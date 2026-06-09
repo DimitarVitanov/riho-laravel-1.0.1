@@ -214,8 +214,68 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('assets/js/bookmark/jquery.validate.min.js') }}"></script>
-    <script src="{{ asset('assets/js/custom-validation/validation.js') }}"></script>
+    <style>
+        /* ── Brand color overrides ── */
+        .login-card .login-main .btn-primary,
+        .login-card .login-main button[type="submit"] {
+            background-color: #0a0b0c !important;
+            border-color: #0a0b0c !important;
+            color: #ffffff !important;
+        }
+        .login-card .login-main .btn-primary:hover,
+        .login-card .login-main button[type="submit"]:hover {
+            background-color: #2a2b2c !important;
+            border-color: #2a2b2c !important;
+        }
+        .login-card .login-main .form-control {
+            background-color: #f2f2f3 !important;
+            border-color: #dcdcdc !important;
+            color: #0a0b0c !important;
+        }
+        .login-card .login-main .form-control::placeholder {
+            color: #888 !important;
+        }
+        .login-card .login-main .form-control:focus {
+            border-color: #0a0b0c !important;
+            box-shadow: 0 0 0 0.2rem rgba(10,11,12,0.15) !important;
+        }
+        .login-card .login-main select.form-control {
+            background-color: #f2f2f3 !important;
+        }
+        .login-card .login-main a {
+            color: #0a0b0c !important;
+        }
+        .login-card .login-main a:hover {
+            color: #444 !important;
+        }
+        /* ── Checkbox fixes ── */
+        .login-main .form-check {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding-left: 0 !important;
+        }
+        .login-main .form-check-input[type="checkbox"] {
+            position: relative !important;
+            float: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            width: 18px !important;
+            height: 18px !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            z-index: 10 !important;
+            appearance: auto !important;
+            -webkit-appearance: checkbox !important;
+            accent-color: #0a0b0c !important;
+        }
+        .login-main .form-check-label {
+            margin: 0 !important;
+            cursor: pointer !important;
+        }
+    </style>
     <script src="{{ asset('assets/js/toastr.min.js') }}"></script>
     <script>
         $(document).ready(function() {

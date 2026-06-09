@@ -102,7 +102,7 @@
                                                             <form action="{{ route('admin.villabit.users.approve-waitlist', $u) }}" method="POST" class="d-inline">
                                                                 @csrf
                                                                 <button type="submit" class="btn btn-sm btn-success" title="Approve & Grant Access">
-                                                                    <i data-feather="check-circle"></i> Approve
+                                                                    <i data-feather="check-circle"></i>
                                                                 </button>
                                                             </form>
                                                         @else

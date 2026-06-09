@@ -96,7 +96,7 @@
                                             </td>
                                             <td>{{ $u->created_at->format('M j, Y') }}</td>
                                             <td>
-                                                <div class="btn-group btn-group-sm">
+                                                <div class="d-flex gap-1">
                                                     @if(!$u->isAdmin())
                                                         @if($u->status === 'waitlist')
                                                             <form action="{{ route('admin.villabit.users.approve-waitlist', $u) }}" method="POST" class="d-inline">

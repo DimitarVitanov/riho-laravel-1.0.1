@@ -1,0 +1,211 @@
+/**=====================
+    3.29 Login CSS Start
+==========================**/
+
+.login-card {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  background: url('../images/login/login_bg.jpg') !important;
+  background-position: center;
+  padding: 30px 12px;
+
+  .logo {
+    display: block;
+    margin-bottom: 30px !important;
+    text-align: center;
+  }
+
+  .btn-showcase {
+    .btn {
+      line-height: 1; 
+      padding: 10px 13px;
+      margin: 0; 
+
+      &+.btn {
+        margin-left: 5px;
+      }
+
+      svg {
+        height: 16px;
+        vertical-align: bottom;
+      }
+    }
+  }
+
+  .login-main {
+    width: 450px;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 37px rgba(8, 21, 66, 0.05);
+    margin: 0 auto;
+    background-color: $white;
+
+    .theme-form {
+      h4 {
+        margin-bottom: 5px;
+      }
+			.form-group {
+				.form-control.error~.show-hide {
+          top: 33%;
+          right: 23px;
+				}
+			} 
+      label {
+        font-size: 15px;
+        letter-spacing: 0.4px;
+      }
+
+      .checkbox label::before {
+        background-color: $card-body-color;
+        border: 1px solid #dfdfdf;
+      }
+
+      .or {
+        position: relative;
+        text-align: center;
+        z-index: 1;
+        &:before {
+          content: "";
+          position: absolute;
+          width: 100%;
+          height: 1px;
+          background-color: #f3f3ff;
+          top: 8px;
+          z-index: -1;
+          right: 0;
+          [dir="rtl"] & {
+            left: 0;
+            right: unset;
+          }
+        }
+        span{
+          background-color: $card-body-color;
+          padding: 0 5px;
+          font-size: 15px;
+        }
+      }
+
+      input { 
+        background-color: rgba($primary-color, 0.1);
+        transition: all 0.3s ease;
+        &[type="password"] {
+          padding: 10px 50px 10px 10px;
+        }
+        &::-webkit-input-placeholder {
+          color: $font-gray-color;
+        }
+
+        &:hover,
+        &:focus {
+          border: 1px solid color.adjust($semi-dark, $lightness: 35%);
+          box-shadow: none !important;
+          transition: all 0.3s ease; 
+        }
+      }
+
+      p {
+        margin-bottom: 25px;
+        font-size: 14px;
+        color: $dark-gray;
+      }
+
+      .form-group {
+        margin-bottom: 10px;
+        position: relative;
+      }
+
+      .link {
+        position: absolute;
+        top: 10px;
+        right: 0;
+      }
+      .social {
+        .btn-showcase {
+          a {
+            &:first-child {
+              margin-inline: unset;
+            }
+            &:nth-child(2) {
+              margin-inline: 5px;
+            }
+            &:last-child {
+              margin-inline: unset;
+            }
+          }
+        }
+      }
+    }
+    .custom-btn-back {
+      p {
+        color: $font-gray-color;
+        &:hover {
+         color: $primary-color; 
+        }
+      }
+    }
+    .spinner-btn{
+      .spinner_loader{
+        vertical-align: -3px;
+      }
+    }
+  }
+}
+
+.show-hide {
+  position: absolute;
+  top: 52px;
+  right: 20px;
+  transform: translateY(-50%); 
+  [dir="rtl"] & {
+    left: 20px;
+    right: unset;
+  }
+  span {
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--theme-default);
+
+    &.show {
+      &:before {
+        content: "";
+        display: inline-block;
+        background-image: url(../svg/eye-off.svg);
+        height: 17px;
+        width: 17px;
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+    }
+
+    &:before {
+      content: "";
+      display: inline-block;
+      background-image: url(../svg/eye.svg);
+      height: 17px;
+      width: 17px;
+      background-size: contain;
+    }
+  }
+}
+
+.needs-validation {
+  .invalid-feedback {
+    color: $dark-gray;
+  }
+
+  .show-hide {
+    right: 30px;
+  }
+
+  .invalid-tooltip {
+    top: 10px;
+    right: 10px;
+  }
+}
+
+/**=====================
+    3.29 Login CSS Ends
+==========================**/

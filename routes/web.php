@@ -52,6 +52,7 @@ Auth::routes(['verify' => true]);
 // Generic dashboard redirect (for agency/investor users)
 Route::get('/dashboard', function () {
     $user = auth()->user();
+    if ($user->isOnWaitlist()) return view('dashboards.waitlist', compact('user'));
     if ($user->isAdmin()) return redirect()->route('admin.villabit.dashboard');
     if ($user->isManager()) return redirect()->route('manager.dashboard');
     if ($user->isAgency()) return redirect()->route('agency.dashboard');

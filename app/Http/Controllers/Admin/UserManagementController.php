@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\ManagerProfile;
 use App\Models\AgencyProfile;
 use App\Models\InvestorProfile;
+use App\Notifications\ManagerAddedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -58,6 +59,8 @@ class UserManagementController extends Controller
             'can_login_as_user' => $request->boolean('can_login_as_user', false),
             'active_from' => now(),
         ]);
+
+        $user->notify(new ManagerAddedNotification());
 
         return redirect()->route('admin.villabit.users.index')
             ->with('success', 'Manager created successfully.');

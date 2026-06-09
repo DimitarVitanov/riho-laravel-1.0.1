@@ -99,8 +99,8 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         Waiting List
                     </div>
-                    <h2 class="fw-bold mb-2">Welcome, {{ $user->first_name }}!</h2>
-                    <p class="mb-0" style="color:rgba(255,255,255,0.75); font-size:1.05rem; max-width:520px; line-height:1.7;">
+                    <h2 class="fw-bold mb-2" style="color:#ffffff;">Welcome, {{ $user->first_name }}!</h2>
+                    <p class="mb-0" style="color:rgba(255,255,255,0.92); font-size:1.05rem; max-width:520px; line-height:1.7;">
                         Your account is currently on the waiting list because our AI server resources are already allocated to existing clients, and full panel access will be granted on a first-registered, first-served basis as additional capacity becomes available.
                     </p>
                 </div>
@@ -108,7 +108,7 @@
                 {{-- Info message --}}
                 <div class="card mb-4">
                     <div class="card-body" style="padding: 24px 28px;">
-                        <p class="mb-0 text-muted" style="line-height:1.75; font-size:0.97rem;">
+                        <p class="mb-0" style="line-height:1.75; font-size:0.97rem; color:#444;">
                             You do not need to take any further action at this stage. Demand for <strong>Villa Bit AI Server</strong> is currently higher than the available AI server resources, which is a sign of growing interest, and our team is actively working to expand capacity and activate new accounts every week.
                         </p>
                     </div>

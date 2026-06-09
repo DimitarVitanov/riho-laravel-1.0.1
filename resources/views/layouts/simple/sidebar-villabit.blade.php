@@ -21,8 +21,20 @@
                     <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
                 </li>
 
+                {{-- ===================== WAITLIST SIDEBAR ===================== --}}
+                @if($user && $user->isOnWaitlist())
+                <li class="sidebar-main-title"><div><h6>My Account</h6></div></li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('dashboard') }}">
+                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use></svg>
+                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use></svg>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
                 {{-- ===================== ADMIN / SUPER ADMIN SIDEBAR ===================== --}}
-                @if($user && $user->isAdmin())
+                @elseif($user && $user->isAdmin())
                 <li class="sidebar-main-title"><div><h6>Admin Panel</h6></div></li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>

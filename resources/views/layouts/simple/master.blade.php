@@ -52,14 +52,7 @@
                         @endif
                         <!-- Page sidebar end-->
 
-                        @switch(Route::currentRouteName())
-                            @case('admin.checkout')
-                                <div class="page-body checkout">
-                                @break
-
-                            @default
-                                <div class="page-body">
-                        @endswitch
+                        <div class="page-body">
                                 @yield('main_content')
                                 @yield('content')
                             </div>

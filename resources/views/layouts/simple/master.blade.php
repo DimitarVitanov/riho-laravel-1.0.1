@@ -61,6 +61,7 @@
                                 <div class="page-body">
                         @endswitch
                                 @yield('main_content')
+                                @yield('content')
                             </div>
 
                             <!-- footer start-->

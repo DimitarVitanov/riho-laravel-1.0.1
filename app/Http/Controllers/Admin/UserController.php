@@ -117,13 +117,13 @@ class UserController extends Controller
      */
     public function userProfile()
     {
-        return view('admin.user.user-profile',['user' => Auth::user(),'role' => Auth::user()->role->name]);
+        return view('admin.user.user-profile',['user' => Auth::user(),'role' => Auth::user()->role]);
     }
 
     public function editProfile()
     {
         $countries = Country::all()->pluck('name','id');
-        return view('admin.user_profile.edit_profile',['user' => Auth::user(),'role' => Auth::user()->role->name], compact('countries'));
+        return view('admin.user_profile.edit_profile',['user' => Auth::user(),'role' => Auth::user()->role], compact('countries'));
     }
     public function getStates(Request $request){
     	$data['states'] = State::where("country_id", $request->country_id)->get(["name", "id"]);

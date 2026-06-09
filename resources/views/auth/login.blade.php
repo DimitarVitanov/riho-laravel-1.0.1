@@ -25,10 +25,7 @@
                     <div>
                         <div> 
                             <a class="logo" href="{{ route('admin.default_dashboard') }}">
-                                <img class="img-fluid for-light" src="{{ asset($settings['general']['dark_logo']) }}"
-                                    alt="looginpage">
-                                <img class="img-fluid for-dark" src="{{ asset($settings['general']['light_logo']) }}"
-                                    alt="looginpage">
+                                <img class="img-fluid" src="{{ asset('assets/images/logo/villabit-logo.png') }}" alt="Villa Bit AI" style="height:50px;width:auto;">
                             </a>
                         </div>
                         <div class="login-main">
@@ -90,6 +87,47 @@
 @endsection
 
 @section('scripts')
+    <style>
+        .login-card .login-main .btn-primary,
+        .login-card .login-main button[type="submit"] {
+            background-color: #0a0b0c !important;
+            border-color: #0a0b0c !important;
+            color: #ffffff !important;
+        }
+        .login-card .login-main .btn-primary:hover,
+        .login-card .login-main button[type="submit"]:hover {
+            background-color: #2a2b2c !important;
+            border-color: #2a2b2c !important;
+        }
+        .login-card .login-main .form-control,
+        .login-card .login-main input {
+            background-color: #f0f0f1 !important;
+            border: 1px solid #d8d8d8 !important;
+            color: #0a0b0c !important;
+        }
+        .login-card .login-main .form-control::placeholder,
+        .login-card .login-main input::placeholder {
+            color: #999 !important;
+        }
+        .login-card .login-main .form-control:focus,
+        .login-card .login-main input:focus {
+            background-color: #f0f0f1 !important;
+            border-color: #0a0b0c !important;
+            box-shadow: 0 0 0 0.15rem rgba(10,11,12,0.12) !important;
+        }
+        .login-card .login-main .show-hide {
+            color: #666 !important;
+        }
+        .login-card .login-main a {
+            color: #0a0b0c !important;
+        }
+        .login-card .login-main a:hover {
+            color: #444 !important;
+        }
+        .login-card .login-main {
+            background-color: #ffffff !important;
+        }
+    </style>
     <script src="{{ asset('assets/js/bookmark/jquery.validate.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom-validation/validation.js') }}"></script>
     <script src="{{ asset('assets/js/toastr.min.js') }}"></script>

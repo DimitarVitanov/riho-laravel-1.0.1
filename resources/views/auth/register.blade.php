@@ -26,10 +26,7 @@
                         <div>
                             <a class="logo" href="{{ route('admin.default_dashboard') }}">
                                 <a class="logo" href="{{ route('admin.default_dashboard') }}">
-                                    <img class="img-fluid for-light" src="{{ asset($settings['general']['dark_logo']) }}"
-                                        alt="looginpage">
-                                    <img class="img-fluid for-dark" src="{{ asset($settings['general']['light_logo']) }}"
-                                        alt="looginpage">
+                                    <img class="img-fluid" src="{{ asset('assets/images/logo/villabit-logo.png') }}" alt="Villa Bit AI" style="height:50px;width:auto;">
                                 </a>
                             </a>
                         </div>
@@ -227,26 +224,38 @@
             background-color: #2a2b2c !important;
             border-color: #2a2b2c !important;
         }
-        .login-card .login-main .form-control {
-            background-color: #f2f2f3 !important;
-            border-color: #dcdcdc !important;
+        /* Kill teal on inputs — theme uses rgba(primary,0.1) */
+        .login-card .login-main .form-control,
+        .login-card .login-main input,
+        .login-card .login-main select,
+        .login-card .login-main textarea {
+            background-color: #f0f0f1 !important;
+            border: 1px solid #d8d8d8 !important;
             color: #0a0b0c !important;
         }
-        .login-card .login-main .form-control::placeholder {
-            color: #888 !important;
+        .login-card .login-main .form-control::placeholder,
+        .login-card .login-main input::placeholder {
+            color: #999 !important;
         }
-        .login-card .login-main .form-control:focus {
+        .login-card .login-main .form-control:focus,
+        .login-card .login-main input:focus {
+            background-color: #f0f0f1 !important;
             border-color: #0a0b0c !important;
-            box-shadow: 0 0 0 0.2rem rgba(10,11,12,0.15) !important;
+            box-shadow: 0 0 0 0.15rem rgba(10,11,12,0.12) !important;
         }
-        .login-card .login-main select.form-control {
-            background-color: #f2f2f3 !important;
+        /* Kill teal on show/hide icon */
+        .login-card .login-main .show-hide {
+            color: #666 !important;
         }
         .login-card .login-main a {
             color: #0a0b0c !important;
         }
         .login-card .login-main a:hover {
             color: #444 !important;
+        }
+        /* Form card white background */
+        .login-card .login-main {
+            background-color: #ffffff !important;
         }
         /* ── Checkbox fixes ── */
         .login-main .form-check {
@@ -276,6 +285,7 @@
             cursor: pointer !important;
         }
     </style>
+    <script src="{{ asset('assets/js/bookmark/jquery.validate.min.js') }}"></script>
     <script src="{{ asset('assets/js/toastr.min.js') }}"></script>
     <script>
         $(document).ready(function() {

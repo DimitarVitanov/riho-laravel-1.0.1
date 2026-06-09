@@ -1,28 +1,62 @@
-@extends('layouts.app')
+@extends('layouts.authentication.master')
 
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Verify Your Email Address') }}</div>
-
-                <div class="card-body">
-                    @if (session('resent'))
-                        <div class="alert alert-success" role="alert">
-                            {{ __('A fresh verification link has been sent to your email address.') }}
+@section('main_content')
+    <div class="loader-wrapper">
+        <div class="loader"><div class="loader4"></div></div>
+    </div>
+    <div class="container-fluid p-0">
+        <div class="row m-0">
+            <div class="col-12 p-0">
+                <div class="login-card login-dark">
+                    <div>
+                        <div>
+                            <a class="logo" href="#">
+                                <img class="img-fluid" src="{{ asset('assets/images/logo/villabit-logo.png') }}" alt="Villa Bit AI" style="height:80px;width:auto;">
+                            </a>
                         </div>
-                    @endif
+                        <div class="login-main">
+                            <h4>Verify Your Email Address</h4>
+                            <p>Almost there! Please check your inbox for a verification link.</p>
 
-                    {{ __('Before proceeding, please check your email for a verification link.') }}
-                    {{ __('If you did not receive the email') }},
-                    <form class="d-inline" method="POST" action="{{ route('verification.resend') }}">
-                        @csrf
-                        <button type="submit" class="btn btn-link p-0 m-0 align-baseline">{{ __('click here to request another') }}</button>.
-                    </form>
+                            @if (session('resent'))
+                                <div class="alert alert-success" role="alert">
+                                    A fresh verification link has been sent to your email address.
+                                </div>
+                            @endif
+
+                            <p class="mb-3">Before proceeding, please check your email for a verification link. If you did not receive the email, click the button below to request another.</p>
+
+                            <form method="POST" action="{{ route('verification.resend') }}">
+                                @csrf
+                                <button type="submit" class="btn btn-primary btn-block w-100">
+                                    Resend Verification Email
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+@endsection
+
+@section('scripts')
+    <style>
+        .login-card.login-dark {
+            background: url('/assets/images/login/login_bg.jpg') center center / cover no-repeat !important;
+            background-color: #f5f6fa !important;
+        }
+        .login-card .login-main {
+            background-color: #ffffff !important;
+        }
+        .login-card .login-main .btn-primary {
+            background-color: #0a0b0c !important;
+            border-color: #0a0b0c !important;
+            color: #ffffff !important;
+        }
+        .login-card .login-main .btn-primary:hover {
+            background-color: #2a2b2c !important;
+            border-color: #2a2b2c !important;
+        }
+    </style>
 @endsection

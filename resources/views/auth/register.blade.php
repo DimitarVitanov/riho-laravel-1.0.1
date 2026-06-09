@@ -257,6 +257,11 @@
         .login-card .login-main {
             background-color: #ffffff !important;
         }
+        /* Force background image to show (overrides .login-dark which hides it) */
+        .login-card.login-dark {
+            background: url('/assets/images/login/login_bg.jpg') center center / cover no-repeat !important;
+            background-color: #f5f6fa !important;
+        }
         /* ── Checkbox fixes ── */
         .login-main .form-check {
             display: flex !important;

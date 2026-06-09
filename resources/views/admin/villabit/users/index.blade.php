@@ -98,12 +98,21 @@
                                             <td>
                                                 <div class="btn-group btn-group-sm">
                                                     @if(!$u->isAdmin())
+                                                        @if($u->status === 'waitlist')
+                                                            <form action="{{ route('admin.villabit.users.approve-waitlist', $u) }}" method="POST" class="d-inline">
+                                                                @csrf
+                                                                <button type="submit" class="btn btn-sm btn-success" title="Approve & Grant Access">
+                                                                    <i data-feather="check-circle"></i> Approve
+                                                                </button>
+                                                            </form>
+                                                        @else
                                                         <form action="{{ route('admin.villabit.users.toggle-status', $u) }}" method="POST" class="d-inline">
                                                             @csrf
                                                             <button type="submit" class="btn btn-sm btn-outline-{{ $u->status === 'active' ? 'warning' : 'success' }}" title="{{ $u->status === 'active' ? 'Suspend' : 'Activate' }}">
                                                                 <i data-feather="{{ $u->status === 'active' ? 'pause-circle' : 'play-circle' }}"></i>
                                                             </button>
                                                         </form>
+                                                        @endif
                                                         <form action="{{ route('admin.villabit.impersonate.start', $u) }}" method="POST" class="d-inline">
                                                             @csrf
                                                             <button type="submit" class="btn btn-sm btn-outline-info" title="Login As">

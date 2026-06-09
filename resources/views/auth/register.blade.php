@@ -110,8 +110,14 @@
 
                                 <div class="form-group">
                                     <label class="col-form-label">Country <span class="text-danger">*</span></label>
-                                    <input id="country" type="text" class="form-control" name="country"
-                                        value="{{ old('country') }}" placeholder="Your country" required>
+                                    <select id="country" name="country" class="form-control" required>
+                                        <option value="">-- Select Country --</option>
+                                        @foreach($countries as $c)
+                                            <option value="{{ $c->name }}" {{ old('country') == $c->name ? 'selected' : '' }}>
+                                                {{ $c->flag }} {{ $c->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                     @error('country')
                                         <span class="text-danger d-block" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -121,8 +127,19 @@
 
                                 <div class="form-group">
                                     <label class="col-form-label">Phone</label>
-                                    <input id="phone" type="text" class="form-control" name="phone"
-                                        value="{{ old('phone') }}" placeholder="Phone number">
+                                    <div class="input-group">
+                                        <select id="phone_code" name="phone_code" class="form-control" style="max-width:150px; flex-shrink:0;">
+                                            @foreach($countries as $c)
+                                                @if($c->calling_code)
+                                                    <option value="+{{ $c->calling_code }}" {{ old('phone_code') == '+'.$c->calling_code ? 'selected' : '' }}>
+                                                        {{ $c->flag }} {{ $c->calling_code }}
+                                                    </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <input id="phone" type="text" class="form-control" name="phone"
+                                            value="{{ old('phone') }}" placeholder="Phone number">
+                                    </div>
                                     @error('phone')
                                         <span class="text-danger d-block" role="alert">
                                             <strong>{{ $message }}</strong>

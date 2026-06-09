@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use App\Models\AffiliateReferral;
+use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
 {
@@ -21,6 +22,12 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    public function showRegistrationForm()
+    {
+        $countries = DB::table('countries')->orderBy('name')->get(['name', 'calling_code', 'flag']);
+        return view('auth.register', compact('countries'));
     }
 
     protected function validator(array $data)

@@ -76,6 +76,7 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::get('users/create-investor', [UserManagementController::class, 'createInvestor'])->name('users.create-investor');
     Route::post('users/store-investor', [UserManagementController::class, 'storeInvestor'])->name('users.store-investor');
     Route::post('users/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::post('users/{user}/approve-waitlist', [UserManagementController::class, 'approveWaitlist'])->name('users.approve-waitlist');
     Route::post('users/{user}/enable-reseller', [UserManagementController::class, 'enableReseller'])->name('users.enable-reseller');
 
     // Managers

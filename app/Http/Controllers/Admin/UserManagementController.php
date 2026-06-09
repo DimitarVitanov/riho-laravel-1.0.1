@@ -8,6 +8,7 @@ use App\Models\ManagerProfile;
 use App\Models\AgencyProfile;
 use App\Models\InvestorProfile;
 use App\Notifications\ManagerAddedNotification;
+use App\Notifications\AccountApprovedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -177,6 +178,19 @@ class UserManagementController extends Controller
         $user->update(['status' => $newStatus]);
 
         return back()->with('success', "User status changed to {$newStatus}.");
+    }
+
+    public function approveWaitlist(User $user)
+    {
+        if ($user->status !== 'waitlist') {
+            return back()->with('error', 'User is not on the waitlist.');
+        }
+
+        $user->update(['status' => 'active']);
+
+        $user->notify(new AccountApprovedNotification());
+
+        return back()->with('success', "{$user->first_name} {$user->last_name} has been approved and granted full access.");
     }
 
     public function enableReseller(User $user)

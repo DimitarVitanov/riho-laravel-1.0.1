@@ -25,7 +25,7 @@
                     <div>
                         <div> 
                             <a class="logo" href="{{ route('admin.default_dashboard') }}">
-                                <img class="img-fluid" src="{{ asset('assets/images/logo/villabit-logo.png') }}" alt="Villa Bit AI" style="height:50px;width:auto;">
+                                <img class="img-fluid" src="{{ asset('assets/images/logo/villabit-logo.png') }}" alt="Villa Bit AI" style="height:80px;width:auto;">
                             </a>
                         </div>
                         <div class="login-main">

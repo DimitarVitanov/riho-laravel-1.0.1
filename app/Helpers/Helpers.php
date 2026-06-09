@@ -39,7 +39,7 @@ class Helpers
           'site_name' => 'Villa Bit AI',
           'light_logo' => 'assets/images/logo/logo.png',
           'dark_logo' => 'assets/images/logo/logo-dark.png',
-          'favicon' => 'assets/images/logo/favicon.png',
+          'favicon' => 'assets/images/logo/favicon.ico',
         ]
       ];
     }

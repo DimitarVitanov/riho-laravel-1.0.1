@@ -45,7 +45,16 @@
                     <div class="page-body-wrapper">
 
                         <!-- Page sidebar start-->
-                        @if(str_starts_with(Route::currentRouteName() ?? '', 'admin.villabit.') || str_starts_with(Route::currentRouteName() ?? '', 'manager.') || str_starts_with(Route::currentRouteName() ?? '', 'agency.') || str_starts_with(Route::currentRouteName() ?? '', 'investor.'))
+                        @php
+                            $routeName = Route::currentRouteName() ?? '';
+                            $useVillabitSidebar = str_starts_with($routeName, 'admin.villabit.')
+                                || str_starts_with($routeName, 'manager.')
+                                || str_starts_with($routeName, 'agency.')
+                                || str_starts_with($routeName, 'investor.')
+                                || $routeName === 'dashboard'
+                                || (auth()->check() && auth()->user()->isOnWaitlist());
+                        @endphp
+                        @if($useVillabitSidebar)
                             @include('layouts.simple.sidebar-villabit')
                         @else
                             @include('layouts.simple.sidebar')

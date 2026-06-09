@@ -193,7 +193,7 @@
                 {{-- Footer note + sign out --}}
                 <div class="text-center mb-5">
                     <p class="text-muted small mb-3">
-                        Questions? Reach us at <a href="mailto:support@villabit.ai" class="text-dark fw-semibold">support@villabit.ai</a>
+                        Questions? Reach us at <a href="mailto:inbox@villabit.ai" class="text-dark fw-semibold">inbox@villabit.ai</a>
                     </p>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

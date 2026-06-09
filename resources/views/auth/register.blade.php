@@ -86,27 +86,6 @@
                                     @enderror
                                 </div>
 
-                                <div class="form-group agency-fields" style="display: none;">
-                                    <label class="col-form-label">Agency Website URL</label>
-                                    <input id="agency_website_url" type="url" class="form-control" name="agency_website_url"
-                                        value="{{ old('agency_website_url') }}" placeholder="https://youragency.com">
-                                    @error('agency_website_url')
-                                        <span class="text-danger d-block" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group agency-fields" style="display: none;">
-                                    <label class="col-form-label">Target City</label>
-                                    <input id="target_city" type="text" class="form-control" name="target_city"
-                                        value="{{ old('target_city') }}" placeholder="Main city you operate in">
-                                    @error('target_city')
-                                        <span class="text-danger d-block" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
 
                                 <div class="form-group">
                                     <label class="col-form-label">Country <span class="text-danger">*</span></label>
@@ -129,12 +108,10 @@
                                     <label class="col-form-label">Phone</label>
                                     <div class="input-group">
                                         <select id="phone_code" name="phone_code" class="form-control" style="max-width:150px; flex-shrink:0;">
-                                            @foreach($countries as $c)
-                                                @if($c->calling_code)
+                                            @foreach($countries->filter(fn($c) => $c->calling_code)->sortBy(fn($c) => (int) preg_replace('/[^0-9]/', '', $c->calling_code))->values() as $c)
                                                     <option value="+{{ $c->calling_code }}" {{ old('phone_code') == '+'.$c->calling_code ? 'selected' : '' }}>
-                                                        {{ $c->flag }} {{ $c->calling_code }}
+                                                        {{ $c->flag }} +{{ $c->calling_code }}
                                                     </option>
-                                                @endif
                                             @endforeach
                                         </select>
                                         <input id="phone" type="text" class="form-control" name="phone"
@@ -185,26 +162,12 @@
 
                                 <div class="form-group">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="terms_acceptance" id="terms_acceptance" value="1" {{ old('terms_acceptance') ? 'checked' : '' }}>
+                                        <input class="form-check-input" type="checkbox" name="terms_acceptance" id="terms_acceptance" value="1" {{ old('terms_acceptance') ? 'checked' : '' }} required>
                                         <label class="form-check-label" for="terms_acceptance">
-                                            I agree to the <a href="/terms" target="_blank">Terms of Service</a>
+                                            I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a>
                                         </label>
                                     </div>
                                     @error('terms_acceptance')
-                                        <span class="text-danger d-block" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="privacy_acceptance" id="privacy_acceptance" value="1" {{ old('privacy_acceptance') ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="privacy_acceptance">
-                                            I agree to the <a href="/privacy" target="_blank">Privacy Policy</a>
-                                        </label>
-                                    </div>
-                                    @error('privacy_acceptance')
                                         <span class="text-danger d-block" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class WipeDemoData extends Command
 {
@@ -36,27 +37,45 @@ class WipeDemoData extends Command
         $this->info("Found {$count} non-admin user(s). Wiping associated data...");
 
         $userIds = $nonAdminUsers->pluck('id')->toArray();
+        $emails = $nonAdminUsers->pluck('email')->toArray();
 
-        DB::transaction(function () use ($userIds) {
-            DB::table('agency_profiles')->whereIn('user_id', $userIds)->delete();
-            DB::table('investor_profiles')->whereIn('user_id', $userIds)->delete();
-            DB::table('agency_feature_toggles')->whereIn('user_id', $userIds)->delete();
-            DB::table('agency_language_settings')->whereIn('user_id', $userIds)->delete();
-            DB::table('usage_limits')->whereIn('user_id', $userIds)->delete();
-            DB::table('ai_reports')->whereIn('user_id', $userIds)->delete();
-            DB::table('generated_pages')->whereIn('user_id', $userIds)->delete();
-            DB::table('leads')->whereIn('user_id', $userIds)->delete();
-            DB::table('affiliate_referrals')->whereIn('referrer_id', $userIds)->orWhereIn('referee_id', $userIds)->delete();
-            DB::table('support_notes')->whereIn('user_id', $userIds)->delete();
-            DB::table('manager_agency')->whereIn('manager_id', $userIds)->orWhereIn('agency_id', $userIds)->delete();
-            DB::table('manager_investor')->whereIn('manager_id', $userIds)->orWhereIn('investor_id', $userIds)->delete();
-            DB::table('password_reset_tokens')->whereIn('email', User::whereIn('id', $userIds)->pluck('email')->toArray())->delete();
+        $tables = [
+            ['table' => 'agency_profiles', 'column' => 'user_id'],
+            ['table' => 'investor_profiles', 'column' => 'user_id'],
+            ['table' => 'agency_feature_toggles', 'column' => 'user_id'],
+            ['table' => 'agency_language_settings', 'column' => 'user_id'],
+            ['table' => 'usage_limits', 'column' => 'user_id'],
+            ['table' => 'ai_reports', 'column' => 'user_id'],
+            ['table' => 'generated_pages', 'column' => 'user_id'],
+            ['table' => 'leads', 'column' => 'user_id'],
+            ['table' => 'support_tickets', 'column' => 'user_id'],
+            ['table' => 'support_ticket_messages', 'column' => 'user_id'],
+        ];
+
+        DB::transaction(function () use ($userIds, $emails, $tables) {
+            foreach ($tables as $t) {
+                if (Schema::hasTable($t['table'])) {
+                    DB::table($t['table'])->whereIn($t['column'], $userIds)->delete();
+                }
+            }
+
+            if (Schema::hasTable('affiliate_referrals')) {
+                DB::table('affiliate_referrals')->whereIn('referrer_id', $userIds)->orWhereIn('referee_id', $userIds)->delete();
+            }
+            if (Schema::hasTable('manager_agency')) {
+                DB::table('manager_agency')->whereIn('manager_id', $userIds)->orWhereIn('agency_id', $userIds)->delete();
+            }
+            if (Schema::hasTable('manager_investor')) {
+                DB::table('manager_investor')->whereIn('manager_id', $userIds)->orWhereIn('investor_id', $userIds)->delete();
+            }
+            if (Schema::hasTable('password_reset_tokens')) {
+                DB::table('password_reset_tokens')->whereIn('email', $emails)->delete();
+            }
 
             User::whereIn('id', $userIds)->delete();
         });
 
         $this->info("✓ Wiped {$count} user(s) and all associated records.");
-        $this->line('Tables cleaned: agency_profiles, investor_profiles, feature_toggles, language_settings, usage_limits, ai_reports, generated_pages, leads, affiliate_referrals, support_notes, manager assignments, password_reset_tokens.');
 
         return self::SUCCESS;
     }

@@ -37,11 +37,8 @@ class WelcomeAfterVerificationNotification extends Notification implements Shoul
             ->line('You can now log in to your panel and continue with your account setup.')
             ->action('LOGIN TO YOUR PANEL', $loginLink);
 
-        if ($notifiable->role === 'real_estate_agency') {
-            $message->line('For Real Estate Agency accounts, Villa Bit AI Server is focused on helping agencies increase sales, build a stronger local presence, create useful second-level content, analyze competitors, improve AI-search readiness, and strengthen online authority.');
-        } elseif ($notifiable->role === 'investor') {
-            $message->line('For Real Estate Investor accounts, Villa Bit AI Server gives access to investor-related areas connected with real estate development opportunities, multi-layered investment profit possibilities, preferred-return information, and project participation details where applicable.');
-        }
+        $message->line('For Real Estate Agency accounts, Villa Bit AI Server is focused on helping agencies increase sales, build a stronger local presence, create useful second-level content, analyze competitors, improve AI-search readiness, and strengthen online authority.');
+        $message->line('For Real Estate Investor accounts, Villa Bit AI Server gives access to investor-related areas connected with real estate development opportunities, multi-layered investment profit possibilities, preferred-return information, and project participation details where applicable.');
 
         $message->line('You can log in and start using your Villa Bit AI Server.')
             ->salutation("Kind regards,\nVilla Bit AI Server Team\nhttps://villabit.ai");

@@ -42,6 +42,8 @@ use App\Http\Controllers\Manager\ManagerCapitalCallController;
 use App\Http\Controllers\Manager\ManagerPayoutPreparationController;
 use App\Http\Controllers\Agency\AgencyGeneratedPageController;
 use App\Http\Controllers\Agency\AgencyLeadController;
+use App\Http\Controllers\Admin\AdminSupportTicketController;
+use App\Http\Controllers\Agency\AgencySupportController;
 
 Route::get('/', function () {
     return redirect()->route('register');
@@ -134,6 +136,12 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::post('content-review/{page}/approve', [AdminContentReviewController::class, 'approve'])->name('content-review.approve');
     Route::post('content-review/{page}/reject', [AdminContentReviewController::class, 'reject'])->name('content-review.reject');
 
+    // Support Tickets
+    Route::get('support-tickets', [AdminSupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::get('support-tickets/{ticket}', [AdminSupportTicketController::class, 'show'])->name('support-tickets.show');
+    Route::post('support-tickets/{ticket}/reply', [AdminSupportTicketController::class, 'reply'])->name('support-tickets.reply');
+    Route::post('support-tickets/{ticket}/update-status', [AdminSupportTicketController::class, 'updateStatus'])->name('support-tickets.update-status');
+
     // Impersonation
     Route::post('impersonate/{user}', [ImpersonationController::class, 'start'])->name('impersonate.start');
     Route::get('impersonate/stop', [ImpersonationController::class, 'stop'])->name('impersonate.stop');
@@ -201,6 +209,13 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::get('leads', [AgencyLeadController::class, 'index'])->name('leads.index');
     Route::get('leads/{lead}', [AgencyLeadController::class, 'show'])->name('leads.show');
     Route::patch('leads/{lead}/status', [AgencyLeadController::class, 'updateStatus'])->name('leads.update-status');
+
+    // Support
+    Route::get('support', [AgencySupportController::class, 'index'])->name('support.index');
+    Route::get('support/create', [AgencySupportController::class, 'create'])->name('support.create');
+    Route::post('support', [AgencySupportController::class, 'store'])->name('support.store');
+    Route::get('support/{ticket}', [AgencySupportController::class, 'show'])->name('support.show');
+    Route::post('support/{ticket}/reply', [AgencySupportController::class, 'reply'])->name('support.reply');
 });
 
 /*

@@ -10,7 +10,7 @@
                 <div class="login-card login-dark">
                     <div>
                         <div>
-                            <a class="logo" href="#">
+                            <a class="logo" href="https://villabit.ai/" target="_blank">
                                 <img class="img-fluid" src="{{ asset('assets/images/logo/villabit-logo.png') }}" alt="Villa Bit AI" style="height:80px;width:auto;">
                             </a>
                         </div>

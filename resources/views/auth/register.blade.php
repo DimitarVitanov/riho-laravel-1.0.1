@@ -24,10 +24,8 @@
                 <div class="login-card login-dark">
                     <div>
                         <div>
-                            <a class="logo" href="{{ route('admin.default_dashboard') }}">
-                                <a class="logo" href="{{ route('admin.default_dashboard') }}">
-                                    <img class="img-fluid" src="{{ asset('assets/images/logo/villabit-logo.png') }}" alt="Villa Bit AI" style="height:80px;width:auto;">
-                                </a>
+                            <a class="logo" href="https://villabit.ai/" target="_blank">
+                                <img class="img-fluid" src="{{ asset('assets/images/logo/villabit-logo.png') }}" alt="Villa Bit AI" style="height:80px;width:auto;">
                             </a>
                         </div>
                         <div class="login-main">

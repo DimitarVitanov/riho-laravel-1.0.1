@@ -7,6 +7,9 @@
 <meta name="color-scheme" content="light">
 <meta name="supported-color-schemes" content="light">
 <style>
+body {
+color: #18181b;
+}
 @media only screen and (max-width: 600px) {
 .inner-body {
 width: 100% !important;

@@ -45,8 +45,9 @@ use App\Http\Controllers\Agency\AgencyLeadController;
 use App\Http\Controllers\Admin\AdminSupportTicketController;
 use App\Http\Controllers\Agency\AgencySupportController;
 
+// Home page redirects to external landing page
 Route::get('/', function () {
-    return redirect()->route('register');
+    return redirect('https://app.villabit.ai/');
 });
 
 Auth::routes(['verify' => true]);

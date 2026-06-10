@@ -45,9 +45,9 @@ use App\Http\Controllers\Agency\AgencyLeadController;
 use App\Http\Controllers\Admin\AdminSupportTicketController;
 use App\Http\Controllers\Agency\AgencySupportController;
 
-// Home page redirects to external landing page
+// Home page redirects to marketing website
 Route::get('/', function () {
-    return redirect('https://app.villabit.ai/');
+    return redirect('https://villabit.ai/');
 });
 
 Auth::routes(['verify' => true]);

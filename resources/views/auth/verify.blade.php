@@ -16,7 +16,7 @@
                         </div>
                         <div class="login-main">
                             <h4>Verify Your Email Address</h4>
-                            <p>Almost there! Please check your inbox for a verification link.</p>
+                            <p>Almost there! Check your email and click the verification link we sent you. If you do not see it, please also check your spam or junk folder. You can request a new verification email by clicking the button below.</p>
 
                             @if (session('resent'))
                                 <div class="alert alert-success" role="alert">
@@ -24,9 +24,7 @@
                                 </div>
                             @endif
 
-                            <p class="mb-3">Before proceeding, please check your email for a verification link. If you did not receive the email, click the button below to request another.</p>
-
-                            <form method="POST" action="{{ route('verification.resend') }}">
+                            <form method="POST" action="{{ route('verification.resend') }}" class="mt-4">
                                 @csrf
                                 <button type="submit" class="btn btn-primary btn-block w-100">
                                     Resend Verification Email

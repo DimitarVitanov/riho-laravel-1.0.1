@@ -20,6 +20,20 @@
                     <p><strong>Target City:</strong> {{ $user->agencyProfile->target_city ?? '—' }}</p>
                     <p><strong>AI Status:</strong> <span class="badge bg-{{ $user->agencyProfile->ai_status === 'active' ? 'success' : 'secondary' }}">{{ ucfirst($user->agencyProfile->ai_status ?? 'n/a') }}</span></p>
                     <p><strong>Subscription:</strong> {{ $user->agencyProfile->subscription_status ?? '—' }}</p>
+
+                    <hr>
+                    <h6 class="mb-3">Account / Usage Status Control</h6>
+                    <form method="POST" action="{{ route('admin.villabit.agencies.toggle-status', $user) }}" class="d-flex align-items-center gap-2">
+                        @csrf
+                        @method('POST')
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="subscriptionToggle" name="subscription_status" value="active" {{ $user->agencyProfile && $user->agencyProfile->subscription_status === 'active' ? 'checked' : '' }} onchange="this.form.submit()">
+                            <label class="form-check-label" for="subscriptionToggle">
+                                {{ $user->agencyProfile && $user->agencyProfile->subscription_status === 'active' ? 'Active' : 'On Hold' }}
+                            </label>
+                        </div>
+                    </form>
+                    <small class="text-muted">Toggle to set agency as Active or On Hold</small>
                     @endif
                 </div>
             </div>
@@ -45,7 +59,17 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header pb-0"><h5>Usage Limits</h5></div>
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <h5>Usage Limits</h5>
+                    @if($user->agencyProfile && $user->agencyProfile->usageLimits->count())
+                        <a href="{{ url('admin/villabit/usage-limits/' . $user->agencyProfile->usageLimits->first()->id . '/edit') }}" class="btn btn-sm btn-outline-primary">Edit Limits</a>
+                    @elseif($user->agencyProfile)
+                        <form action="{{ url('admin/villabit/agencies/' . $user->id . '/create-usage-limits') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-primary">Create Default Limits</button>
+                        </form>
+                    @endif
+                </div>
                 <div class="card-body">
                     @if($user->agencyProfile && $user->agencyProfile->usageLimits->count())
                         @php $ul = $user->agencyProfile->usageLimits->first(); @endphp
@@ -57,6 +81,9 @@
                         <p>Small Actions: {{ $ul->small_ai_content_actions_used }}/{{ $ul->small_ai_content_actions_limit }}</p>
                     @else
                         <p class="text-muted">No usage limits set.</p>
+                        @if($user->agencyProfile)
+                            <small class="text-muted">Click "Create Default Limits" to set up default usage limits for this agency.</small>
+                        @endif
                     @endif
                 </div>
             </div>

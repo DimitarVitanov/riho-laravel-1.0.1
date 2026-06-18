@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\ManagerProfile;
 use App\Models\AgencyProfile;
 use App\Models\InvestorProfile;
+use App\Models\UsageLimit;
 use App\Notifications\ManagerAddedNotification;
 use App\Notifications\AccountApprovedNotification;
 use Illuminate\Http\Request;
@@ -99,7 +100,7 @@ class UserManagementController extends Controller
             'created_by_admin_id' => auth()->id(),
         ]);
 
-        AgencyProfile::create([
+        $agencyProfile = AgencyProfile::create([
             'user_id' => $user->id,
             'agency_name' => $request->company_name,
             'country' => $request->country,
@@ -107,8 +108,25 @@ class UserManagementController extends Controller
             'assigned_manager_id' => $request->assigned_manager_id,
         ]);
 
+        // Create default usage limits for the agency
+        UsageLimit::create([
+            'agency_profile_id' => $agencyProfile->id,
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'local_seo_pages_limit' => 10,
+            'local_seo_pages_used' => 0,
+            'competitor_scans_limit' => 10,
+            'competitor_scans_used' => 0,
+            'ai_search_freshness_updates_limit' => 4,
+            'ai_search_freshness_updates_used' => 0,
+            'authority_review_updates_limit' => 1,
+            'authority_review_updates_used' => 0,
+            'small_ai_content_actions_limit' => 10,
+            'small_ai_content_actions_used' => 0,
+        ]);
+
         return redirect()->route('admin.villabit.users.index')
-            ->with('success', 'Agency user created successfully.');
+            ->with('success', 'Agency user created successfully with default usage limits.');
     }
 
     public function createInvestor()

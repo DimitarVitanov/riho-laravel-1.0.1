@@ -8,7 +8,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12 footer-copyright text-center">
-                <p class="mb-0">{{ $settings['general']['footer'] }}</p>
+                <p class="mb-0">Copyright &copy; Villa Bit AI</p>
             </div>
         </div>
     </div>

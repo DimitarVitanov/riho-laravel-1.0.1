@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->appendToGroup('web', [
             \App\Http\Middleware\AffiliateClickMiddleware::class,
+            \App\Http\Middleware\SetUserLanguage::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -22,6 +22,7 @@ use App\Http\Controllers\Manager\ManagerSupportNoteController;
 use App\Http\Controllers\Agency\AgencyDashboardController;
 use App\Http\Controllers\Agency\AgencySettingsController;
 use App\Http\Controllers\Agency\AgencyFeatureController;
+use App\Http\Controllers\Agency\DailyAiEmployeeController;
 use App\Http\Controllers\Agency\AgencyAiReportController;
 use App\Http\Controllers\Agency\AgencyUsageLimitController;
 use App\Http\Controllers\Agency\AgencyAffiliateController;
@@ -49,6 +50,10 @@ use App\Http\Controllers\Agency\AgencySupportController;
 Route::get('/', function () {
     return redirect('https://villabit.ai/');
 });
+
+// Public Lead Magnet Capture Form
+Route::get('/lm/{agency}', [App\Http\Controllers\Frontend\LeadMagnetController::class, 'show'])->name('lead-magnet.show');
+Route::post('/lm/{agency}', [App\Http\Controllers\Frontend\LeadMagnetController::class, 'store'])->name('lead-magnet.store');
 
 Auth::routes(['verify' => true]);
 
@@ -90,6 +95,8 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     // Agencies
     Route::get('agencies', [AdminAgencyController::class, 'index'])->name('agencies.index');
     Route::get('agencies/{user}', [AdminAgencyController::class, 'show'])->name('agencies.show');
+    Route::post('agencies/{user}/toggle-status', [AdminAgencyController::class, 'toggleStatus'])->name('agencies.toggle-status');
+    Route::post('agencies/{user}/create-usage-limits', [AdminAgencyController::class, 'createUsageLimits'])->name('agencies.create-usage-limits');
 
     // Investors
     Route::get('investors', [AdminInvestorController::class, 'index'])->name('investors.index');
@@ -117,6 +124,7 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
 
     // Usage Limits
     Route::get('usage-limits', [AdminUsageLimitController::class, 'index'])->name('usage-limits.index');
+    Route::get('usage-limits/{usageLimit}/edit', [AdminUsageLimitController::class, 'edit'])->name('usage-limits.edit');
     Route::put('usage-limits/{usageLimit}', [AdminUsageLimitController::class, 'update'])->name('usage-limits.update');
 
     // Affiliate Tracking
@@ -189,6 +197,23 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
 
     // Features
     Route::get('features/{feature}', [AgencyFeatureController::class, 'show'])->name('features.show');
+
+    // Daily AI Employee - Unified Content Inbox
+    Route::get('daily-ai-employee', [DailyAiEmployeeController::class, 'index'])->name('daily-ai-employee.index');
+    Route::post('daily-ai-employee/settings', [DailyAiEmployeeController::class, 'saveSettings'])->name('daily-ai-employee.save-settings');
+    Route::get('daily-ai-employee/logs', [DailyAiEmployeeController::class, 'viewLogs'])->name('daily-ai-employee.logs');
+    Route::get('daily-ai-employee/prompt', [DailyAiEmployeeController::class, 'openPrompt'])->name('daily-ai-employee.prompt');
+    Route::patch('daily-ai-employee/suggestions/{suggestion}/accept', [DailyAiEmployeeController::class, 'acceptSuggestion'])->name('daily-ai-employee.accept');
+    Route::patch('daily-ai-employee/suggestions/{suggestion}/skip', [DailyAiEmployeeController::class, 'skipSuggestion'])->name('daily-ai-employee.skip');
+    Route::patch('daily-ai-employee/suggestions/{suggestion}/remove', [DailyAiEmployeeController::class, 'removeSuggestion'])->name('daily-ai-employee.remove');
+    Route::patch('daily-ai-employee/suggestions/{suggestion}/review', [DailyAiEmployeeController::class, 'markAsReviewed'])->name('daily-ai-employee.review');
+    Route::patch('daily-ai-employee/pages/{page}/publish', [DailyAiEmployeeController::class, 'publishContent'])->name('daily-ai-employee.publish');
+
+    // Invisible Lead Magnet
+    Route::post('invisible-lead-magnet/settings', [AgencyFeatureController::class, 'saveSettings'])->name('invisible-lead-magnet.save-settings');
+    Route::get('invisible-lead-magnet/logs', [AgencyFeatureController::class, 'viewLogs'])->name('invisible-lead-magnet.logs');
+    Route::get('invisible-lead-magnet/prompt', [AgencyFeatureController::class, 'openPrompt'])->name('invisible-lead-magnet.prompt');
+    Route::get('invisible-lead-magnet/export', [AgencyFeatureController::class, 'exportLeads'])->name('invisible-lead-magnet.export');
 
     // AI Reports
     Route::get('ai-reports', [AgencyAiReportController::class, 'index'])->name('ai-reports.index');

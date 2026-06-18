@@ -23,10 +23,7 @@
                         <td>{{ $l->authority_review_updates_used }}/{{ $l->authority_review_updates_limit }}</td>
                         <td>{{ $l->small_ai_content_actions_used }}/{{ $l->small_ai_content_actions_limit }}</td>
                         <td>
-                            <form action="{{ route('admin.villabit.usage-limits.update', $l) }}" method="POST" class="d-inline">
-                                @csrf @method('PUT')
-                                <button class="btn btn-outline-primary btn-sm" onclick="event.preventDefault(); alert('Edit in detail view coming soon.');">Edit</button>
-                            </form>
+                            <a href="{{ route('admin.villabit.usage-limits.edit', $l) }}" class="btn btn-outline-primary btn-sm">Edit</a>
                         </td>
                     </tr>
                     @empty

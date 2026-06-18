@@ -71,4 +71,9 @@ class AgencyProfile extends Model
             ->where('period_end', '>=', now())
             ->latest('period_start');
     }
+
+    public function leads()
+    {
+        return $this->hasMany(Lead::class);
+    }
 }

@@ -1,47 +1,48 @@
 @extends('layouts.simple.master')
 
-@section('title', 'Agency Dashboard')
+@section('title', __('messages.dashboard'))
 
 @section('main_content')
     <div class="container-fluid">
         <!-- Page Header -->
         <div class="vb-page-header">
             <div>
-                <h1>Real Estate Agency Panel</h1>
-                <p>Agency panel is where AI does the work: local SEO, AI search, competitor scans, authority builder, invisible lead magnet, reports, usage, uniqueness checks, and affiliate earnings.</p>
+                <h1>{{ __('messages.real_estate_agency_panel') }}</h1>
+                <p>{{ __('messages.agency_panel_description') }}</p>
             </div>
         </div>
 
         <!-- Usage Period Status Banner -->
         @if($currentUsage)
-        <div class="vb-usage-status-title">Visible Usage Period Status</div>
+        <div class="vb-usage-status-title">{{ __('messages.usage_period_status') }}</div>
         <div class="vb-usage-status-banner">
             <div class="vb-item">
-                <span>Usage month</span>
-                <b>{{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }}</b>
-            </div>
-            <div class="vb-item">
-                <span>Current period</span>
+                <span>{{ strtoupper(__('messages.current_period')) }}</span>
                 <b>{{ $currentUsage->period_start->format('M j') }}–{{ $currentUsage->period_end->format('j, Y') }}</b>
             </div>
             <div class="vb-item">
-                <span>Account / usage status</span>
+                <span>{{ strtoupper(__('messages.account_usage_status')) }}</span>
                 <b>{{ $currentUsage->usagePeriodStatus() }}</b>
             </div>
             <div class="vb-item">
-                <span>Next automatic reset</span>
-                <b>{{ $currentUsage->nextResetDate() }}</b>
+                <span>{{ strtoupper(__('messages.next_automatic_reset')) }}</span>
+                <b>{{ $currentUsage->period_end->addDay()->format('F j, Y') }}</b>
             </div>
         </div>
         @else
+        <div class="vb-usage-status-title">{{ __('messages.usage_period_status') }}</div>
         <div class="vb-usage-status-banner">
             <div class="vb-item">
-                <span>Welcome</span>
-                <b>{{ $user->first_name }}</b>
+                <span>{{ strtoupper(__('messages.current_period')) }}</span>
+                <b>{{ now()->startOfMonth()->format('M j') }}–{{ now()->endOfMonth()->format('j, Y') }}</b>
             </div>
             <div class="vb-item">
-                <span>Status</span>
-                <b>Pending Setup</b>
+                <span>{{ strtoupper(__('messages.account_usage_status')) }}</span>
+                <b>{{ $user->agencyProfile && $user->agencyProfile->subscription_status === 'active' ? 'Active' : 'On Hold' }}</b>
+            </div>
+            <div class="vb-item">
+                <span>{{ strtoupper(__('messages.next_automatic_reset')) }}</span>
+                <b>{{ now()->addMonth()->startOfMonth()->format('F j, Y') }}</b>
             </div>
         </div>
         @endif
@@ -50,52 +51,98 @@
         @if($currentUsage)
         <div class="vb-grid">
             <div class="vb-card">
-                <div class="vb-label">Local SEO Pages</div>
+                <div class="vb-label">{{ __('messages.local_seo_pages') }}</div>
                 <div class="vb-metric">{{ $currentUsage->local_seo_pages_used }} / {{ $currentUsage->local_seo_pages_limit }}</div>
                 <div class="vb-progress">
                     <div class="vb-progress-bar {{ ($currentUsage->local_seo_pages_limit > 0 && $currentUsage->local_seo_pages_used / $currentUsage->local_seo_pages_limit >= 0.9) ? 'vb-danger' : '' }}" style="width:{{ $currentUsage->local_seo_pages_limit > 0 ? ($currentUsage->local_seo_pages_used / $currentUsage->local_seo_pages_limit * 100) : 0 }}%"></div>
                 </div>
-                <div class="vb-period">Usage month: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · Usage status: {{ $currentUsage->usagePeriodStatus() }}</div>
+                <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
             </div>
             <div class="vb-card">
-                <div class="vb-label">Competitor Scans</div>
+                <div class="vb-label">{{ __('messages.competitor_scans') }}</div>
                 <div class="vb-metric">{{ $currentUsage->competitor_scans_used }} / {{ $currentUsage->competitor_scans_limit }}</div>
                 <div class="vb-progress">
                     <div class="vb-progress-bar {{ ($currentUsage->competitor_scans_limit > 0 && $currentUsage->competitor_scans_used / $currentUsage->competitor_scans_limit >= 0.9) ? 'vb-danger' : '' }}" style="width:{{ $currentUsage->competitor_scans_limit > 0 ? ($currentUsage->competitor_scans_used / $currentUsage->competitor_scans_limit * 100) : 0 }}%"></div>
                 </div>
-                <div class="vb-period">Usage month: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · Usage status: {{ $currentUsage->usagePeriodStatus() }}</div>
+                <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
             </div>
             <div class="vb-card">
-                <div class="vb-label">AI Freshness Updates</div>
+                <div class="vb-label">{{ __('messages.ai_freshness_updates') }}</div>
                 <div class="vb-metric">{{ $currentUsage->ai_search_freshness_updates_used }} / {{ $currentUsage->ai_search_freshness_updates_limit }}</div>
                 <div class="vb-progress">
                     <div class="vb-progress-bar {{ ($currentUsage->ai_search_freshness_updates_limit > 0 && $currentUsage->ai_search_freshness_updates_used / $currentUsage->ai_search_freshness_updates_limit >= 0.9) ? 'vb-danger' : '' }}" style="width:{{ $currentUsage->ai_search_freshness_updates_limit > 0 ? ($currentUsage->ai_search_freshness_updates_used / $currentUsage->ai_search_freshness_updates_limit * 100) : 0 }}%"></div>
                 </div>
-                <div class="vb-period">Usage month: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · Usage status: {{ $currentUsage->usagePeriodStatus() }}</div>
+                <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
             </div>
             <div class="vb-card">
-                <div class="vb-label">Authority Updates</div>
+                <div class="vb-label">{{ __('messages.authority_reviews') }}</div>
                 <div class="vb-metric">{{ $currentUsage->authority_review_updates_used }} / {{ $currentUsage->authority_review_updates_limit }}</div>
                 <div class="vb-progress">
                     <div class="vb-progress-bar {{ ($currentUsage->authority_review_updates_limit > 0 && $currentUsage->authority_review_updates_used / $currentUsage->authority_review_updates_limit >= 0.9) ? 'vb-danger' : '' }}" style="width:{{ $currentUsage->authority_review_updates_limit > 0 ? ($currentUsage->authority_review_updates_used / $currentUsage->authority_review_updates_limit * 100) : 0 }}%"></div>
                 </div>
-                <div class="vb-period">Usage month: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · Usage status: {{ $currentUsage->usagePeriodStatus() }}</div>
+                <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
+            </div>
+            <div class="vb-card">
+                <div class="vb-label">{{ __('messages.small_actions') }}</div>
+                <div class="vb-metric">{{ $currentUsage->small_ai_content_actions_used }} / {{ $currentUsage->small_ai_content_actions_limit }}</div>
+                <div class="vb-progress">
+                    <div class="vb-progress-bar {{ ($currentUsage->small_ai_content_actions_limit > 0 && $currentUsage->small_ai_content_actions_used / $currentUsage->small_ai_content_actions_limit >= 0.9) ? 'vb-danger' : '' }}" style="width:{{ $currentUsage->small_ai_content_actions_limit > 0 ? ($currentUsage->small_ai_content_actions_used / $currentUsage->small_ai_content_actions_limit * 100) : 0 }}%"></div>
+                </div>
+                <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
             </div>
         </div>
         @endif
 
+        <!-- Language Settings Section -->
+        <div class="row" style="margin-bottom: 28px;">
+            <div class="col-lg-6">
+                <div class="vb-card" style="height: 100%;">
+                    <h2 class="vb-section-title">{{ __('messages.language_settings') }}</h2>
+                    <form action="{{ route('agency.settings.language.update') }}" method="POST">
+                        @csrf
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" style="font-size: 12px; font-weight: 700; color: #374151;">{{ __('messages.control_panel_language') }}</label>
+                                <select name="panel_language" class="form-select" style="background-color: #f9fafb;">
+                                    @foreach(\App\Http\Controllers\Agency\AgencySettingsController::supportedPanelLanguages() as $code => $name)
+                                        <option value="{{ $code }}" {{ ($user->preferred_language ?? 'en') === $code ? 'selected' : '' }}>{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" style="font-size: 12px; font-weight: 700; color: #374151;">{{ __('messages.ai_webpage_posting_language') }}</label>
+                                <select name="ai_content_language" class="form-select" style="background-color: #f9fafb;">
+                                    @foreach(\App\Http\Controllers\Agency\AgencySettingsController::supportedAiContentLanguages() as $lang)
+                                        <option value="{{ $lang }}" {{ ($user->agencyProfile->ai_content_language ?? 'English') === $lang ? 'selected' : '' }}>{{ $lang }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-3 p-3" style="background-color: #f3f4f6; border-radius: 8px;">
+                            <p class="mb-0" style="font-size: 14px; color: #6b7280;">
+                                Panel language controls dashboard interface. AI webpage posting language controls public SEO, AI search, authority, FAQ, market, and lead-magnet content created by AI.
+                            </p>
+                        </div>
+                        <div class="mt-3">
+                            <button type="submit" class="vb-btn vb-btn-primary">{{ __('messages.save_language_settings') }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- AI Features Status Table -->
         @if($aiFeatures->count())
         <div class="vb-card" style="margin-bottom: 28px;">
-            <h2 class="vb-section-title">AI Features</h2>
+            <h2 class="vb-section-title">{{ __('messages.ai_features') }}</h2>
             <table class="vb-table">
                 <thead>
                     <tr>
-                        <th>Feature</th>
-                        <th>Status</th>
-                        <th>Frequency</th>
-                        <th>Last Run</th>
-                        <th>Action</th>
+                        <th>{{ __('messages.feature') }}</th>
+                        <th>{{ __('messages.status') }}</th>
+                        <th>{{ __('messages.frequency') }}</th>
+                        <th>{{ __('messages.last_run') }}</th>
+                        <th>{{ __('messages.action') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -104,14 +151,14 @@
                         <td><strong>{{ ucfirst(str_replace('_', ' ', $feature->feature_key)) }}</strong></td>
                         <td>
                             @if($feature->is_enabled)
-                                <span class="vb-badge vb-badge-success">ON</span>
+                                <span class="vb-badge vb-badge-success">{{ __('messages.on') }}</span>
                             @else
-                                <span class="vb-badge vb-badge-muted">OFF</span>
+                                <span class="vb-badge vb-badge-muted">{{ __('messages.off') }}</span>
                             @endif
                         </td>
                         <td>{{ ucfirst($feature->frequency) }}</td>
                         <td>{{ $feature->last_run_at ? $feature->last_run_at->diffForHumans() : '—' }}</td>
-                        <td><a href="{{ route('agency.features.show', $feature->feature_key) }}" class="vb-btn vb-btn-sm">Open</a></td>
+                        <td><a href="{{ route('agency.features.show', $feature->feature_key) }}" class="vb-btn vb-btn-sm">{{ __('messages.open') }}</a></td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -119,7 +166,7 @@
         </div>
         @endif
 
-        <!-- Uniqueness Rules -->
+        <!-- Uniqueness Rules 
         <div class="vb-grid-2">
             <div class="vb-card">
                 <h2 class="vb-section-title">Mandatory Internet Uniqueness Rules</h2>
@@ -166,5 +213,7 @@
                 </div>
             </div>
         </div>
+
+    -->
     </div>
 @endsection

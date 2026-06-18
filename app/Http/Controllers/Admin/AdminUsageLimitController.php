@@ -17,6 +17,12 @@ class AdminUsageLimitController extends Controller
         return view('admin.villabit.usage-limits.index', compact('limits'));
     }
 
+    public function edit(UsageLimit $usageLimit)
+    {
+        $usageLimit->load('agencyProfile', 'agencyProfile.user');
+        return view('admin.villabit.usage-limits.edit', compact('usageLimit'));
+    }
+
     public function update(Request $request, UsageLimit $usageLimit)
     {
         $validated = $request->validate([

@@ -18,5 +18,6 @@ class DatabaseSeeder extends Seeder
         // $this->call(StateSeeder::class); // Disabled: depends on hardcoded country IDs
         $this->call(SettingSeeder::class);
         $this->call(LandingPageSeeder::class);
+        $this->call(GlobalAiPromptSeeder::class);
     }
 }

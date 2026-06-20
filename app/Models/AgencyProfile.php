@@ -76,4 +76,19 @@ class AgencyProfile extends Model
     {
         return $this->hasMany(Lead::class);
     }
+
+    public function localSeoTargets()
+    {
+        return $this->hasMany(LocalSeoTarget::class);
+    }
+
+    public function generatedPages()
+    {
+        return $this->hasMany(GeneratedPage::class);
+    }
+
+    public function agencyListings()
+    {
+        return $this->hasMany(AgencyListing::class);
+    }
 }

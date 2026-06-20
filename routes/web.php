@@ -215,6 +215,34 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::get('invisible-lead-magnet/prompt', [AgencyFeatureController::class, 'openPrompt'])->name('invisible-lead-magnet.prompt');
     Route::get('invisible-lead-magnet/export', [AgencyFeatureController::class, 'exportLeads'])->name('invisible-lead-magnet.export');
 
+    // Local SEO Presence Boost
+    Route::post('local-seo-presence-boost/settings', [AgencyFeatureController::class, 'saveSettings'])->name('local-seo.save-settings');
+    Route::get('local-seo-presence-boost/logs', [AgencyFeatureController::class, 'viewLogs'])->name('local-seo.logs');
+    Route::get('local-seo-presence-boost/prompt', [AgencyFeatureController::class, 'openPrompt'])->name('local-seo.prompt');
+    Route::post('local-seo-presence-boost/generate-targets', [AgencyFeatureController::class, 'generateLocalSeoTargets'])->name('local-seo.generate-targets');
+    Route::post('local-seo-presence-boost/generate-pages', [AgencyFeatureController::class, 'generateLocalSeoPages'])->name('local-seo.generate-pages');
+    Route::get('local-seo-presence-boost/pages/{page}/preview', [AgencyFeatureController::class, 'previewLocalSeoPage'])->name('local-seo.pages.preview');
+    Route::get('local-seo-presence-boost/pages/{page}/edit', [AgencyFeatureController::class, 'editLocalSeoPage'])->name('local-seo.pages.edit');
+    Route::put('local-seo-presence-boost/pages/{page}', [AgencyFeatureController::class, 'updateLocalSeoPage'])->name('local-seo.pages.update');
+    Route::post('local-seo-presence-boost/pages/{page}/publish', [AgencyFeatureController::class, 'publishLocalSeoPage'])->name('local-seo.pages.publish');
+    Route::delete('local-seo-presence-boost/pages/{page}', [AgencyFeatureController::class, 'destroyLocalSeoPage'])->name('local-seo.pages.destroy');
+
+    // Agency Listings
+    Route::post('local-seo-presence-boost/listings', [AgencyFeatureController::class, 'storeListing'])->name('local-seo.listings.store');
+    Route::put('local-seo-presence-boost/listings/{listing}', [AgencyFeatureController::class, 'updateListing'])->name('local-seo.listings.update');
+    Route::delete('local-seo-presence-boost/listings/{listing}', [AgencyFeatureController::class, 'destroyListing'])->name('local-seo.listings.destroy');
+
+    // AI Search Ranking
+    Route::post('ai-search-ranking/settings', [AgencyFeatureController::class, 'saveSettings'])->name('ai-search.save-settings');
+    Route::post('ai-search-ranking/generate-authority-pages', [AgencyFeatureController::class, 'generateAuthorityPages'])->name('ai-search.generate-authority-pages');
+    Route::post('ai-search-ranking/generate-data-blocks', [AgencyFeatureController::class, 'generateDataBlocks'])->name('ai-search.generate-data-blocks');
+    Route::get('ai-search-ranking/pages/{page}/preview', [AgencyFeatureController::class, 'previewAiSearchPage'])->name('ai-search.pages.preview');
+    Route::get('ai-search-ranking/pages/{page}/edit', [AgencyFeatureController::class, 'editAiSearchPage'])->name('ai-search.pages.edit');
+    Route::put('ai-search-ranking/pages/{page}', [AgencyFeatureController::class, 'updateAiSearchPage'])->name('ai-search.pages.update');
+    Route::post('ai-search-ranking/pages/{page}/publish', [AgencyFeatureController::class, 'publishAiSearchPage'])->name('ai-search.pages.publish');
+    Route::post('ai-search-ranking/pages/{page}/refresh', [AgencyFeatureController::class, 'refreshAiSearchPage'])->name('ai-search.pages.refresh');
+    Route::delete('ai-search-ranking/pages/{page}', [AgencyFeatureController::class, 'destroyAiSearchPage'])->name('ai-search.pages.destroy');
+
     // AI Reports
     Route::get('ai-reports', [AgencyAiReportController::class, 'index'])->name('ai-reports.index');
 

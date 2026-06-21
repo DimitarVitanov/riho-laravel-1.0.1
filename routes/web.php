@@ -42,6 +42,7 @@ use App\Http\Controllers\Manager\ManagerContentReviewController;
 use App\Http\Controllers\Manager\ManagerCapitalCallController;
 use App\Http\Controllers\Manager\ManagerPayoutPreparationController;
 use App\Http\Controllers\Agency\AgencyGeneratedPageController;
+use App\Http\Controllers\Agency\AgencyCompetitorController;
 use App\Http\Controllers\Agency\AgencyLeadController;
 use App\Http\Controllers\Admin\AdminSupportTicketController;
 use App\Http\Controllers\Agency\AgencySupportController;
@@ -242,6 +243,21 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::post('ai-search-ranking/pages/{page}/publish', [AgencyFeatureController::class, 'publishAiSearchPage'])->name('ai-search.pages.publish');
     Route::post('ai-search-ranking/pages/{page}/refresh', [AgencyFeatureController::class, 'refreshAiSearchPage'])->name('ai-search.pages.refresh');
     Route::delete('ai-search-ranking/pages/{page}', [AgencyFeatureController::class, 'destroyAiSearchPage'])->name('ai-search.pages.destroy');
+
+    // Daily Competitor Scan
+    Route::post('daily-competitor-scan/competitors', [AgencyCompetitorController::class, 'storeCompetitor'])->name('competitor.store');
+    Route::delete('daily-competitor-scan/competitors/{competitor}', [AgencyCompetitorController::class, 'destroyCompetitor'])->name('competitor.destroy');
+    Route::post('daily-competitor-scan/run-scan', [AgencyCompetitorController::class, 'runScan'])->name('competitor.run-scan');
+    Route::post('daily-competitor-scan/results/{result}/acted', [AgencyCompetitorController::class, 'markActed'])->name('competitor.results.acted');
+    Route::post('daily-competitor-scan/results/{result}/dismissed', [AgencyCompetitorController::class, 'markDismissed'])->name('competitor.results.dismissed');
+    Route::delete('daily-competitor-scan/results/{result}', [AgencyCompetitorController::class, 'destroyResult'])->name('competitor.results.destroy');
+
+    // AI Authority Builder
+    Route::post('ai-authority-builder/generate', [AgencyFeatureController::class, 'generateAuthorityReview'])->name('authority.generate');
+    Route::get('ai-authority-builder/pages/{page}/preview', [AgencyFeatureController::class, 'previewAuthorityReview'])->name('authority.pages.preview');
+    Route::post('ai-authority-builder/pages/{page}/publish', [AgencyFeatureController::class, 'publishAuthorityReview'])->name('authority.pages.publish');
+    Route::post('ai-authority-builder/pages/{page}/refresh', [AgencyFeatureController::class, 'refreshAuthorityReview'])->name('authority.pages.refresh');
+    Route::delete('ai-authority-builder/pages/{page}', [AgencyFeatureController::class, 'destroyAuthorityReview'])->name('authority.pages.destroy');
 
     // AI Reports
     Route::get('ai-reports', [AgencyAiReportController::class, 'index'])->name('ai-reports.index');

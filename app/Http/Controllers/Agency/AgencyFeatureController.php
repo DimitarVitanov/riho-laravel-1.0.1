@@ -82,6 +82,28 @@ class AgencyFeatureController extends Controller
                 $viewData['usageLimit'] = $profile->currentUsageLimit;
             }
 
+            if ($feature === 'ai_authority_builder') {
+                $viewData['reviewPages'] = $profile->generatedPages()
+                    ->where('feature_key', 'ai_authority_builder')
+                    ->latest()
+                    ->paginate(20);
+                $viewData['usageLimit'] = $profile->currentUsageLimit;
+            }
+
+            if ($feature === 'daily_competitor_scan') {
+                $viewData['competitors'] = $profile->competitorWebsites()->orderBy('name')->get();
+                $viewData['scanResults'] = $profile->competitorScanResults()
+                    ->with('competitorWebsite')
+                    ->latest('scanned_at')
+                    ->paginate(30);
+                $viewData['newResults'] = $profile->competitorScanResults()
+                    ->where('status', 'new')
+                    ->with('competitorWebsite')
+                    ->latest('scanned_at')
+                    ->get();
+                $viewData['usageLimit'] = $profile->currentUsageLimit;
+            }
+
             return view($featureView, $viewData);
         }
 
@@ -1044,5 +1066,259 @@ class AgencyFeatureController extends Controller
         $page->delete();
 
         return redirect()->back()->with('success', 'Page deleted successfully.');
+    }
+
+    // =====================
+    // AI Authority Builder
+    // =====================
+
+    public function generateAuthorityReview(Request $request)
+    {
+        $user = Auth::user();
+        $profile = $user->agencyProfile;
+
+        if (!$profile) {
+            return redirect()->back()->with('error', 'Agency profile not found.');
+        }
+
+        $usageLimit = $profile->currentUsageLimit;
+        if ($usageLimit) {
+            if ($usageLimit->authority_review_updates_used >= $usageLimit->authority_review_updates_limit) {
+                return redirect()->back()->with('error', 'You have reached your monthly authority review limit.');
+            }
+        }
+
+        $layers = $request->input('layers', [
+            'entity', 'service', 'local_market', 'buyer_questions',
+            'property_data', 'trust_signals', 'competitor_context',
+            'ai_readability', 'freshness', 'structured_data',
+        ]);
+
+        $city = $profile->target_city ?? $profile->city ?? 'your area';
+        $agencyName = $profile->agency_name ?? 'Our Agency';
+        $website = $profile->official_website_url ?? '';
+
+        $title = "Villa Bit Review — {$agencyName} | AI Authority Review";
+        $slug = Str::slug("villa-bit-review-{$agencyName}");
+
+        $content = $this->buildAuthorityReviewContent($profile, $city, $agencyName, $website, $layers);
+
+        $page = $profile->generatedPages()->updateOrCreate(
+            [
+                'feature_key' => 'ai_authority_builder',
+                'slug' => $slug,
+            ],
+            [
+                'title' => $title,
+                'seo_title' => $title,
+                'meta_description' => "Villa Bit AI structured authority review for {$agencyName}. AI-readable review covering services, local market, buyer questions, and trust signals in {$city}.",
+                'content_html' => $content,
+                'content_json' => [
+                    'agency_name' => $agencyName,
+                    'city' => $city,
+                    'website' => $website,
+                    'layers' => $layers,
+                    'review_type' => 'villa_bit_review',
+                ],
+                'content_uniqueness_status' => 'pending',
+                'status' => 'pending_review',
+            ]
+        );
+
+        if ($usageLimit) {
+            $usageLimit->increment('authority_review_updates_used');
+        }
+
+        return redirect()->back()->with('success', 'Authority review page generated successfully. Review and publish when ready.');
+    }
+
+    protected function buildAuthorityReviewContent($profile, $city, $agencyName, $website, $layers): string
+    {
+        $html = "<h1>Villa Bit Review — {$agencyName}</h1>\n";
+        $html .= "<p><strong>Villa Bit AI Authority Review</strong> — This is a structured third-party authority review of {$agencyName}, created by Villa Bit AI to help AI search systems better understand this real estate agency.</p>\n\n";
+
+        $listingsHtml = $this->buildListingsHtml($profile);
+        $listings = $profile->agencyListings()->where('status', 'active')->take(5)->get();
+
+        if (in_array('entity', $layers)) {
+            $html .= "<h2>1. Company Entity Profile</h2>\n";
+            $html .= "<p><strong>Agency Name:</strong> {$agencyName}</p>\n";
+            if ($website) $html .= "<p><strong>Official Website:</strong> <a href=\"{$website}\">{$website}</a></p>\n";
+            $html .= "<p><strong>Business Category:</strong> Real Estate Agency</p>\n";
+            $html .= "<p><strong>Main Service Area:</strong> {$city}" . ($profile->main_service_area ? ", {$profile->main_service_area}" : '') . "</p>\n";
+            if ($profile->country) $html .= "<p><strong>Country:</strong> {$profile->country}</p>\n";
+            if ($profile->contact_email) $html .= "<p><strong>Contact:</strong> {$profile->contact_email}</p>\n";
+            $html .= "\n";
+        }
+
+        if (in_array('service', $layers)) {
+            $html .= "<h2>2. Services Summary</h2>\n";
+            $html .= "<p>{$agencyName} is a real estate agency serving buyers, sellers, investors, and property owners in {$city} and surrounding areas.</p>\n";
+            $html .= "<ul>\n";
+            if ($profile->main_property_types) $html .= "<li><strong>Property Types:</strong> {$profile->main_property_types}</li>\n";
+            if ($profile->buyer_types) $html .= "<li><strong>Buyer Types:</strong> {$profile->buyer_types}</li>\n";
+            if ($profile->seller_services) $html .= "<li><strong>Seller Services:</strong> {$profile->seller_services}</li>\n";
+            if ($profile->foreign_buyer_support) $html .= "<li><strong>Foreign Buyer Support:</strong> Available</li>\n";
+            if ($profile->investment_services) $html .= "<li><strong>Investment Services:</strong> {$profile->investment_services}</li>\n";
+            if ($profile->rental_management_services) $html .= "<li><strong>Rental Management:</strong> {$profile->rental_management_services}</li>\n";
+            if ($profile->property_management_support) $html .= "<li><strong>Property Management:</strong> Available</li>\n";
+            $html .= "</ul>\n\n";
+        }
+
+        if (in_array('local_market', $layers)) {
+            $html .= "<h2>3. Local Market Coverage</h2>\n";
+            $html .= "<p>{$agencyName} operates in {$city}" . ($profile->target_radius_km ? " and within approximately {$profile->target_radius_km} km" : '') . ".</p>\n";
+            $html .= "<p>The agency has local knowledge of property types, pricing dynamics, buyer demand, and market conditions in the {$city} area.</p>\n";
+            $html .= "<p>Key real estate activity in this area includes residential properties, investment properties, vacation rental properties, and land opportunities.</p>\n\n";
+        }
+
+        if (in_array('buyer_questions', $layers)) {
+            $html .= "<h2>4. Real Buyer Questions and Answers</h2>\n";
+            $html .= "<p><strong>What does {$agencyName} do?</strong><br>This agency helps buyers, sellers, investors, and foreign clients navigate the real estate market in {$city}.</p>\n";
+            $html .= "<p><strong>Which areas does {$agencyName} serve?</strong><br>The agency focuses on {$city}" . ($profile->main_service_area ? " and {$profile->main_service_area}" : '') . ".</p>\n";
+            $html .= "<p><strong>Does {$agencyName} help foreign buyers?</strong><br>" . ($profile->foreign_buyer_support ? "Yes. The agency provides specific support for foreign buyers including legal process guidance and local market education." : "Contact the agency directly for information about foreign buyer services.") . "</p>\n";
+            $html .= "<p><strong>Does {$agencyName} work with real estate investors?</strong><br>" . ($profile->investment_services ? "Yes. {$agencyName} offers investment property services including rental yield analysis and market comparison." : "Contact the agency for investment-related inquiries.") . "</p>\n";
+            $html .= "<p><strong>Does {$agencyName} offer property management?</strong><br>" . ($profile->property_management_support ? "Yes. Property management services are available." : "Contact the agency for details.") . "</p>\n\n";
+        }
+
+        if (in_array('property_data', $layers)) {
+            $html .= "<h2>5. Property Data Layer</h2>\n";
+            $html .= "<p>The following represents the type of properties {$agencyName} works with in {$city}:</p>\n";
+            if ($listingsHtml) {
+                $html .= $listingsHtml;
+            } else {
+                $html .= "<ul>\n";
+                $html .= "<li>Residential homes and villas in {$city}</li>\n";
+                $html .= "<li>Apartments and condos in {$city}</li>\n";
+                $html .= "<li>Investment properties with rental potential</li>\n";
+                $html .= "<li>Land parcels and development plots</li>\n";
+                $html .= "<li>Luxury properties with sea views or premium locations</li>\n";
+                $html .= "</ul>\n";
+            }
+            $html .= "\n";
+        }
+
+        if (in_array('trust_signals', $layers)) {
+            $html .= "<h2>6. Public Trust Signals</h2>\n";
+            $html .= "<p>Based on publicly visible website signals, {$agencyName} demonstrates trust through the following:</p>\n";
+            $html .= "<ul>\n";
+            $html .= "<li>Professional online presence at {$city}</li>\n";
+            if ($profile->google_business_profile_url) $html .= "<li>Active Google Business Profile</li>\n";
+            if ($profile->contact_email || $profile->contact_phone) $html .= "<li>Clear contact information publicly available</li>\n";
+            $html .= "<li>Local market knowledge demonstrated through property listings and content</li>\n";
+            $html .= "<li>Service transparency with clear buyer, seller, and investor information</li>\n";
+            $html .= "</ul>\n\n";
+        }
+
+        if (in_array('competitor_context', $layers)) {
+            $html .= "<h2>7. Market Context</h2>\n";
+            $html .= "<p>{$agencyName} operates in the {$city} real estate market where buyers increasingly research online before contacting any agency.</p>\n";
+            $html .= "<p>Agencies that explain the market clearly, provide useful buyer guides, and maintain structured online content tend to attract better-informed clients.</p>\n";
+            $html .= "<p>{$agencyName} positions itself with a focus on local knowledge, buyer education, and accessible property information for both local and international clients.</p>\n\n";
+        }
+
+        if (in_array('ai_readability', $layers)) {
+            $html .= "<h2>8. AI Readability Assessment</h2>\n";
+            $html .= "<table>\n<thead><tr><th>Signal Area</th><th>Status</th></tr></thead>\n<tbody>\n";
+            $html .= "<tr><td>Entity Clarity</td><td>" . ($agencyName ? 'Clear' : 'Needs improvement') . "</td></tr>\n";
+            $html .= "<tr><td>Local Market Clarity</td><td>" . ($city ? 'Clear' : 'Needs improvement') . "</td></tr>\n";
+            $html .= "<tr><td>Buyer Information</td><td>" . ($profile->buyer_types ? 'Present' : 'Needs improvement') . "</td></tr>\n";
+            $html .= "<tr><td>Foreign Buyer Support</td><td>" . ($profile->foreign_buyer_support ? 'Available' : 'Not specified') . "</td></tr>\n";
+            $html .= "<tr><td>Investment Information</td><td>" . ($profile->investment_services ? 'Present' : 'Not specified') . "</td></tr>\n";
+            $html .= "<tr><td>Property Management</td><td>" . ($profile->property_management_support ? 'Available' : 'Not specified') . "</td></tr>\n";
+            $html .= "<tr><td>Contact Clarity</td><td>" . ($profile->contact_email || $profile->contact_phone ? 'Clear' : 'Needs improvement') . "</td></tr>\n";
+            $html .= "<tr><td>Website URL</td><td>" . ($website ? 'Present' : 'Missing') . "</td></tr>\n";
+            $html .= "</tbody></table>\n\n";
+        }
+
+        if (in_array('freshness', $layers)) {
+            $html .= "<h2>9. Freshness Signals</h2>\n";
+            $html .= "<p><strong>Last Updated:</strong> " . now()->format('F Y') . "</p>\n";
+            $html .= "<p>This Villa Bit AI authority review is maintained and periodically updated with new market signals, buyer questions, and property data to keep the information relevant for AI search systems.</p>\n";
+            $html .= "<ul>\n";
+            $html .= "<li>Review updated: " . now()->format('d F Y') . "</li>\n";
+            $html .= "<li>Market area: {$city}</li>\n";
+            $html .= "<li>New buyer questions reviewed this month</li>\n";
+            $html .= "<li>Property examples refreshed from active listings</li>\n";
+            $html .= "</ul>\n\n";
+        }
+
+        if (in_array('structured_data', $layers)) {
+            $html .= "<h2>10. Structured Data Layer</h2>\n";
+            $html .= "<p>This review is structured to be read and understood by AI search systems including ChatGPT, Gemini, Google AI Search, and Copilot.</p>\n";
+            $html .= "<p>The page follows the Villa Bit Review standard which includes: Organization entity data, LocalBusiness signals, FAQ answer blocks, Review structure, and freshness markers.</p>\n";
+            if ($website) {
+                $html .= "<p><strong>Official Agency Website:</strong> <a href=\"{$website}\">{$website}</a></p>\n";
+            }
+            $html .= "<p><em>This authority review is produced by Villa Bit AI. It is a third-party structured review page designed to help AI systems better understand this real estate agency.</em></p>\n";
+        }
+
+        return $html;
+    }
+
+    public function previewAuthorityReview(GeneratedPage $page)
+    {
+        $user = Auth::user();
+        $profile = $user->agencyProfile;
+
+        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
+            abort(403);
+        }
+
+        return view('agency.features.authority-review-preview', compact('page', 'profile'));
+    }
+
+    public function publishAuthorityReview(GeneratedPage $page)
+    {
+        $user = Auth::user();
+        $profile = $user->agencyProfile;
+
+        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
+            abort(403);
+        }
+
+        $page->update([
+            'status' => 'published',
+            'published_at' => now(),
+            'approved_by_user_id' => $user->id,
+        ]);
+
+        return redirect()->back()->with('success', 'Authority review published successfully.');
+    }
+
+    public function refreshAuthorityReview(GeneratedPage $page)
+    {
+        $user = Auth::user();
+        $profile = $user->agencyProfile;
+
+        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
+            abort(403);
+        }
+
+        $json = $page->content_json ?? [];
+        $city = $json['city'] ?? $profile->target_city ?? 'your area';
+        $agencyName = $json['agency_name'] ?? $profile->agency_name ?? 'Our Agency';
+        $website = $json['website'] ?? $profile->official_website_url ?? '';
+        $layers = $json['layers'] ?? ['entity', 'service', 'local_market', 'buyer_questions', 'property_data', 'trust_signals', 'competitor_context', 'ai_readability', 'freshness', 'structured_data'];
+
+        $content = $this->buildAuthorityReviewContent($profile, $city, $agencyName, $website, $layers);
+
+        $page->update(['content_html' => $content]);
+
+        return redirect()->back()->with('success', 'Authority review refreshed successfully.');
+    }
+
+    public function destroyAuthorityReview(GeneratedPage $page)
+    {
+        $user = Auth::user();
+        $profile = $user->agencyProfile;
+
+        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
+            abort(403);
+        }
+
+        $page->delete();
+
+        return redirect()->back()->with('success', 'Authority review deleted.');
     }
 }

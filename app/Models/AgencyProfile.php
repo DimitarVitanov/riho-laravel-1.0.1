@@ -91,4 +91,14 @@ class AgencyProfile extends Model
     {
         return $this->hasMany(AgencyListing::class);
     }
+
+    public function competitorWebsites()
+    {
+        return $this->hasMany(CompetitorWebsite::class);
+    }
+
+    public function competitorScanResults()
+    {
+        return $this->hasMany(CompetitorScanResult::class);
+    }
 }

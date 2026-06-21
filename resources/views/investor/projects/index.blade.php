@@ -1,31 +1,68 @@
 @extends('layouts.simple.master')
-@section('title', 'Investment Projects')
-@section('breadcrumb-title')<h3>Investment Projects</h3>@endsection
-@section('breadcrumb-items')
-    <li class="breadcrumb-item"><a href="{{ route('investor.dashboard') }}">Investor</a></li>
-    <li class="breadcrumb-item active">Projects</li>
-@endsection
-@section('content')
+@section('title', 'Project Reports')
+
+@section('main_content')
 <div class="container-fluid">
-    <div class="row">
-        @forelse($projects as $p)
-        <div class="col-md-6 col-lg-4 mb-3">
-            <div class="card h-100">
-                <div class="card-header pb-0"><h5>{{ $p->project_name }}</h5></div>
-                <div class="card-body">
-                    <p><strong>Code:</strong> {{ $p->project_code }}</p>
-                    <p><strong>Location:</strong> {{ $p->project_location ?? '—' }}</p>
-                    <p><strong>Status:</strong> <span class="badge bg-info">{{ ucfirst($p->project_status) }}</span></p>
-                    <p><strong>Min Investment:</strong> {{ number_format($p->minimum_investment_amount, 2) }}</p>
-                    <p><strong>Preferred Return:</strong> {{ $p->preferred_return_percent }}%</p>
-                    <a href="{{ route('investor.projects.show', $p) }}" class="btn btn-outline-primary btn-sm">View Details</a>
-                </div>
+    <div class="vb-page-header">
+        <div>
+            <h1>Project Reports</h1>
+            <p>Monthly project updates, capital usage, construction progress, expected next capital call, and payout status for your investment projects.</p>
+        </div>
+    </div>
+
+    @include('components.villabit.usage-banner')
+
+    @forelse($projects as $p)
+    <div class="vb-card" style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+            <div>
+                <h2 class="vb-section-title" style="margin-bottom: 4px;">{{ $p->project_name }}</h2>
+                <div class="vb-period">{{ $p->project_code }} · {{ $p->project_location ?? '' }}{{ $p->project_country ? ', ' . $p->project_country : '' }}</div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                @php
+                    $pCls = match($p->project_status) {
+                        'active' => 'vb-badge-success',
+                        'completed' => 'vb-badge-info',
+                        'on_hold' => 'vb-badge-warning',
+                        default => 'vb-badge-muted'
+                    };
+                @endphp
+                <span class="vb-badge {{ $pCls }}">{{ ucfirst(str_replace('_', ' ', $p->project_status)) }}</span>
+                <a href="{{ route('investor.projects.show', $p) }}" class="vb-btn vb-btn-sm">View Details</a>
             </div>
         </div>
-        @empty
-        <div class="col-12"><div class="alert alert-info">No projects available at this time.</div></div>
-        @endforelse
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;">
+            <div>
+                <div class="vb-label">Target Raise</div>
+                <div style="font-size: 18px; font-weight: 800;">€{{ number_format($p->target_raise_amount, 0) }}</div>
+            </div>
+            <div>
+                <div class="vb-label">Preferred Return</div>
+                <div style="font-size: 18px; font-weight: 800;">{{ $p->preferred_return_percent }}%</div>
+            </div>
+            <div>
+                <div class="vb-label">Rental Profit Share</div>
+                <div style="font-size: 18px; font-weight: 800;">{{ $p->rental_profit_share_percent ?? '—' }}%</div>
+            </div>
+            <div>
+                <div class="vb-label">Exit Profit Share</div>
+                <div style="font-size: 18px; font-weight: 800;">{{ $p->project_exit_profit_share_percent ?? '—' }}%</div>
+            </div>
+        </div>
+        @if($p->summary)
+        <div class="vb-notice">{{ $p->summary }}</div>
+        @endif
     </div>
-    {{ $projects->links() }}
+    @empty
+    <div class="vb-card">
+        <div class="vb-empty">
+            <h3>No project reports available</h3>
+            <p>Project reports will appear here once you have active investments.</p>
+        </div>
+    </div>
+    @endforelse
+
+    <div style="margin-top: 20px;">{{ $projects->links() }}</div>
 </div>
 @endsection

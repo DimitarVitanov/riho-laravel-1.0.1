@@ -35,6 +35,7 @@ use App\Http\Controllers\Investor\InvestorCapitalCallController;
 use App\Http\Controllers\Investor\InvestorEarningsController;
 use App\Http\Controllers\Investor\InvestorPayoutController;
 use App\Http\Controllers\Investor\InvestorDocumentController;
+use App\Http\Controllers\Investor\InvestorAffiliateController;
 use App\Http\Controllers\Investor\InvestorProfileController;
 use App\Http\Controllers\Investor\InvestorSupportController;
 use App\Http\Controllers\Admin\AdminGlobalAiPromptController;
@@ -313,6 +314,9 @@ Route::prefix('investor')->middleware(['auth', 'verified', 'role:investor'])->na
     Route::post('documents', [InvestorDocumentController::class, 'store'])->name('documents.store');
     Route::get('profile', [InvestorProfileController::class, 'show'])->name('profile.show');
     Route::put('profile', [InvestorProfileController::class, 'update'])->name('profile.update');
+
+    // Affiliate
+    Route::get('affiliate', [InvestorAffiliateController::class, 'index'])->name('affiliate.index');
 
     // Support
     Route::get('support', [InvestorSupportController::class, 'index'])->name('support.index');

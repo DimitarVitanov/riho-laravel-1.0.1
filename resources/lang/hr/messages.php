@@ -170,6 +170,9 @@ return [
     'mark_as_reviewed' => 'Označi kao pregledano',
     'mark_all_reviewed' => 'Označi sve kao pregledano',
     'export_csv' => 'Izvezi CSV',
+    'item_marked_reviewed' => 'Stavka označena kao pregledana',
+    'all_items_reviewed' => 'Sve stavke označene kao pregledane',
+    'copied' => 'Kopirano',
 
     // Local SEO
     'local_seo_ai_summary' => 'AI gradi vašu lokalnu SEO prisutnost ciljajući obližnja mjesta, generirajući stranice bogate ključnim riječima i stvarajući FAQ sekcije za Google AI Overview.',

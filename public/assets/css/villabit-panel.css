@@ -70,13 +70,26 @@
     border-radius: 3px;
 }
 
+/* Global Text Color Overrides — make muted/secondary text dark */
+.page-body-wrapper .text-muted,
+.page-body-wrapper p.text-muted,
+.page-body-wrapper small.text-muted,
+.page-body-wrapper span.text-muted,
+.page-body-wrapper .text-secondary,
+.page-body-wrapper p,
+.page-body-wrapper .card-text,
+.page-body-wrapper .form-text,
+.page-body-wrapper label {
+    color: #000000 !important;
+}
+
 /* Usage Period Status Banner */
 .vb-usage-status-title {
     font-size: 13px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #6b7280;
+    color: #111827;
     margin-bottom: 10px;
 }
 
@@ -104,7 +117,7 @@
 
 .vb-usage-status-banner .vb-item span {
     font-size: 11px;
-    color: #6b7280;
+    color: #111827;
     font-weight: 600;
     letter-spacing: 0.3px;
 }
@@ -168,7 +181,7 @@
 
 .vb-card .vb-label {
     font-size: 13px;
-    color: #6b7280;
+    color: #111827;
     font-weight: 600;
     margin-bottom: 4px;
 }
@@ -197,7 +210,7 @@
 
 .vb-section-subtitle {
     font-size: 14px;
-    color: #6b7280;
+    color: #111827;
     margin: -12px 0 20px;
 }
 
@@ -320,7 +333,7 @@
 
 .vb-table th {
     text-align: left;
-    color: #6b7280;
+    color: #111827;
     font-size: 12px;
     font-weight: 700;
     padding: 8px 14px;
@@ -422,7 +435,7 @@
 .vb-badge-warning { background: #fef3c7; color: #92400e; }
 .vb-badge-danger { background: #fee2e2; color: #991b1b; }
 .vb-badge-info { background: #dbeafe; color: #1e40af; }
-.vb-badge-muted { background: #f3f4f6; color: #6b7280; }
+.vb-badge-muted { background: #f3f4f6; color: #111827; }
 
 /* Progress Bar */
 .vb-progress {
@@ -455,13 +468,13 @@
 .vb-report h4 {
     font-size: 14px;
     font-weight: 800;
-    color: #374151;
+    color: #000000;
     margin: 0 0 8px;
 }
 
 .vb-report p {
     font-size: 13px;
-    color: #6b7280;
+    color: #111827;
     margin: 0;
     line-height: 1.6;
 }
@@ -527,7 +540,7 @@
 
 .vb-option-card span {
     font-size: 12px;
-    color: #6b7280;
+    color: #111827;
 }
 
 /* Content Status Flow */
@@ -544,7 +557,7 @@
     font-size: 11px;
     font-weight: 700;
     background: #f3f4f6;
-    color: #6b7280;
+    color: #111827;
 }
 
 .vb-status-step.active {
@@ -571,7 +584,7 @@
 
 .vb-page-header p {
     font-size: 14px;
-    color: #6b7280;
+    color: #111827;
     margin: 6px 0 0;
     max-width: 700px;
 }
@@ -586,7 +599,7 @@
 .vb-empty h3 {
     font-size: 18px;
     font-weight: 700;
-    color: #6b7280;
+    color: #111827;
     margin-bottom: 8px;
 }
 

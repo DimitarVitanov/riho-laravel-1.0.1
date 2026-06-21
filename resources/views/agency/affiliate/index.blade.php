@@ -14,7 +14,7 @@
         <div class="col-12">
             <div class="card border-0" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: white;">
                 <div class="card-body py-5 px-4 text-center">
-                    <h2 class="fw-bold mb-2">{{ __('messages.affiliate_hero_title') }}</h2>
+                    <h2 class="fw-bold mb-2 text-white">{{ __('messages.affiliate_hero_title') }}</h2>
                     <p class="mb-1 opacity-75 fs-5">{{ __('messages.affiliate_hero_subtitle') }}</p>
                     <p class="mb-4 opacity-50 small">{{ __('messages.affiliate_hero_terms') }}</p>
                     <div class="d-flex justify-content-center gap-4 flex-wrap">

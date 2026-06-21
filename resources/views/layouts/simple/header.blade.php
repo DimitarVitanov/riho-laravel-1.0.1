@@ -21,7 +21,7 @@
                           <div class="mode"><i class="moon" data-feather="moon"> </i></div>
                       </li>
                       <li class="profile-nav onhover-dropdown">
-                          <div class="media profile-media">
+                          <div class="media profile-media text-capitalize">
                               @php
                                   $image = auth()->user()->getFirstMedia('image');
                               @endphp

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Admin\VillaBitDashboardController;
 use App\Http\Controllers\Admin\UserManagementController;
@@ -258,6 +259,12 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::post('ai-authority-builder/pages/{page}/publish', [AgencyFeatureController::class, 'publishAuthorityReview'])->name('authority.pages.publish');
     Route::post('ai-authority-builder/pages/{page}/refresh', [AgencyFeatureController::class, 'refreshAuthorityReview'])->name('authority.pages.refresh');
     Route::delete('ai-authority-builder/pages/{page}', [AgencyFeatureController::class, 'destroyAuthorityReview'])->name('authority.pages.destroy');
+    
+    // Suggestion Management for Individual Features
+    Route::patch('ai-authority-builder/suggestions/{suggestion}/accept', [AgencyFeatureController::class, 'acceptAuthoritySuggestion'])->name('authority.suggestions.accept');
+    Route::patch('ai-authority-builder/suggestions/{suggestion}/skip', [AgencyFeatureController::class, 'skipAuthoritySuggestion'])->name('authority.suggestions.skip');
+    Route::patch('local-seo/suggestions/{suggestion}/accept', [AgencyFeatureController::class, 'acceptLocalSeoSuggestion'])->name('local-seo.suggestions.accept');
+    Route::patch('local-seo/suggestions/{suggestion}/skip', [AgencyFeatureController::class, 'skipLocalSeoSuggestion'])->name('local-seo.suggestions.skip');
 
     // AI Reports
     Route::get('ai-reports', [AgencyAiReportController::class, 'index'])->name('ai-reports.index');

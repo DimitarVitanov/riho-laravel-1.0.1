@@ -174,7 +174,7 @@
                             </table>
                         </div>
                         <div class="p-3">
-                            {{ $leads->links() }}
+                            @include('partials.pagination', ['paginator' => $leads])
                         </div>
                     @else
                         <div class="text-center py-5">

@@ -59,6 +59,11 @@ class AgencyProfile extends Model
         return $this->hasMany(AiDailyReport::class);
     }
 
+    public function aiSuggestions()
+    {
+        return $this->hasMany(AiSuggestion::class);
+    }
+
     public function usageLimits()
     {
         return $this->hasMany(UsageLimit::class);

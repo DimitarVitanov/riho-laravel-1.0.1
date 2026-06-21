@@ -32,6 +32,14 @@
                     </tbody>
                 </table>
             </div>
+            @if($investments instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-muted">
+                        Showing {{ $investments->firstItem() }} to {{ $investments->lastItem() }} of {{ $investments->total() }} investments
+                    </small>
+                    {{ $investments->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </div>

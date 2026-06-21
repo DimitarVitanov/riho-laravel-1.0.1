@@ -39,6 +39,14 @@
                     </tbody>
                 </table>
             </div>
+            @if($documents instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-muted">
+                        Showing {{ $documents->firstItem() }} to {{ $documents->lastItem() }} of {{ $documents->total() }} documents
+                    </small>
+                    {{ $documents->links() }}
+                </div>
+            @endif
             @else
             <p class="text-muted">No documents uploaded yet.</p>
             @endif

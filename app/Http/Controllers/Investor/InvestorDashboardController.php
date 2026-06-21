@@ -20,9 +20,12 @@ class InvestorDashboardController extends Controller
         $recentPayouts = collect();
 
         if ($profile) {
-            $investments = InvestorInvestment::where('investor_user_id', $user->id)->get();
+            $investments = InvestorInvestment::where('investor_user_id', $user->id)
+                ->latest()
+                ->get();
             $pendingCalls = CapitalCall::where('investor_user_id', $user->id)
                 ->where('status', 'sent')
+                ->latest()
                 ->get();
             $recentPayouts = InvestorPayout::where('investor_user_id', $user->id)
                 ->latest()

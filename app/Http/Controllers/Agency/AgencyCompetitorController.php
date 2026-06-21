@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Agency;
 use App\Http\Controllers\Controller;
 use App\Models\CompetitorWebsite;
 use App\Models\CompetitorScanResult;
+use App\Models\AiSuggestion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -67,10 +68,13 @@ class AgencyCompetitorController extends Controller
             return redirect()->back()->with('error', 'Please add at least one competitor website to scan.');
         }
 
+        $suggestionCount = 0;
+        
         foreach ($competitors as $competitor) {
             foreach ($scanTypes as $scanType) {
                 $result = $this->buildScanResult($scanType, $competitor, $city, $agencyName);
-                CompetitorScanResult::create([
+                
+                $scanResult = CompetitorScanResult::create([
                     'agency_profile_id' => $profile->id,
                     'competitor_website_id' => $competitor->id,
                     'scan_type' => $scanType,
@@ -82,11 +86,42 @@ class AgencyCompetitorController extends Controller
                     'status' => 'new',
                     'scanned_at' => now(),
                 ]);
+
+                // Create AiSuggestion if there's recommended content
+                if (!empty($result['content']) && !empty($result['action'])) {
+                    $suggestion = $profile->aiSuggestions()->create([
+                        'feature_key' => 'daily_competitor_scan',
+                        'suggestion_type' => 'competitor_response',
+                        'title' => $result['action'],
+                        'target_keyword' => $competitor->name,
+                        'content_html' => "<h2>" . $result['action'] . "</h2>\n<p>" . $result['content'] . "</p>\n<p><strong>Competitor:</strong> " . $competitor->name . "</p>\n<p><strong>Scan Type:</strong> " . ucfirst(str_replace('_', ' ', $scanType)) . "</p>",
+                        'content_json' => [
+                            'competitor_name' => $competitor->name,
+                            'competitor_url' => $competitor->url,
+                            'scan_type' => $scanType,
+                            'scan_result_id' => $scanResult->id,
+                            'recommended_action' => $result['action'],
+                            'recommended_content' => $result['content'],
+                        ],
+                        'ai_summary' => "Competitor analysis suggestion based on {$competitor->name} {$scanType} scan.",
+                        'ai_conclusion' => "This content helps respond to competitor strategies and maintain competitive advantage.",
+                        'status' => 'pending',
+                        'content_uniqueness_status' => 'pending',
+                    ]);
+                    $suggestionCount++;
+                }
             }
             $competitor->update(['last_scanned_at' => now()]);
         }
 
-        return redirect()->back()->with('success', 'Competitor scan completed. Review the findings below.');
+        $message = 'Competitor scan completed. ';
+        if ($suggestionCount > 0) {
+            $message .= "Created {$suggestionCount} content suggestions for review in Daily AI Employee.";
+        } else {
+            $message .= "Review the findings below.";
+        }
+
+        return redirect()->back()->with('success', $message);
     }
 
     protected function buildScanResult($scanType, $competitor, $city, $agencyName): array

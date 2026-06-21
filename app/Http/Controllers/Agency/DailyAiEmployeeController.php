@@ -87,13 +87,13 @@ class DailyAiEmployeeController extends Controller
         $pendingSuggestions = (clone $suggestionsQuery)
             ->pending()
             ->latest()
-            ->get();
+            ->paginate(10);
 
         // Get accepted suggestions ready for final approval/publish
         $acceptedSuggestions = (clone $suggestionsQuery)
             ->accepted()
             ->latest()
-            ->get();
+            ->paginate(10);
 
         // Get recent suggestions history
         $suggestionsHistory = (clone $suggestionsQuery)

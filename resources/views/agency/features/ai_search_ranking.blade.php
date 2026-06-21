@@ -216,7 +216,7 @@
                             </table>
                         </div>
                         <div class="p-3">
-                            {{ $pages->links() }}
+                            @include('partials.pagination', ['paginator' => $pages])
                         </div>
                     @else
                         <div class="text-center py-4">

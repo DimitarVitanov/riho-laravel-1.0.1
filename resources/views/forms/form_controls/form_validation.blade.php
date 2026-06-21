@@ -207,7 +207,7 @@
                                     <option>U.K </option>
                                     <option>India </option>
                                     <option>Thailand</option>
-                                    <option>Newyork</option>
+                                    <option>New York</option>
                                 </select>
                                 <div class="invalid-feedback">Please select a valid state.</div>
                                 <div class="valid-feedback">

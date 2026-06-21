@@ -273,6 +273,16 @@
                         </div>
                     </div>
                     @endforeach
+                    
+                    {{-- Pagination for new findings --}}
+                    @if($newResults->hasPages())
+                        <div class="d-flex justify-content-between align-items-center mt-3 px-3">
+                            <small class="text-muted">
+                                Showing {{ $newResults->firstItem() }} to {{ $newResults->lastItem() }} of {{ $newResults->total() }} new findings
+                            </small>
+                            @include('partials.pagination', ['paginator' => $newResults])
+                        </div>
+                    @endif
                 </div>
             </div>
             @endif
@@ -324,7 +334,7 @@
                         </table>
                     </div>
                     <div class="p-3">
-                        {{ $scanResults->links() }}
+                        @include('partials.pagination', ['paginator' => $scanResults])
                     </div>
                     @endif
                 </div>

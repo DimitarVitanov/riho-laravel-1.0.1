@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Agency;
 
 use App\Http\Controllers\Controller;
 use App\Models\AiFeatureSetting;
+use App\Models\AiSuggestion;
 use App\Models\GeneratedPage;
 use App\Models\LocalSeoTarget;
 use Illuminate\Support\Facades\Auth;
@@ -59,49 +60,49 @@ class AgencyFeatureController extends Controller
             $viewData = compact('feature', 'user', 'profile', 'featureSetting', 'latestReport');
 
             if ($feature === 'local_seo_presence_boost') {
-                $viewData['cities'] = $profile->localSeoTargets()->cities()->get();
-                $viewData['keywords'] = $profile->localSeoTargets()->keywords()->get();
-                $viewData['subniches'] = $profile->localSeoTargets()->subniches()->get();
-                $viewData['pages'] = $profile->generatedPages()
+                $viewData['cities'] = $profile ? $profile->localSeoTargets()->cities()->get() : collect();
+                $viewData['keywords'] = $profile ? $profile->localSeoTargets()->keywords()->get() : collect();
+                $viewData['subniches'] = $profile ? $profile->localSeoTargets()->subniches()->get() : collect();
+                $viewData['pages'] = $profile ? $profile->generatedPages()
                     ->where('feature_key', 'local_seo_presence_boost')
                     ->latest()
-                    ->paginate(20);
-                $viewData['listings'] = $profile->agencyListings()
+                    ->paginate(10) : collect();
+                $viewData['listings'] = $profile ? $profile->agencyListings()
                     ->where('status', 'active')
                     ->latest()
-                    ->get();
+                    ->get() : collect();
             }
 
             if ($feature === 'ai_search_ranking') {
-                $viewData['pages'] = $profile->generatedPages()
+                $viewData['pages'] = $profile ? $profile->generatedPages()
                     ->where('feature_key', 'ai_search_ranking')
                     ->latest()
-                    ->paginate(20);
+                    ->paginate(10) : collect();
                 $viewData['dataBlocks'] = collect();
-                $viewData['notifications'] = $this->getAiSearchNotifications($profile);
-                $viewData['usageLimit'] = $profile->currentUsageLimit;
+                $viewData['notifications'] = $profile ? $this->getAiSearchNotifications($profile) : collect();
+                $viewData['usageLimit'] = $profile ? $profile->currentUsageLimit : null;
             }
 
             if ($feature === 'ai_authority_builder') {
-                $viewData['reviewPages'] = $profile->generatedPages()
+                $viewData['reviewPages'] = $profile ? $profile->generatedPages()
                     ->where('feature_key', 'ai_authority_builder')
                     ->latest()
-                    ->paginate(20);
-                $viewData['usageLimit'] = $profile->currentUsageLimit;
+                    ->paginate(10) : collect();
+                $viewData['usageLimit'] = $profile ? $profile->currentUsageLimit : null;
             }
 
             if ($feature === 'daily_competitor_scan') {
-                $viewData['competitors'] = $profile->competitorWebsites()->orderBy('name')->get();
-                $viewData['scanResults'] = $profile->competitorScanResults()
+                $viewData['competitors'] = $profile ? $profile->competitorWebsites()->orderBy('name')->get() : collect();
+                $viewData['scanResults'] = $profile ? $profile->competitorScanResults()
                     ->with('competitorWebsite')
                     ->latest('scanned_at')
-                    ->paginate(30);
-                $viewData['newResults'] = $profile->competitorScanResults()
+                    ->paginate(10) : collect();
+                $viewData['newResults'] = $profile ? $profile->competitorScanResults()
                     ->where('status', 'new')
                     ->with('competitorWebsite')
                     ->latest('scanned_at')
-                    ->get();
-                $viewData['usageLimit'] = $profile->currentUsageLimit;
+                    ->paginate(10) : collect();
+                $viewData['usageLimit'] = $profile ? $profile->currentUsageLimit : null;
             }
 
             return view($featureView, $viewData);
@@ -344,11 +345,20 @@ class AgencyFeatureController extends Controller
             return redirect()->back()->with('error', 'Please set a target city first.');
         }
 
+        // Validate and correct city name
+        $city = $this->validateAndCorrectCityName($city);
+        if (!$city) {
+            return redirect()->back()->with('error', 'Invalid city name provided.');
+        }
+
         // Update profile target city
         $profile->update([
             'target_city' => $city,
         ]);
 
+        // Clean up old targets before generating new ones
+        $this->cleanupMisspelledTargets($profile);
+        
         $this->seedLocalSeoTargets($profile, $city);
 
         // Add custom cities if provided
@@ -372,6 +382,9 @@ class AgencyFeatureController extends Controller
 
     protected function seedLocalSeoTargets($profile, $city)
     {
+        // Clean up any existing misspelled entries first
+        $this->cleanupMisspelledTargets($profile);
+        
         $cities = [
             $city,
             $city . ' suburbs',
@@ -464,31 +477,31 @@ class AgencyFeatureController extends Controller
         foreach ($cities as $city) {
             foreach ($keywords as $keyword) {
                 $title = $keyword->target_value;
-                $slug = Str::slug($title);
+                $content = $this->buildLocalSeoPageContent($title, $city->target_value, $subniches, $profile);
 
-                $page = $profile->generatedPages()->firstOrCreate([
+                // Create AiSuggestion instead of direct GeneratedPage
+                $suggestion = $profile->aiSuggestions()->create([
                     'feature_key' => 'local_seo_presence_boost',
-                    'slug' => $slug,
-                ], [
+                    'suggestion_type' => 'local_seo_page',
                     'title' => $title,
-                    'seo_title' => $title,
-                    'meta_description' => 'Find ' . $title . '. Professional real estate agency serving ' . $city->target_value . ' and surrounding areas.',
-                    'content_html' => $this->buildLocalSeoPageContent($title, $city->target_value, $subniches, $profile),
+                    'target_keyword' => $keyword->target_value,
+                    'content_html' => $content,
                     'content_json' => [
                         'target_city' => $city->target_value,
                         'target_keyword' => $keyword->target_value,
                         'subniches' => $subniches,
                     ],
+                    'ai_summary' => "Local SEO page for {$title} targeting {$city->target_value} with focus on " . implode(', ', $subniches),
+                    'ai_conclusion' => "This page helps establish local presence and authority for the targeted keywords.",
+                    'status' => 'pending',
                     'content_uniqueness_status' => 'pending',
-                    'status' => 'pending_review',
                 ]);
 
-                $city->update(['generated_page_id' => $page->id]);
                 $generatedCount++;
             }
         }
 
-        return redirect()->back()->with('success', $generatedCount . ' local SEO pages generated successfully.');
+        return redirect()->back()->with('success', $generatedCount . ' local SEO suggestions created successfully. Review in Daily AI Employee or approve directly below.');
     }
 
     protected function buildLocalSeoPageContent($title, $city, $subniches, $profile)
@@ -574,12 +587,70 @@ class AgencyFeatureController extends Controller
         return $html;
     }
 
+    protected function validateAndCorrectCityName($city)
+    {
+        // Common city name corrections
+        $corrections = [
+            'new yourk' => 'New York',
+            'New yourk' => 'New York',
+            'new Yourk' => 'New York',
+            'New Yourk' => 'New York',
+            'newyork' => 'New York',
+            'Newyork' => 'New York',
+            'new york city' => 'New York City',
+            'nyc' => 'New York City',
+        ];
+
+        // Trim and normalize
+        $city = trim($city);
+        
+        // Apply corrections
+        if (isset($corrections[strtolower($city)])) {
+            return $corrections[strtolower($city)];
+        }
+        
+        // Check for case-insensitive matches
+        foreach ($corrections as $incorrect => $correct) {
+            if (strcasecmp($city, $incorrect) === 0) {
+                return $correct;
+            }
+        }
+        
+        return $city;
+    }
+
+    protected function cleanupMisspelledTargets($profile)
+    {
+        // Remove misspelled "new yourk" variations
+        $misspelledVariations = [
+            'new yourk',
+            'New yourk', 
+            'new Yourk',
+            'New Yourk',
+            'newyork',
+            'Newyork'
+        ];
+
+        foreach ($misspelledVariations as $misspelled) {
+            $profile->localSeoTargets()
+                ->where('target_value', 'like', '%' . $misspelled . '%')
+                ->delete();
+        }
+
+        // Also clean up any old "New York" entries that don't match current city
+        if ($profile->target_city && $profile->target_city !== 'New York') {
+            $profile->localSeoTargets()
+                ->where('target_value', 'like', '%New York%')
+                ->delete();
+        }
+    }
+
     public function previewLocalSeoPage(GeneratedPage $page)
     {
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id) {
+        if (!$profile || $page->agency_profile_id !== $profile->id) {
             abort(403);
         }
 
@@ -591,7 +662,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id) {
+        if (!$profile || $page->agency_profile_id !== $profile->id) {
             abort(403);
         }
 
@@ -603,7 +674,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id) {
+        if (!$profile || $page->agency_profile_id !== $profile->id) {
             abort(403);
         }
 
@@ -629,7 +700,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id) {
+        if (!$profile || $page->agency_profile_id !== $profile->id) {
             abort(403);
         }
 
@@ -657,7 +728,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id) {
+        if (!$profile || $page->agency_profile_id !== $profile->id) {
             abort(403);
         }
 
@@ -670,6 +741,10 @@ class AgencyFeatureController extends Controller
     {
         $user = Auth::user();
         $profile = $user->agencyProfile;
+
+        if (!$profile) {
+            return redirect()->back()->with('error', 'Agency profile not found.');
+        }
 
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -714,7 +789,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($listing->agency_profile_id !== $profile->id) {
+        if (!$profile || $listing->agency_profile_id !== $profile->id) {
             abort(403);
         }
 
@@ -757,7 +832,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($listing->agency_profile_id !== $profile->id) {
+        if (!$profile || $listing->agency_profile_id !== $profile->id) {
             abort(403);
         }
 
@@ -961,7 +1036,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
+        if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
         }
 
@@ -973,7 +1048,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
+        if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
         }
 
@@ -985,7 +1060,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
+        if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
         }
 
@@ -1011,7 +1086,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
+        if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
         }
 
@@ -1029,7 +1104,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
+        if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
         }
 
@@ -1059,7 +1134,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
+        if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
         }
 
@@ -1103,33 +1178,31 @@ class AgencyFeatureController extends Controller
 
         $content = $this->buildAuthorityReviewContent($profile, $city, $agencyName, $website, $layers);
 
-        $page = $profile->generatedPages()->updateOrCreate(
-            [
-                'feature_key' => 'ai_authority_builder',
-                'slug' => $slug,
+        // Create AiSuggestion instead of direct GeneratedPage
+        $suggestion = $profile->aiSuggestions()->create([
+            'feature_key' => 'ai_authority_builder',
+            'suggestion_type' => 'authority_review',
+            'title' => $title,
+            'target_keyword' => $agencyName . ' ' . $city,
+            'content_html' => $content,
+            'content_json' => [
+                'agency_name' => $agencyName,
+                'city' => $city,
+                'website' => $website,
+                'layers' => $layers,
+                'review_type' => 'villa_bit_review',
             ],
-            [
-                'title' => $title,
-                'seo_title' => $title,
-                'meta_description' => "Villa Bit AI structured authority review for {$agencyName}. AI-readable review covering services, local market, buyer questions, and trust signals in {$city}.",
-                'content_html' => $content,
-                'content_json' => [
-                    'agency_name' => $agencyName,
-                    'city' => $city,
-                    'website' => $website,
-                    'layers' => $layers,
-                    'review_type' => 'villa_bit_review',
-                ],
-                'content_uniqueness_status' => 'pending',
-                'status' => 'pending_review',
-            ]
-        );
+            'ai_summary' => "AI-generated authority review for {$agencyName} covering services, local market, buyer questions, and trust signals in {$city}.",
+            'ai_conclusion' => "This structured review helps AI search systems better understand the agency's expertise and local market presence.",
+            'status' => 'pending',
+            'content_uniqueness_status' => 'pending',
+        ]);
 
         if ($usageLimit) {
             $usageLimit->increment('authority_review_updates_used');
         }
 
-        return redirect()->back()->with('success', 'Authority review page generated successfully. Review and publish when ready.');
+        return redirect()->back()->with('success', 'Authority review suggestion created successfully. Review in Daily AI Employee or approve directly below.');
     }
 
     protected function buildAuthorityReviewContent($profile, $city, $agencyName, $website, $layers): string
@@ -1261,7 +1334,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
+        if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
             abort(403);
         }
 
@@ -1273,7 +1346,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
+        if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
             abort(403);
         }
 
@@ -1291,7 +1364,7 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
+        if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
             abort(403);
         }
 
@@ -1313,12 +1386,100 @@ class AgencyFeatureController extends Controller
         $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        if ($page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
+        if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
             abort(403);
         }
 
         $page->delete();
 
         return redirect()->back()->with('success', 'Authority review deleted.');
+    }
+
+    // =====================
+    // Suggestion Management
+    // =====================
+
+    public function acceptAuthoritySuggestion(Request $request, AiSuggestion $suggestion)
+    {
+        $user = Auth::user();
+        
+        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id || $suggestion->feature_key !== 'ai_authority_builder') {
+            abort(403);
+        }
+
+        $suggestion->markAsAccepted($user->id, $request->input('notes'));
+
+        // Convert to GeneratedPage for final approval workflow
+        $page = GeneratedPage::create([
+            'agency_profile_id' => $suggestion->agency_profile_id,
+            'feature_key' => $suggestion->feature_key,
+            'title' => $suggestion->title,
+            'slug' => Str::slug($suggestion->title),
+            'seo_title' => $suggestion->title,
+            'meta_description' => substr(strip_tags($suggestion->content_html), 0, 160),
+            'content_html' => $suggestion->content_html,
+            'content_json' => $suggestion->content_json,
+            'status' => 'pending_review',
+            'content_uniqueness_status' => $suggestion->content_uniqueness_status ?? 'pending',
+        ]);
+
+        $suggestion->update(['converted_to_page_id' => $page->id]);
+
+        return redirect()->back()->with('success', 'Authority review accepted and moved to final review.');
+    }
+
+    public function skipAuthoritySuggestion(Request $request, AiSuggestion $suggestion)
+    {
+        $user = Auth::user();
+        
+        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id || $suggestion->feature_key !== 'ai_authority_builder') {
+            abort(403);
+        }
+
+        $suggestion->markAsSkipped($user->id, $request->input('notes'));
+
+        return redirect()->back()->with('success', 'Authority review suggestion skipped.');
+    }
+
+    public function acceptLocalSeoSuggestion(Request $request, AiSuggestion $suggestion)
+    {
+        $user = Auth::user();
+        
+        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id || $suggestion->feature_key !== 'local_seo_presence_boost') {
+            abort(403);
+        }
+
+        $suggestion->markAsAccepted($user->id, $request->input('notes'));
+
+        // Convert to GeneratedPage for final approval workflow
+        $page = GeneratedPage::create([
+            'agency_profile_id' => $suggestion->agency_profile_id,
+            'feature_key' => $suggestion->feature_key,
+            'title' => $suggestion->title,
+            'slug' => Str::slug($suggestion->title),
+            'seo_title' => $suggestion->title,
+            'meta_description' => substr(strip_tags($suggestion->content_html), 0, 160),
+            'content_html' => $suggestion->content_html,
+            'content_json' => $suggestion->content_json,
+            'status' => 'pending_review',
+            'content_uniqueness_status' => $suggestion->content_uniqueness_status ?? 'pending',
+        ]);
+
+        $suggestion->update(['converted_to_page_id' => $page->id]);
+
+        return redirect()->back()->with('success', 'Local SEO content accepted and moved to final review.');
+    }
+
+    public function skipLocalSeoSuggestion(Request $request, AiSuggestion $suggestion)
+    {
+        $user = Auth::user();
+        
+        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id || $suggestion->feature_key !== 'local_seo_presence_boost') {
+            abort(403);
+        }
+
+        $suggestion->markAsSkipped($user->id, $request->input('notes'));
+
+        return redirect()->back()->with('success', 'Local SEO suggestion skipped.');
     }
 }

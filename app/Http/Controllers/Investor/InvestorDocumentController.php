@@ -25,6 +25,8 @@ class InvestorDocumentController extends Controller
                     'date' => Storage::disk('local')->lastModified($file),
                 ];
             }
+
+            usort($documents, fn ($a, $b) => $b['date'] <=> $a['date']);
         }
 
         return view('investor.documents.index', compact('documents'));

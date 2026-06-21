@@ -31,10 +31,12 @@
                             <small class="text-muted">This prompt instructs the AI how to generate content for your agency.</small>
                         </div>
                         
-                        <div class="d-flex gap-2 mb-4">
-                            <button type="submit" class="btn btn-dark">Save Prompt</button>
-                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#resetModal">
-                                Reset to Default
+                        <div class="d-flex gap-3 mb-4">
+                            <button type="submit" class="btn btn-dark px-3">
+                                <i class="fas fa-save me-2"></i>Save Prompt
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary px-3" data-bs-toggle="modal" data-bs-target="#resetModal">
+                                <i class="fas fa-undo me-2"></i>Reset to Default
                             </button>
                         </div>
                     </form>

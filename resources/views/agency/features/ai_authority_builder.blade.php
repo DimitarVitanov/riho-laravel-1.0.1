@@ -162,8 +162,68 @@
 
         </div>
 
-        {{-- RIGHT: Generated Review Pages --}}
+        {{-- RIGHT: Suggestions & Review Pages --}}
         <div class="col-lg-8">
+            
+            {{-- Pending Suggestions --}}
+            <div class="card mb-4">
+                <div class="card-header bg-warning bg-opacity-10 border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0"><i class="fa fa-lightbulb-o me-2"></i>{{ __('messages.pending_suggestions') }}</h6>
+                    <a href="{{ route('agency.daily-ai-employee.index') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-inbox me-1"></i>{{ __('messages.daily_ai_employee') }}
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    @php
+                        $pendingSuggestions = $profile ? $profile->aiSuggestions()
+                            ->where('feature_key', 'ai_authority_builder')
+                            ->where('status', 'pending')
+                            ->latest()
+                            ->get() : collect();
+                    @endphp
+                    @if($pendingSuggestions->isEmpty())
+                    <div class="p-4 text-center text-muted">
+                        <i class="fa fa-lightbulb-o fa-2x mb-2 d-block text-muted opacity-50"></i>
+                        <p class="mb-0 small">{{ __('messages.no_pending_suggestions') }}</p>
+                    </div>
+                    @else
+                    <div class="p-3">
+                        @foreach($pendingSuggestions as $suggestion)
+                        <div class="border rounded p-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ $suggestion->title }}</h6>
+                                    <small class="text-muted">{{ $suggestion->ai_summary }}</small>
+                                </div>
+                                <span class="badge bg-warning">{{ __('messages.pending') }}</span>
+                            </div>
+                            <div class="d-flex gap-3 mt-3">
+                                <form action="{{ route('agency.authority.suggestions.accept', $suggestion) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-success btn-sm px-3">
+                                        <i class="fas fa-check-circle me-2"></i>{{ __('messages.accept') }}
+                                    </button>
+                                </form>
+                                <form action="{{ route('agency.authority.suggestions.skip', $suggestion) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-outline-warning btn-sm px-3">
+                                        <i class="fas fa-forward me-2"></i>{{ __('messages.skip') }}
+                                    </button>
+                                </form>
+                                <a href="{{ route('agency.daily-ai-employee.index') }}" class="btn btn-outline-primary btn-sm px-3">
+                                    <i class="fas fa-inbox me-2"></i>{{ __('messages.review_in_ai_employee') }}
+                                </a>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Generated Review Pages --}}
             <div class="card">
                 <div class="card-header bg-white border-bottom py-3">
                     <h6 class="fw-bold mb-0"><i class="fa fa-file-text me-2"></i>{{ __('messages.authority_review_pages') }}</h6>
@@ -202,27 +262,27 @@
                                     <td class="text-muted">{{ $page->created_at->format('d M Y') }}</td>
                                     <td>
                                         <div class="d-flex gap-1 flex-wrap">
-                                            <a href="{{ route('agency.authority.pages.preview', $page) }}" class="btn btn-outline-dark btn-sm">
-                                                <i class="fa fa-eye"></i>
+                                            <a href="{{ route('agency.authority.pages.preview', $page) }}" class="btn btn-outline-dark btn-sm px-2">
+                                                <i class="fas fa-eye"></i>
                                             </a>
                                             @if($page->status !== 'published')
                                             <form action="{{ route('agency.authority.pages.publish', $page) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-success btn-sm" title="{{ __('messages.publish') }}">
-                                                    <i class="fa fa-check"></i>
+                                                <button type="submit" class="btn btn-success btn-sm px-2" title="{{ __('messages.publish') }}">
+                                                    <i class="fas fa-check-circle"></i>
                                                 </button>
                                             </form>
                                             @endif
                                             <form action="{{ route('agency.authority.pages.refresh', $page) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-outline-primary btn-sm" title="{{ __('messages.refresh') }}">
-                                                    <i class="fa fa-refresh"></i>
+                                                <button type="submit" class="btn btn-outline-primary btn-sm px-2" title="{{ __('messages.refresh') }}">
+                                                    <i class="fas fa-sync-alt"></i>
                                                 </button>
                                             </form>
                                             <form action="{{ route('agency.authority.pages.destroy', $page) }}" method="POST" class="d-inline">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('{{ __('messages.confirm_delete') }}')" title="{{ __('messages.delete') }}">
-                                                    <i class="fa fa-trash"></i>
+                                                <button type="submit" class="btn btn-outline-danger btn-sm px-2" onclick="return confirm('{{ __('messages.confirm_delete') }}')" title="{{ __('messages.delete') }}">
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -233,7 +293,7 @@
                         </table>
                     </div>
                     <div class="p-3">
-                        {{ $reviewPages->links() }}
+                        @include('partials.pagination', ['paginator' => $reviewPages])
                     </div>
                     @endif
                 </div>

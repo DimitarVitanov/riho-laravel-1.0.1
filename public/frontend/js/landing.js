@@ -29,7 +29,7 @@
     localStorage.setItem("page-wrapper", "horizontal-wrapper enterprice-type");
   });
 
-  $(".newyork-view").click(function () {
+  $(".new-york-view").click(function () {
     localStorage.setItem("page-wrapper", "compact-wrapper box-layout");
   });
 

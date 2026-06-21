@@ -302,6 +302,81 @@
         </div>
     </div>
 
+    {{-- Pending Suggestions Section --}}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning bg-opacity-10 border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1 fw-bold"><i class="fa fa-lightbulb-o me-2"></i>{{ __('messages.pending_suggestions') }}</h5>
+                        <small class="text-muted">{{ __('messages.local_seo_suggestions_ready') }}</small>
+                    </div>
+                    <a href="{{ route('agency.daily-ai-employee.index') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa fa-inbox me-1"></i>{{ __('messages.daily_ai_employee') }}
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    @php
+                        $pendingSuggestions = $profile ? $profile->aiSuggestions()
+                            ->where('feature_key', 'local_seo_presence_boost')
+                            ->where('status', 'pending')
+                            ->latest()
+                            ->paginate(10) : collect();
+                    @endphp
+                    @if($pendingSuggestions->isEmpty())
+                    <div class="p-4 text-center text-muted">
+                        <i class="fa fa-lightbulb-o fa-2x mb-2 d-block text-muted opacity-50"></i>
+                        <p class="mb-0 small">{{ __('messages.no_pending_suggestions') }}</p>
+                    </div>
+                    @else
+                    <div class="p-3">
+                        @foreach($pendingSuggestions as $suggestion)
+                        <div class="border rounded p-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="fw-bold mb-1">{{ $suggestion->title }}</h6>
+                                    <small class="text-muted">{{ $suggestion->content_json['target_city'] ?? 'Unknown City' }} • {{ $suggestion->ai_summary }}</small>
+                                </div>
+                                <span class="badge bg-warning">{{ __('messages.pending') }}</span>
+                            </div>
+                            <div class="d-flex gap-3 mt-3">
+                                <form action="{{ route('agency.local-seo.suggestions.accept', $suggestion) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-success btn-sm px-3">
+                                        <i class="fas fa-check-circle me-2"></i>{{ __('messages.accept') }}
+                                    </button>
+                                </form>
+                                <form action="{{ route('agency.local-seo.suggestions.skip', $suggestion) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-outline-warning btn-sm px-3">
+                                        <i class="fas fa-forward me-2"></i>{{ __('messages.skip') }}
+                                    </button>
+                                </form>
+                                <a href="{{ route('agency.daily-ai-employee.index') }}" class="btn btn-outline-primary btn-sm px-3">
+                                    <i class="fas fa-inbox me-2"></i>{{ __('messages.review_in_ai_employee') }}
+                                </a>
+                            </div>
+                        </div>
+                        @endforeach
+                    
+                    {{-- Pagination for pending suggestions --}}
+                    @if($pendingSuggestions->hasPages())
+                        <div class="d-flex justify-content-between align-items-center mt-3 px-3">
+                            <small class="text-muted">
+                                Showing {{ $pendingSuggestions->firstItem() }} to {{ $pendingSuggestions->lastItem() }} of {{ $pendingSuggestions->total() }} pending suggestions
+                            </small>
+                            @include('partials.pagination', ['paginator' => $pendingSuggestions])
+                        </div>
+                    @endif
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Generated Pages Section --}}
     <div class="row">
         <div class="col-12">
@@ -373,7 +448,7 @@
                             </table>
                         </div>
                         <div class="p-3">
-                            {{ $pages->links() }}
+                            @include('partials.pagination', ['paginator' => $pages])
                         </div>
                     @else
                         <div class="text-center py-5">

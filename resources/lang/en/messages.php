@@ -120,6 +120,8 @@ return [
     'preview' => 'Preview',
     'accept' => 'Accept',
     'accept_and_move' => 'Accept & Move to Queue',
+    'skip' => 'Skip',
+    'remove' => 'Remove',
     'skip_suggestion' => 'Skip Suggestion',
     'remove_suggestion' => 'Remove Suggestion',
     'reason' => 'Reason',
@@ -408,4 +410,19 @@ return [
     'website' => 'Website',
     'title' => 'Title',
     'type' => 'Type',
+    
+    // Suggestion Management
+    'pending_suggestions' => 'Pending Suggestions',
+    'no_pending_suggestions' => 'No pending suggestions',
+    'accept' => 'Accept',
+    'skip' => 'Skip',
+    'review_in_ai_employee' => 'Review in Daily AI Employee',
+    'daily_ai_employee' => 'Daily AI Employee',
+    'local_seo_suggestions_ready' => 'Local SEO suggestions ready for review',
+    'authority_review_suggestion_created' => 'Authority review suggestion created successfully. Review in Daily AI Employee or approve directly below.',
+    'local_seo_suggestions_created' => 'Local SEO suggestions created successfully. Review in Daily AI Employee or approve directly below.',
+    'competitor_suggestions_created' => 'Content suggestions created for review in Daily AI Employee.',
+    'authority_review_accepted' => 'Authority review accepted and moved to final review.',
+    'local_seo_accepted' => 'Local SEO content accepted and moved to final review.',
+    'suggestion_skipped' => 'Suggestion skipped.',
 ];

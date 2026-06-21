@@ -21,7 +21,7 @@
                         <h5 class="mb-1 fw-bold">Daily AI Employee</h5>
                         <small class="text-muted">Always Active</small>
                     </div>
-                    <span class="badge bg-success"><i class="fa fa-check-circle me-1"></i>Running</span>
+                    <span class="badge bg-success text-white"><i class="fa fa-check-circle me-1"></i>Running</span>
                 </div>
                 
                 <div class="card-body">
@@ -80,10 +80,16 @@
                         </div>
                         
                         {{-- Action Buttons --}}
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-dark">Save</button>
-                            <a href="{{ route('agency.daily-ai-employee.logs') }}" class="btn btn-outline-secondary">View Logs</a>
-                            <a href="{{ route('agency.daily-ai-employee.prompt') }}" class="btn btn-outline-secondary">Open Prompt</a>
+                        <div class="d-flex gap-3">
+                            <button type="submit" class="btn btn-dark px-3">
+                                <i class="fas fa-save me-2"></i>Save
+                            </button>
+                            <a href="{{ route('agency.daily-ai-employee.logs') }}" class="btn btn-outline-secondary px-3">
+                                <i class="fas fa-file-alt me-2"></i>View Logs
+                            </a>
+                            <a href="{{ route('agency.daily-ai-employee.prompt') }}" class="btn btn-outline-secondary px-3">
+                                <i class="fas fa-edit me-2"></i>Open Prompt
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -96,7 +102,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <form method="GET" action="{{ route('agency.daily-ai-employee.index') }}" class="row align-items-end">
+                    <div class="row align-items-end">
                         {{-- Quick Date Presets --}}
                         <div class="col-md-2 mb-2">
                             <label class="form-label text-muted small">Quick Select</label>
@@ -115,7 +121,7 @@
                         <div class="col-md-3 mb-2">
                             <label class="form-label text-muted small">From Date</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                 <input type="date" name="date_from" id="dateFrom" class="form-control" 
                                     value="{{ request('date_from', $dateFrom?->format('Y-m-d')) }}">
                             </div>
@@ -125,7 +131,7 @@
                         <div class="col-md-3 mb-2">
                             <label class="form-label text-muted small">To Date</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                 <input type="date" name="date_to" id="dateTo" class="form-control" 
                                     value="{{ request('date_to', $dateTo?->format('Y-m-d')) }}">
                             </div>
@@ -134,16 +140,16 @@
                         {{-- Action Buttons --}}
                         <div class="col-md-4 mb-2">
                             <label class="form-label d-none d-md-block">&nbsp;</label>
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-dark">
-                                    <i class="fa fa-filter me-1"></i>Apply Filter
+                            <div class="d-flex gap-3">
+                                <button type="button" class="btn btn-dark px-3" onclick="applyFilter()">
+                                    <i class="fas fa-filter me-2"></i>Apply Filter
                                 </button>
-                                <a href="{{ route('agency.daily-ai-employee.index') }}" class="btn btn-outline-secondary">
-                                    <i class="fa fa-refresh me-1"></i>Reset
+                                <a href="{{ route('agency.daily-ai-employee.index') }}" class="btn btn-outline-secondary px-3">
+                                    <i class="fas fa-redo me-2"></i>Reset
                                 </a>
                             </div>
                         </div>
-                    </form>
+                    </div>
                     
                     {{-- Active Filter Display --}}
                     @if($dateFrom && $dateTo)
@@ -161,6 +167,18 @@
     </div>
     
     <script>
+        function applyFilter() {
+            const dateFrom = document.getElementById('dateFrom');
+            const dateTo = document.getElementById('dateTo');
+            const baseUrl = "{{ route('agency.daily-ai-employee.index') }}";
+            
+            const params = new URLSearchParams();
+            if (dateFrom.value) params.append('date_from', dateFrom.value);
+            if (dateTo.value) params.append('date_to', dateTo.value);
+            
+            window.location.href = baseUrl + (params.toString() ? '?' + params.toString() : '');
+        }
+        
         function applyDatePreset(preset) {
             const today = new Date();
             const dateFrom = document.getElementById('dateFrom');
@@ -200,7 +218,7 @@
             }
             
             if (preset) {
-                document.querySelector('form').submit();
+                applyFilter();
             }
         }
         
@@ -301,18 +319,18 @@
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm">
-                                                <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#acceptModal{{ $suggestion->id }}">
-                                                    {{ __('messages.accept') }}
+                                                <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#acceptModal{{ $suggestion->id }}" title="{{ __('messages.accept') }}">
+                                                    <i class="fas fa-check"></i>
                                                 </button>
-                                                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#skipModal{{ $suggestion->id }}">
-                                                    {{ __('messages.skip') }}
+                                                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#skipModal{{ $suggestion->id }}" title="{{ __('messages.skip') }}">
+                                                    <i class="fas fa-forward"></i>
                                                 </button>
-                                                <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#removeModal{{ $suggestion->id }}">
-                                                    {{ __('messages.remove') }}
+                                                <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#removeModal{{ $suggestion->id }}" title="{{ __('messages.remove') }}">
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             </div>
-                                            <button class="btn btn-sm btn-outline-dark mt-1 d-block" data-bs-toggle="modal" data-bs-target="#previewModal{{ $suggestion->id }}">
-                                                {{ __('messages.preview') }}
+                                            <button class="btn btn-sm btn-outline-dark mt-1 d-block" data-bs-toggle="modal" data-bs-target="#previewModal{{ $suggestion->id }}" title="{{ __('messages.preview') }}">
+                                                <i class="fas fa-eye"></i>
                                             </button>
                                         </td>
                                     </tr>
@@ -324,6 +342,20 @@
                         <div class="text-center py-5">
                             <h5 class="text-muted">🎉 {{ __('messages.all_caught_up') }}</h5>
                             <p class="text-muted">{{ __('messages.no_pending_suggestions') }}</p>
+                        </div>
+                    @endif
+                    
+                    {{-- Always show pagination if there are pages --}}
+                    @if($pendingSuggestions->hasPages())
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <small class="text-muted">
+                                @if($pendingSuggestions->count() > 0)
+                                    Showing {{ $pendingSuggestions->firstItem() }} to {{ $pendingSuggestions->lastItem() }} of {{ $pendingSuggestions->total() }} pending suggestions
+                                @else
+                                    No pending suggestions on this page (Page {{ $pendingSuggestions->currentPage() }} of {{ $pendingSuggestions->lastPage() }})
+                                @endif
+                            </small>
+                            @include('partials.pagination', ['paginator' => $pendingSuggestions])
                         </div>
                     @endif
                 </div>
@@ -379,6 +411,16 @@
                         </div>
                         @endforeach
                     </div>
+                    
+                    {{-- Pagination for Accepted Suggestions --}}
+                    @if($acceptedSuggestions->hasPages())
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted">
+                            Showing {{ $acceptedSuggestions->firstItem() }} to {{ $acceptedSuggestions->lastItem() }} of {{ $acceptedSuggestions->total() }} accepted suggestions
+                        </small>
+                        @include('partials.pagination', ['paginator' => $acceptedSuggestions])
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -596,6 +638,28 @@
 }
 .daily-ai-employee .card:hover {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.pagination .page-link {
+    color: #495057;
+}
+.pagination .page-item.active .page-link {
+    background-color: #343a40;
+    border-color: #343a40;
+}
+/* Fix content preview text color - override bg-light white text */
+.bg-light .content-preview {
+    color: #212529 !important;
+}
+.bg-light .content-preview p,
+.bg-light .content-preview div,
+.bg-light .content-preview span,
+.bg-light .content-preview h1,
+.bg-light .content-preview h2,
+.bg-light .content-preview h3,
+.bg-light .content-preview h4,
+.bg-light .content-preview h5,
+.bg-light .content-preview h6 {
+    color: #212529 !important;
 }
 </style>
 @endpush

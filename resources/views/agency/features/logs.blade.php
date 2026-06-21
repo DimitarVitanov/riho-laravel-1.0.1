@@ -56,7 +56,7 @@
                             </table>
                         </div>
                         <div class="p-3">
-                            {{ $logs->links() }}
+                            @include('partials.pagination', ['paginator' => $logs])
                         </div>
                     @else
                         <div class="text-center py-5">

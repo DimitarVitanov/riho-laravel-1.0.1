@@ -12,6 +12,7 @@ class InvestorEarningsController extends Controller
     {
         $investments = InvestorInvestment::where('investor_user_id', Auth::id())
             ->with('project')
+            ->latest()
             ->get();
 
         $totalPreferredReturn = $investments->sum('preferred_return_accrued_amount');

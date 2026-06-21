@@ -18,7 +18,7 @@
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
-                                <tr><th>#</th><th>Agency</th><th>Owner</th><th>City</th><th>AI Status</th><th>Status</th><th>Actions</th></tr>
+                                <tr><th>#</th><th>Agency</th><th>Owner</th><th>City</th><th>AI Status</th><th>Affiliate</th><th>Status</th><th>Actions</th></tr>
                             </thead>
                             <tbody>
                                 @forelse($agencies as $a)
@@ -28,14 +28,22 @@
                                     <td>{{ $a->first_name }} {{ $a->last_name }}</td>
                                     <td>{{ $a->agencyProfile->city ?? '—' }}</td>
                                     <td><span class="badge bg-{{ ($a->agencyProfile->ai_status ?? '') === 'active' ? 'success' : 'secondary' }}">{{ ucfirst($a->agencyProfile->ai_status ?? 'n/a') }}</span></td>
+                                    <td>
+                                        @if($a->is_reseller_enabled)
+                                            <span class="badge bg-success">Enabled</span>
+                                        @else
+                                            <form action="{{ route('admin.villabit.users.enable-reseller', $a) }}" method="POST" class="d-inline">@csrf<button class="btn btn-outline-secondary btn-sm">Enable</button></form>
+                                        @endif
+                                    </td>
                                     <td><span class="badge bg-{{ $a->status === 'active' ? 'success' : 'warning' }}">{{ ucfirst($a->status) }}</span></td>
                                     <td>
                                         <a href="{{ route('admin.villabit.agencies.show', $a) }}" class="btn btn-outline-primary btn-sm">View</a>
                                         <form action="{{ route('admin.villabit.impersonate.start', $a) }}" method="POST" class="d-inline">@csrf<button class="btn btn-outline-info btn-sm">Login As</button></form>
+                                        <form action="{{ route('admin.villabit.users.destroy', $a) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete {{ addslashes($a->agencyProfile->agency_name ?? $a->company_name ?? ($a->first_name.' '.$a->last_name)) }} and ALL related data? This cannot be undone.')">@csrf @method('DELETE')<button class="btn btn-outline-danger btn-sm">Delete</button></form>
                                     </td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="7" class="text-center text-muted">No agencies found.</td></tr>
+                                <tr><td colspan="8" class="text-center text-muted">No agencies found.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>

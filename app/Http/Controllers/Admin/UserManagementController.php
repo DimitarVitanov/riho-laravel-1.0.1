@@ -8,9 +8,12 @@ use App\Models\ManagerProfile;
 use App\Models\AgencyProfile;
 use App\Models\InvestorProfile;
 use App\Models\UsageLimit;
+use App\Models\SupportTicket;
+use App\Models\SupportTicketMessage;
 use App\Notifications\ManagerAddedNotification;
 use App\Notifications\AccountApprovedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -219,5 +222,35 @@ class UserManagementController extends Controller
         ]);
 
         return back()->with('success', 'Reseller enabled for user.');
+    }
+
+    public function destroy(User $user)
+    {
+        if (in_array($user->role, ['admin', 'super_admin'])) {
+            return back()->with('error', 'Administrator accounts cannot be deleted.');
+        }
+
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'You cannot delete your own account.');
+        }
+
+        $name = trim($user->first_name . ' ' . $user->last_name) ?: $user->email;
+
+        DB::transaction(function () use ($user) {
+            // Support tickets have no DB-level cascade, so clean them up manually.
+            $ticketIds = SupportTicket::where('user_id', $user->id)->pluck('id');
+            if ($ticketIds->isNotEmpty()) {
+                SupportTicketMessage::whereIn('support_ticket_id', $ticketIds)->delete();
+                SupportTicket::whereIn('id', $ticketIds)->delete();
+            }
+            SupportTicketMessage::where('user_id', $user->id)->delete();
+
+            // Remaining related data (profiles, usage limits, leads, generated pages,
+            // AI suggestions/reports, investments, capital calls, payouts, referrals, etc.)
+            // is removed automatically via onDelete('cascade') foreign keys.
+            $user->delete();
+        });
+
+        return back()->with('success', "{$name} and all related data have been deleted.");
     }
 }

@@ -16,7 +16,7 @@
 <!-- Bootstrap css-->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/bootstrap.css') }}">
 <!-- App css-->
-@vite(['public/assets/scss/style.scss'])
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
 <!-- Responsive css-->
 
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/nestable-style.css') }}">

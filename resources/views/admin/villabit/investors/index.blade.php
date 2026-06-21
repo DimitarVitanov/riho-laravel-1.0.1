@@ -31,6 +31,7 @@
                                     <td><span class="badge bg-{{ $i->status === 'active' ? 'success' : 'warning' }}">{{ ucfirst($i->status) }}</span></td>
                                     <td>
                                         <a href="{{ route('admin.villabit.investors.show', $i) }}" class="btn btn-outline-primary btn-sm">View</a>
+                                        <form action="{{ route('admin.villabit.users.destroy', $i) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete {{ addslashes($i->first_name.' '.$i->last_name) }} and ALL related data? This cannot be undone.')">@csrf @method('DELETE')<button class="btn btn-outline-danger btn-sm">Delete</button></form>
                                     </td>
                                 </tr>
                                 @empty

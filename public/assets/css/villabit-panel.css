@@ -4,8 +4,12 @@
    ============================================================ */
 
 /* Dark Sidebar Override */
-.page-wrapper .sidebar-wrapper {
+.page-wrapper .sidebar-wrapper,
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper {
     background: #0a0b0c !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-radius: 0 !important;
 }
 .page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links .simplebar-wrapper .simplebar-content-wrapper .simplebar-content > li a svg,
 .page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li a span {
@@ -26,9 +30,13 @@
     letter-spacing: -0.3px;
 }
 .page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li a:hover,
-.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li a.active {
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li a.active,
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links .simplebar-wrapper .simplebar-mask .simplebar-content-wrapper .simplebar-content > li .sidebar-link.active,
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links .simplebar-wrapper .simplebar-mask .simplebar-content-wrapper .simplebar-content > li.sidebar-list:hover > a:hover,
+.page-wrapper.compact-sidebar .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links li a.active {
     background: #1f2937 !important;
-    border-radius: 8px;
+    border-radius: 0 !important;
+    margin: 0 !important;
 }
 .sidebar-wrapper .back-btn {
     background: #0a0b0c !important;
@@ -43,6 +51,23 @@
 }
 .page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links .sidebar-list .fa-thumb-tack {
     display: none !important;
+}
+/* Sidebar scrollbar */
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    scrollbar-width: thin;
+    scrollbar-color: #374151 #0a0b0c;
+}
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links::-webkit-scrollbar {
+    width: 5px;
+}
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links::-webkit-scrollbar-track {
+    background: #0a0b0c;
+}
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links::-webkit-scrollbar-thumb {
+    background-color: #374151;
+    border-radius: 3px;
 }
 
 /* Usage Period Status Banner */

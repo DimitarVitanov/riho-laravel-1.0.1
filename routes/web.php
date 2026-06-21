@@ -89,6 +89,7 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::post('users/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::post('users/{user}/approve-waitlist', [UserManagementController::class, 'approveWaitlist'])->name('users.approve-waitlist');
     Route::post('users/{user}/enable-reseller', [UserManagementController::class, 'enableReseller'])->name('users.enable-reseller');
+    Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
 
     // Managers
     Route::get('managers', [AdminManagerController::class, 'index'])->name('managers.index');

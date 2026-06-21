@@ -34,6 +34,11 @@ class AgencyFeatureController extends Controller
         $featureSetting = null;
         $latestReport = null;
 
+        if (!$profile) {
+            return redirect()->route('agency.dashboard')
+                ->with('error', 'Agency profile not found. Please complete your agency profile before accessing features.');
+        }
+
         if ($profile) {
             $featureSetting = AiFeatureSetting::firstOrCreate(
                 [

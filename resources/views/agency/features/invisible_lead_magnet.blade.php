@@ -132,12 +132,14 @@
                         <a href="{{ route('agency.invisible-lead-magnet.export') }}" class="btn btn-dark btn-sm">
                             <i class="fa fa-download me-1"></i>{{ __('messages.export_csv') }}
                         </a>
-                        <span class="badge bg-dark text-white fs-6">{{ $profile->leads()->count() }} {{ __('messages.total_leads') }}</span>
+                        <span class="badge bg-dark text-white fs-6">{{ $profile ? $profile->leads()->count() : 0 }} {{ __('messages.total_leads') }}</span>
                     </div>
                 </div>
                 <div class="card-body p-0">
                     @php
-                        $leads = $profile->leads()->where('source', 'invisible_lead_magnet')->latest()->paginate(20);
+                        $leads = $profile
+                            ? $profile->leads()->where('source', 'invisible_lead_magnet')->latest()->paginate(20)
+                            : new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
                     @endphp
                     
                     @if($leads->count() > 0)

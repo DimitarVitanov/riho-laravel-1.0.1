@@ -271,7 +271,7 @@ return [
 
     // Affiliate / Reseller
     'affiliate_hero_title' => 'Become a Reseller — Earn 10% Lifetime Commissions',
-    'affiliate_hero_subtitle' => 'The most attractive affiliate program in AI real estate.',
+    'affiliate_hero_subtitle' => 'You earn 10% on every payment made by clients you sign up – forever. Earn a 10% lifetime commission when your referral becomes a paying Villa Bit AI real estate investor. You may also earn an optional 6% commission for a completed sale referral of any Villa Bit Capital real estate.',
     'affiliate_hero_terms' => '180-day cookie · $10 minimum payout · Payout on the 1st of each month',
     'lifetime_commission' => 'Lifetime Commission',
     'day_cookie' => 'Day Cookie',

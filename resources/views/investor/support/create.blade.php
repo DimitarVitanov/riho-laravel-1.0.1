@@ -14,9 +14,19 @@
     <div class="vb-card" style="max-width:720px;">
         <form action="{{ route('investor.support.store') }}" method="POST">
             @csrf
-            <div class="vb-field" style="margin-bottom:18px;">
-                <label>Subject</label>
-                <input type="text" name="subject" class="vb-input" value="{{ old('subject') }}" required placeholder="Brief description of your request">
+            <div style="display:grid;grid-template-columns:1fr auto;gap:16px;margin-bottom:18px;align-items:end;">
+                <div class="vb-field">
+                    <label>Subject</label>
+                    <input type="text" name="subject" class="vb-input" value="{{ old('subject') }}" required placeholder="Brief description of your request">
+                </div>
+                <div class="vb-field" style="min-width:160px;">
+                    <label>Urgency</label>
+                    <select name="priority" class="form-select" style="background:#f9fafb;border:1px solid #d9dde3;border-radius:10px;padding:10px;" required>
+                        <option value="medium" {{ old('priority','medium')==='medium' ? 'selected' : '' }}>Normal</option>
+                        <option value="high"   {{ old('priority')==='high'   ? 'selected' : '' }}>High</option>
+                        <option value="urgent" {{ old('priority')==='urgent' ? 'selected' : '' }}>Urgent</option>
+                    </select>
+                </div>
             </div>
             <div class="vb-field" style="margin-bottom:22px;">
                 <label>Message</label>

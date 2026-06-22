@@ -12,6 +12,7 @@ class InvestorDocumentController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $profile = $user->investorProfile;
         $documents = [];
 
         $path = 'investor-documents/' . $user->id;
@@ -29,7 +30,7 @@ class InvestorDocumentController extends Controller
             usort($documents, fn ($a, $b) => $b['date'] <=> $a['date']);
         }
 
-        return view('investor.documents.index', compact('documents'));
+        return view('investor.documents.index', compact('documents', 'user', 'profile'));
     }
 
     public function store(Request $request)

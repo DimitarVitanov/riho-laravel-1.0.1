@@ -27,14 +27,16 @@ class InvestorSupportController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string',
+            'subject'  => 'required|string|max:255',
+            'message'  => 'required|string',
+            'priority' => 'required|in:low,medium,high,urgent',
         ]);
 
         SupportTicket::create([
-            'user_id' => Auth::id(),
-            'subject' => $request->subject,
-            'message' => $request->message,
+            'user_id'  => Auth::id(),
+            'subject'  => $request->subject,
+            'message'  => $request->message,
+            'priority' => $request->priority,
         ]);
 
         return redirect()->route('investor.support.index')

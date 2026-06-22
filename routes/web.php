@@ -105,6 +105,8 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     // Investors
     Route::get('investors', [AdminInvestorController::class, 'index'])->name('investors.index');
     Route::get('investors/{user}', [AdminInvestorController::class, 'show'])->name('investors.show');
+    Route::post('investors/{user}/reseller', [AdminInvestorController::class, 'updateReseller'])->name('investors.update-reseller');
+    Route::post('investors/{user}/kyc-status', [AdminInvestorController::class, 'updateKycStatus'])->name('investors.update-kyc-status');
 
     // Investment Projects
     Route::get('investment-projects', [AdminInvestmentProjectController::class, 'index'])->name('investment-projects.index');

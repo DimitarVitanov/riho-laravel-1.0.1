@@ -42,7 +42,7 @@
                         <span class="vb-badge {{ $tClass }}">{{ ucfirst(str_replace('_', ' ', $ticket->status)) }}</span>
                     </td>
                     <td>{{ ucfirst($ticket->priority ?? 'normal') }}</td>
-                    <td>{{ $ticket->created_at->format('M d, Y') }}</td>
+                    <td>{{ $ticket->created_at->format('M d, Y H:i') }}</td>
                     <td><a href="{{ route('agency.support.show', $ticket) }}" class="vb-btn vb-btn-sm">View</a></td>
                 </tr>
                 @empty

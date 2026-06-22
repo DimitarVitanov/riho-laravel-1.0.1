@@ -406,7 +406,7 @@
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('investor.documents.index') }}">
                         <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-file') }}"></use></svg>
                         <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-file') }}"></use></svg>
-                        <span>Documents</span>
+                        <span>KYC Documents</span>
                     </a>
                 </li>
 

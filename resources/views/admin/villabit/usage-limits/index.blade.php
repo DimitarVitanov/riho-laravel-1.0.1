@@ -7,7 +7,22 @@
 @endsection
 @section('content')
 <div class="container-fluid">
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if(session('info'))
+        <div class="alert alert-info">{{ session('info') }}</div>
+    @endif
+
     <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Agency Usage Limits — {{ now()->format('F Y') }}</strong>
+            <form method="POST" action="{{ route('admin.villabit.usage-limits.bulk-create') }}" onsubmit="return confirm('Create default limits for all agencies missing a limit this month?')">
+                @csrf
+                <button type="submit" class="btn btn-primary btn-sm">Create Missing Limits</button>
+            </form>
+        </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped table-sm">
@@ -16,7 +31,7 @@
                     @forelse($limits as $l)
                     <tr>
                         <td>{{ $l->agencyProfile->agency_name ?? '—' }}</td>
-                        <td>{{ $l->period_start }} — {{ $l->period_end }}</td>
+                        <td>{{ \Carbon\Carbon::parse($l->period_start)->format('d M Y') }} — {{ \Carbon\Carbon::parse($l->period_end)->format('d M Y') }}</td>
                         <td>{{ $l->local_seo_pages_used }}/{{ $l->local_seo_pages_limit }}</td>
                         <td>{{ $l->competitor_scans_used }}/{{ $l->competitor_scans_limit }}</td>
                         <td>{{ $l->ai_search_freshness_updates_used }}/{{ $l->ai_search_freshness_updates_limit }}</td>

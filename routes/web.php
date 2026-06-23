@@ -48,6 +48,8 @@ use App\Http\Controllers\Agency\AgencyCompetitorController;
 use App\Http\Controllers\Agency\AgencyLeadController;
 use App\Http\Controllers\Admin\AdminSupportTicketController;
 use App\Http\Controllers\Agency\AgencySupportController;
+use App\Http\Controllers\Admin\AdminAiSettingsController;
+use App\Http\Controllers\Agency\AgencySitemapController;
 
 // Home page redirects to marketing website
 Route::get('/', function () {
@@ -57,6 +59,9 @@ Route::get('/', function () {
 // Public Lead Magnet Capture Form
 Route::get('/lm/{agency}', [App\Http\Controllers\Frontend\LeadMagnetController::class, 'show'])->name('lead-magnet.show');
 Route::post('/lm/{agency}', [App\Http\Controllers\Frontend\LeadMagnetController::class, 'store'])->name('lead-magnet.store');
+
+// Public Agency Sitemap XML
+Route::get('/sitemap/agency/{agencyId}.xml', [AgencySitemapController::class, 'show'])->name('agency.sitemap');
 
 Auth::routes(['verify' => true]);
 
@@ -146,6 +151,10 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::get('ai-prompts/{prompt}/edit', [AdminGlobalAiPromptController::class, 'edit'])->name('ai-prompts.edit');
     Route::put('ai-prompts/{prompt}', [AdminGlobalAiPromptController::class, 'update'])->name('ai-prompts.update');
 
+    // AI API Settings
+    Route::get('ai-settings', [AdminAiSettingsController::class, 'index'])->name('ai-settings.index');
+    Route::put('ai-settings', [AdminAiSettingsController::class, 'update'])->name('ai-settings.update');
+
     // Content Review
     Route::get('content-review', [AdminContentReviewController::class, 'index'])->name('content-review.index');
     Route::get('content-review/{page}', [AdminContentReviewController::class, 'show'])->name('content-review.show');
@@ -201,6 +210,8 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::post('settings/language', [AgencySettingsController::class, 'updateLanguageSettings'])->name('settings.language.update');
     Route::get('settings/features', [AgencySettingsController::class, 'featureToggles'])->name('settings.features');
     Route::post('settings/features/toggle', [AgencySettingsController::class, 'updateFeatureToggle'])->name('settings.features.toggle');
+    Route::get('settings/integrations', [AgencySettingsController::class, 'integrations'])->name('settings.integrations');
+    Route::put('settings/integrations', [AgencySettingsController::class, 'updateIntegrations'])->name('settings.integrations.update');
 
     // Features
     Route::get('features/{feature}', [AgencyFeatureController::class, 'show'])->name('features.show');

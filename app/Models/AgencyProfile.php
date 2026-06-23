@@ -27,6 +27,8 @@ class AgencyProfile extends Model
         'property_management_support',
         'google_business_profile_url',
         'sitemap_url',
+        'copyscape_username',
+        'copyscape_api_key',
         'contact_email',
         'contact_phone',
         'agency_logo_path',

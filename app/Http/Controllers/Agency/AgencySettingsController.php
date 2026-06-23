@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Agency;
 use App\Http\Controllers\Controller;
 use App\Models\AgencyProfile;
 use App\Models\AiFeatureSetting;
+use App\Models\GeneratedPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -65,6 +66,32 @@ class AgencySettingsController extends Controller
         }
 
         return back()->with('success', 'Feature toggled.');
+    }
+
+    public function integrations()
+    {
+        $user      = Auth::user();
+        $profile   = $user->agencyProfile;
+        $pageCount = $profile
+            ? GeneratedPage::where('agency_profile_id', $profile->id)->where('status', 'published')->count()
+            : 0;
+
+        return view('agency.settings.integrations', compact('user', 'profile', 'pageCount'));
+    }
+
+    public function updateIntegrations(Request $request)
+    {
+        $request->validate([
+            'copyscape_username' => 'nullable|string|max:255',
+            'copyscape_api_key'  => 'nullable|string|max:255',
+        ]);
+
+        $user = Auth::user();
+        if ($user->agencyProfile) {
+            $user->agencyProfile->update($request->only('copyscape_username', 'copyscape_api_key'));
+        }
+
+        return back()->with('success', 'Integration settings saved.');
     }
 
     public static function supportedPanelLanguages(): array

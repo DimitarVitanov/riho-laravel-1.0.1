@@ -108,6 +108,14 @@
                     </a>
                 </li>
 
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.ai-settings.index') }}">
+                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-widget') }}"></use></svg>
+                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-widget') }}"></use></svg>
+                        <span>AI API Settings</span>
+                    </a>
+                </li>
+
                 <li class="sidebar-main-title"><div><h6>Support</h6></div></li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
@@ -337,6 +345,14 @@
                         <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-charts') }}"></use></svg>
                         <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-charts') }}"></use></svg>
                         <span>{{ __('messages.my_usage_limits') }}</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.integrations') }}">
+                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-widget') }}"></use></svg>
+                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-widget') }}"></use></svg>
+                        <span>Integrations &amp; Sitemap</span>
                     </a>
                 </li>
 

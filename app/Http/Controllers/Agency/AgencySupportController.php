@@ -7,6 +7,7 @@ use App\Models\SupportTicket;
 use App\Models\SupportTicketMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class AgencySupportController extends Controller
 {
@@ -32,15 +33,36 @@ class AgencySupportController extends Controller
             'priority' => 'required|in:low,medium,high,urgent',
         ]);
 
-        SupportTicket::create([
+        $ticket = SupportTicket::create([
             'user_id'  => Auth::id(),
             'subject'  => $request->subject,
             'message'  => $request->message,
             'priority' => $request->priority,
         ]);
 
+        $user = Auth::user();
+        $adminEmail = config('mail.admin_address', 'inbox@villabit.ai');
+
+        // Notify admin
+        Mail::raw(
+            "New support ticket #{$ticket->id}\n"
+            . "From: {$user->first_name} {$user->last_name} ({$user->email})\n"
+            . "Priority: {$ticket->priority}\n"
+            . "Subject: {$ticket->subject}\n\n"
+            . $ticket->message,
+            fn ($m) => $m->to($adminEmail)->subject("[VillaBit Support] #{$ticket->id}: {$ticket->subject}")
+        );
+
+        // Confirm to user
+        Mail::raw(
+            "Hi {$user->first_name},\n\nYour support ticket has been received.\n"
+            . "Ticket #: {$ticket->id}\nSubject: {$ticket->subject}\n\n"
+            . "We'll get back to you as soon as possible.\n\n— Villa Bit AI Team",
+            fn ($m) => $m->to($user->email)->subject("Your support ticket #{$ticket->id} received")
+        );
+
         return redirect()->route('agency.support.index')
-            ->with('success', 'Support ticket created.');
+            ->with('success', 'Support ticket created. Confirmation sent to your email.');
     }
 
     public function show(SupportTicket $ticket)

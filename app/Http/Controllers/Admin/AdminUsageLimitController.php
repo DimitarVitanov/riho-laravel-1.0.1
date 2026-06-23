@@ -11,11 +11,56 @@ class AdminUsageLimitController extends Controller
 {
     public function index()
     {
-        $limits = UsageLimit::with('agencyProfile', 'agencyProfile.user')
+        $limits  = UsageLimit::with('agencyProfile', 'agencyProfile.user')
             ->latest('period_start')
-            ->paginate(20);
+            ->paginate(50);
 
-        return view('admin.villabit.usage-limits.index', compact('limits'));
+        $presets = config('ai.usage_limit_presets', []);
+
+        return view('admin.villabit.usage-limits.index', compact('limits', 'presets'));
+    }
+
+    public function applyPreset(Request $request, UsageLimit $usageLimit)
+    {
+        $request->validate(['preset' => 'required|string']);
+
+        $presets = config('ai.usage_limit_presets', []);
+        $key     = $request->preset;
+
+        if (!isset($presets[$key])) {
+            return back()->with('error', 'Unknown preset.');
+        }
+
+        $values = $presets[$key];
+        unset($values['label']);
+
+        $usageLimit->update($values);
+
+        $label = $presets[$key]['label'];
+        return back()->with('success', "Applied \"{$label}\" preset to {$usageLimit->agencyProfile->agency_name}.");
+    }
+
+    public function bulkApplyPreset(Request $request)
+    {
+        $request->validate(['preset' => 'required|string']);
+
+        $presets = config('ai.usage_limit_presets', []);
+        $key     = $request->preset;
+
+        if (!isset($presets[$key])) {
+            return back()->with('error', 'Unknown preset.');
+        }
+
+        $values = $presets[$key];
+        unset($values['label']);
+        $label = $presets[$key]['label'];
+
+        $periodStart = now()->startOfMonth()->toDateString();
+
+        $count = UsageLimit::where('period_start', $periodStart)->update($values);
+
+        return redirect()->route('admin.villabit.usage-limits.index')
+            ->with('success', "Applied \"{$label}\" preset to {$count} agencies for this month.");
     }
 
     public function edit(UsageLimit $usageLimit)

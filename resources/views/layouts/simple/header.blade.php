@@ -22,16 +22,6 @@
                       </li>
                       <li class="profile-nav onhover-dropdown">
                           <div class="media profile-media text-capitalize">
-                              @php
-                                  $image = auth()->user()->getFirstMedia('image');
-                              @endphp
-
-                              @isset($image)
-                                  <img src="{{ $image->getUrl() }}" alt="Image" class="b-r-10">
-                              @else
-                                  <img class="b-r-10" src="{{ asset('assets/images/dashboard/profile.png') }}"
-                                      alt="">
-                              @endisset
                               <div class="media-body d-xxl-block d-none box-col-none">
                                   <div class="d-flex align-items-center gap-2">
                                       <span>{{ ucfirst(auth()?->user()?->first_name) }} </span><i

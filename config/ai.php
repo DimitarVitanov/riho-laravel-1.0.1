@@ -76,10 +76,60 @@ return [
     */
     'usage_limits' => [
         'local_seo_pages' => env('USAGE_LIMIT_LOCAL_SEO_PAGES', 10),
-        'competitor_scans' => env('USAGE_LIMIT_COMPETITOR_SCANS', 30),
+        'competitor_scans' => env('USAGE_LIMIT_COMPETITOR_SCANS', 10),
         'ai_search_freshness_updates' => env('USAGE_LIMIT_AI_SEARCH_UPDATES', 4),
         'authority_review_updates' => env('USAGE_LIMIT_AUTHORITY_UPDATES', 1),
-        'small_ai_content_actions' => env('USAGE_LIMIT_SMALL_AI_ACTIONS', 30),
+        'small_ai_content_actions' => env('USAGE_LIMIT_SMALL_AI_ACTIONS', 10),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Usage Limit Presets (Global Plans)
+    |--------------------------------------------------------------------------
+    | Named presets admin can assign to any agency. Changing values here
+    | affects only newly applied presets, not already-saved limits.
+    */
+    'usage_limit_presets' => [
+        'starter' => [
+            'label'                          => 'Starter',
+            'local_seo_pages_limit'          => 5,
+            'competitor_scans_limit'         => 5,
+            'ai_search_freshness_updates_limit' => 2,
+            'authority_review_updates_limit' => 1,
+            'small_ai_content_actions_limit' => 5,
+        ],
+        'basic' => [
+            'label'                          => 'Basic',
+            'local_seo_pages_limit'          => 10,
+            'competitor_scans_limit'         => 10,
+            'ai_search_freshness_updates_limit' => 4,
+            'authority_review_updates_limit' => 1,
+            'small_ai_content_actions_limit' => 10,
+        ],
+        'pro' => [
+            'label'                          => 'Pro',
+            'local_seo_pages_limit'          => 30,
+            'competitor_scans_limit'         => 30,
+            'ai_search_freshness_updates_limit' => 12,
+            'authority_review_updates_limit' => 3,
+            'small_ai_content_actions_limit' => 50,
+        ],
+        'premium' => [
+            'label'                          => 'Premium',
+            'local_seo_pages_limit'          => 100,
+            'competitor_scans_limit'         => 100,
+            'ai_search_freshness_updates_limit' => 30,
+            'authority_review_updates_limit' => 10,
+            'small_ai_content_actions_limit' => 200,
+        ],
+        'enterprise' => [
+            'label'                          => 'Enterprise',
+            'local_seo_pages_limit'          => 500,
+            'competitor_scans_limit'         => 500,
+            'ai_search_freshness_updates_limit' => 100,
+            'authority_review_updates_limit' => 30,
+            'small_ai_content_actions_limit' => 999,
+        ],
     ],
 
 ];

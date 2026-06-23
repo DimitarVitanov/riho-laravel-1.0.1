@@ -136,6 +136,8 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     // Usage Limits
     Route::get('usage-limits', [AdminUsageLimitController::class, 'index'])->name('usage-limits.index');
     Route::post('usage-limits/bulk-create', [AdminUsageLimitController::class, 'bulkCreate'])->name('usage-limits.bulk-create');
+    Route::post('usage-limits/bulk-apply-preset', [AdminUsageLimitController::class, 'bulkApplyPreset'])->name('usage-limits.bulk-apply-preset');
+    Route::post('usage-limits/{usageLimit}/apply-preset', [AdminUsageLimitController::class, 'applyPreset'])->name('usage-limits.apply-preset');
     Route::get('usage-limits/{usageLimit}/edit', [AdminUsageLimitController::class, 'edit'])->name('usage-limits.edit');
     Route::put('usage-limits/{usageLimit}', [AdminUsageLimitController::class, 'update'])->name('usage-limits.update');
 

@@ -13,10 +13,6 @@ class AgencyAffiliateController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->is_reseller_enabled) {
-            return view('agency.affiliate.disabled');
-        }
-
         $referrals = AffiliateReferral::where('reseller_user_id', $user->id)
             ->latest()
             ->paginate(20);

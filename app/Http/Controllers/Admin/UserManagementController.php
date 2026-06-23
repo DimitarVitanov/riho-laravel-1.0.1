@@ -99,6 +99,8 @@ class UserManagementController extends Controller
             'account_type' => 'real_estate_agency',
             'role' => 'real_estate_agency',
             'status' => 'active',
+            'is_reseller_enabled' => true,
+            'referral_code' => strtoupper(\Illuminate\Support\Str::random(8)),
             'assigned_manager_id' => $request->assigned_manager_id,
             'created_by_admin_id' => auth()->id(),
         ]);
@@ -158,6 +160,8 @@ class UserManagementController extends Controller
             'account_type' => 'investor',
             'role' => 'investor',
             'status' => 'active',
+            'is_reseller_enabled' => true,
+            'referral_code' => strtoupper(\Illuminate\Support\Str::random(8)),
             'assigned_manager_id' => $request->assigned_manager_id,
             'created_by_admin_id' => auth()->id(),
         ]);

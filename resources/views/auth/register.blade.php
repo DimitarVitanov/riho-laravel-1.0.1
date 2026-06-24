@@ -5,7 +5,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/toastr.min.css') }}">
     <style>
         .vb-terms-link { text-decoration: underline !important; color: #111827 !important; font-weight: 600 !important; }
-        .vb-terms-link:hover { text-decoration: underline !important; color: #111827 !important; }
+        .vb-terms-link:hover { text-decoration: none !important; color: #111827 !important; }
     </style>
 @endsection
 

@@ -38,8 +38,6 @@ class VerifyEmailNotification extends Notification implements ShouldQueue
             ->line("Your registered account type is: **{$userType}**")
             ->line('Before we activate your access, please confirm your email address by clicking the button below:')
             ->action('Confirm Email Address', $verificationUrl)
-            ->line('This confirmation helps us protect your account and make sure that all future notifications, reports, access details, and important platform messages are delivered correctly.')
-            ->line('Villa Bit AI Server is built as a serious real estate AI platform for business users, including real estate agencies and real estate investors. Our system is designed to support stronger real estate visibility, structured AI activity, local presence, AI search readiness, and long-term real estate relationship value.')
             ->line('If you did not create this account, you can safely ignore this email.')
             ->salutation("Kind regards,\n\nVILLA BIT AI Server Team\\\nAI Server For Real Estate Agencies\\\n┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄\\\nVilla Bit AI Really Works Better, More, And Cheaper Than A Human!\\\nhttps://villabit.ai");
     }

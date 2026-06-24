@@ -45,6 +45,13 @@ class InvestorSupportController extends Controller
 
         $ticketUrl = route('admin.villabit.support-tickets.show', $ticket->id);
 
+        $signature = "\n\nKind regards,\n\n"
+            . "VILLA BIT AI Server Team\n"
+            . "AI Server For Real Estate Agencies\n"
+            . "┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄\n"
+            . "Villa Bit AI Really Works Better, More, And Cheaper Than A Human!\n"
+            . "https://villabit.ai";
+
         // Notify admin
         Mail::raw(
             "New support ticket #{$ticket->id}\n"
@@ -52,7 +59,9 @@ class InvestorSupportController extends Controller
             . "Priority: {$ticket->priority}\n"
             . "Subject: {$ticket->subject}\n\n"
             . $ticket->message . "\n\n"
-            . "View ticket: {$ticketUrl}",
+            . "===\n\n"
+            . "View ticket: {$ticketUrl}"
+            . $signature,
             fn ($m) => $m
                 ->from('inbox@villabit.ai', 'Villa Bit AI')
                 ->to($adminEmail)
@@ -63,7 +72,8 @@ class InvestorSupportController extends Controller
         Mail::raw(
             "Hi {$user->first_name},\n\nYour support ticket has been received.\n"
             . "Ticket #: {$ticket->id}\nSubject: {$ticket->subject}\n\n"
-            . "We'll get back to you as soon as possible.\n\n— Villa Bit AI Team",
+            . "We'll get back to you as soon as possible."
+            . $signature,
             fn ($m) => $m
                 ->from('inbox@villabit.ai', 'Villa Bit AI')
                 ->to($user->email)

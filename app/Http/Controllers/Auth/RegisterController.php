@@ -26,7 +26,7 @@ class RegisterController extends Controller
 
     public function showRegistrationForm()
     {
-        $countries = DB::table('countries')->orderBy('name')->get(['name', 'calling_code', 'flag']);
+        $countries = DB::table('countries')->orderBy('iso_3166_2')->get(['name', 'calling_code', 'flag', 'iso_3166_2']);
         return view('auth.register', compact('countries'));
     }
 

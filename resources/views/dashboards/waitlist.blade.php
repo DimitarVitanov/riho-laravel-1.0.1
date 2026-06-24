@@ -93,6 +93,13 @@
         <div class="row justify-content-center">
             <div class="col-xl-7 col-lg-9 col-md-11">
 
+                @if(session('verified_message'))
+                    <div class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert">
+                        <i data-feather="check-circle" style="width:18px;height:18px;"></i>
+                        <span>{{ session('verified_message') }}</span>
+                    </div>
+                @endif
+
                 {{-- Hero card --}}
                 <div class="waitlist-hero mb-4">
                     <div class="waitlist-badge">

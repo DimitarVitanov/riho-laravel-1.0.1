@@ -91,7 +91,7 @@
                                         <option value="">-- Select Country --</option>
                                         @foreach($countries as $c)
                                             <option value="{{ $c->name }}" {{ old('country') == $c->name ? 'selected' : '' }}>
-                                                {{ $c->flag }} {{ $c->name }}
+                                                {{ $c->iso_3166_2 }} — {{ $c->name }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -106,9 +106,9 @@
                                     <label class="col-form-label">Phone</label>
                                     <div class="input-group">
                                         <select id="phone_code" name="phone_code" class="form-control" style="max-width:150px; flex-shrink:0;">
-                                            @foreach($countries->filter(fn($c) => $c->calling_code)->sortBy(fn($c) => (int) preg_replace('/[^0-9]/', '', $c->calling_code))->values() as $c)
+                                            @foreach($countries->filter(fn($c) => $c->calling_code)->sortBy('iso_3166_2')->values() as $c)
                                                     <option value="+{{ $c->calling_code }}" {{ old('phone_code') == '+'.$c->calling_code ? 'selected' : '' }}>
-                                                        {{ $c->flag }} +{{ $c->calling_code }}
+                                                        {{ $c->iso_3166_2 }} +{{ $c->calling_code }}
                                                     </option>
                                             @endforeach
                                         </select>

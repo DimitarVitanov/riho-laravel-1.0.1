@@ -56,7 +56,7 @@
                                         <a class="checkbox1" href="{{ route('password.request') }}">Forgot Password?</a>
                                     @endif
                                     <div class="text-end mt-3">
-                                        <button class="btn btn-primary btn-block w-100 spinner-btn" type="submit">Sign in</button>
+                                        <button class="btn btn-primary btn-block w-100" type="submit">Sign in</button>
                                     </div>
                                 </div>
 

@@ -29,6 +29,6 @@ class ManagerAddedNotification extends Notification implements ShouldQueue
             ->line('You can log in to your Manager panel using the link below:')
             ->action('Login to Manager Panel', $loginLink)
             ->line('Please keep your login details secure and do not share your access with anyone.')
-            ->salutation("Kind regards,\nVilla Bit AI Server Team\nhttps://villabit.ai");
+            ->salutation("Kind regards,\n\nVILLA BIT AI Server Team\nAI Server For Real Estate Agencies\n┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄\nVilla Bit AI Really Works Better, More, And Cheaper Than A Human!\nhttps://villabit.ai");
     }
 }

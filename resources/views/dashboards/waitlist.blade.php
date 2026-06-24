@@ -107,7 +107,7 @@
                         Waiting List
                     </div>
                     <h2 class="fw-bold mb-2" style="color:#ffffff;">Welcome, {{ $user->first_name }}!</h2>
-                    <p class="mb-0" style="color:rgba(255,255,255,0.92); font-size:1.05rem; max-width:520px; line-height:1.7;">
+                    <p class="mb-0" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
                         Your account is currently on the waiting list because our AI server resources are already allocated to existing clients, and full panel access will be granted on a first-registered, first-served basis as additional capacity becomes available.
                     </p>
                 </div>

@@ -11,6 +11,39 @@
     --light-shade-primary: #f3f4f6 !important;
 }
 
+.bg-primary,
+.badge.bg-primary,
+.btn-primary,
+.btn.btn-primary,
+.btn-air-primary,
+.btn.btn-air-primary,
+.pill-badge-primary,
+.round-badge-primary,
+.badge-primary {
+    background-color: #111827 !important;
+    border-color: #111827 !important;
+}
+
+.btn-outline-primary,
+.btn.btn-outline-primary {
+    color: #111827 !important;
+    border-color: #111827 !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-primary:hover,
+.btn.btn-outline-primary:hover {
+    background-color: #111827 !important;
+    color: #fff !important;
+}
+
+.font-primary,
+.txt-primary,
+a,
+a:hover {
+    color: #111827 !important;
+}
+
 /* Dark Sidebar Override */
 .page-wrapper .sidebar-wrapper,
 .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper {

@@ -43,14 +43,20 @@ class InvestorSupportController extends Controller
         $user = Auth::user();
         $adminEmail = config('mail.admin_address', 'inbox@villabit.ai');
 
+        $ticketUrl = route('admin.villabit.support.show', $ticket->id);
+
         // Notify admin
         Mail::raw(
             "New support ticket #{$ticket->id}\n"
             . "From: {$user->first_name} {$user->last_name} ({$user->email})\n"
             . "Priority: {$ticket->priority}\n"
             . "Subject: {$ticket->subject}\n\n"
-            . $ticket->message,
-            fn ($m) => $m->to($adminEmail)->subject("[VillaBit Support] #{$ticket->id}: {$ticket->subject}")
+            . $ticket->message . "\n\n"
+            . "View ticket: {$ticketUrl}",
+            fn ($m) => $m
+                ->from('inbox@villabit.ai', 'Villa Bit AI')
+                ->to($adminEmail)
+                ->subject("[VillaBit Support] #{$ticket->id}: {$ticket->subject}")
         );
 
         // Confirm to user
@@ -58,7 +64,10 @@ class InvestorSupportController extends Controller
             "Hi {$user->first_name},\n\nYour support ticket has been received.\n"
             . "Ticket #: {$ticket->id}\nSubject: {$ticket->subject}\n\n"
             . "We'll get back to you as soon as possible.\n\n— Villa Bit AI Team",
-            fn ($m) => $m->to($user->email)->subject("Your support ticket #{$ticket->id} received")
+            fn ($m) => $m
+                ->from('inbox@villabit.ai', 'Villa Bit AI')
+                ->to($user->email)
+                ->subject("Your support ticket #{$ticket->id} received")
         );
 
         return redirect()->route('investor.support.index')

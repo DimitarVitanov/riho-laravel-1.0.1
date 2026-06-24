@@ -57,7 +57,7 @@
                             </div>
                         </form>
 
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="overflow: visible;">
                             <table class="table table-striped table-hover">
                                 <thead>
                                     <tr>

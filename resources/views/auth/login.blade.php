@@ -127,6 +127,18 @@
         .login-card .login-main {
             background-color: #ffffff !important;
         }
+        .login-card .login-main .form-group {
+            margin-bottom: 16px !important;
+        }
+        .login-card .login-main .form-group label {
+            margin-bottom: 6px !important;
+        }
+        .login-card .login-main .form-group .text-danger,
+        .login-card .login-main .form-group label.error {
+            font-size: 12px !important;
+            margin-top: 4px !important;
+            display: block !important;
+        }
         /* Force background image to show (overrides .login-dark which hides it) */
         .login-card.login-dark {
             background: url('/assets/images/login/login_bg.jpg') center center / cover no-repeat !important;

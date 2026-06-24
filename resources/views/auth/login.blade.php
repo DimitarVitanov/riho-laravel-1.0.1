@@ -43,9 +43,7 @@
                                     <input id="email" type="email" class="form-control" name="email"
                                         value="{{ old('email') }}" placeholder="Enter your email" autocomplete="email"
                                         autofocus>
-                                    <span id="emailError" class="text-danger" style="font-size:12px;">
-                                        @error('email') {{ $message }} @enderror
-                                    </span>
+                                    <span id="emailError" class="text-danger" style="font-size:12px;display:block;min-height:0;">@error('email'){{ $message }}@enderror</span>
                                 </div>
 
                                 <div class="form-group">
@@ -55,9 +53,7 @@
                                             placeholder="Enter password" autocomplete="current-password">
                                         <div class="show-hide"><span class="show"></span></div>
                                     </div>
-                                    <span id="passError" class="text-danger" style="font-size:12px;">
-                                        @error('password') {{ $message }} @enderror
-                                    </span>
+                                    <span id="passError" class="text-danger" style="font-size:12px;display:block;min-height:0;">@error('password'){{ $message }}@enderror</span>
                                 </div>
 
                                 <div class="form-group mb-0 text-end">

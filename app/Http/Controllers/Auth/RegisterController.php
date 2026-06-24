@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use App\Models\AffiliateReferral;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class RegisterController extends Controller
 {
@@ -36,7 +37,7 @@ class RegisterController extends Controller
             'account_type' => ['required', 'in:real_estate_agency,investor'],
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
             'phone' => ['nullable', 'string', 'max:50'],
             'country' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -54,6 +55,11 @@ class RegisterController extends Controller
 
     protected function create(array $data)
     {
+        // A previously deleted account is soft-deleted, so its row still occupies
+        // the email's unique index. Remove any soft-deleted record with this email
+        // so the address can be reused for a fresh registration.
+        User::onlyTrashed()->where('email', $data['email'])->forceDelete();
+
         $user = User::create([
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],

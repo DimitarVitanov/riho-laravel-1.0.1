@@ -8,7 +8,7 @@
             <h1>Messages & Support</h1>
             <p>Create and manage support tickets. Communicate with Villa Bit AI team.</p>
         </div>
-        <a href="{{ route('agency.support.create') }}" class="vb-btn">New Ticket</a>
+        <a href="{{ route('agency.support.create') }}" class="vb-btn text-white">New Ticket</a>
     </div>
 
     @include('components.villabit.usage-banner')
@@ -43,7 +43,7 @@
                     </td>
                     <td>{{ ucfirst($ticket->priority ?? 'normal') }}</td>
                     <td>{{ $ticket->created_at->format('M d, Y H:i') }}</td>
-                    <td><a href="{{ route('agency.support.show', $ticket) }}" class="vb-btn vb-btn-sm">View</a></td>
+                    <td><a href="{{ route('agency.support.show', $ticket) }}" class="vb-btn vb-btn-sm text-white">View</a></td>
                 </tr>
                 @empty
                 <tr>

@@ -39,8 +39,9 @@ a img {
 
 h1 {
     color: #18181b;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: normal;
+    font-family: inherit;
     margin-top: 0;
     text-align: start;
 }

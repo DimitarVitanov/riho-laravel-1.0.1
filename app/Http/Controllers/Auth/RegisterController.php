@@ -13,6 +13,7 @@ use Illuminate\Auth\Events\Registered;
 use App\Models\AffiliateReferral;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -71,6 +72,8 @@ class RegisterController extends Controller
             'account_type' => $data['account_type'],
             'role' => $data['account_type'],
             'status' => 'waitlist',
+            'is_reseller_enabled' => true,
+            'referral_code' => strtoupper(Str::random(8)),
         ]);
 
         if ($data['account_type'] === 'real_estate_agency') {

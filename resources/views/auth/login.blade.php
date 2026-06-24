@@ -42,26 +42,22 @@
                                     <label class="col-form-label">Email Address</label>
                                     <input id="email" type="email" class="form-control" name="email"
                                         value="{{ old('email') }}" placeholder="Enter your email" autocomplete="email"
-                                        autofocus required>
-                                    @error('email')
-                                        <span class="text-danger d-block" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
+                                        autofocus>
+                                    <span id="emailError" class="text-danger" style="font-size:12px;">
+                                        @error('email') {{ $message }} @enderror
+                                    </span>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="col-form-label">Password</label>
                                     <div class="form-input position-relative">
                                         <input id="password" type="password" class="form-control" name="password"
-                                            placeholder="Enter password" autocomplete="current-password" required>
+                                            placeholder="Enter password" autocomplete="current-password">
                                         <div class="show-hide"><span class="show"></span></div>
-                                        @error('password')
-                                            <span class="text-danger d-block" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
                                     </div>
+                                    <span id="passError" class="text-danger" style="font-size:12px;">
+                                        @error('password') {{ $message }} @enderror
+                                    </span>
                                 </div>
 
                                 <div class="form-group mb-0 text-end">
@@ -146,4 +142,32 @@
         }
     </style>
     <script src="{{ asset('assets/js/toastr.min.js') }}"></script>
+    <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        let valid = true;
+
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const emailErr = document.getElementById('emailError');
+        const passErr  = document.getElementById('passError');
+
+        emailErr.textContent = '';
+        passErr.textContent  = '';
+
+        if (!email.value.trim()) {
+            emailErr.textContent = 'Email is required.';
+            valid = false;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+            emailErr.textContent = 'Please enter a valid email address.';
+            valid = false;
+        }
+
+        if (!password.value.trim()) {
+            passErr.textContent = 'Password is required.';
+            valid = false;
+        }
+
+        if (!valid) e.preventDefault();
+    });
+    </script>
 @endsection

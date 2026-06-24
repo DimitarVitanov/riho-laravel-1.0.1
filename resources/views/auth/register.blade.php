@@ -3,6 +3,10 @@
 @section('css')
     <!-- Toastr css-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/toastr.min.css') }}">
+    <style>
+        .vb-terms-link { text-decoration: underline !important; color: #111827 !important; font-weight: 600 !important; }
+        .vb-terms-link:hover { text-decoration: underline !important; color: #111827 !important; }
+    </style>
 @endsection
 
 @section('main_content')
@@ -163,7 +167,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="terms_acceptance" id="terms_acceptance" value="1" {{ old('terms_acceptance') ? 'checked' : '' }} required>
                                         <label class="form-check-label" for="terms_acceptance">
-                                            I agree to the <a href="/terms" target="_blank" class="vb-terms-link">Terms of Service</a> and <a href="/privacy" target="_blank" class="vb-terms-link">Privacy Policy</a>
+                                            I agree to the <a href="/terms" style="text-decoration: underline;" target="_blank" class="vb-terms-link">Terms of Service</a> and <a href="/privacy" style="text-decoration: underline;" target="_blank" class="vb-terms-link">Privacy Policy</a>
                                         </label>
                                     </div>
                                     @error('terms_acceptance')

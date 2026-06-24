@@ -21,12 +21,12 @@
                             <h5>All Users</h5>
                             <div class="btn-group">
                                 <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i data-feather="user-plus" style="width:15px;height:15px;margin-right:5px;"></i> Add User
+                                    + Add User
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-manager') }}"><i data-feather="briefcase" style="width:14px;height:14px;margin-right:6px;"></i>Add Manager</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-agency') }}"><i data-feather="home" style="width:14px;height:14px;margin-right:6px;"></i>Add Agency</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-investor') }}"><i data-feather="trending-up" style="width:14px;height:14px;margin-right:6px;"></i>Add Investor</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-manager') }}">Add Manager</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-agency') }}">Add Agency</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-investor') }}">Add Investor</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -109,7 +109,7 @@
                                                                     <form action="{{ route('admin.villabit.users.approve-waitlist', $u) }}" method="POST">
                                                                         @csrf
                                                                         <button type="submit" class="dropdown-item text-success">
-                                                                            <i data-feather="check-circle" class="me-2" style="width:14px;height:14px;"></i> Approve Access
+                                                                            ✔ Approve Access
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -118,8 +118,7 @@
                                                                     <form action="{{ route('admin.villabit.users.toggle-status', $u) }}" method="POST">
                                                                         @csrf
                                                                         <button type="submit" class="dropdown-item {{ $u->status === 'active' ? 'text-warning' : 'text-success' }}">
-                                                                            <i data-feather="{{ $u->status === 'active' ? 'pause-circle' : 'play-circle' }}" class="me-2" style="width:14px;height:14px;"></i>
-                                                                            {{ $u->status === 'active' ? 'Suspend' : 'Activate' }}
+                                                                            {{ $u->status === 'active' ? '⏸ Suspend' : '▶ Activate' }}
                                                                         </button>
                                                                     </form>
                                                                 </li>
@@ -128,7 +127,7 @@
                                                                 <form action="{{ route('admin.villabit.impersonate.start', $u) }}" method="POST">
                                                                     @csrf
                                                                     <button type="submit" class="dropdown-item text-info">
-                                                                        <i data-feather="log-in" class="me-2" style="width:14px;height:14px;"></i> Login As
+                                                                        → Login As
                                                                     </button>
                                                                 </form>
                                                             </li>
@@ -139,7 +138,7 @@
                                                                     @csrf
                                                                     @method('DELETE')
                                                                     <button type="submit" class="dropdown-item text-danger">
-                                                                        <i data-feather="trash-2" class="me-2" style="width:14px;height:14px;"></i> Delete
+                                                                        🗑 Delete
                                                                     </button>
                                                                 </form>
                                                             </li>
@@ -164,3 +163,15 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function (el) {
+            el.addEventListener('shown.bs.dropdown', function () {
+                if (typeof feather !== 'undefined') feather.replace();
+            });
+        });
+    });
+</script>
+@endpush

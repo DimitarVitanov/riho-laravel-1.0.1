@@ -699,6 +699,24 @@
 }
 
 /* ============================================================
+   Stats metric cards — force dark text on light-bg cards
+   ============================================================ */
+.card .card-body.bg-light-primary span,
+.card .card-body.bg-light-primary h4,
+.card .card-body.bg-light-secondary span,
+.card .card-body.bg-light-secondary h4,
+.card .card-body.bg-light-success span,
+.card .card-body.bg-light-success h4,
+.card .card-body.bg-light-warning span,
+.card .card-body.bg-light-warning h4,
+.card .card-body.bg-light-danger span,
+.card .card-body.bg-light-danger h4,
+.card .card-body.bg-light-info span,
+.card .card-body.bg-light-info h4 {
+    color: #111827 !important;
+}
+
+/* ============================================================
    Toastr — force white text on all notification types
    ============================================================ */
 #toast-container > div,

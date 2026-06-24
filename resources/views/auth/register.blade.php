@@ -107,8 +107,9 @@
                                     <div class="input-group">
                                         <select id="phone_code" name="phone_code" class="form-control" style="max-width:150px; flex-shrink:0;">
                                             @foreach($countries->filter(fn($c) => $c->calling_code)->sortBy('iso_3166_2')->values() as $c)
-                                                    <option value="+{{ $c->calling_code }}" {{ old('phone_code') == '+'.$c->calling_code ? 'selected' : '' }}>
-                                                        {{ $c->iso_3166_2 }} +{{ $c->calling_code }}
+                                                    @php($code = '+'.ltrim($c->calling_code, '+'))
+                                                    <option value="{{ $code }}" {{ old('phone_code') == $code ? 'selected' : '' }}>
+                                                        {{ $c->iso_3166_2 }} {{ $code }}
                                                     </option>
                                             @endforeach
                                         </select>

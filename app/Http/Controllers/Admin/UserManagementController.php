@@ -12,6 +12,8 @@ use App\Models\SupportTicket;
 use App\Models\SupportTicketMessage;
 use App\Notifications\ManagerAddedNotification;
 use App\Notifications\AccountApprovedNotification;
+use App\Notifications\AccountSuspendedNotification;
+use App\Notifications\AccountClosedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -202,6 +204,10 @@ class UserManagementController extends Controller
         $newStatus = $user->status === 'active' ? 'suspended' : 'active';
         $user->update(['status' => $newStatus]);
 
+        if ($newStatus === 'suspended') {
+            $user->notify(new AccountSuspendedNotification());
+        }
+
         return back()->with('success', "User status changed to {$newStatus}.");
     }
 
@@ -239,6 +245,11 @@ class UserManagementController extends Controller
         }
 
         $name = trim($user->first_name . ' ' . $user->last_name) ?: $user->email;
+
+        // Send the closure confirmation while the account still exists. This
+        // notification is intentionally not queued so it is dispatched before
+        // the record (and its email address) is removed below.
+        $user->notify(new AccountClosedNotification());
 
         DB::transaction(function () use ($user) {
             // Support tickets have no DB-level cascade, so clean them up manually.

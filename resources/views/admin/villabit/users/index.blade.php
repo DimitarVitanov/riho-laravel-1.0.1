@@ -19,12 +19,14 @@
                     <div class="card-header pb-0">
                         <div class="d-flex justify-content-between align-items-center">
                             <h5>All Users</h5>
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">+ Add User</button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-manager') }}">Add Manager</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-agency') }}">Add Agency</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-investor') }}">Add Investor</a></li>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i data-feather="user-plus" style="width:15px;height:15px;margin-right:5px;"></i> Add User
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-manager') }}"><i data-feather="briefcase" style="width:14px;height:14px;margin-right:6px;"></i>Add Manager</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-agency') }}"><i data-feather="home" style="width:14px;height:14px;margin-right:6px;"></i>Add Agency</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.villabit.users.create-investor') }}"><i data-feather="trending-up" style="width:14px;height:14px;margin-right:6px;"></i>Add Investor</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -96,38 +98,55 @@
                                             </td>
                                             <td>{{ $u->created_at->format('M j, Y') }}</td>
                                             <td>
-                                                <div class="d-flex gap-1">
-                                                    @if(!$u->isAdmin())
-                                                        @if($u->status === 'waitlist')
-                                                            <form action="{{ route('admin.villabit.users.approve-waitlist', $u) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <button type="submit" class="btn btn-sm btn-success" title="Approve & Grant Access">
-                                                                    <i data-feather="check-circle"></i>
-                                                                </button>
-                                                            </form>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        Actions
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        @if(!$u->isAdmin())
+                                                            @if($u->status === 'waitlist')
+                                                                <li>
+                                                                    <form action="{{ route('admin.villabit.users.approve-waitlist', $u) }}" method="POST">
+                                                                        @csrf
+                                                                        <button type="submit" class="dropdown-item text-success">
+                                                                            <i data-feather="check-circle" class="me-2" style="width:14px;height:14px;"></i> Approve Access
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            @else
+                                                                <li>
+                                                                    <form action="{{ route('admin.villabit.users.toggle-status', $u) }}" method="POST">
+                                                                        @csrf
+                                                                        <button type="submit" class="dropdown-item {{ $u->status === 'active' ? 'text-warning' : 'text-success' }}">
+                                                                            <i data-feather="{{ $u->status === 'active' ? 'pause-circle' : 'play-circle' }}" class="me-2" style="width:14px;height:14px;"></i>
+                                                                            {{ $u->status === 'active' ? 'Suspend' : 'Activate' }}
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            @endif
+                                                            <li>
+                                                                <form action="{{ route('admin.villabit.impersonate.start', $u) }}" method="POST">
+                                                                    @csrf
+                                                                    <button type="submit" class="dropdown-item text-info">
+                                                                        <i data-feather="log-in" class="me-2" style="width:14px;height:14px;"></i> Login As
+                                                                    </button>
+                                                                </form>
+                                                            </li>
+                                                            <li><hr class="dropdown-divider"></li>
+                                                            <li>
+                                                                <form action="{{ route('admin.villabit.users.destroy', $u) }}" method="POST"
+                                                                      onsubmit="return confirm('Delete {{ addslashes($u->first_name . ' ' . $u->last_name) }}? This cannot be undone.')">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="dropdown-item text-danger">
+                                                                        <i data-feather="trash-2" class="me-2" style="width:14px;height:14px;"></i> Delete
+                                                                    </button>
+                                                                </form>
+                                                            </li>
                                                         @else
-                                                        <form action="{{ route('admin.villabit.users.toggle-status', $u) }}" method="POST" class="d-inline">
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-sm btn-outline-{{ $u->status === 'active' ? 'warning' : 'success' }}" title="{{ $u->status === 'active' ? 'Suspend' : 'Activate' }}">
-                                                                <i data-feather="{{ $u->status === 'active' ? 'pause-circle' : 'play-circle' }}"></i>
-                                                            </button>
-                                                        </form>
+                                                            <li><span class="dropdown-item text-muted">No actions</span></li>
                                                         @endif
-                                                        <form action="{{ route('admin.villabit.impersonate.start', $u) }}" method="POST" class="d-inline">
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-sm btn-outline-info" title="Login As">
-                                                                <i data-feather="log-in"></i>
-                                                            </button>
-                                                        </form>
-                                                        @if(!$u->is_reseller_enabled)
-                                                            <form action="{{ route('admin.villabit.users.enable-reseller', $u) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <button type="submit" class="btn btn-sm btn-outline-secondary" title="Enable Reseller">
-                                                                    <i data-feather="share-2"></i>
-                                                                </button>
-                                                            </form>
-                                                        @endif
-                                                    @endif
+                                                    </ul>
                                                 </div>
                                             </td>
                                         </tr>

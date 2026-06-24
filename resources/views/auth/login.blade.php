@@ -145,7 +145,5 @@
             background-color: #f5f6fa !important;
         }
     </style>
-    <script src="{{ asset('assets/js/bookmark/jquery.validate.min.js') }}"></script>
-    <script src="{{ asset('assets/js/custom-validation/validation.js') }}"></script>
     <script src="{{ asset('assets/js/toastr.min.js') }}"></script>
 @endsection

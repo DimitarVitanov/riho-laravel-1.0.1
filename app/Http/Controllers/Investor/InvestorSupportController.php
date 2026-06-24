@@ -43,7 +43,7 @@ class InvestorSupportController extends Controller
         $user = Auth::user();
         $adminEmail = config('mail.admin_address', 'inbox@villabit.ai');
 
-        $ticketUrl = route('admin.villabit.support.show', $ticket->id);
+        $ticketUrl = route('admin.villabit.support-tickets.show', $ticket->id);
 
         // Notify admin
         Mail::raw(

@@ -46,16 +46,15 @@
     color: #111827 !important;
 }
 
-/* Registration/auth pages — no underline on links, consistent styling */
-.auth-content a,
-.authentication-main a,
-.login-card a,
-form a {
-    text-decoration: none !important;
-}
-form a:hover {
+.vb-terms-link,
+.vb-terms-link:hover,
+.vb-terms-link:focus,
+.vb-terms-link:visited {
+    color: #111827 !important;
     text-decoration: underline !important;
+    font-weight: 600 !important;
 }
+
 
 /* Dark Sidebar Override */
 .page-wrapper .sidebar-wrapper,

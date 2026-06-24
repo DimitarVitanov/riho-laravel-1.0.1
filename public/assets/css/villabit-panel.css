@@ -3,6 +3,14 @@
    Matches Goran's HTML mockup design with improved spacing
    ============================================================ */
 
+/* ============================================================
+   Brand color override — replace theme teal #006666 with black
+   ============================================================ */
+:root {
+    --theme-default: #111827 !important;
+    --light-shade-primary: #f3f4f6 !important;
+}
+
 /* Dark Sidebar Override */
 .page-wrapper .sidebar-wrapper,
 .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper {
@@ -696,6 +704,24 @@
     .vb-metric {
         font-size: 22px;
     }
+}
+
+/* ============================================================
+   Sidebar toggle button — dark brand color instead of teal/green
+   ============================================================ */
+.toggle-sidebar svg,
+.toggle-sidebar i,
+.sidebar-toggle,
+.toggle-sidebar .status_toggle {
+    color: #111827 !important;
+    stroke: #111827 !important;
+}
+
+/* Hide the auto-generated number badge on sidebar menu items */
+.sidebar-wrapper .sidebar-list .badge,
+.sidebar-wrapper .sidebar-list .label,
+.sidebar-wrapper li .badge {
+    display: none !important;
 }
 
 /* ============================================================

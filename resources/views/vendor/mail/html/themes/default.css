@@ -39,7 +39,7 @@ a img {
 
 h1 {
     color: #18181b;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: normal;
     margin-top: 0;
     text-align: start;
@@ -60,10 +60,11 @@ h3 {
 }
 
 p {
-    font-size: 16px;
+    font-size: 17px;
     line-height: 1.5em;
     margin-top: 0;
     text-align: left;
+    color: #18181b;
 }
 
 p.sub {
@@ -176,13 +177,14 @@ img {
 }
 
 .footer p {
-    color: #a1a1aa;
-    font-size: 12px;
+    color: #52525b;
+    font-size: 13px;
+    font-weight: 600;
     text-align: center;
 }
 
 .footer a {
-    color: #a1a1aa;
+    color: #52525b;
     text-decoration: underline;
 }
 

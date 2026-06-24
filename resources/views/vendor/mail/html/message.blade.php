@@ -21,7 +21,7 @@
 {{-- Footer --}}
 <x-slot:footer>
 <x-mail::footer>
-© {{ date('Y') }} {{ config('app.name') }}. {{ __('All rights reserved.') }}
+© {{ date('Y') }} Villa Bit AI – All Rights Reserved.
 </x-mail::footer>
 </x-slot:footer>
 </x-mail::layout>

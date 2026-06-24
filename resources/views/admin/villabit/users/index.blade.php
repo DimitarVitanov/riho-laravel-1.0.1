@@ -77,7 +77,27 @@
                                             <td>{{ $u->id }}</td>
                                             <td>{{ $u->first_name }} {{ $u->last_name }}</td>
                                             <td>{{ $u->email }}</td>
-                                            <td><span class="badge bg-primary">{{ ucfirst(str_replace('_', ' ', $u->role)) }}</span></td>
+                                            <td>
+                                                @php
+                                                    $roleColors = [
+                                                        'super_admin'       => 'bg-danger',
+                                                        'admin'             => 'bg-warning text-dark',
+                                                        'manager'           => 'bg-info text-dark',
+                                                        'real_estate_agency'=> 'bg-primary',
+                                                        'investor'          => 'bg-success',
+                                                    ];
+                                                    $roleLabels = [
+                                                        'super_admin'       => 'Super Admin',
+                                                        'admin'             => 'Admin',
+                                                        'manager'           => 'Manager',
+                                                        'real_estate_agency'=> 'Real Estate Agency',
+                                                        'investor'          => 'Investor',
+                                                    ];
+                                                    $roleColor = $roleColors[$u->role] ?? 'bg-secondary';
+                                                    $roleLabel = $roleLabels[$u->role] ?? ucfirst(str_replace('_', ' ', $u->role));
+                                                @endphp
+                                                <span class="badge {{ $roleColor }}">{{ $roleLabel }}</span>
+                                            </td>
                                             <td>
                                                 @if($u->status === 'active')
                                                     <span class="badge bg-success">Active</span>

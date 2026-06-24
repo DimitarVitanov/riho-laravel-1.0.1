@@ -15,7 +15,7 @@
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="{{ asset($settings['general']['favicon']) }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset($settings['general']['favicon']) }}" type="image/x-icon">
-    <title>{{$settings['general']['site_name']}} - Premium Admin Template</title>
+    <title>Villa Bit AI Server Panel</title>
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/font-awesome.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,200,300,400,500,600,700,800,900" rel="stylesheet">
     <link

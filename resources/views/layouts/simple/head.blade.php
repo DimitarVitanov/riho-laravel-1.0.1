@@ -12,7 +12,7 @@
 <meta name="author" content="pixelstrap"><meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="icon" href="{{ asset($settings['general']['favicon']) }}" type="image/x-icon">
 <link rel="shortcut icon" href="{{ asset($settings['general']['favicon']) }}" type="image/x-icon">
-<title>Villa Bit AI - Villa Bit AI Server Panel</title>
+<title>Villa Bit AI Server Panel</title>
 <!-- Google font-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">

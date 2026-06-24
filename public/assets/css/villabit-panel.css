@@ -46,6 +46,17 @@
     color: #111827 !important;
 }
 
+/* Registration/auth pages — no underline on links, consistent styling */
+.auth-content a,
+.authentication-main a,
+.login-card a,
+form a {
+    text-decoration: none !important;
+}
+form a:hover {
+    text-decoration: underline !important;
+}
+
 /* Dark Sidebar Override */
 .page-wrapper .sidebar-wrapper,
 .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper {

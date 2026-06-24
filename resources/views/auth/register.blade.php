@@ -163,7 +163,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="terms_acceptance" id="terms_acceptance" value="1" {{ old('terms_acceptance') ? 'checked' : '' }} required>
                                         <label class="form-check-label" for="terms_acceptance">
-                                            I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a>
+                                            I agree to the <a href="/terms" target="_blank" style="text-decoration:none; color:#111827; font-weight:600;">Terms of Service</a> and <a href="/privacy" target="_blank" style="text-decoration:none; color:#111827; font-weight:600;">Privacy Policy</a>
                                         </label>
                                     </div>
                                     @error('terms_acceptance')

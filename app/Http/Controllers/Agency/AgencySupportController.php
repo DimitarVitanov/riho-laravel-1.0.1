@@ -44,6 +44,7 @@ class AgencySupportController extends Controller
         $adminEmail = config('mail.admin_address', 'inbox@villabit.ai');
 
         $ticketUrl = route('admin.villabit.support-tickets.show', $ticket->id);
+        $userTicketUrl = route('agency.support.show', $ticket->id);
 
         $signature = "\n\nKind regards,\n\n"
             . "VILLA BIT AI Server Team\n"
@@ -72,7 +73,8 @@ class AgencySupportController extends Controller
         Mail::raw(
             "Hi {$user->first_name},\n\nYour support ticket has been received.\n"
             . "Ticket #: {$ticket->id}\nSubject: {$ticket->subject}\n\n"
-            . "We'll get back to you as soon as possible."
+            . "We'll get back to you as soon as possible.\n\n"
+            . "===\n\nView your ticket: {$userTicketUrl}"
             . $signature,
             fn ($m) => $m
                 ->from('inbox@villabit.ai', 'Villa Bit AI')

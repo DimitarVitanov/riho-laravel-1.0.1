@@ -43,7 +43,7 @@
 }
 
 .page-body-wrapper a:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):not(.logo-wrapper a) {
-    color: #111827 !important;
+    color: white !important;
 }
 
 .vb-terms-link,

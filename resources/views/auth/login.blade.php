@@ -1,10 +1,5 @@
 @extends('layouts.authentication.master')
 
-@section('css')
-    <!-- Toastr css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/toastr.min.css') }}">
-@endsection
-
 @section('main_content')
     @use('App\Helpers\Helpers')
     @php
@@ -76,9 +71,7 @@
             </div>
         </div>
     </div>
-@endsection
 
-@section('scripts')
     <style>
         .login-card .login-main .btn-primary,
         .login-card .login-main button[type="submit"] {
@@ -125,31 +118,20 @@
         .login-card .login-main .form-group label {
             margin-bottom: 6px !important;
         }
-        .login-card .login-main .form-group .text-danger,
-        .login-card .login-main .form-group label.error {
-            font-size: 12px !important;
-            margin-top: 4px !important;
-            display: block !important;
-        }
-        /* Force background image to show (overrides .login-dark which hides it) */
         .login-card.login-dark {
             background: url('/assets/images/login/login_bg.jpg') center center / cover no-repeat !important;
             background-color: #f5f6fa !important;
         }
     </style>
-    <script src="{{ asset('assets/js/toastr.min.js') }}"></script>
     <script>
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         let valid = true;
-
-        const email = document.getElementById('email');
+        const email    = document.getElementById('email');
         const password = document.getElementById('password');
         const emailErr = document.getElementById('emailError');
         const passErr  = document.getElementById('passError');
-
         emailErr.textContent = '';
         passErr.textContent  = '';
-
         if (!email.value.trim()) {
             emailErr.textContent = 'Email is required.';
             valid = false;
@@ -157,12 +139,10 @@
             emailErr.textContent = 'Please enter a valid email address.';
             valid = false;
         }
-
         if (!password.value.trim()) {
             passErr.textContent = 'Password is required.';
             valid = false;
         }
-
         if (!valid) e.preventDefault();
     });
     </script>

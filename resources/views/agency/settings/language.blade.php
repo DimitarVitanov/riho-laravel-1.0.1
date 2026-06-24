@@ -54,6 +54,46 @@
                         </form>
                     </div>
                 </div>
+
+                {{-- Copyscape --}}
+                <div class="card mt-4">
+                    <div class="card-header pb-0">
+                        <h5>🔍 Copyscape — Content Uniqueness Check</h5>
+                        <small class="text-muted">Enter your own Copyscape credentials to use your account for uniqueness checking on your generated content.</small>
+                    </div>
+                    <div class="card-body">
+                        @if(session('success_copyscape'))
+                            <div class="alert alert-success">{{ session('success_copyscape') }}</div>
+                        @endif
+                        <form method="POST" action="{{ route('agency.settings.integrations.update') }}">
+                            @csrf @method('PUT')
+                            <div class="row g-4">
+                                <div class="col-md-5">
+                                    <label class="form-label">Copyscape Username</label>
+                                    <input type="text" name="copyscape_username" class="form-control"
+                                           value="{{ $profile->copyscape_username ?? '' }}"
+                                           placeholder="your_copyscape_username">
+                                </div>
+                                <div class="col-md-7">
+                                    <label class="form-label">Copyscape API Key</label>
+                                    <input type="text" name="copyscape_api_key" class="form-control font-monospace"
+                                           value="{{ $profile->copyscape_api_key ?? '' }}"
+                                           placeholder="Your Copyscape API key">
+                                    <small class="text-muted">Get your API key at <a href="https://www.copyscape.com/api/" target="_blank">copyscape.com/api</a></small>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">Save Copyscape Settings</button>
+                                @if($profile && $profile->copyscape_api_key)
+                                    <span class="badge bg-success ms-2">✓ Copyscape configured</span>
+                                @else
+                                    <span class="badge bg-secondary ms-2">Using system-wide key</span>
+                                @endif
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

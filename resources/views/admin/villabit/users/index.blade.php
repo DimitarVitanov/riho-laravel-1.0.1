@@ -102,7 +102,7 @@
                                                     <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-strategy="fixed" aria-expanded="false">
                                                         Actions
                                                     </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                    <ul class="dropdown-menu dropdown-menu-end" style="background-color:#fff !important; z-index:9999 !important; box-shadow:0 4px 16px rgba(0,0,0,0.15);">
                                                         @if(!$u->isAdmin())
                                                             @if($u->status === 'waitlist')
                                                                 <li>

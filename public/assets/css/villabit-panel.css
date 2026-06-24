@@ -697,3 +697,41 @@
         font-size: 22px;
     }
 }
+
+/* ============================================================
+   Toastr — force white text on all notification types
+   ============================================================ */
+#toast-container > div,
+#toast-container > .toast-success,
+#toast-container > .toast-error,
+#toast-container > .toast-warning,
+#toast-container > .toast-info {
+    color: #ffffff !important;
+}
+#toast-container > div .toast-message,
+#toast-container > div .toast-title {
+    color: #ffffff !important;
+}
+
+/* ============================================================
+   Actions dropdown — bolder, darker item text
+   ============================================================ */
+.dropdown-menu .dropdown-item {
+    font-weight: 600 !important;
+    font-size: 13px !important;
+}
+.dropdown-menu .dropdown-item.text-success {
+    color: #15803d !important;
+}
+.dropdown-menu .dropdown-item.text-warning {
+    color: #b45309 !important;
+}
+.dropdown-menu .dropdown-item.text-info {
+    color: #0369a1 !important;
+}
+.dropdown-menu .dropdown-item.text-danger {
+    color: #b91c1c !important;
+}
+.dropdown-menu .dropdown-item.text-muted {
+    color: #6b7280 !important;
+}

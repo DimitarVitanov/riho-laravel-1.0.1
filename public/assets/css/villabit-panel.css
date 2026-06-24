@@ -38,9 +38,11 @@
 }
 
 .font-primary,
-.txt-primary,
-a,
-a:hover {
+.txt-primary {
+    color: #111827 !important;
+}
+
+.page-body-wrapper a:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):not(.logo-wrapper a) {
     color: #111827 !important;
 }
 

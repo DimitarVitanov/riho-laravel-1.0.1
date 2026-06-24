@@ -49,6 +49,6 @@ class ResetPasswordNotification extends Notification implements ShouldQueue
             ->action('RESET PASSWORD', $resetUrl)
             ->line("For security reasons, this password reset link will expire after {$expiryTime}.")
             ->line('If you did not request a password reset, you can safely ignore this email. Your current password will remain unchanged.')
-            ->salutation("Kind regards,\n\nVILLA BIT AI Server Team\nAI Server For Real Estate Agencies\n┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄\nVilla Bit AI Really Works Better, More, And Cheaper Than A Human!\nhttps://villabit.ai");
+            ->salutation("Kind regards,\n\nVILLA BIT AI Server Team\\\nAI Server For Real Estate Agencies\\\n┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄\\\nVilla Bit AI Really Works Better, More, And Cheaper Than A Human!\\\nhttps://villabit.ai");
     }
 }

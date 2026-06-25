@@ -80,7 +80,7 @@ Route::get('/dashboard', function () {
     if ($user->isAgency()) return redirect()->route('agency.dashboard');
     if ($user->isInvestor()) return redirect()->route('investor.dashboard');
     return redirect()->route('login');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------

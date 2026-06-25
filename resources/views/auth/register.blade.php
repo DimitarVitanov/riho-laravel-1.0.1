@@ -6,6 +6,10 @@
     <style>
         .vb-terms-link { text-decoration: underline !important; color: #111827 !important; font-weight: 600 !important; }
         .vb-terms-link:hover { text-decoration: none !important; color: #111827 !important; }
+        .login-card .login-main .form-group { margin-bottom: 16px !important; }
+        .login-card .login-main .form-group label { margin-bottom: 6px !important; }
+        .login-card .login-main .form-group .text-danger { font-size: 12px !important; display: block; margin-top: 4px !important; }
+        .login-card .login-main .form-group .text-danger strong { font-weight: 600; }
     </style>
 @endsection
 

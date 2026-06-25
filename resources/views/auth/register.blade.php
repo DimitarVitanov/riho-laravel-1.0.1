@@ -274,10 +274,11 @@
         }
         /* ── Tight form spacing to match login page ── */
         .login-card .login-main .theme-form .form-group { margin-bottom: 16px !important; }
-        .login-card .login-main .theme-form .form-group label { margin-bottom: 6px !important; }
+        .login-card .login-main .theme-form .form-group label { margin-bottom: 6px !important; line-height: 1.2 !important; }
         .login-card .login-main .theme-form .form-group .form-control { margin-bottom: 0 !important; }
-        .login-card .login-main .theme-form .form-group .text-danger[role="alert"] { font-size: 12px !important; display: block; margin-top: 4px !important; }
+        .login-card .login-main .theme-form .form-group .text-danger[role="alert"] { font-size: 12px !important; display: block; margin-top: 4px !important; margin-bottom: 0 !important; line-height: 1.2 !important; }
         .login-card .login-main .theme-form .form-group .text-danger[role="alert"] strong { font-weight: 600; }
+        .login-card .login-main .theme-form label.error { font-size: 12px !important; color: #dc3545 !important; display: block; margin-top: 4px !important; margin-bottom: 0 !important; line-height: 1.2 !important; font-weight: 600; }
         /* ── Checkbox fixes ── */
         .login-main .form-check {
             display: flex !important;

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
@@ -24,7 +25,7 @@ class RegisterController extends Controller
 
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware('guest')->except('showRegistrationForm');
     }
 
     protected function registered(Request $request, $user)
@@ -33,8 +34,14 @@ class RegisterController extends Controller
         return redirect()->route('verification.notice');
     }
 
-    public function showRegistrationForm()
+    public function showRegistrationForm(Request $request)
     {
+        if (Auth::check()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
         $countries = DB::table('countries')->orderBy('iso_3166_2')->get(['name', 'calling_code', 'flag', 'iso_3166_2']);
         return view('auth.register', compact('countries'));
     }

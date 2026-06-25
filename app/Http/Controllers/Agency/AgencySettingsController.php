@@ -70,21 +70,53 @@ class AgencySettingsController extends Controller
 
     public function domainSettings()
     {
-        $user    = Auth::user();
+        $user = Auth::user();
         $profile = $user->agencyProfile;
 
-        return view('agency.settings.domain', compact('user', 'profile'));
+        $customDomain = $profile->custom_domain ?? '';
+        $domainPart1 = '';
+        $domainPart2 = '';
+
+        if ($user->agency_server_type === 'subdomain_ai_server' && $customDomain) {
+            $parts = explode('.', $customDomain, 2);
+            $domainPart1 = $parts[0] ?? '';
+            $domainPart2 = $parts[1] ?? '';
+        } elseif ($user->agency_server_type === 'domain_folder_ai_server' && $customDomain) {
+            $parts = explode('/', $customDomain, 2);
+            $domainPart1 = $parts[0] ?? '';
+            $domainPart2 = isset($parts[1]) ? trim($parts[1], '/') : '';
+        } elseif ($customDomain) {
+            $domainPart1 = $customDomain;
+        }
+
+        return view('agency.settings.domain', compact('user', 'profile', 'domainPart1', 'domainPart2'));
     }
 
     public function updateDomainSettings(Request $request)
     {
-        $request->validate([
-            'custom_domain' => 'nullable|string|max:255|regex:/^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/',
-        ]);
-
         $user = Auth::user();
+        $domain = null;
+
+        if ($user->agency_server_type === 'subdomain_ai_server') {
+            $request->validate([
+                'domain_part1' => 'required|string|max:63|regex:/^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$/',
+                'domain_part2' => 'required|string|max:255|regex:/^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/',
+            ]);
+            $domain = strtolower($request->domain_part1 . '.' . $request->domain_part2);
+        } elseif ($user->agency_server_type === 'domain_folder_ai_server') {
+            $request->validate([
+                'domain_part1' => 'required|string|max:255|regex:/^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/',
+                'domain_part2' => 'required|string|max:63|regex:/^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$/',
+            ]);
+            $domain = strtolower($request->domain_part1 . '/' . trim($request->domain_part2, '/'));
+        } else {
+            $request->validate([
+                'domain_part1' => 'nullable|string|max:255|regex:/^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/',
+            ]);
+            $domain = $request->domain_part1 ? rtrim(strtolower($request->domain_part1), '/') : null;
+        }
+
         if ($user->agencyProfile) {
-            $domain = $request->custom_domain ? rtrim(strtolower($request->custom_domain), '/') : null;
             $user->agencyProfile->update(['custom_domain' => $domain]);
         }
 

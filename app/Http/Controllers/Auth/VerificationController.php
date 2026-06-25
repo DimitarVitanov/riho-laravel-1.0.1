@@ -45,6 +45,38 @@ class VerificationController extends Controller
     }
 
     /**
+     * Show the email verification notice.
+     *
+     * Only allow viewing immediately after registration or login. On refresh,
+     * log the user out so they must log in again.
+     */
+    public function show(Request $request)
+    {
+        if (! $request->session()->has('just_registered')) {
+            Auth::logout();
+            return redirect()->route('login')->with('warning', 'Please log in to continue.');
+        }
+
+        return view('auth.verify');
+    }
+
+    /**
+     * Resend the verification email.
+     *
+     * Keep the one-time view flag so the user can see the success message.
+     */
+    public function resend(Request $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect($this->redirectPath());
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('resent', true)->with('just_registered', true);
+    }
+
+    /**
      * Mark the authenticated user's email address as verified.
      *
      * Overridden so the verification link works even when the user is not

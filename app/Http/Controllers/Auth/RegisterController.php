@@ -14,6 +14,7 @@ use App\Models\AffiliateReferral;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -24,6 +25,12 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    protected function registered(Request $request, $user)
+    {
+        $request->session()->flash('just_registered', true);
+        return redirect()->route('verification.notice');
     }
 
     public function showRegistrationForm()

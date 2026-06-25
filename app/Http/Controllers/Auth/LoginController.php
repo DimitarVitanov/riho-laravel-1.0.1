@@ -28,6 +28,11 @@ class LoginController extends Controller
 
         $user->update(['last_login_at' => now()]);
 
+        if (! $user->hasVerifiedEmail()) {
+            $request->session()->flash('just_registered', true);
+            return redirect()->route('verification.notice');
+        }
+
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         }

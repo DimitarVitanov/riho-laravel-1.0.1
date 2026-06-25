@@ -32,6 +32,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'country',
         'account_type',
         'agency_server_type',
+        'agency_server_price',
         'role',
         'status',
         'timezone',

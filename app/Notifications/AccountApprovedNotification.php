@@ -21,10 +21,18 @@ class AccountApprovedNotification extends Notification
             ? url('/investor/dashboard')
             : url('/agency/dashboard');
 
-        return (new MailMessage)
+        $price = $notifiable->agency_server_price ? '$' . number_format($notifiable->agency_server_price, 2) . ' per month' : null;
+
+        $message = (new MailMessage)
             ->subject('Payment Confirmed – Your Villa Bit AI Server Account Is Now Active')
             ->greeting("Hello {$notifiable->first_name},")
-            ->line('We have successfully received your payment.')
+            ->line('We have successfully received your payment.');
+
+        if ($price) {
+            $message->line("Your selected monthly price is: {$price}");
+        }
+
+        return $message
             ->line('Your Villa Bit AI Server account is now fully active, and all services and enabled features are available for use.')
             ->line('To allow your AI Server to start working, please log in to your account, open the Settings section, and enter your website domain name in the Server Panel.')
             ->line('Once your domain name is added, your AI Server can begin working for your real estate agency.')

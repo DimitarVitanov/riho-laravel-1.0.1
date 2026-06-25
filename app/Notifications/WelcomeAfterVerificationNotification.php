@@ -34,9 +34,13 @@ class WelcomeAfterVerificationNotification extends Notification implements Shoul
             default                    => null,
         };
 
-        $paypalLink = ($notifiable->agency_server_type === 'domain_folder_ai_server')
-            ? 'https://app.villabit.ai/folder.php'
-            : 'https://app.villabit.ai/subdomain.php';
+        $price = $notifiable->agency_server_price ? '$' . number_format($notifiable->agency_server_price, 2) . ' per month' : null;
+
+        $paypalLink = match ($notifiable->agency_server_type ?? '') {
+            'domain_folder_ai_server' => 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-9Y5677004X541883TNI6O66Y',
+            'subdomain_ai_server'     => 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-6PP71655UL592291MNI6O4XY',
+            default                   => null,
+        };
 
         $signature = "Kind regards,\n\nVILLA BIT AI Server Team\\\nAI Server For Real Estate Agencies\\\n┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄\\\nVilla Bit AI Really Works Better, More, And Cheaper Than A Human!\\\nhttps://villabit.ai";
 
@@ -50,10 +54,16 @@ class WelcomeAfterVerificationNotification extends Notification implements Shoul
             $message->line("Your subaccount type is: {$subType}");
         }
 
-        if ($notifiable->role === 'real_estate_agency') {
+        if ($price) {
+            $message->line("Your selected monthly price is: {$price}");
+        }
+
+        if ($notifiable->role === 'real_estate_agency' && $paypalLink) {
             $message
-                ->line('To activate your account and add it to the Villa Bit AI Server, please click the link below, choose your preferred setup, and complete payment securely through PayPal:')
+                ->line('To activate your account and add it to the Villa Bit AI Server, please click the link below and complete payment securely through PayPal:')
                 ->action('ACTIVATE YOUR ACCOUNT AND PAY WITH PAYPAL', $paypalLink);
+        } elseif ($notifiable->role === 'real_estate_agency') {
+            $message->line('To activate your account and add it to the Villa Bit AI Server, please select a plan and complete payment securely through PayPal.');
         }
 
         $message

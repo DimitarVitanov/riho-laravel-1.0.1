@@ -66,6 +66,19 @@
                                     @enderror
                                 </div>
 
+                                <div class="form-group agency-fields" id="agency_price_group" style="display: none;">
+                                    <label class="col-form-label">Monthly Price</label>
+                                    <div class="form-control" style="background-color:#f8f9fa; font-weight:600; border:1px solid #d8d8d8;">
+                                        <span id="price_display">—</span>
+                                    </div>
+                                    <input type="hidden" id="agency_server_price" name="agency_server_price" value="{{ old('agency_server_price') }}">
+                                    @error('agency_server_price')
+                                        <span class="text-danger d-block" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+
                                 <div class="form-group">
                                     <div class="row g-2">
                                         <div class="col-6">
@@ -291,17 +304,54 @@
     <script src="{{ asset('assets/js/toastr.min.js') }}"></script>
     <script>
         $(document).ready(function() {
+            var prices = {
+                'subdomain_ai_server': 99.00,
+                'domain_folder_ai_server': 125.00
+            };
+
+            function updatePrice() {
+                var serverType = $('#agency_server_type').val();
+                var price = prices[serverType];
+                if (price) {
+                    $('#price_display').text('$' + price.toFixed(2) + ' per month');
+                    $('#agency_server_price').val(price.toFixed(2));
+                    $('#agency_price_group').show();
+                } else {
+                    $('#price_display').text('—');
+                    $('#agency_server_price').val('');
+                    $('#agency_price_group').hide();
+                }
+            }
+
             function toggleAgencyFields() {
                 var accountType = $('#account_type').val();
                 if (accountType === 'real_estate_agency') {
                     $('.agency-fields').show();
+                    updatePrice();
                 } else {
                     $('.agency-fields').hide();
+                    $('#agency_server_type').val('');
+                    $('#agency_server_price').val('');
+                    updatePrice();
+                }
+            }
+
+            function preselectFromUrl() {
+                var params = new URLSearchParams(window.location.search);
+                var accountType = params.get('account_type');
+                var serverType = params.get('agency_server_type');
+                if (accountType && $('#account_type option[value="' + accountType + '"]').length) {
+                    $('#account_type').val(accountType).trigger('change');
+                }
+                if (serverType && $('#agency_server_type option[value="' + serverType + '"]').length) {
+                    $('#agency_server_type').val(serverType).trigger('change');
                 }
             }
 
             toggleAgencyFields();
             $('#account_type').on('change', toggleAgencyFields);
+            $('#agency_server_type').on('change', updatePrice);
+            preselectFromUrl();
         });
     </script>
 @endsection

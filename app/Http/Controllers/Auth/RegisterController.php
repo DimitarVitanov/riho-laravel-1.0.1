@@ -47,6 +47,7 @@ class RegisterController extends Controller
 
         if (($data['account_type'] ?? '') === 'real_estate_agency') {
             $rules['agency_server_type'] = ['required', 'in:subdomain_ai_server,domain_folder_ai_server'];
+            $rules['agency_server_price'] = ['required', 'numeric', 'min:0'];
         }
 
         if ($data['account_type'] === 'real_estate_agency') {
@@ -76,6 +77,7 @@ class RegisterController extends Controller
             'account_type' => $data['account_type'],
             'role' => $data['account_type'],
             'agency_server_type' => $data['agency_server_type'] ?? null,
+            'agency_server_price' => $data['agency_server_price'] ?? null,
             'status' => 'waitlist',
             'is_reseller_enabled' => true,
             'referral_code' => strtoupper(Str::random(8)),

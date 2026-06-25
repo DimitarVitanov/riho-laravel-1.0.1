@@ -31,11 +31,19 @@ class VerifyEmailNotification extends Notification implements ShouldQueue
             default => ucfirst($notifiable->role ?? 'User'),
         };
 
-        return (new MailMessage)
+        $price = $notifiable->agency_server_price ? '$' . number_format($notifiable->agency_server_price, 2) . ' per month' : null;
+
+        $message = (new MailMessage)
             ->subject('Confirm Your Villa Bit AI Server Account')
             ->greeting("Hello {$notifiable->first_name},")
             ->line('Thank you for creating your Villa Bit AI Server account.')
-            ->line("Your registered account type is: **{$userType}**")
+            ->line("Your registered account type is: **{$userType}**");
+
+        if ($price) {
+            $message->line("Your selected monthly price is: **{$price}**");
+        }
+
+        return $message
             ->line('Before we activate your access, please confirm your email address by clicking the button below:')
             ->action('Confirm Email Address', $verificationUrl)
             ->line('If you did not create this account, you can safely ignore this email.')

@@ -13,6 +13,7 @@ class AgencyProfile extends Model
         'user_id',
         'agency_name',
         'official_website_url',
+        'custom_domain',
         'country',
         'city',
         'main_service_area',

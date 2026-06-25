@@ -212,6 +212,8 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::post('settings/language', [AgencySettingsController::class, 'updateLanguageSettings'])->name('settings.language.update');
     Route::get('settings/features', [AgencySettingsController::class, 'featureToggles'])->name('settings.features');
     Route::post('settings/features/toggle', [AgencySettingsController::class, 'updateFeatureToggle'])->name('settings.features.toggle');
+    Route::get('settings/domain', [AgencySettingsController::class, 'domainSettings'])->name('settings.domain');
+    Route::post('settings/domain', [AgencySettingsController::class, 'updateDomainSettings'])->name('settings.domain.update');
     Route::get('settings/integrations', [AgencySettingsController::class, 'integrations'])->name('settings.integrations');
     Route::put('settings/integrations', [AgencySettingsController::class, 'updateIntegrations'])->name('settings.integrations.update');
 

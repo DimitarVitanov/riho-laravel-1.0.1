@@ -349,6 +349,14 @@
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.domain') }}">
+                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-blog') }}"></use></svg>
+                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-blog') }}"></use></svg>
+                        <span>Domain</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.usage-limits.index') }}">
                         <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-charts') }}"></use></svg>
                         <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-charts') }}"></use></svg>

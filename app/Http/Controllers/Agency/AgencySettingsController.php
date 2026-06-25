@@ -68,6 +68,29 @@ class AgencySettingsController extends Controller
         return back()->with('success', 'Feature toggled.');
     }
 
+    public function domainSettings()
+    {
+        $user    = Auth::user();
+        $profile = $user->agencyProfile;
+
+        return view('agency.settings.domain', compact('user', 'profile'));
+    }
+
+    public function updateDomainSettings(Request $request)
+    {
+        $request->validate([
+            'custom_domain' => 'nullable|string|max:255|regex:/^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/',
+        ]);
+
+        $user = Auth::user();
+        if ($user->agencyProfile) {
+            $domain = $request->custom_domain ? rtrim(strtolower($request->custom_domain), '/') : null;
+            $user->agencyProfile->update(['custom_domain' => $domain]);
+        }
+
+        return back()->with('success', 'Domain settings saved.');
+    }
+
     public function integrations()
     {
         $user      = Auth::user();

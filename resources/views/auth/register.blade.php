@@ -52,6 +52,20 @@
                                     @enderror
                                 </div>
 
+                                <div class="form-group agency-fields" id="agency_server_type_group" style="display: none;">
+                                    <label class="col-form-label">Account Sub-Type <span class="text-danger">*</span></label>
+                                    <select id="agency_server_type" name="agency_server_type" class="form-control">
+                                        <option value="">--- Select Account Sub-Type ---</option>
+                                        <option value="subdomain_ai_server" {{ old('agency_server_type') == 'subdomain_ai_server' ? 'selected' : '' }}>Subdomain AI Server</option>
+                                        <option value="domain_folder_ai_server" {{ old('agency_server_type') == 'domain_folder_ai_server' ? 'selected' : '' }}>Domain Folder AI Server</option>
+                                    </select>
+                                    @error('agency_server_type')
+                                        <span class="text-danger d-block" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+
                                 <div class="form-group">
                                     <div class="row g-2">
                                         <div class="col-6">

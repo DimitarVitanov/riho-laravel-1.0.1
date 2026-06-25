@@ -45,6 +45,10 @@ class RegisterController extends Controller
             'terms_acceptance' => ['required', 'accepted'],
         ];
 
+        if (($data['account_type'] ?? '') === 'real_estate_agency') {
+            $rules['agency_server_type'] = ['required', 'in:subdomain_ai_server,domain_folder_ai_server'];
+        }
+
         if ($data['account_type'] === 'real_estate_agency') {
             $rules['company_name'] = ['required', 'string', 'max:255'];
             $rules['agency_website_url'] = ['nullable', 'url', 'max:255'];
@@ -71,6 +75,7 @@ class RegisterController extends Controller
             'country' => $data['country'],
             'account_type' => $data['account_type'],
             'role' => $data['account_type'],
+            'agency_server_type' => $data['agency_server_type'] ?? null,
             'status' => 'waitlist',
             'is_reseller_enabled' => true,
             'referral_code' => strtoupper(Str::random(8)),

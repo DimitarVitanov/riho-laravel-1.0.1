@@ -66,6 +66,7 @@
                                         <th>Email</th>
                                         <th>Role</th>
                                         <th>Status</th>
+                                        <th>Server Type</th>
                                         <th>Reseller</th>
                                         <th>Joined</th>
                                         <th>Actions</th>
@@ -107,6 +108,15 @@
                                                     <span class="badge bg-danger">Suspended</span>
                                                 @else
                                                     <span class="badge bg-secondary">{{ ucfirst($u->status) }}</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($u->agency_server_type === 'subdomain_ai_server')
+                                                    <span class="badge bg-dark">Subdomain</span>
+                                                @elseif($u->agency_server_type === 'domain_folder_ai_server')
+                                                    <span class="badge bg-secondary">Domain Folder</span>
+                                                @else
+                                                    <span class="text-muted">—</span>
                                                 @endif
                                             </td>
                                             <td>

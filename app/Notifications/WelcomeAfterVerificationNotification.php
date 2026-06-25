@@ -37,8 +37,8 @@ class WelcomeAfterVerificationNotification extends Notification implements Shoul
         $price = $notifiable->agency_server_price ? '$' . number_format($notifiable->agency_server_price, 2) . ' per month' : null;
 
         $paypalLink = match ($notifiable->agency_server_type ?? '') {
-            'domain_folder_ai_server' => 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-9Y5677004X541883TNI6O66Y',
-            'subdomain_ai_server'     => 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-6PP71655UL592291MNI6O4XY',
+            'domain_folder_ai_server' => 'https://app.villabit.ai/folder.php',
+            'subdomain_ai_server'     => 'https://app.villabit.ai/subdomain.php',
             default                   => null,
         };
 

@@ -47,13 +47,15 @@ class VerificationController extends Controller
     /**
      * Show the email verification notice.
      *
-     * Only allow viewing immediately after registration or login. On refresh,
-     * log the user out so they must log in again.
+     * Only allow viewing immediately after registration or login. On refresh
+     * or navigation back, log the user out and redirect to login.
      */
     public function show(Request $request)
     {
         if (! $request->session()->has('just_registered')) {
             Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
             return redirect()->route('login')->with('warning', 'Please log in to continue.');
         }
 

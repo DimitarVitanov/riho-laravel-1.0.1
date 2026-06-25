@@ -65,6 +65,10 @@ Route::get('/sitemap/agency/{agencyId}.xml', [AgencySitemapController::class, 's
 // Public Agency Sitemap XML — by custom domain (e.g. yourdomain.com/sitemap.xml)
 Route::get('/sitemap.xml', [AgencySitemapController::class, 'showByDomain']);
 
+// Public legal pages redirect to marketing site
+Route::redirect('/terms', 'https://villabit.ai/terms/', 301)->name('terms');
+Route::redirect('/privacy', 'https://villabit.ai/privacy/', 301)->name('privacy');
+
 Auth::routes(['verify' => true]);
 
 // Generic dashboard redirect (for agency/investor users)

@@ -103,11 +103,11 @@
             background: url('/assets/images/login/login_bg.jpg') center center / cover no-repeat !important;
             background-color: #f5f6fa !important;
         }
-        .login-card .login-main .form-group { margin-bottom: 16px !important; }
-        .login-card .login-main .form-group label { margin-bottom: 6px !important; }
-        .login-card .login-main .form-group .form-control { margin-bottom: 0 !important; }
-        .login-card .login-main .form-group .text-danger[role="alert"] { font-size: 12px !important; display: block; margin-top: 4px !important; }
-        .login-card .login-main .form-group .text-danger[role="alert"] strong { font-weight: 600; }
+        .login-card .login-main .theme-form .form-group { margin-bottom: 16px !important; }
+        .login-card .login-main .theme-form .form-group label { margin-bottom: 6px !important; }
+        .login-card .login-main .theme-form .form-group .form-control { margin-bottom: 0 !important; }
+        .login-card .login-main .theme-form .form-group .text-danger[role="alert"] { font-size: 12px !important; display: block; margin-top: 4px !important; }
+        .login-card .login-main .theme-form .form-group .text-danger[role="alert"] strong { font-weight: 600; }
     </style>
     <script src="{{ asset('assets/js/bookmark/jquery.validate.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom-validation/validation.js') }}"></script>

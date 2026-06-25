@@ -31,15 +31,18 @@
                     <div class="input-group">
                         <span class="input-group-text">https://</span>
                         <input type="text" name="custom_domain" class="form-control @error('custom_domain') is-invalid @enderror"
-                            placeholder="yourdomain.com or anyname.yourdomain.com"
+                            placeholder="@if(auth()->user()->agency_server_type === 'subdomain_ai_server')anyname.yourdomain.com@elseif(auth()->user()->agency_server_type === 'domain_folder_ai_server')yourdomain.com@elseyourdomain.com@endif"
                             value="{{ old('custom_domain', $profile->custom_domain ?? '') }}">
                         @error('custom_domain')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <small class="text-muted mt-1 d-block">
-                        For <strong>Subdomain AI Server</strong>: enter <code>anyname.yourdomain.com</code><br>
-                        For <strong>Domain Folder AI Server</strong>: enter <code>yourdomain.com</code>
+                        @if(auth()->user()->agency_server_type === 'subdomain_ai_server')
+                            For Subdomain AI Server: enter <code>anyname.yourdomain.com</code>
+                        @elseif(auth()->user()->agency_server_type === 'domain_folder_ai_server')
+                            For Domain Folder AI Server: enter <code>yourdomain.com</code>
+                        @endif
                     </small>
                 </div>
 

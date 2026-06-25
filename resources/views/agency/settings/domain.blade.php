@@ -30,8 +30,15 @@
                     <label class="form-label fw-semibold">Custom Domain</label>
                     <div class="input-group">
                         <span class="input-group-text">https://</span>
+                        @php
+                            $domainPlaceholder = match(auth()->user()->agency_server_type) {
+                                'subdomain_ai_server'     => 'anyname.yourdomain.com',
+                                'domain_folder_ai_server' => 'yourdomain.com',
+                                default                   => 'yourdomain.com',
+                            };
+                        @endphp
                         <input type="text" name="custom_domain" class="form-control @error('custom_domain') is-invalid @enderror"
-                            placeholder="@if(auth()->user()->agency_server_type === 'subdomain_ai_server')anyname.yourdomain.com@elseif(auth()->user()->agency_server_type === 'domain_folder_ai_server')yourdomain.com@elseyourdomain.com@endif"
+                            placeholder="{{ $domainPlaceholder }}"
                             value="{{ old('custom_domain', $profile->custom_domain ?? '') }}">
                         @error('custom_domain')
                             <div class="invalid-feedback">{{ $message }}</div>

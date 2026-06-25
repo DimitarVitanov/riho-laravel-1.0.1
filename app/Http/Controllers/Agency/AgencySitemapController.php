@@ -8,6 +8,19 @@ use App\Models\GeneratedPage;
 
 class AgencySitemapController extends Controller
 {
+    public function showByDomain(\Illuminate\Http\Request $request)
+    {
+        $host = strtolower($request->getHost());
+
+        $profile = AgencyProfile::whereRaw('LOWER(custom_domain) = ?', [$host])->first();
+
+        if (!$profile) {
+            abort(404, 'No agency found for this domain.');
+        }
+
+        return $this->show($profile->id);
+    }
+
     public function show(int $agencyId)
     {
         $profile = AgencyProfile::findOrFail($agencyId);
@@ -18,9 +31,11 @@ class AgencySitemapController extends Controller
             ->select(['slug', 'target_url', 'published_at', 'updated_at'])
             ->cursor();
 
-        $baseUrl = $profile->official_website_url
-            ? rtrim($profile->official_website_url, '/')
-            : config('app.url');
+        $baseUrl = $profile->custom_domain
+            ? 'https://' . rtrim($profile->custom_domain, '/')
+            : ($profile->official_website_url
+                ? rtrim($profile->official_website_url, '/')
+                : config('app.url'));
 
         return response()->stream(function () use ($pages, $baseUrl) {
             echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";

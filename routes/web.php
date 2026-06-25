@@ -60,8 +60,10 @@ Route::get('/', function () {
 Route::get('/lm/{agency}', [App\Http\Controllers\Frontend\LeadMagnetController::class, 'show'])->name('lead-magnet.show');
 Route::post('/lm/{agency}', [App\Http\Controllers\Frontend\LeadMagnetController::class, 'store'])->name('lead-magnet.store');
 
-// Public Agency Sitemap XML
+// Public Agency Sitemap XML — by ID
 Route::get('/sitemap/agency/{agencyId}.xml', [AgencySitemapController::class, 'show'])->name('agency.sitemap');
+// Public Agency Sitemap XML — by custom domain (e.g. yourdomain.com/sitemap.xml)
+Route::get('/sitemap.xml', [AgencySitemapController::class, 'showByDomain']);
 
 Auth::routes(['verify' => true]);
 

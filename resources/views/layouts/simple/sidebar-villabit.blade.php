@@ -325,6 +325,14 @@
                 <li class="sidebar-main-title"><div><h6>{{ __('messages.settings') }}</h6></div></li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.domain') }}">
+                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-blog') }}"></use></svg>
+                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-blog') }}"></use></svg>
+                        <span>Domain</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.language') }}">
                         <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-internationalization') }}"></use></svg>
                         <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-internationalization') }}"></use></svg>
@@ -345,14 +353,6 @@
                         <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-knob') }}"></use></svg>
                         <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-knob') }}"></use></svg>
                         <span>{{ __('messages.feature_toggles') }}</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.domain') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-blog') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-blog') }}"></use></svg>
-                        <span>Domain</span>
                     </a>
                 </li>
 

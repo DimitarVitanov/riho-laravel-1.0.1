@@ -60,7 +60,7 @@ class WelcomeAfterVerificationNotification extends Notification implements Shoul
 
         if ($notifiable->role === 'real_estate_agency' && $paypalLink) {
             $message
-                ->line('To activate your account and add it to the Villa Bit AI Server, please click the link below and complete payment securely through PayPal:')
+                ->line('To activate your account and add it to the Villa Bit AI Server, please click the button below and complete payment securely through PayPal:')
                 ->action('ACTIVATE YOUR ACCOUNT AND PAY WITH PAYPAL', $paypalLink);
         } elseif ($notifiable->role === 'real_estate_agency') {
             $message->line('To activate your account and add it to the Villa Bit AI Server, please select a plan and complete payment securely through PayPal.');
@@ -68,8 +68,7 @@ class WelcomeAfterVerificationNotification extends Notification implements Shoul
 
         $message
             ->line('Once payment is completed, your account will be activated and added to the AI Server setup process.')
-            ->line('You can now log in to your panel and continue with your account setup.')
-            ->action('LOGIN TO YOUR PANEL', $loginLink);
+            ->line("You can log in to your panel here: {$loginLink}");
 
         if ($notifiable->role === 'real_estate_agency') {
             $message->line('For Real Estate Agency accounts, Villa Bit AI Server helps agencies increase sales, build a stronger local presence, create useful second-level content, analyze competitors, improve AI-search readiness, and strengthen online authority.');

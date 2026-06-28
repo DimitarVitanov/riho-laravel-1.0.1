@@ -132,7 +132,11 @@
                 <span>Complete payment to activate your Villa Bit AI Server account.</span>
             </div>
             <div class="mb-3">
-                <span class="fw-bold">⏳ AI Server Setup</span><br>
+                @if($profile->nameserver_1 && $profile->nameserver_2)
+                    <span class="text-success fw-bold">✔ AI Server Setup</span><br>
+                @else
+                    <span class="fw-bold">⏳ AI Server Setup</span><br>
+                @endif
                 <span>After payment, your account will be added to the AI Server setup process.</span>
             </div>
             <div class="mb-3">
@@ -151,7 +155,11 @@
                 @endif
             </div>
             <div class="mb-3">
-                <span class="fw-bold">○ Nameserver Changes</span><br>
+                @if($profile->nameserver_1 && $profile->nameserver_2)
+                    <span class="fw-bold">⏳ Nameserver Changes</span><br>
+                @else
+                    <span class="fw-bold">○ Nameserver Changes</span><br>
+                @endif
                 <span>You will copy the Cloudflare nameservers shown in this panel. Then, log in to the domain registrar where you originally registered your domain name and change the nameservers to the exact Cloudflare nameservers provided by Villa Bit AI.</span>
             </div>
             <div class="mb-0 border-top pt-3">

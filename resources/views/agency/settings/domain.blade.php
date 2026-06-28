@@ -145,7 +145,7 @@
             </div>
             <div class="mb-0 border-top pt-3">
                 <span>If you need any technical help, please ask or submit a support ticket here:
-                <a href="{{ route('agency.support.index') }}">https://app.villabit.ai/agency/support</a></span>
+                <a href="{{ route('agency.support.index') }}" class="vb-domain-support-link">https://app.villabit.ai/agency/support</a></span>
             </div>
         </div>
     </div>

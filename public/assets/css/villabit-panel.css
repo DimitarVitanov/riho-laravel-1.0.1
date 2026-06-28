@@ -43,11 +43,17 @@
 }
 
 .page-body-wrapper a:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):not(.logo-wrapper a) {
-    color: #111827 !important;
-    text-decoration: none;
+    color: white !important;
 }
-.page-body-wrapper a:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):not(.logo-wrapper a):hover {
+
+.vb-domain-support-link {
+    color: #111827 !important;
     text-decoration: underline;
+    font-weight: 700;
+}
+.vb-domain-support-link:hover {
+    text-decoration: none;
+    color: #111827 !important;
 }
 
 .vb-terms-link,

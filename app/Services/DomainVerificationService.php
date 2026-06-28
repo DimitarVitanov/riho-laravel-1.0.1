@@ -61,6 +61,12 @@ class DomainVerificationService
         $domain = explode('/', $domain)[0];
         $domain = preg_replace('/:\d+$/', '', $domain);
 
+        // Strip subdomains so that ai.booking-demo.dev -> booking-demo.dev
+        $parts = explode('.', $domain);
+        if (count($parts) > 2) {
+            $domain = implode('.', array_slice($parts, -2));
+        }
+
         return $domain;
     }
 

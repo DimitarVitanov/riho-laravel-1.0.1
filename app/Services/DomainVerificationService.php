@@ -35,34 +35,33 @@ class DomainVerificationService
 
     protected function verifySubdomain(string $domain, string $serverIp): bool
     {
-        $resolvedIp = gethostbyname($domain);
-
-        if ($resolvedIp === $domain) {
-            Log::info("DNS verification failed: could not resolve {$domain}");
-            return false;
-        }
-
-        if ($resolvedIp !== $serverIp) {
-            Log::info("DNS verification failed: {$domain} resolves to {$resolvedIp}, expected {$serverIp}");
-            return false;
-        }
-
-        return $this->httpCheck("https://{$domain}/__villa_bit_verify.php")
-            || $this->httpCheck("https://{$domain}/");
+        return $this->resolveAndCheck($domain, $serverIp)
+            && $this->httpCheck("https://{$domain}/");
     }
 
     protected function verifyFolder(string $domain, string $serverIp): bool
     {
         $baseDomain = explode('/', $domain, 2)[0];
-        $resolvedIp = gethostbyname($baseDomain);
 
-        if ($resolvedIp === $baseDomain) {
-            Log::info("DNS verification failed: could not resolve {$baseDomain}");
+        return $this->resolveAndCheck($baseDomain, $serverIp)
+            && $this->httpCheck("https://{$domain}/");
+    }
+
+    protected function resolveAndCheck(string $host, string $serverIp): bool
+    {
+        $resolvedIp = gethostbyname($host);
+
+        if ($resolvedIp === $host) {
+            Log::info("DNS verification failed: could not resolve {$host}");
             return false;
         }
 
-        return $this->httpCheck("https://{$domain}/__villa_bit_verify.php")
-            || $this->httpCheck("https://{$domain}/");
+        if ($resolvedIp !== $serverIp) {
+            Log::info("DNS verification failed: {$host} resolves to {$resolvedIp}, expected {$serverIp}");
+            return false;
+        }
+
+        return true;
     }
 
     protected function verifyDefault(string $domain, string $serverIp): bool

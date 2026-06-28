@@ -104,11 +104,11 @@
                 <div class="waitlist-hero mb-4">
                     <div class="waitlist-badge">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        Waiting List
+                        Payment Required
                     </div>
                     <h2 class="fw-bold mb-2" style="color:#ffffff;">Welcome, {{ $user->first_name }}!</h2>
                     <p class="mb-0" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
-                        Your account is currently on the waiting list because our AI server resources are already allocated to existing clients, and full panel access will be granted on a first-registered, first-served basis as additional capacity becomes available.
+                        Your account is currently on hold because payment is required before activation. To activate your account and begin the Villa Bit AI Server setup process, complete your monthly payment securely through PayPal.
                     </p>
                 </div>
 
@@ -116,7 +116,7 @@
                 <div class="card mb-4">
                     <div class="card-body" style="padding: 24px 28px;">
                         <p class="mb-0" style="line-height:1.75; font-size:0.97rem; color:#444;">
-                            You do not need to take any further action at this stage. Demand for <strong>Villa Bit AI Server</strong> is currently higher than the available AI server resources, which is a sign of growing interest, and our team is actively working to expand capacity and activate new accounts every week.
+                            Once payment is completed, your account will be activated and your domain setup process will begin. You will enter the <strong>yourdomain.com/anyword</strong> you want to use for your Villa Bit AI Server connection, and your new Cloudflare nameservers will appear in this panel.
                         </p>
                     </div>
                 </div>
@@ -138,7 +138,7 @@
                     <div class="col-4">
                         <div class="stat-box">
                             <div class="stat-num" style="color:#ffc107;">⏳</div>
-                            <div class="stat-label">Awaiting Activation</div>
+                            <div class="stat-label">Payment Required</div>
                         </div>
                     </div>
                 </div>
@@ -154,7 +154,7 @@
                                 <i data-feather="check" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold">Account registered</div>
+                                <div class="fw-semibold">Account Created</div>
                                 <div class="text-muted small">Your profile has been created successfully.</div>
                             </div>
                         </div>
@@ -163,8 +163,8 @@
                                 <i data-feather="check" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold">Email verified</div>
-                                <div class="text-muted small">Your email address has been confirmed.</div>
+                                <div class="fw-semibold">Email Verified</div>
+                                <div class="text-muted small">Your email address has been confirmed successfully.</div>
                             </div>
                         </div>
                         <div class="step-item">
@@ -172,17 +172,35 @@
                                 <i data-feather="clock" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold">Team activation <span class="badge bg-warning text-dark ms-1" style="font-size:0.72rem;">In Progress</span></div>
-                                <div class="text-muted small">Our team reviews and activates accounts weekly.</div>
+                                <div class="fw-semibold">Payment Required <span class="badge bg-warning text-dark ms-1" style="font-size:0.72rem;">In Progress</span></div>
+                                <div class="text-muted small">Complete payment to activate your Villa Bit AI Server account.</div>
                             </div>
                         </div>
                         <div class="step-item">
                             <div class="step-icon pending">
-                                <i data-feather="zap" style="width:14px;height:14px;"></i>
+                                <i data-feather="server" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold text-muted">AI features & onboarding</div>
-                                <div class="text-muted small">Your AI tools and workspace will be configured.</div>
+                                <div class="fw-semibold text-muted">AI Server Setup</div>
+                                <div class="text-muted small">After payment, your account will be added to the AI Server setup process.</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-icon pending">
+                                <i data-feather="globe" style="width:14px;height:14px;"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold text-muted">Domain Connection</div>
+                                <div class="text-muted small">You will enter yourdomain.com/anyword for your Villa Bit AI Server connection.</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-icon pending">
+                                <i data-feather="settings" style="width:14px;height:14px;"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold text-muted">Nameserver Changes</div>
+                                <div class="text-muted small">Copy the Cloudflare nameservers and update them at your domain registrar.</div>
                             </div>
                         </div>
                         <div class="step-item">
@@ -190,8 +208,8 @@
                                 <i data-feather="unlock" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold text-muted">Full panel access granted</div>
-                                <div class="text-muted small">You'll receive an email the moment your account is activated.</div>
+                                <div class="fw-semibold text-muted">Full Panel Access</div>
+                                <div class="text-muted small">Your AI tools, workspace, and onboarding will become active after full DNS propagation.</div>
                             </div>
                         </div>
                     </div>
@@ -200,7 +218,7 @@
                 {{-- Footer note + sign out --}}
                 <div class="text-center mb-5">
                     <p class="text-muted small mb-3">
-                        Questions? Reach us at <a href="mailto:inbox@villabit.ai" class="text-dark fw-semibold">inbox@villabit.ai</a>
+                        Need technical help? <a href="https://app.villabit.ai/agency/support" class="text-dark fw-semibold">Submit a support ticket here</a>.
                     </p>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

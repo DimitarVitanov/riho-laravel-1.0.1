@@ -9,9 +9,14 @@
               <div class="left-header col-xxl-5 col-xl-6 col-lg-5 col-md-4 col-sm-3 p-0">
                   <div> <a class="toggle-sidebar" href="#"> <i class="iconly-Category icli"> </i></a>
                       <div class="d-flex align-items-center gap-2 ">
-                          <h4 class="f-w-600">Welcome
-                              {{ \Illuminate\Support\Str::title(auth()->user()->first_name ?? '') }}
-                              {{ \Illuminate\Support\Str::title(auth()->user()->last_name ?? '') }}</h4>
+                          @php
+                              $headerUser = auth()->user();
+                              $headerProfile = $headerUser->agencyProfile ?? null;
+                              $headerDisplayName = ($headerProfile && $headerProfile->agency_name)
+                                  ? \Illuminate\Support\Str::title($headerProfile->agency_name)
+                                  : \Illuminate\Support\Str::title(($headerUser->first_name ?? '') . ' ' . ($headerUser->last_name ?? ''));
+                          @endphp
+                          <h4 class="f-w-600">{{ $headerDisplayName }}</h4>
                       </div>
                   </div>
               </div>
@@ -24,7 +29,14 @@
                           <div class="media profile-media text-capitalize">
                               <div class="media-body d-xxl-block d-none box-col-none">
                                   <div class="d-flex align-items-center gap-2">
-                                      <span>{{ ucfirst(auth()?->user()?->first_name) }} </span><i
+                                      @php
+                                      $navUser = auth()->user();
+                                      $navProfile = $navUser->agencyProfile ?? null;
+                                      $navDisplayName = ($navProfile && $navProfile->agency_name)
+                                          ? \Illuminate\Support\Str::title($navProfile->agency_name)
+                                          : \Illuminate\Support\Str::title(($navUser->first_name ?? '') . ' ' . ($navUser->last_name ?? ''));
+                                  @endphp
+                                  <span>{{ $navDisplayName }} </span><i
                                           class="middle fa fa-angle-down"> </i>
                                   </div>
                                   <p class="mb-0 font-roboto">{{ ucfirst(str_replace('_', ' ', auth()?->user()->role ?? '')) }}</p>

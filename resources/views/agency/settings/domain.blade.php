@@ -202,6 +202,38 @@
             </p>
         </div>
     </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">YOUR ACTIVATION PROCESS</h5>
+        </div>
+        <div class="card-body bg-light">
+            <div class="mb-3">
+                <span class="text-success fw-bold">✔ Account Created</span><br>
+                <span class="text-muted">Your profile has been created successfully.</span>
+            </div>
+            <div class="mb-3">
+                <span class="text-success fw-bold">✔ Email Verified</span><br>
+                <span class="text-muted">Your email address has been confirmed successfully.</span>
+            </div>
+            <div class="mb-3">
+                <span class="fw-bold">○ Payment Required</span><br>
+                <span class="text-muted">Complete payment to activate your Villa Bit AI Server account.</span>
+            </div>
+            <div class="mb-3">
+                <span class="fw-bold">○ AI Server Setup</span><br>
+                <span class="text-muted">After payment, your account will be added to the AI Server setup process.</span>
+            </div>
+            <div class="mb-3">
+                <span class="fw-bold">○ Domain Connection</span><br>
+                <span class="text-muted">You will enter the yourdomain.com/anyword you want to use for your Villa Bit AI Server connection. Your new Cloudflare nameservers will appear in this panel.</span>
+            </div>
+            <div class="mb-0">
+                <span class="fw-bold">○ Nameserver Changes</span><br>
+                <span class="text-muted">You will copy the Cloudflare nameservers shown in this panel. Then, log in to the domain registrar where you originally registered your domain name and change the nameservers to the exact Cloudflare nameservers provided by Villa Bit AI.</span>
+            </div>
+        </div>
+    </div>
     @endif
 
 </div>

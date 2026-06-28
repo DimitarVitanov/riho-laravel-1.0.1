@@ -33,16 +33,16 @@
         <div class="vb-usage-status-title">{{ __('messages.usage_period_status') }}</div>
         <div class="vb-usage-status-banner">
             <div class="vb-item">
-                <span>{{ strtoupper(__('messages.current_period')) }}</span>
-                <b>{{ now()->startOfMonth()->format('M j') }}–{{ now()->endOfMonth()->format('j, Y') }}</b>
-            </div>
-            <div class="vb-item">
                 <span>{{ strtoupper(__('messages.account_usage_status')) }}</span>
                 <b>{{ $user->agencyProfile && $user->agencyProfile->subscription_status === 'active' ? 'Active' : 'On Hold' }}</b>
             </div>
             <div class="vb-item">
+                <span>{{ strtoupper(__('messages.current_period')) }}</span>
+                <b>—</b>
+            </div>
+            <div class="vb-item">
                 <span>{{ strtoupper(__('messages.next_automatic_reset')) }}</span>
-                <b>{{ now()->addMonth()->startOfMonth()->format('F j, Y') }}</b>
+                <b>—</b>
             </div>
         </div>
         @endif

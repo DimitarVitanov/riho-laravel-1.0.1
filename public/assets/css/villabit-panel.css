@@ -46,13 +46,15 @@
     color: white !important;
 }
 
-.page-body-wrapper .vb-domain-support-link,
-.page-body-wrapper .vb-domain-support-link:visited {
+body .page-body-wrapper .vb-domain-support-link,
+body .page-body-wrapper .vb-domain-support-link:visited,
+body .page-body-wrapper a.vb-domain-support-link:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link) {
     color: #111827 !important;
     text-decoration: underline !important;
     font-weight: 700 !important;
 }
-.page-body-wrapper .vb-domain-support-link:hover {
+body .page-body-wrapper .vb-domain-support-link:hover,
+body .page-body-wrapper a.vb-domain-support-link:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):hover {
     text-decoration: none !important;
     color: #111827 !important;
 }

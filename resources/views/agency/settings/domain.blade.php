@@ -138,6 +138,17 @@
             <div class="mb-3">
                 <span class="fw-bold">○ Domain Connection</span><br>
                 <span>You will enter the yourdomain.com/anyword you want to use for your Villa Bit AI Server connection. Your new Cloudflare nameservers will appear in this panel.</span>
+                @if($profile->nameserver_1 && $profile->nameserver_2)
+                    <div class="alert alert-light border mt-2 mb-0">
+                        <strong>Your nameservers are:</strong><br>
+                        <code>{{ $profile->nameserver_1 }}</code><br>
+                        <code>{{ $profile->nameserver_2 }}</code>
+                    </div>
+                @else
+                    <div class="alert alert-light border mt-2 mb-0">
+                        <em>[Nameservers will appear here once Villa Bit AI Server adds your domain to Cloudflare]</em>
+                    </div>
+                @endif
             </div>
             <div class="mb-3">
                 <span class="fw-bold">○ Nameserver Changes</span><br>

@@ -43,7 +43,11 @@
 }
 
 .page-body-wrapper a:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):not(.logo-wrapper a) {
-    color: white !important;
+    color: #111827 !important;
+    text-decoration: none;
+}
+.page-body-wrapper a:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):not(.logo-wrapper a):hover {
+    text-decoration: underline;
 }
 
 .vb-terms-link,

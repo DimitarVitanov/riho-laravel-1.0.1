@@ -116,121 +116,36 @@
     @if($hasDomain)
     <div class="card mb-4">
         <div class="card-header">
-            <h5 class="mb-0">Connection Steps</h5>
-        </div>
-        <div class="card-body">
-            @if($serverType === 'subdomain_ai_server')
-                <ol class="list-group list-group-numbered mb-3">
-                    <li class="list-group-item">
-                        Enter the “anyword” you want to use into the Villa Bit AI Server panel.
-                        <br><small class="text-muted">Example: <code>app</code> to create <code>app.yourdomain.com</code></small>
-                    </li>
-                    <li class="list-group-item">
-                        Villa Bit AI Server adds your domain to the Cloudflare DNS system.
-                    </li>
-                    <li class="list-group-item">
-                        Your Villa Bit AI Server panel will show your new Cloudflare nameservers here.
-
-                        @if($profile->nameserver_1 && $profile->nameserver_2)
-                            <div class="alert alert-light border mt-2 mb-0">
-                                <strong>Your nameservers are:</strong><br>
-                                <code>{{ $profile->nameserver_1 }}</code><br>
-                                <code>{{ $profile->nameserver_2 }}</code>
-                            </div>
-                            <small class="text-muted d-block mt-2">
-                                Note: After you add the “anyword” in Step 1, wait up to 24 hours for the nameservers to appear.
-                                When you see your new nameservers here, change them at your existing domain registrar.
-                            </small>
-                        @else
-                            <div class="alert alert-light border mt-2 mb-0">
-                                <em>[Nameservers will appear here once Villa Bit AI Server adds your domain to Cloudflare]</em>
-                            </div>
-                        @endif
-                    </li>
-                    <li class="list-group-item">
-                        When DNS has fully propagated across the internet, you will see a green confirmation icon here showing that your DNS settings have been correctly propagated.
-                        @if($isVerified)
-                            <div class="mt-2"><span class="badge bg-success fs-6">✅ DNS verified</span></div>
-                        @endif
-                    </li>
-                </ol>
-                <div class="alert alert-info">
-                    <strong>Note:</strong> Your domain can continue working on your existing hosting server without any changes. At the same time, Villa Bit AI Server is added to your domain name system.
-                </div>
-            @elseif($serverType === 'domain_folder_ai_server')
-                <ol class="list-group list-group-numbered mb-3">
-                    <li class="list-group-item">
-                        Enter the folder name you want to use into the Villa Bit AI Server panel.
-                        <br><small class="text-muted">Example: <code>ai</code> to create <code>yourdomain.com/ai/</code></small>
-                    </li>
-                    <li class="list-group-item">
-                        Villa Bit AI Server creates the Cloudflare Worker and DNS records for your folder.
-                    </li>
-                    <li class="list-group-item">
-                        Your Villa Bit AI Server panel will show your new Cloudflare nameservers here.
-                        @if($profile->nameserver_1 && $profile->nameserver_2)
-                            <div class="alert alert-light border mt-2 mb-0">
-                                <strong>Your nameservers are:</strong><br>
-                                <code>{{ $profile->nameserver_1 }}</code><br>
-                                <code>{{ $profile->nameserver_2 }}</code>
-                            </div>
-                        @else
-                            <div class="alert alert-light border mt-2 mb-0">
-                                <em>[Nameservers will appear here once Villa Bit AI Server adds your domain to Cloudflare]</em>
-                            </div>
-                        @endif
-                    </li>
-                    <li class="list-group-item">
-                        When DNS has fully propagated across the internet, you will see a green confirmation icon here showing that your DNS settings have been correctly propagated.
-                        @if($isVerified)
-                            <div class="mt-2"><span class="badge bg-success fs-6">✅ DNS verified</span></div>
-                        @endif
-                    </li>
-                </ol>
-                <div class="alert alert-info">
-                    <strong>Important:</strong> Only the selected folder is routed to Villa Bit AI. The rest of your website, email, cPanel, and FTP stay on your existing hosting.
-                </div>
-            @else
-                <div class="alert alert-info">
-                    Your domain setup instructions will appear here once a server type is selected.
-                </div>
-            @endif
-
-            <p class="mb-0">
-                If you need any technical help, please ask or submit a support ticket here:
-                <a href="{{ route('agency.support.index') }}">https://app.villabit.ai/agency/support</a>
-            </p>
-        </div>
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-header">
             <h5 class="mb-0">YOUR ACTIVATION PROCESS</h5>
         </div>
-        <div class="card-body bg-light">
+        <div class="card-body">
             <div class="mb-3">
                 <span class="text-success fw-bold">✔ Account Created</span><br>
-                <span class="text-muted">Your profile has been created successfully.</span>
+                <span>Your profile has been created successfully.</span>
             </div>
             <div class="mb-3">
                 <span class="text-success fw-bold">✔ Email Verified</span><br>
-                <span class="text-muted">Your email address has been confirmed successfully.</span>
+                <span>Your email address has been confirmed successfully.</span>
             </div>
             <div class="mb-3">
                 <span class="fw-bold">○ Payment Required</span><br>
-                <span class="text-muted">Complete payment to activate your Villa Bit AI Server account.</span>
+                <span>Complete payment to activate your Villa Bit AI Server account.</span>
             </div>
             <div class="mb-3">
                 <span class="fw-bold">○ AI Server Setup</span><br>
-                <span class="text-muted">After payment, your account will be added to the AI Server setup process.</span>
+                <span>After payment, your account will be added to the AI Server setup process.</span>
             </div>
             <div class="mb-3">
                 <span class="fw-bold">○ Domain Connection</span><br>
-                <span class="text-muted">You will enter the yourdomain.com/anyword you want to use for your Villa Bit AI Server connection. Your new Cloudflare nameservers will appear in this panel.</span>
+                <span>You will enter the yourdomain.com/anyword you want to use for your Villa Bit AI Server connection. Your new Cloudflare nameservers will appear in this panel.</span>
             </div>
-            <div class="mb-0">
+            <div class="mb-3">
                 <span class="fw-bold">○ Nameserver Changes</span><br>
-                <span class="text-muted">You will copy the Cloudflare nameservers shown in this panel. Then, log in to the domain registrar where you originally registered your domain name and change the nameservers to the exact Cloudflare nameservers provided by Villa Bit AI.</span>
+                <span>You will copy the Cloudflare nameservers shown in this panel. Then, log in to the domain registrar where you originally registered your domain name and change the nameservers to the exact Cloudflare nameservers provided by Villa Bit AI.</span>
+            </div>
+            <div class="mb-0 border-top pt-3">
+                <span>If you need any technical help, please ask or submit a support ticket here:
+                <a href="{{ route('agency.support.index') }}">https://app.villabit.ai/agency/support</a></span>
             </div>
         </div>
     </div>

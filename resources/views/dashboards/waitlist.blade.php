@@ -166,7 +166,7 @@
                 {{-- Steps card --}}
                 <div class="card mb-4">
                     <div class="card-header py-3">
-                        <h6 class="mb-0 fw-semibold">Your activation progress</h6>
+                        <h6 class="mb-0 fw-semibold">YOUR ACTIVATION PROGRESS</h6>
                     </div>
                     <div class="card-body px-4 waitlist-steps">
                         <div class="step-item">
@@ -174,7 +174,7 @@
                                 <i data-feather="check" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold">Account Created</div>
+                                <div class="fw-semibold">✓ Account Created</div>
                                 <div class="text-muted small">Your profile has been created successfully.</div>
                             </div>
                         </div>
@@ -183,7 +183,7 @@
                                 <i data-feather="check" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold">Email Verified</div>
+                                <div class="fw-semibold">✓ Email Verified</div>
                                 <div class="text-muted small">Your email address has been confirmed successfully.</div>
                             </div>
                         </div>
@@ -192,7 +192,7 @@
                                 <i data-feather="clock" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold">Payment Required <span class="badge bg-warning text-dark ms-1" style="font-size:0.72rem;">In Progress</span></div>
+                                <div class="fw-semibold">⏳ Payment Required</div>
                                 <div class="text-muted small">Complete payment to activate your Villa Bit AI Server account.</div>
                             </div>
                         </div>
@@ -201,7 +201,7 @@
                                 <i data-feather="server" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold text-muted">AI Server Setup</div>
+                                <div class="fw-semibold text-muted">○ AI Server Setup</div>
                                 <div class="text-muted small">After payment, your account will be added to the AI Server setup process.</div>
                             </div>
                         </div>
@@ -210,8 +210,8 @@
                                 <i data-feather="globe" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold text-muted">Domain Connection</div>
-                                <div class="text-muted small">You will enter yourdomain.com/anyword for your Villa Bit AI Server connection.</div>
+                                <div class="fw-semibold text-muted">○ Domain Connection</div>
+                                <div class="text-muted small">You will enter the yourdomain.com/anyword you want to use for your Villa Bit AI Server connection. Your new Cloudflare nameservers will appear in this panel.</div>
                             </div>
                         </div>
                         <div class="step-item">
@@ -219,8 +219,8 @@
                                 <i data-feather="settings" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold text-muted">Nameserver Changes</div>
-                                <div class="text-muted small">Copy the Cloudflare nameservers and update them at your domain registrar.</div>
+                                <div class="fw-semibold text-muted">○ Nameserver Changes</div>
+                                <div class="text-muted small">You will copy the Cloudflare nameservers shown in this panel. Then, log in to the domain registrar where you originally registered your domain name and change the nameservers to the exact Cloudflare nameservers provided by Villa Bit AI.</div>
                             </div>
                         </div>
                         <div class="step-item">
@@ -228,7 +228,7 @@
                                 <i data-feather="unlock" style="width:14px;height:14px;"></i>
                             </div>
                             <div>
-                                <div class="fw-semibold text-muted">Full Panel Access</div>
+                                <div class="fw-semibold text-muted">○ Full Panel Access</div>
                                 <div class="text-muted small">Your AI tools, workspace, and onboarding will become active after full DNS propagation.</div>
                             </div>
                         </div>

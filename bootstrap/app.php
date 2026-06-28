@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'agency' => \App\Http\Middleware\AgencyAccessMiddleware::class,
         ]);
         $middleware->appendToGroup('web', [
             \App\Http\Middleware\AffiliateClickMiddleware::class,

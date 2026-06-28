@@ -121,19 +121,13 @@
                         To activate your account and begin the Villa Bit AI Server setup process, complete your monthly payment securely through PayPal.
                     </p>
                     @if($paypalLink)
-                        <a href="{{ $paypalLink }}" target="_blank" class="btn btn-warning fw-bold px-4 py-2 mt-2" style="color:#0a0b0c !important; text-transform:uppercase; letter-spacing:0.5px;">
+                        <a href="{{ $paypalLink }}" target="_blank" class="btn btn-warning fw-bold px-4 py-2 mt-2 mb-3" style="color:#0a0b0c !important; text-transform:uppercase; letter-spacing:0.5px;">
                             Activate Your Account and Pay with PayPal
                         </a>
                     @endif
-                </div>
-
-                {{-- Info message --}}
-                <div class="card mb-4">
-                    <div class="card-body" style="padding: 24px 28px;">
-                        <p class="mb-0" style="line-height:1.75; font-size:0.97rem; color:#444;">
-                            Once payment is completed, your account will be activated and your domain setup process will begin.
-                        </p>
-                    </div>
+                    <p class="mb-0" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                        Once payment is completed, your account will be activated and your domain setup process will begin.
+                    </p>
                 </div>
 
                 {{-- Technical help --}}

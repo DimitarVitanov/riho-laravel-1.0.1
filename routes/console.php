@@ -14,6 +14,6 @@ Schedule::command('queue:work --stop-when-empty --max-time=55')
     ->runInBackground();
 
 Schedule::command('app:verify-agency-domains')
-    ->hourly()
+    ->everyThirtyMinutes()
     ->withoutOverlapping()
     ->runInBackground();

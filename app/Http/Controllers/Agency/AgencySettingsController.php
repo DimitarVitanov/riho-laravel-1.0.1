@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AgencyProfile;
 use App\Models\AiFeatureSetting;
 use App\Models\GeneratedPage;
+use App\Services\DomainVerificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -72,6 +73,11 @@ class AgencySettingsController extends Controller
     {
         $user = Auth::user();
         $profile = $user->agencyProfile;
+
+        if ($profile && $profile->custom_domain) {
+            app(DomainVerificationService::class)->verify($profile);
+            $profile->refresh();
+        }
 
         $customDomain = $profile->custom_domain ?? '';
         $domainPart1 = '';

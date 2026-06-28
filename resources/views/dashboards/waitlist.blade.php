@@ -67,8 +67,8 @@
     }
     .stat-box .stat-num { font-size: 1.8rem; font-weight: 700; color: #0a0b0c; }
     .stat-box .stat-label { font-size: 0.78rem; color: #0a0b0c; text-transform: uppercase; letter-spacing: 0.5px; }
-    .page-body-wrapper a.support-link { color:#000000 !important; text-decoration:underline !important; }
-    .page-body-wrapper a.support-link:hover { text-decoration:none !important; }
+    .page-body-wrapper a.support-link:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):not(.logo-wrapper a) { color:#000000 !important; text-decoration:underline !important; }
+    .page-body-wrapper a.support-link:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):not(.logo-wrapper a):hover { text-decoration:none !important; }
 </style>
 @endsection
 

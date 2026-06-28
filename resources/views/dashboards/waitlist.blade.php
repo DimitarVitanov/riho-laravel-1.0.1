@@ -125,7 +125,7 @@
                             Activate Your Account and Pay with PayPal
                         </a>
                     @endif
-                    <p class="mb-0" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                    <p class="mb-0" style="color:#ffffff !important; font-size:15px; line-height:1.7;">
                         Once payment is completed, your account will be activated and your domain setup process will begin.
                     </p>
                 </div>
@@ -136,7 +136,7 @@
                         <h6 class="fw-bold mb-2">NEED TECHNICAL HELP?</h6>
                         <p class="mb-0" style="line-height:1.75; font-size:0.97rem; color:#444;">
                             For any questions, please submit a support ticket here:<br>
-                            <a href="https://app.villabit.ai/agency/support" class="fw-semibold">https://app.villabit.ai/agency/support</a>
+                            <a href="{{ route('agency.support.index') }}" class="fw-semibold">https://app.villabit.ai/agency/support</a>
                         </p>
                     </div>
                 </div>
@@ -237,9 +237,7 @@
 
                 {{-- Footer note + sign out --}}
                 <div class="text-center mb-5">
-                    <p class="small mb-3" style="color:#000000 !important;">
-                        Need technical help? <a href="https://app.villabit.ai/agency/support" class="fw-semibold" style="color:#000000 !important; text-decoration:underline;">Submit a support ticket here</a>.
-                    </p>
+                 
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="btn btn-outline-secondary px-4">Sign Out</button>

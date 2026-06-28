@@ -67,8 +67,8 @@
     }
     .stat-box .stat-num { font-size: 1.8rem; font-weight: 700; color: #0a0b0c; }
     .stat-box .stat-label { font-size: 0.78rem; color: #0a0b0c; text-transform: uppercase; letter-spacing: 0.5px; }
-    .support-link { color:#000000; text-decoration:underline; }
-    .support-link:hover { text-decoration:none; }
+    .support-link { color:#000000 !important; text-decoration:underline !important; }
+    .support-link:hover { text-decoration:none !important; }
 </style>
 @endsection
 

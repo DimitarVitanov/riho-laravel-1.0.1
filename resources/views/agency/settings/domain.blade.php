@@ -128,11 +128,11 @@
                 <span>Your email address has been confirmed successfully.</span>
             </div>
             <div class="mb-3">
-                <span class="fw-bold">○ Payment Required</span><br>
+                <span class="text-success fw-bold">✔ Payment Required</span><br>
                 <span>Complete payment to activate your Villa Bit AI Server account.</span>
             </div>
             <div class="mb-3">
-                <span class="fw-bold">○ AI Server Setup</span><br>
+                <span class="fw-bold">⏳ AI Server Setup</span><br>
                 <span>After payment, your account will be added to the AI Server setup process.</span>
             </div>
             <div class="mb-3">

@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\AgencyProfile;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class DomainVerificationService
@@ -11,19 +10,42 @@ class DomainVerificationService
     public function verify(AgencyProfile $profile): bool
     {
         $domain = $profile->custom_domain;
-        $serverIp = $profile->server_ip;
-        $user = $profile->user;
 
-        if (!$domain || !$serverIp || !$user) {
+        if (!$domain) {
             $profile->update(['last_dns_check_at' => now()]);
             return false;
         }
 
-        $verified = match ($user->agency_server_type) {
-            'subdomain_ai_server' => $this->verifySubdomain($domain, $serverIp),
-            'domain_folder_ai_server' => $this->verifyFolder($domain, $serverIp),
-            default => $this->verifyDefault($domain, $serverIp),
-        };
+        $baseDomain = $this->extractBaseDomain($domain);
+        $expected = $this->expectedNameservers($profile);
+        $current = $this->getNameservers($baseDomain);
+
+        if ($expected === []) {
+            Log::info("DNS verification failed: no expected nameservers for {$domain}");
+            $profile->update([
+                'last_dns_check_at' => now(),
+                'dns_verified_at' => null,
+            ]);
+            return false;
+        }
+
+        if ($current === []) {
+            Log::info("DNS verification failed: could not resolve nameservers for {$baseDomain}");
+            $profile->update([
+                'last_dns_check_at' => now(),
+                'dns_verified_at' => null,
+            ]);
+            return false;
+        }
+
+        sort($expected);
+        sort($current);
+
+        $verified = $current === $expected;
+
+        if (!$verified) {
+            Log::info("DNS verification failed: {$baseDomain} nameservers " . implode(', ', $current) . " do not match expected " . implode(', ', $expected));
+        }
 
         $profile->update([
             'last_dns_check_at' => now(),
@@ -33,55 +55,45 @@ class DomainVerificationService
         return $verified;
     }
 
-    protected function verifySubdomain(string $domain, string $serverIp): bool
+    protected function extractBaseDomain(string $domain): string
     {
-        return $this->resolveAndCheck($domain, $serverIp)
-            && $this->httpCheck("https://{$domain}/");
+        $domain = preg_replace('#^https?://#i', '', trim($domain));
+        $domain = explode('/', $domain)[0];
+        $domain = preg_replace('/:\d+$/', '', $domain);
+
+        return $domain;
     }
 
-    protected function verifyFolder(string $domain, string $serverIp): bool
+    protected function getNameservers(string $domain): array
     {
-        $baseDomain = explode('/', $domain, 2)[0];
-
-        return $this->resolveAndCheck($baseDomain, $serverIp)
-            && $this->httpCheck("https://{$domain}/");
-    }
-
-    protected function resolveAndCheck(string $host, string $serverIp): bool
-    {
-        $resolvedIp = gethostbyname($host);
-
-        if ($resolvedIp === $host) {
-            Log::info("DNS verification failed: could not resolve {$host}");
-            return false;
+        if (!filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME)) {
+            return [];
         }
 
-        if ($resolvedIp !== $serverIp) {
-            Log::info("DNS verification failed: {$host} resolves to {$resolvedIp}, expected {$serverIp}");
-            return false;
+        $records = dns_get_record($domain, DNS_NS);
+        $nameservers = [];
+
+        foreach ($records as $record) {
+            if (!empty($record['target'])) {
+                $nameservers[] = rtrim(strtolower($record['target']), '.');
+            }
         }
 
-        return true;
+        return array_values(array_unique($nameservers));
     }
 
-    protected function verifyDefault(string $domain, string $serverIp): bool
+    protected function expectedNameservers(AgencyProfile $profile): array
     {
-        $resolvedIp = gethostbyname($domain);
+        $nameservers = [];
 
-        return $resolvedIp !== $domain && $resolvedIp === $serverIp;
-    }
-
-    protected function httpCheck(string $url): bool
-    {
-        try {
-            $response = Http::timeout(10)
-                ->withOptions(['verify' => false])
-                ->get($url);
-
-            return $response->successful();
-        } catch (\Exception $e) {
-            Log::info("HTTP verification failed for {$url}: {$e->getMessage()}");
-            return false;
+        if ($profile->nameserver_1) {
+            $nameservers[] = rtrim(strtolower($profile->nameserver_1), '.');
         }
+
+        if ($profile->nameserver_2) {
+            $nameservers[] = rtrim(strtolower($profile->nameserver_2), '.');
+        }
+
+        return array_values(array_unique($nameservers));
     }
 }

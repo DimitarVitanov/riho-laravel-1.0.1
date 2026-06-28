@@ -837,3 +837,22 @@ body .page-body-wrapper a.vb-domain-support-link:not(.sidebar-link):not(.menu-li
 .dropdown-menu .dropdown-item.text-muted {
     color: #6b7280 !important;
 }
+
+.waitlist-steps .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f2f3;
+}
+.waitlist-steps .step-item:last-child { border-bottom: none; }
+.step-icon {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+}
+.step-icon.done    { background: #d4edda; color: #28a745; }
+.step-icon.active  { background: #fff3cd; color: #ffc107; }
+.step-icon.pending { background: #f0f0f1; color: #aaa; }

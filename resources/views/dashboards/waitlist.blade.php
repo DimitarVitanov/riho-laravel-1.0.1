@@ -66,7 +66,7 @@
         text-align: center;
     }
     .stat-box .stat-num { font-size: 1.8rem; font-weight: 700; color: #0a0b0c; }
-    .stat-box .stat-label { font-size: 0.78rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-box .stat-label { font-size: 0.78rem; color: #0a0b0c; text-transform: uppercase; letter-spacing: 0.5px; }
 </style>
 @endsection
 

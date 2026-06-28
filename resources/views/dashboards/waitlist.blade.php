@@ -82,7 +82,7 @@
                                 <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use></svg>
                             </a>
                         </li>
-                        <li class="breadcrumb-item active">Waiting List</li>
+                        <li class="breadcrumb-item active">On Hold</li>
                     </ol>
                 </div>
             </div>

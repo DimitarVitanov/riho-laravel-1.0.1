@@ -58,6 +58,52 @@
     </div>
     <div class="row">
         <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header pb-0"><h5>Domain Settings</h5></div>
+                <div class="card-body">
+                    @if($user->agencyProfile)
+                    <form method="POST" action="{{ route('admin.villabit.agencies.domain-settings.update', $user) }}">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="form-label">Custom Domain</label>
+                            <input type="text" name="custom_domain" class="form-control" value="{{ old('custom_domain', $user->agencyProfile->custom_domain) }}" placeholder="yourdomain.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Server Name</label>
+                            <input type="text" name="server_name" class="form-control" value="{{ old('server_name', $user->agencyProfile->server_name) }}" placeholder="Server1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Server IP</label>
+                            <input type="text" name="server_ip" class="form-control" value="{{ old('server_ip', $user->agencyProfile->server_ip) }}" placeholder="165.227.125.83">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nameserver 1</label>
+                            <input type="text" name="nameserver_1" class="form-control" value="{{ old('nameserver_1', $user->agencyProfile->nameserver_1) }}" placeholder="hunts.ns.cloudflare.com">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nameserver 2</label>
+                            <input type="text" name="nameserver_2" class="form-control" value="{{ old('nameserver_2', $user->agencyProfile->nameserver_2) }}" placeholder="ziggy.ns.cloudflare.com">
+                        </div>
+                        <div class="mb-3">
+                            <strong>DNS Status:</strong>
+                            @if($user->agencyProfile->is_dns_verified)
+                                <span class="badge bg-success">Verified</span>
+                            @else
+                                <span class="badge bg-warning text-dark">Waiting</span>
+                            @endif
+                            @if($user->agencyProfile->last_dns_check_at)
+                                <br><small class="text-muted">Last checked: {{ $user->agencyProfile->last_dns_check_at->diffForHumans() }}</small>
+                            @endif
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Domain Settings</button>
+                    </form>
+                    @else
+                        <p class="text-muted">Agency profile not found.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <h5>Usage Limits</h5>

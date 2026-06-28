@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\AgencyProfile;
+use App\Notifications\DomainNameserverNotification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class AdminAgencyController extends Controller
 {
@@ -72,5 +75,48 @@ class AdminAgencyController extends Controller
 
         return redirect()->route('admin.villabit.usage-limits.edit', $usageLimit)
             ->with('success', 'Default usage limits created successfully.');
+    }
+
+    public function updateDomainSettings(Request $request, User $user)
+    {
+        $request->validate([
+            'custom_domain' => 'nullable|string|max:255',
+            'server_name' => 'nullable|string|max:255',
+            'server_ip' => 'nullable|string|max:255',
+            'nameserver_1' => 'nullable|string|max:255',
+            'nameserver_2' => 'nullable|string|max:255',
+        ]);
+
+        if (!$user->agencyProfile) {
+            return redirect()->route('admin.villabit.agencies.show', $user)
+                ->with('error', 'Agency profile not found.');
+        }
+
+        $profile = $user->agencyProfile;
+        $oldNameserver1 = $profile->nameserver_1;
+        $oldNameserver2 = $profile->nameserver_2;
+
+        $profile->update($request->only([
+            'custom_domain',
+            'server_name',
+            'server_ip',
+            'nameserver_1',
+            'nameserver_2',
+        ]));
+
+        $nameserversChanged = $request->nameserver_1 && $request->nameserver_2
+            && ($request->nameserver_1 !== $oldNameserver1 || $request->nameserver_2 !== $oldNameserver2);
+
+        if ($nameserversChanged && $user->email) {
+            Notification::send($user, new DomainNameserverNotification(
+                $request->custom_domain ?: $profile->custom_domain ?: 'yourdomain.com',
+                $request->nameserver_1,
+                $request->nameserver_2,
+                $user->agency_server_type
+            ));
+        }
+
+        return redirect()->route('admin.villabit.agencies.show', $user)
+            ->with('success', 'Agency domain settings updated.');
     }
 }

@@ -7,6 +7,7 @@ use App\Models\AiFeatureSetting;
 use App\Models\AiSuggestion;
 use App\Models\GeneratedPage;
 use App\Models\LocalSeoTarget;
+use App\Services\DnsVerificationGuard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -457,6 +458,10 @@ class AgencyFeatureController extends Controller
 
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
+        }
+
+        if (!DnsVerificationGuard::ensureVerified($profile)) {
+            return redirect()->back()->with('error', 'Domain DNS is not verified yet. AI features are paused until your domain is connected.');
         }
 
         $selectedCities = $request->input('selected_cities', []);

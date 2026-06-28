@@ -14,6 +14,12 @@ class AgencyProfile extends Model
         'agency_name',
         'official_website_url',
         'custom_domain',
+        'server_name',
+        'server_ip',
+        'nameserver_1',
+        'nameserver_2',
+        'dns_verified_at',
+        'last_dns_check_at',
         'country',
         'city',
         'main_service_area',
@@ -108,5 +114,10 @@ class AgencyProfile extends Model
     public function competitorScanResults()
     {
         return $this->hasMany(CompetitorScanResult::class);
+    }
+
+    public function getIsDnsVerifiedAttribute(): bool
+    {
+        return $this->dns_verified_at !== null;
     }
 }

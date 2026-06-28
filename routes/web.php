@@ -112,6 +112,7 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::get('agencies/{user}', [AdminAgencyController::class, 'show'])->name('agencies.show');
     Route::post('agencies/{user}/toggle-status', [AdminAgencyController::class, 'toggleStatus'])->name('agencies.toggle-status');
     Route::post('agencies/{user}/create-usage-limits', [AdminAgencyController::class, 'createUsageLimits'])->name('agencies.create-usage-limits');
+    Route::post('agencies/{user}/domain-settings', [AdminAgencyController::class, 'updateDomainSettings'])->name('agencies.domain-settings.update');
 
     // Investors
     Route::get('investors', [AdminInvestorController::class, 'index'])->name('investors.index');

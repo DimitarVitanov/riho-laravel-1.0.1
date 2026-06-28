@@ -92,7 +92,7 @@
                                 <span class="badge bg-warning text-dark">Waiting</span>
                             @endif
                             @if($user->agencyProfile->last_dns_check_at)
-                                <br><small class="text-muted">Last checked: {{ $user->agencyProfile->last_dns_check_at->diffForHumans() }}</small>
+                                <br><small class="text-muted">Last checked: {{ \Carbon\Carbon::parse($user->agencyProfile->last_dns_check_at)->diffForHumans() }}</small>
                             @endif
                         </div>
                         <button type="submit" class="btn btn-primary">Save Domain Settings</button>

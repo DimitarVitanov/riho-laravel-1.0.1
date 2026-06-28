@@ -48,6 +48,14 @@ class AgencyProfile extends Model
         'ai_content_language',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'dns_verified_at'   => 'datetime',
+            'last_dns_check_at' => 'datetime',
+        ];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

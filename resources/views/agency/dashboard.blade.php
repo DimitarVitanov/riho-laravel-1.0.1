@@ -18,7 +18,7 @@
         <div class="vb-usage-status-banner">
             <div class="vb-item">
                 <span>{{ strtoupper(__('messages.current_period')) }}</span>
-                <b>{{ $currentUsage->period_start->format('M j') }}–{{ $currentUsage->period_end->format('j, Y') }}</b>
+                <b>{{ $currentUsage->period_start->format('M j, Y') }} – {{ $currentUsage->period_end->format('M j, Y') }}</b>
             </div>
             <div class="vb-item">
                 <span>{{ strtoupper(__('messages.account_usage_status')) }}</span>

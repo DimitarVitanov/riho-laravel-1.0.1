@@ -13,7 +13,7 @@
                               $headerUser = auth()->user();
                               $headerProfile = $headerUser->agencyProfile ?? null;
                               $headerDisplayName = ($headerProfile && $headerProfile->agency_name)
-                                  ? \Illuminate\Support\Str::title($headerProfile->agency_name)
+                                  ? $headerProfile->agency_name
                                   : \Illuminate\Support\Str::title(($headerUser->first_name ?? '') . ' ' . ($headerUser->last_name ?? ''));
                           @endphp
                           <h4 class="f-w-600">{{ $headerDisplayName }}</h4>
@@ -26,14 +26,14 @@
                           <div class="mode"><i class="moon" data-feather="moon"> </i></div>
                       </li>
                       <li class="profile-nav onhover-dropdown">
-                          <div class="media profile-media text-capitalize">
+                          <div class="media profile-media">
                               <div class="media-body d-xxl-block d-none box-col-none">
                                   <div class="d-flex align-items-center gap-2">
                                       @php
                                       $navUser = auth()->user();
                                       $navProfile = $navUser->agencyProfile ?? null;
                                       $navDisplayName = ($navProfile && $navProfile->agency_name)
-                                          ? \Illuminate\Support\Str::title($navProfile->agency_name)
+                                          ? $navProfile->agency_name
                                           : \Illuminate\Support\Str::title(($navUser->first_name ?? '') . ' ' . ($navUser->last_name ?? ''));
                                   @endphp
                                   <span>{{ $navDisplayName }} </span><i

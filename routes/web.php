@@ -313,13 +313,27 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::get('leads', [AgencyLeadController::class, 'index'])->name('leads.index');
     Route::get('leads/{lead}', [AgencyLeadController::class, 'show'])->name('leads.show');
     Route::patch('leads/{lead}/status', [AgencyLeadController::class, 'updateStatus'])->name('leads.update-status');
+});
 
-    // Support
-    Route::get('support', [AgencySupportController::class, 'index'])->name('support.index');
-    Route::get('support/create', [AgencySupportController::class, 'create'])->name('support.create');
-    Route::post('support', [AgencySupportController::class, 'store'])->name('support.store');
-    Route::get('support/{ticket}', [AgencySupportController::class, 'show'])->name('support.show');
-    Route::post('support/{ticket}/reply', [AgencySupportController::class, 'reply'])->name('support.reply');
+/*
+|--------------------------------------------------------------------------
+| AGENCY Support Routes (accessible to agencies on the waitlist too)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('agency')->middleware(['auth', 'verified'])->name('agency.')->group(function () {
+    Route::group(['middleware' => function (\Illuminate\Http\Request $request, $next) {
+        $user = $request->user();
+        if (!$user || !in_array($user->role, ['real_estate_agency', 'admin', 'super_admin'])) {
+            abort(403, 'Unauthorized access.');
+        }
+        return $next($request);
+    }], function () {
+        Route::get('support', [AgencySupportController::class, 'index'])->name('support.index');
+        Route::get('support/create', [AgencySupportController::class, 'create'])->name('support.create');
+        Route::post('support', [AgencySupportController::class, 'store'])->name('support.store');
+        Route::get('support/{ticket}', [AgencySupportController::class, 'show'])->name('support.show');
+        Route::post('support/{ticket}/reply', [AgencySupportController::class, 'reply'])->name('support.reply');
+    });
 });
 
 /*

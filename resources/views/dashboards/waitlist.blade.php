@@ -136,7 +136,7 @@
                         <h6 class="fw-bold mb-2">NEED TECHNICAL HELP?</h6>
                         <p class="mb-0" style="line-height:1.75; font-size:0.97rem; color:#444;">
                             For any questions, please submit a support ticket here:<br>
-                            <a href="{{ route('agency.support.index') }}" class="fw-semibold">https://app.villabit.ai/agency/support</a>
+                            <a href="{{ route('agency.support.index') }}" class="fw-semibold" style="color:#0d6efd; text-decoration:underline;">https://app.villabit.ai/agency/support</a>
                         </p>
                     </div>
                 </div>

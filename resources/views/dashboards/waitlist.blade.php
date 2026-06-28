@@ -237,8 +237,8 @@
 
                 {{-- Footer note + sign out --}}
                 <div class="text-center mb-5">
-                    <p class="small mb-3" style="color:#0a0b0c;">
-                        Need technical help? <a href="https://app.villabit.ai/agency/support" class="fw-semibold" style="color:#0a0b0c; text-decoration:underline;">Submit a support ticket here</a>.
+                    <p class="small mb-3" style="color:#000000 !important;">
+                        Need technical help? <a href="https://app.villabit.ai/agency/support" class="fw-semibold" style="color:#000000 !important; text-decoration:underline;">Submit a support ticket here</a>.
                     </p>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

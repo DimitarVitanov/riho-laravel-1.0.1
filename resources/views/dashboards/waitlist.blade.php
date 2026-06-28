@@ -67,8 +67,6 @@
     }
     .stat-box .stat-num { font-size: 1.8rem; font-weight: 700; color: #0a0b0c; }
     .stat-box .stat-label { font-size: 0.78rem; color: #0a0b0c; text-transform: uppercase; letter-spacing: 0.5px; }
-    .support-link { color:#0d6efd; text-decoration:underline; }
-    .support-link:hover { text-decoration:none; }
 </style>
 @endsection
 
@@ -137,8 +135,7 @@
                     <div class="card-body" style="padding: 24px 28px;">
                         <h6 class="fw-bold mb-2">NEED TECHNICAL HELP?</h6>
                         <p class="mb-0" style="line-height:1.75; font-size:0.97rem; color:#444;">
-                            For any questions, please submit a support ticket here:<br>
-                            <a href="{{ route('agency.support.index') }}" class="fw-semibold support-link">https://app.villabit.ai/agency/support</a>
+                            For any questions, please submit a support ticket here: <a href="{{ route('agency.support.index') }}" class="fw-semibold" style="color:#000000; text-decoration:underline;">https://app.villabit.ai/agency/support</a>
                         </p>
                     </div>
                 </div>

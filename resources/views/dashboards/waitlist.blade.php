@@ -103,6 +103,19 @@
                 @endif
 
                 @php
+                    $userType = match ($user->role) {
+                        'real_estate_agency' => 'Real Estate Agency',
+                        'investor'           => 'Real Estate Investor',
+                        'manager'            => 'Manager Account',
+                        'super_admin', 'admin' => 'Administrator',
+                        default              => ucfirst($user->role ?? 'User'),
+                    };
+                    $subType = match ($user->agency_server_type ?? '') {
+                        'subdomain_ai_server'     => 'Subdomain Villa Bit AI Server',
+                        'domain_folder_ai_server' => 'Domain Folder Villa Bit AI Server',
+                        default                   => null,
+                    };
+                    $price = $user->agency_server_price ? '$' . number_format($user->agency_server_price, 2) . ' per month' : null;
                     $paypalLink = match ($user->agency_server_type ?? '') {
                         'domain_folder_ai_server' => 'https://app.villabit.ai/folder.php',
                         'subdomain_ai_server'     => 'https://app.villabit.ai/subdomain.php',
@@ -116,9 +129,22 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         Payment Required
                     </div>
-                    <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                    <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
                         Your account is currently on hold because payment is required before activation.
                     </p>
+                    <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                        Your account type: <strong>{{ $userType }}</strong>
+                    </p>
+                    @if($subType)
+                        <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                            Your subaccount type: <strong>{{ $subType }}</strong>
+                        </p>
+                    @endif
+                    @if($price)
+                        <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                            Your selected monthly price: <strong>{{ $price }}</strong>
+                        </p>
+                    @endif
                     <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
                         To activate your account and begin the Villa Bit AI Server setup process, complete your monthly payment securely through PayPal.
                     </p>
@@ -138,7 +164,7 @@
                         <h6 class="fw-bold mb-2">NEED TECHNICAL HELP?</h6>
                         <p class="mb-0" style="line-height:1.75; font-size:0.97rem; color:#444;">
                             For any questions, please submit a support ticket here:<br>
-                            <a href="{{ route('agency.support.index') }}" class="fw-semibold support-link">https://app.villabit.ai/agency/support</a>
+                            <a style="color:#000000;" href="{{ route('agency.support.index') }}" class="fw-semibold support-link">https://app.villabit.ai/agency/support</a>
                         </p>
                     </div>
                 </div>

@@ -100,6 +100,14 @@
                     </div>
                 @endif
 
+                @php
+                    $paypalLink = match ($user->agency_server_type ?? '') {
+                        'domain_folder_ai_server' => 'https://app.villabit.ai/folder.php',
+                        'subdomain_ai_server'     => 'https://app.villabit.ai/subdomain.php',
+                        default                   => null,
+                    };
+                @endphp
+
                 {{-- Hero card --}}
                 <div class="waitlist-hero mb-4">
                     <div class="waitlist-badge">
@@ -107,16 +115,24 @@
                         Payment Required
                     </div>
                     <h2 class="fw-bold mb-2" style="color:#ffffff;">Welcome, {{ $user->first_name }}!</h2>
-                    <p class="mb-0" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
-                        Your account is currently on hold because payment is required before activation. To activate your account and begin the Villa Bit AI Server setup process, complete your monthly payment securely through PayPal.
+                    <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                        Your account is currently on hold because payment is required before activation.
                     </p>
+                    <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                        To activate your account and begin the Villa Bit AI Server setup process, complete your monthly payment securely through PayPal.
+                    </p>
+                    @if($paypalLink)
+                        <a href="{{ $paypalLink }}" target="_blank" class="btn btn-warning fw-bold px-4 py-2 mt-2" style="color:#0a0b0c !important; text-transform:uppercase; letter-spacing:0.5px;">
+                            Activate Your Account and Pay with PayPal
+                        </a>
+                    @endif
                 </div>
 
                 {{-- Info message --}}
                 <div class="card mb-4">
                     <div class="card-body" style="padding: 24px 28px;">
                         <p class="mb-0" style="line-height:1.75; font-size:0.97rem; color:#444;">
-                            Once payment is completed, your account will be activated and your domain setup process will begin. You will enter the <strong>yourdomain.com/anyword</strong> you want to use for your Villa Bit AI Server connection, and your new Cloudflare nameservers will appear in this panel.
+                            Once payment is completed, your account will be activated and your domain setup process will begin.
                         </p>
                     </div>
                 </div>

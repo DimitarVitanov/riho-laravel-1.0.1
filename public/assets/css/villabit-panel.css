@@ -46,13 +46,14 @@
     color: white !important;
 }
 
-.vb-domain-support-link {
+.page-body-wrapper .vb-domain-support-link,
+.page-body-wrapper .vb-domain-support-link:visited {
     color: #111827 !important;
-    text-decoration: underline;
-    font-weight: 700;
+    text-decoration: underline !important;
+    font-weight: 700 !important;
 }
-.vb-domain-support-link:hover {
-    text-decoration: none;
+.page-body-wrapper .vb-domain-support-link:hover {
+    text-decoration: none !important;
     color: #111827 !important;
 }
 

@@ -78,11 +78,11 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Nameserver 1</label>
-                            <input type="text" name="nameserver_1" class="form-control" value="{{ old('nameserver_1', $user->agencyProfile->nameserver_1) }}" placeholder="hunts.ns.cloudflare.com">
+                            <input type="text" name="nameserver_1" class="form-control" value="{{ old('nameserver_1', $user->agencyProfile->nameserver_1) }}" placeholder="">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Nameserver 2</label>
-                            <input type="text" name="nameserver_2" class="form-control" value="{{ old('nameserver_2', $user->agencyProfile->nameserver_2) }}" placeholder="ziggy.ns.cloudflare.com">
+                            <input type="text" name="nameserver_2" class="form-control" value="{{ old('nameserver_2', $user->agencyProfile->nameserver_2) }}" placeholder="">
                         </div>
                         <div class="mb-3">
                             <strong>DNS Status:</strong>

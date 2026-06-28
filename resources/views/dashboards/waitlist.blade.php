@@ -137,6 +137,17 @@
                     </div>
                 </div>
 
+                {{-- Technical help --}}
+                <div class="card mb-4">
+                    <div class="card-body" style="padding: 24px 28px;">
+                        <h6 class="fw-bold mb-2">NEED TECHNICAL HELP?</h6>
+                        <p class="mb-0" style="line-height:1.75; font-size:0.97rem; color:#444;">
+                            For any questions, please submit a support ticket here:<br>
+                            <a href="https://app.villabit.ai/agency/support" class="fw-semibold">https://app.villabit.ai/agency/support</a>
+                        </p>
+                    </div>
+                </div>
+
                 {{-- Stats row --}}
                 <div class="row g-3 mb-4">
                     <div class="col-4">

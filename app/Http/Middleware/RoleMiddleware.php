@@ -16,10 +16,6 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
-        if ($user->isOnWaitlist()) {
-            return redirect()->route('dashboard');
-        }
-
         foreach ($roles as $role) {
             if ($role === 'admin' && $user->isAdmin()) {
                 return $next($request);
@@ -27,6 +23,10 @@ class RoleMiddleware
             if ($user->role === $role) {
                 return $next($request);
             }
+        }
+
+        if ($user->isOnWaitlist()) {
+            return redirect()->route('dashboard');
         }
 
         abort(403, 'Unauthorized access.');

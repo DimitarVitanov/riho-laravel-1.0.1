@@ -64,6 +64,8 @@ Route::post('/lm/{agency}', [App\Http\Controllers\Frontend\LeadMagnetController:
 Route::get('/sitemap/agency/{agencyId}.xml', [AgencySitemapController::class, 'show'])->name('agency.sitemap');
 // Public Agency Sitemap XML — by custom domain (e.g. yourdomain.com/sitemap.xml)
 Route::get('/sitemap.xml', [AgencySitemapController::class, 'showByDomain']);
+// Public Agency Sitemap XML — folder-based (e.g. yourdomain.com/blog/sitemap.xml)
+Route::get('/{folder}/sitemap.xml', [AgencySitemapController::class, 'showByDomainFolder'])->where('folder', '[a-zA-Z0-9_\-]+');
 
 // Public legal pages redirect to marketing site
 Route::redirect('/terms', 'https://villabit.ai/terms/', 301)->name('terms');

@@ -21,6 +21,20 @@ class AgencySitemapController extends Controller
         return $this->show($profile->id);
     }
 
+    public function showByDomainFolder(\Illuminate\Http\Request $request, string $folder)
+    {
+        $host = strtolower($request->getHost());
+        $domainFolder = $host . '/' . $folder;
+
+        $profile = AgencyProfile::whereRaw('LOWER(custom_domain) = ?', [$domainFolder])->first();
+
+        if (!$profile) {
+            abort(404, 'No agency found for this domain/folder.');
+        }
+
+        return $this->show($profile->id);
+    }
+
     public function show(int $agencyId)
     {
         $profile = AgencyProfile::findOrFail($agencyId);

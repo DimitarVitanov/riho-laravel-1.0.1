@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\AgencyProfile;
 use App\Models\User;
 use App\Notifications\AdminDomainDisconnectedNotification;
+use App\Notifications\DomainLiveNotification;
 use App\Services\DomainVerificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Notification;
@@ -31,6 +32,10 @@ class VerifyAgencyDomains extends Command
             if ($isVerified) {
                 $verified++;
                 $this->info("{$profile->custom_domain}: verified");
+
+                if (!$wasVerified && $profile->user) {
+                    $profile->user->notify(new DomainLiveNotification($profile));
+                }
             } else {
                 $failed++;
                 $this->info("{$profile->custom_domain}: failed");

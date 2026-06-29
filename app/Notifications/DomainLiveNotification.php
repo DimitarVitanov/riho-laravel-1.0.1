@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AdminDomainDisconnectedNotification extends Notification implements ShouldQueue
+class DomainLiveNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -23,15 +23,17 @@ class AdminDomainDisconnectedNotification extends Notification implements Should
 
     public function toMail($notifiable): MailMessage
     {
-        $agency = $this->profile->agency_name ?? $this->profile->user?->name ?? 'Unknown agency';
-        $domain = $this->profile->custom_domain ?? 'Not set';
+        $name = $notifiable->first_name ?: $notifiable->name;
+        $domain = $this->profile->custom_domain ?? 'your domain';
+        $loginLink = url('/login');
         $signature = "Kind regards,\n\nVILLA BIT AI Server Team\\\nAI Server For Real Estate Agencies\\\n┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄\\\nVilla Bit AI Really Works Better, More, And Cheaper Than A Human!\\\nhttps://villabit.ai";
 
         return (new MailMessage)
-            ->subject("{$domain} Is No Longer Live on Villa Bit AI Server")
-            ->greeting('Hello Villa Bit AI Admin,')
-            ->line("{$domain} is no longer live on the Villa Bit AI Server.")
-            ->action('View Agency', route('admin.villabit.agencies.show', $this->profile->user_id))
+            ->subject("Your Domain is Now LIVE on Villa Bit AI Server")
+            ->greeting("Hello {$name},")
+            ->line("Your domain {$domain} is now verified, connected, and LIVE on the Villa Bit AI Server.")
+            ->line('All available features in your account can now be used. You can log in to your Villa Bit AI Server panel at any time to review your settings, activity, and available features.')
+            ->action('LOGIN TO YOUR PANEL', $loginLink)
             ->salutation($signature);
     }
 }

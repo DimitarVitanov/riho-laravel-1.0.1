@@ -126,7 +126,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                 </div>
                 <div class="vb-field">
                     <label class="vb-label">Country of Birth</label>
-                    <input type="text" name="country_of_birth" class="vb-input" value="{{ $profile->country_of_birth ?? '' }}" placeholder="Country">
+                    <select name="country_of_birth" class="vb-input">
+                        <option value="">-- Select Country --</option>
+                        @foreach($countries as $c)
+                            <option value="{{ $c->name }}" {{ ($profile->country_of_birth ?? '') == $c->name ? 'selected' : '' }}>{{ $c->iso_3166_2 }} — {{ $c->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
@@ -136,7 +141,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                 </div>
                 <div class="vb-field">
                     <label class="vb-label">Citizenship Country (Primary)</label>
-                    <input type="text" name="citizenship_country" class="vb-input" value="{{ $profile->citizenship_country ?? '' }}" placeholder="Primary citizenship">
+                    <select name="citizenship_country" class="vb-input">
+                        <option value="">-- Select Country --</option>
+                        @foreach($countries as $c)
+                            <option value="{{ $c->name }}" {{ ($profile->citizenship_country ?? '') == $c->name ? 'selected' : '' }}>{{ $c->iso_3166_2 }} — {{ $c->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
@@ -179,7 +189,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                 </div>
                 <div class="vb-field">
                     <label class="vb-label">Issuing Country</label>
-                    <input type="text" name="id_document_issuing_country" class="vb-input" value="{{ $profile->id_document_issuing_country ?? '' }}" placeholder="Issuing country">
+                    <select name="id_document_issuing_country" class="vb-input">
+                        <option value="">-- Select Country --</option>
+                        @foreach($countries as $c)
+                            <option value="{{ $c->name }}" {{ ($profile->id_document_issuing_country ?? '') == $c->name ? 'selected' : '' }}>{{ $c->iso_3166_2 }} — {{ $c->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="vb-field">
                     <label class="vb-label">Expiry Date</label>
@@ -230,23 +245,48 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                 </div>
                 <div class="vb-field">
                     <label class="vb-label">Country of Normal Residence</label>
-                    <input type="text" name="residence_country" class="vb-input" value="{{ $profile->residence_country ?? '' }}" placeholder="Country where you live">
+                    <select name="residence_country" class="vb-input">
+                        <option value="">-- Select Country --</option>
+                        @foreach($countries as $c)
+                            <option value="{{ $c->name }}" {{ ($profile->residence_country ?? '') == $c->name ? 'selected' : '' }}>{{ $c->iso_3166_2 }} — {{ $c->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:16px;margin-bottom:16px;">
                 <div style="font-weight:700;color:#374151;margin-bottom:12px;font-size:13px;">Country When Investment Activity Occurred</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
                     <div class="vb-field"><label class="vb-label">When you first received investment information</label>
-                        <input type="text" name="country_when_received_info" class="vb-input" value="{{ $profile->country_when_received_info ?? '' }}" placeholder="Country">
+                        <select name="country_when_received_info" class="vb-input">
+                            <option value="">-- Select Country --</option>
+                            @foreach($countries as $c)
+                                <option value="{{ $c->name }}" {{ ($profile->country_when_received_info ?? '') == $c->name ? 'selected' : '' }}>{{ $c->iso_3166_2 }} — {{ $c->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="vb-field"><label class="vb-label">When discussing the investment</label>
-                        <input type="text" name="country_when_discussing" class="vb-input" value="{{ $profile->country_when_discussing ?? '' }}" placeholder="Country">
+                        <select name="country_when_discussing" class="vb-input">
+                            <option value="">-- Select Country --</option>
+                            @foreach($countries as $c)
+                                <option value="{{ $c->name }}" {{ ($profile->country_when_discussing ?? '') == $c->name ? 'selected' : '' }}>{{ $c->iso_3166_2 }} — {{ $c->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="vb-field"><label class="vb-label">When signing documentation</label>
-                        <input type="text" name="country_when_signing" class="vb-input" value="{{ $profile->country_when_signing ?? '' }}" placeholder="Country">
+                        <select name="country_when_signing" class="vb-input">
+                            <option value="">-- Select Country --</option>
+                            @foreach($countries as $c)
+                                <option value="{{ $c->name }}" {{ ($profile->country_when_signing ?? '') == $c->name ? 'selected' : '' }}>{{ $c->iso_3166_2 }} — {{ $c->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="vb-field"><label class="vb-label">When sending investment funds</label>
-                        <input type="text" name="country_when_sending_funds" class="vb-input" value="{{ $profile->country_when_sending_funds ?? '' }}" placeholder="Country">
+                        <select name="country_when_sending_funds" class="vb-input">
+                            <option value="">-- Select Country --</option>
+                            @foreach($countries as $c)
+                                <option value="{{ $c->name }}" {{ ($profile->country_when_sending_funds ?? '') == $c->name ? 'selected' : '' }}>{{ $c->iso_3166_2 }} — {{ $c->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </div>
@@ -380,7 +420,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                     <input type="text" name="bank_account_holder" class="vb-input" value="{{ $profile->bank_account_holder ?? '' }}" placeholder="Full name as on account">
                 </div>
                 <div class="vb-field"><label class="vb-label">Bank Country</label>
-                    <input type="text" name="bank_country" class="vb-input" value="{{ $profile->bank_country ?? '' }}" placeholder="Country">
+                    <select name="bank_country" class="vb-input">
+                        <option value="">-- Select Country --</option>
+                        @foreach($countries as $c)
+                            <option value="{{ $c->name }}" {{ ($profile->bank_country ?? '') == $c->name ? 'selected' : '' }}>{{ $c->iso_3166_2 }} — {{ $c->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">

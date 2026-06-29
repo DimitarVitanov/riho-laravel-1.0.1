@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Investor;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class InvestorDocumentController extends Controller
@@ -30,7 +31,9 @@ class InvestorDocumentController extends Controller
             usort($documents, fn ($a, $b) => $b['date'] <=> $a['date']);
         }
 
-        return view('investor.documents.index', compact('documents', 'user', 'profile'));
+        $countries = DB::table('countries')->orderBy('iso_3166_2')->get(['name', 'iso_3166_2']);
+
+        return view('investor.documents.index', compact('documents', 'user', 'profile', 'countries'));
     }
 
     public function store(Request $request)

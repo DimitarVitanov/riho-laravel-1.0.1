@@ -129,25 +129,26 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         Payment Required
                     </div>
-                    <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                    <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:700px; line-height:1.7;">
                         Your account type: <strong>{{ $userType }}</strong>
                     </p>
 
                     @if($user->isInvestor())
-                        <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                        <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem;  line-height:1.7;">
                             Your account is currently on hold because KYC verification and payment are required before activation.
                         </p>
-                        <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                        <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; line-height:1.7;">
                             To activate your account, first complete the KYC process. After your KYC is approved, complete your investment payment securely by bank wire transfer. Once both steps are completed, your account will be activated and your investment process will begin.
-                        </p>
-                        <p class="mb-3" style="color:#ffffff !important; font-size:0.95rem; max-width:520px; line-height:1.7; opacity:0.85;">
-                            Note: If you want to become a reseller only, your account does not need to be fully activated. Your affiliate link and all reseller features are fully active.
                         </p>
                         <a href="{{ route('investor.documents.index') }}" class="btn btn-warning fw-bold px-4 py-2 mt-2 mb-3" style="color:#0a0b0c !important; text-transform:uppercase; letter-spacing:0.5px;">
                             Complete KYC Verification
                         </a>
+                        <p class="mb-3" style="color:#ffffff !important; font-size:0.95rem;line-height:1.7; opacity:0.85;">
+                            Note: If you want to become a reseller only, your account does not need to be fully activated. Your affiliate link and all reseller features are fully active.
+                        </p>
+                     
                     @else
-                        <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                        <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; line-height:1.7;">
                             Your account is currently on hold because payment is required before activation.
                         </p>
                         @if($subType)

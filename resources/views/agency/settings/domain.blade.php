@@ -159,7 +159,9 @@
                 @endif
             </div>
             <div class="mb-3">
-                @if($profile->nameserver_1 && $profile->nameserver_2)
+                @if($isVerified)
+                    <span class="text-success fw-bold">✔ Nameserver Changes</span><br>
+                @elseif($profile->nameserver_1 && $profile->nameserver_2)
                     <span class="fw-bold">⏳ Nameserver Changes</span><br>
                 @else
                     <span class="fw-bold">○ Nameserver Changes</span><br>

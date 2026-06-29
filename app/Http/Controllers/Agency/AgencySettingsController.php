@@ -95,7 +95,10 @@ class AgencySettingsController extends Controller
             $domainPart1 = $customDomain;
         }
 
-        return view('agency.settings.domain', compact('user', 'profile', 'domainPart1', 'domainPart2'));
+        $hasDomain = !empty($customDomain);
+        $isVerified = $profile && !empty($profile->dns_verified_at);
+
+        return view('agency.settings.domain', compact('user', 'profile', 'domainPart1', 'domainPart2', 'hasDomain', 'isVerified'));
     }
 
     public function updateDomainSettings(Request $request)

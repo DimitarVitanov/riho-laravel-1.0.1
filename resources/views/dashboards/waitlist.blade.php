@@ -130,32 +130,48 @@
                         Payment Required
                     </div>
                     <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
-                        Your account is currently on hold because payment is required before activation.
-                    </p>
-                    <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
                         Your account type: <strong>{{ $userType }}</strong>
                     </p>
-                    @if($subType)
+
+                    @if($user->isInvestor())
                         <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
-                            Your subaccount type: <strong>{{ $subType }}</strong>
+                            Your account is currently on hold because KYC verification and payment are required before activation.
                         </p>
-                    @endif
-                    @if($price)
                         <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
-                            Your selected monthly price: <strong>{{ $price }}</strong>
+                            To activate your account, first complete the KYC process. After your KYC is approved, complete your investment payment securely by bank wire transfer. Once both steps are completed, your account will be activated and your investment process will begin.
+                        </p>
+                        <p class="mb-3" style="color:#ffffff !important; font-size:0.95rem; max-width:520px; line-height:1.7; opacity:0.85;">
+                            Note: If you want to become a reseller only, your account does not need to be fully activated. Your affiliate link and all reseller features are fully active.
+                        </p>
+                        <a href="{{ route('investor.documents.index') }}" class="btn btn-warning fw-bold px-4 py-2 mt-2 mb-3" style="color:#0a0b0c !important; text-transform:uppercase; letter-spacing:0.5px;">
+                            Complete KYC Verification
+                        </a>
+                    @else
+                        <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                            Your account is currently on hold because payment is required before activation.
+                        </p>
+                        @if($subType)
+                            <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                                Your subaccount type: <strong>{{ $subType }}</strong>
+                            </p>
+                        @endif
+                        @if($price)
+                            <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                                Your selected monthly price: <strong>{{ $price }}</strong>
+                            </p>
+                        @endif
+                        <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                            To activate your account and begin the Villa Bit AI Server setup process, complete your monthly payment securely through PayPal.
+                        </p>
+                        @if($paypalLink)
+                            <a href="{{ $paypalLink }}" target="_blank" class="btn btn-warning fw-bold px-4 py-2 mt-2 mb-3" style="color:#0a0b0c !important; text-transform:uppercase; letter-spacing:0.5px;">
+                                Activate Your Account and Pay with PayPal
+                            </a>
+                        @endif
+                        <p class="mb-0" style="color:#ffffff !important; font-size:15px; line-height:1.7;">
+                            Once payment is completed, your account will be activated and your domain setup process will begin.
                         </p>
                     @endif
-                    <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
-                        To activate your account and begin the Villa Bit AI Server setup process, complete your monthly payment securely through PayPal.
-                    </p>
-                    @if($paypalLink)
-                        <a href="{{ $paypalLink }}" target="_blank" class="btn btn-warning fw-bold px-4 py-2 mt-2 mb-3" style="color:#0a0b0c !important; text-transform:uppercase; letter-spacing:0.5px;">
-                            Activate Your Account and Pay with PayPal
-                        </a>
-                    @endif
-                    <p class="mb-0" style="color:#ffffff !important; font-size:15px; line-height:1.7;">
-                        Once payment is completed, your account will be activated and your domain setup process will begin.
-                    </p>
                 </div>
 
                 {{-- Technical help --}}

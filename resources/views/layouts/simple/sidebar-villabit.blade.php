@@ -34,7 +34,7 @@
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.support.index') }}">
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ $user->isInvestor() ? route('investor.support.index') : route('agency.support.index') }}">
                         <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-others') }}"></use></svg>
                         <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-others') }}"></use></svg>
                         <span>Support Tickets</span>

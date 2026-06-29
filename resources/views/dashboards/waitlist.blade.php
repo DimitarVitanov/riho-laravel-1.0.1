@@ -164,7 +164,11 @@
                         <h6 class="fw-bold mb-2">NEED TECHNICAL HELP?</h6>
                         <p class="mb-0" style="line-height:1.75; font-size:0.97rem; color:#444;">
                             For any questions, please submit a support ticket here:<br>
+                            @if(auth()->user()->isInvestor())
+                            <a style="color:#000000;" href="{{ route('investor.support.index') }}" class="fw-semibold support-link">https://app.villabit.ai/investor/support</a>
+                            @else
                             <a style="color:#000000;" href="{{ route('agency.support.index') }}" class="fw-semibold support-link">https://app.villabit.ai/agency/support</a>
+                            @endif
                         </p>
                     </div>
                 </div>

@@ -190,7 +190,87 @@
                     </div>
                 </div>
 
-                {{-- Stats row --}}
+                @if($user->isInvestor())
+
+                {{-- Investor stats row --}}
+                <div class="row g-3 mb-4">
+                    <div class="col-4">
+                        <div class="stat-box">
+                            <div class="stat-num">✓</div>
+                            <div class="stat-label">Account Created</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-box">
+                            <div class="stat-num">✓</div>
+                            <div class="stat-label">Email Verified</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-box">
+                            <div class="stat-num" style="color:#ffc107;">⏳</div>
+                            <div class="stat-label">KYC Required</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Investor steps card --}}
+                <div class="card mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="mb-0 fw-semibold">YOUR ACTIVATION PROGRESS</h6>
+                    </div>
+                    <div class="card-body px-4 waitlist-steps">
+                        <div class="step-item">
+                            <div class="step-icon done">
+                                <i data-feather="check" style="width:14px;height:14px;"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold">✓ Account Created</div>
+                                <div class="text-muted small">Your profile has been created successfully.</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-icon done">
+                                <i data-feather="check" style="width:14px;height:14px;"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold">✓ Email Verified</div>
+                                <div class="text-muted small">Your email address has been confirmed successfully.</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-icon active">
+                                <i data-feather="clock" style="width:14px;height:14px;"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold">⏳ KYC Required</div>
+                                <div class="text-muted small">Complete KYC verification to identify yourself as an investor, as required by law.</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-icon pending">
+                                <i data-feather="credit-card" style="width:14px;height:14px;"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold text-muted">○ Payment Required</div>
+                                <div class="text-muted small">Complete your investment payment to activate your Villa Bit AI Server account.</div>
+                            </div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-icon pending">
+                                <i data-feather="unlock" style="width:14px;height:14px;"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold text-muted">○ Full Panel Access</div>
+                                <div class="text-muted small">Your online Villa Bit AI investor system will become fully active.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @else
+
+                {{-- Agency stats row --}}
                 <div class="row g-3 mb-4">
                     <div class="col-4">
                         <div class="stat-box">
@@ -212,7 +292,7 @@
                     </div>
                 </div>
 
-                {{-- Steps card --}}
+                {{-- Agency steps card --}}
                 <div class="card mb-4">
                     <div class="card-header py-3">
                         <h6 class="mb-0 fw-semibold">YOUR ACTIVATION PROGRESS</h6>
@@ -283,6 +363,8 @@
                         </div>
                     </div>
                 </div>
+
+                @endif
 
                 {{-- Footer note + sign out --}}
                 <div class="text-center mb-5">

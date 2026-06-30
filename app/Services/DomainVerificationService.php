@@ -7,9 +7,14 @@ use Illuminate\Support\Facades\Log;
 
 class DomainVerificationService
 {
+    public function __construct(protected SitemapSftpUploader $uploader)
+    {
+    }
+
     public function verify(AgencyProfile $profile): bool
     {
         $domain = $profile->custom_domain;
+        $wasVerified = $profile->is_dns_verified;
 
         if (!$domain) {
             $profile->update(['last_dns_check_at' => now()]);
@@ -52,7 +57,28 @@ class DomainVerificationService
             'dns_verified_at' => $verified ? now() : null,
         ]);
 
+        if ($verified && !$wasVerified) {
+            $this->uploadSitemap($profile);
+        }
+
         return $verified;
+    }
+
+    protected function uploadSitemap(AgencyProfile $profile): void
+    {
+        if (!$profile->server_ip || !$profile->sftp_username || !$profile->sftp_password) {
+            Log::info("Auto sitemap upload skipped for {$profile->custom_domain}: missing SFTP credentials");
+            return;
+        }
+
+        $result = $this->uploader->upload($profile);
+
+        if ($result['success']) {
+            $profile->update(['sitemap_url' => $profile->custom_domain . '/sitemap.xml']);
+            Log::info("Auto sitemap upload succeeded for {$profile->custom_domain}: {$result['path']}");
+        } else {
+            Log::error("Auto sitemap upload failed for {$profile->custom_domain}: {$result['message']}");
+        }
     }
 
     protected function extractBaseDomain(string $domain): string

@@ -110,16 +110,6 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Save Domain Settings</button>
                     </form>
-                    
-                    @if($user->agencyProfile->server_ip && $user->agencyProfile->sftp_username && $user->agencyProfile->sftp_password)
-                    <hr>
-                    <form method="POST" action="{{ route('admin.villabit.agencies.upload-sitemap', $user) }}" class="mt-3">
-                        @csrf
-                        <button type="submit" class="btn btn-success">
-                            <i class="fa fa-upload"></i> Upload Sitemap via SFTP
-                        </button>
-                    </form>
-                    @endif
                     @else
                         <p class="text-muted">Agency profile not found.</p>
                     @endif

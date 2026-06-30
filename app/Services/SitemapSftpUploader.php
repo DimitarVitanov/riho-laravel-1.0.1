@@ -21,31 +21,13 @@ class SitemapSftpUploader
 
         try {
             $sitemapContent = $this->generateSitemapXml($profile);
-            $folder = $this->extractFolderFromDomain($profile->custom_domain);
-            
-            $remotePath = $profile->sftp_path ?: '/public_html';
-            $remotePath = rtrim($remotePath, '/');
-            
-            if ($folder) {
-                $folderPath = $remotePath . '/' . $folder;
-                $fullPath = $folderPath . '/sitemap.xml';
-            } else {
-                $folderPath = $remotePath;
-                $fullPath = $remotePath . '/sitemap.xml';
-            }
+
+            $remotePath = rtrim($profile->sftp_path ?: '/public_html', '/');
+            $fullPath = $remotePath . '/sitemap.xml';
 
             $filesystem = $this->createSftpFilesystem($profile);
 
-            // Create folder if needed
-            if ($folder) {
-                try {
-                    $filesystem->createDirectory($folderPath);
-                } catch (\Exception $e) {
-                    // Folder may already exist
-                }
-            }
-
-            // Upload sitemap
+            // Upload sitemap to the configured SFTP path root
             $filesystem->write($fullPath, $sitemapContent);
 
             return [

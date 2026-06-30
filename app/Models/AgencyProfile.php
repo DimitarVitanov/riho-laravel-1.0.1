@@ -57,6 +57,7 @@ class AgencyProfile extends Model
         return [
             'dns_verified_at'   => 'datetime',
             'last_dns_check_at' => 'datetime',
+            'sftp_password'     => 'encrypted',
         ];
     }
 

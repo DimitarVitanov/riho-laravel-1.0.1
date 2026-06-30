@@ -100,16 +100,21 @@ class AdminAgencyController extends Controller
         $oldNameserver1 = $profile->nameserver_1;
         $oldNameserver2 = $profile->nameserver_2;
 
-        $profile->update($request->only([
+        $data = $request->only([
             'custom_domain',
             'server_name',
             'server_ip',
             'sftp_username',
-            'sftp_password',
             'sftp_path',
             'nameserver_1',
             'nameserver_2',
-        ]));
+        ]);
+
+        if ($request->filled('sftp_password')) {
+            $data['sftp_password'] = $request->sftp_password;
+        }
+
+        $profile->update($data);
 
         $nameserversChanged = $request->nameserver_1 && $request->nameserver_2
             && ($request->nameserver_1 !== $oldNameserver1 || $request->nameserver_2 !== $oldNameserver2);

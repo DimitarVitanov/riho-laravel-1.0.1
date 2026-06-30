@@ -17,3 +17,8 @@ Schedule::command('app:verify-agency-domains')
     ->everyMinute()
     ->withoutOverlapping()
     ->runInBackground();
+
+Schedule::command('app:refresh-agency-sitemaps')
+    ->daily()
+    ->withoutOverlapping()
+    ->runInBackground();

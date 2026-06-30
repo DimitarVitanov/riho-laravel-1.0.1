@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\AgencyProfile;
 use App\Notifications\DomainNameserverNotification;
+use App\Services\SitemapSftpUploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 
@@ -83,6 +84,9 @@ class AdminAgencyController extends Controller
             'custom_domain' => 'nullable|string|max:255',
             'server_name' => 'nullable|string|max:255',
             'server_ip' => 'nullable|string|max:255',
+            'sftp_username' => 'nullable|string|max:255',
+            'sftp_password' => 'nullable|string|max:255',
+            'sftp_path' => 'nullable|string|max:255',
             'nameserver_1' => 'nullable|string|max:255',
             'nameserver_2' => 'nullable|string|max:255',
         ]);
@@ -100,6 +104,9 @@ class AdminAgencyController extends Controller
             'custom_domain',
             'server_name',
             'server_ip',
+            'sftp_username',
+            'sftp_password',
+            'sftp_path',
             'nameserver_1',
             'nameserver_2',
         ]));
@@ -118,5 +125,23 @@ class AdminAgencyController extends Controller
 
         return redirect()->route('admin.villabit.agencies.show', $user)
             ->with('success', 'Agency domain settings updated.');
+    }
+
+    public function uploadSitemap(User $user, SitemapSftpUploader $uploader)
+    {
+        if (!$user->agencyProfile) {
+            return redirect()->route('admin.villabit.agencies.show', $user)
+                ->with('error', 'Agency profile not found.');
+        }
+
+        $result = $uploader->upload($user->agencyProfile);
+
+        if ($result['success']) {
+            return redirect()->route('admin.villabit.agencies.show', $user)
+                ->with('success', $result['message']);
+        }
+
+        return redirect()->route('admin.villabit.agencies.show', $user)
+            ->with('error', $result['message']);
     }
 }

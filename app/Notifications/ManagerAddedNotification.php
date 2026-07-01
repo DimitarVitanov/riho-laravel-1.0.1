@@ -19,13 +19,29 @@ class ManagerAddedNotification extends Notification implements ShouldQueue
     public function toMail($notifiable): MailMessage
     {
         $loginLink = url('/login');
+        $profile = $notifiable->managerProfile;
+
+        $permissions = [];
+        if ($profile) {
+            if ($profile->can_manage_agencies) $permissions[] = '✓ Can Manage Agencies';
+            if ($profile->can_manage_investors) $permissions[] = '✓ Can Manage Investors';
+            if ($profile->can_review_ai_outputs) $permissions[] = '✓ Can Review AI Outputs';
+            if ($profile->can_prepare_payouts) $permissions[] = '✓ Can Prepare Payouts';
+            if ($profile->can_view_financials) $permissions[] = '✓ Can View Financials';
+            if ($profile->can_login_as_user) $permissions[] = '✓ Can Login As User';
+            if ($profile->can_view_agency_readonly) $permissions[] = '✓ Can View Agency Panel (Read-Only)';
+        }
+
+        $permissionsText = !empty($permissions)
+            ? "Your granted permissions:\n\n" . implode("\n\n", $permissions)
+            : 'No specific permissions have been assigned yet.';
 
         return (new MailMessage)
             ->subject('You Have Been Added as a Villa Bit AI Server Manager')
             ->greeting("Hello {$notifiable->first_name},")
             ->line('You have been added as a Manager inside the Villa Bit AI Server panel.')
             ->line('Your access level is: **Manager Account**')
-            ->line('This means you can access and manage assigned areas of the Villa Bit AI Server panel, depending on the permissions given to you by the Administrator.')
+            ->line($permissionsText)
             ->line('You can log in to your Manager panel using the link below:')
             ->action('Login to Manager Panel', $loginLink)
             ->line('Please keep your login details secure and do not share your access with anyone.')

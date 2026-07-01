@@ -33,6 +33,9 @@ class LoginController extends Controller
         }
 
         if ($user->isManager()) {
+            if ($user->managerProfile?->can_view_agency_readonly) {
+                return redirect()->route('agency.dashboard');
+            }
             return redirect()->route('manager.dashboard');
         }
 

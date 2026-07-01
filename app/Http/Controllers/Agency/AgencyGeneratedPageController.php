@@ -12,7 +12,9 @@ class AgencyGeneratedPageController extends Controller
 {
     public function index()
     {
-        $profile = Auth::user()->agencyProfile;
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
         $pages = collect();
 
         if ($profile) {
@@ -39,7 +41,9 @@ class AgencyGeneratedPageController extends Controller
             'feature_key' => 'required|string|max:100',
         ]);
 
-        $profile = Auth::user()->agencyProfile;
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile) {
             return back()->with('error', 'Agency profile not found.');
@@ -126,7 +130,9 @@ class AgencyGeneratedPageController extends Controller
 
     public function preview(GeneratedPage $page)
     {
-        $profile = Auth::user()->agencyProfile;
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
 
         return view('public-pages.article', [
             'page' => $page,

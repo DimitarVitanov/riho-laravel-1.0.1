@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="{{ $page->taxi_meta_description ?? 'Real Estate Taxi helps anyone profit from real estate, even without owning property.' }}" />
-  <title>{{ $page->taxi_meta_title ?? 'Real Estate Taxi — Free Global Real Estate Market Tools' }}</title>
+  <meta name="description" content="Real Estate Taxi helps anyone profit from real estate, even without owning property." />
+  <title>Real Estate Taxi — Free Global Real Estate Market Tools</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -31,7 +31,7 @@
       color: var(--body);
       background: var(--bg);
       line-height: 1.62;
-      font-size: 17px;
+      font-size: 16px;
     }
     a { color: inherit; text-decoration: none; }
     button, input { font: inherit; }
@@ -78,7 +78,7 @@
       border-bottom: 1px solid var(--line);
       box-shadow: 0 2px 12px rgba(15,23,42,.04);
     }
-    .container { width: min(1420px, 90%); margin: 0 auto; }
+    .container { width: min(1420px, calc(100% - 36px)); margin: 0 auto; }
     .header-inner {
       min-height: var(--header-h);
       display: flex;
@@ -175,7 +175,7 @@
       color: #0f172a;
     }
     .hero-copy {
-      font-size: 18px;
+      font-size: 17px;
       color: var(--body);
       max-width: 820px;
       line-height: 1.7;
@@ -210,7 +210,7 @@
       font-size: 20px; font-weight: 900; cursor: pointer;
     }
     .submit-arrow:hover { background: var(--teal-dark); }
-    .report-note { margin: 14px 0 0; color: #8a96a8; font-size: 14px; line-height: 1.6; }
+    .report-note { margin: 14px 0 0; color: #8a96a8; font-size: 13px; line-height: 1.6; }
 
     /* ── AI IMAGE CARD ── */
     .ai-img-card {
@@ -228,7 +228,7 @@
     }
 
     /* ── COPY STACK ── */
-    .copy-stack p { color: var(--body); font-size: 17px; line-height: 1.72; }
+    .copy-stack p { color: var(--body); font-size: 16px; line-height: 1.72; }
     .copy-stack p + p { margin-top: 14px; }
 
     /* ── PURPOSE CARD ── */
@@ -248,7 +248,7 @@
 
     /* ── FOCUS CARD ── */
     .focus-card h2 { margin: 12px 0 0; font-size: 30px; line-height: 1.14; letter-spacing: -.7px; color: #0f172a; }
-    .focus-copy { color: var(--body); font-size: 17px; margin-top: 10px; line-height: 1.72; }
+    .focus-copy { color: var(--body); font-size: 16px; margin-top: 10px; line-height: 1.72; }
     .areas-list {
       margin: 22px 0 0; padding: 0; list-style: none;
       display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px;
@@ -414,8 +414,8 @@
   <div class="top-strip">
     <div class="top-strip-inner">
       <div class="top-strip-left">
-        <span class="badge">{{ $page->taxi_strip_badge ?? 'FREE' }}</span>
-        {{ $page->taxi_strip_text ?? 'Global Real Estate Market Tools & AI Reports — No Registration Required' }}
+        <span class="badge">FREE</span>
+        Global Real Estate Market Tools &amp; AI Reports — No Registration Required
       </div>
       <div class="top-strip-right">
         <a href="#ask">Ask AI</a>
@@ -475,8 +475,8 @@
         <section class="card span-12">
           <div class="card-pad">
             <span class="number-label">01</span>
-            <h1 class="hero-title">{{ $page->taxi_hero_title ?? 'Real Estate Taxi is your FREE ride through the global real estate market!' }}</h1>
-            <p class="hero-copy">{{ $page->taxi_hero_copy ?? 'Real Estate Taxi helps anyone profit from real estate, even without owning property. It gives regular people a way to understand markets, compare prices, ask questions, and find practical ways to create value.' }}</p>
+            <h1 class="hero-title">Real Estate Taxi is your FREE ride through the global real estate market!</h1>
+            <p class="hero-copy">Real Estate Taxi helps anyone profit from real estate, even without owning property. It gives regular people a way to understand markets, compare prices, ask questions, and find practical ways to create value.</p>
           </div>
         </section>
 
@@ -484,12 +484,12 @@
         <section class="card ask-card span-7" id="ask">
           <div class="card-pad">
             <span class="number-label">02</span>
-            <h2>{{ $page->taxi_ask_title ?? 'Ask anything about real estate, anywhere!' }}</h2>
+            <h2>Ask anything about real estate, anywhere!</h2>
             <form class="query-box" id="askForm">
-              <input type="text" aria-label="Ask anything about real estate" placeholder="{{ $page->taxi_ask_placeholder ?? 'Type your question here.' }}" />
+              <input type="text" aria-label="Ask anything about real estate" placeholder="Type your question here." />
               <button class="submit-arrow" type="submit" aria-label="Submit question">↗</button>
             </form>
-            <p class="report-note">{!! nl2br(e($page->taxi_ask_note ?? "Real Estate Taxi AI analyzes your question and gives you a complete report.\nCreating the report can take 30–45 seconds.")) !!}</p>
+            <p class="report-note">Real Estate Taxi AI analyzes your question and gives you a complete report.<br>Creating the report can take 30–45 seconds.</p>
           </div>
         </section>
 
@@ -503,9 +503,10 @@
           <div class="card-pad">
             <span class="number-label">03</span>
             <div class="copy-stack" style="padding-top:16px;">
-              @foreach(($page->taxi_why_paragraphs ?? []) as $p)
-                <p>{{ $p }}</p>
-              @endforeach
+              <p>Everyone, whatever your profession is, must understand that they need to be involved in some part of the real estate business.</p>
+              <p>It is not important whether you have money to buy and invest in real estate or not.</p>
+              <p>Real estate is real value that always remains a wealth factor. And at the end of the day, everyone must live in some house.</p>
+              <p>Ignoring that, or believing that it is not your kind of expertise, can damage you financially in one way or another.</p>
             </div>
           </div>
         </section>
@@ -514,7 +515,7 @@
         <section class="card purpose-card span-4">
           <div class="card-pad">
             <span class="number-label" style="color:rgba(255,255,255,.5);">04</span>
-            <p style="margin-top:14px;">{!! $page->taxi_purpose_text ?? 'Real Estate Taxi is here to inform regular people and give them professional tools to profit from real estate markets <strong>worldwide.</strong>' !!}</p>
+            <p style="margin-top:14px;">Real Estate Taxi is here to inform regular people and give them professional tools to profit from real estate markets <strong>worldwide.</strong></p>
           </div>
         </section>
 
@@ -522,20 +523,23 @@
         <section class="card focus-card span-12" id="focus">
           <div class="card-pad">
             <span class="number-label">05</span>
-            <h2>{{ $page->taxi_focus_title ?? 'Smart Real Estate Decisions Made Simple' }}</h2>
-            <p class="focus-copy">{{ $page->taxi_focus_intro ?? 'Real Estate Taxi helps regular people understand real estate and find practical ways to benefit from it, even without owning property or having money to invest.' }}</p>
+            <h2>Smart Real Estate Decisions Made Simple</h2>
+            <p class="focus-copy">Real Estate Taxi helps regular people understand real estate and find practical ways to benefit from it, even without owning property or having money to invest.</p>
             <div class="copy-stack" style="margin-top:18px;">
-              <p>{{ $page->taxi_focus_areas_intro ?? 'We focus on four important areas that can help you make smarter real estate decisions:' }}</p>
+              <p>We focus on four important areas that can help you make smarter real estate decisions:</p>
             </div>
             <ol class="areas-list">
-              @foreach(($page->taxi_focus_areas ?? []) as $area)
-                <li><b>{{ $area['number'] }}</b><span>{{ $area['title'] }}</span></li>
-              @endforeach
+              <li><b>01</b><span>How to earn from real estate without buying property</span></li>
+              <li><b>02</b><span>Best real estate software and AI solutions</span></li>
+              <li><b>03</b><span>Global residential property market analysis</span></li>
+              <li><b>04</b><span>Worldwide property prices comparison</span></li>
             </ol>
             <div class="copy-stack" style="margin-top:22px;">
-              @foreach(($page->taxi_focus_paragraphs ?? []) as $p)
-                <p>{{ $p }}</p>
-              @endforeach
+              <p>Through these four areas, we help you find useful information, understand where opportunities may exist, compare markets, use better tools, and make more informed decisions.</p>
+              <p>Our goal is to make real estate knowledge simpler and more useful for everyone. You do not need to be a real estate agent, investor, or property owner to understand how the market works and how you may benefit from it.</p>
+              <p>We provide practical guides, market research, useful tools, AI solutions, property comparisons, and real estate ideas from around the world.</p>
+              <p>Whether you want to earn by connecting buyers and sellers, find better investment locations, compare property prices, understand rental yields, or simply learn how real estate affects your financial future, Real Estate Taxi gives you a faster and clearer way to start.</p>
+              <p>Real estate is a real value that always remains important. At the end of the day, everyone needs a place to live, rent, buy, sell, build, or invest in. Understanding real estate can help you make better financial decisions in many different ways.</p>
             </div>
           </div>
         </section>
@@ -545,12 +549,12 @@
           <div class="card-pad">
             <div class="topic-head">
               <span class="topic-number">01</span>
-              <h2>{{ $page->taxi_topic1_title ?? 'How to Earn From Real Estate Without Buying Property' }}</h2>
+              <h2>How to Earn From Real Estate Without Buying Property</h2>
             </div>
             <div class="copy-stack">
-              @foreach(($page->taxi_topic1_paragraphs ?? []) as $p)
-                <p>{{ $p }}</p>
-              @endforeach
+              <p>You do not need to own a villa, apartment, or a large investment portfolio to earn from real estate.</p>
+              <p>Learn practical ways regular people can create income by finding buyers, referring investors, helping owners rent properties, generating leads, creating property content, or simply connecting the right people with the right opportunity.</p>
+              <p>Real estate is not only for people who already have money to buy property. Even without owning anything, you can become useful in the process and earn from the value you create.</p>
             </div>
           </div>
         </section>
@@ -560,12 +564,13 @@
           <div class="card-pad">
             <div class="topic-head">
               <span class="topic-number">02</span>
-              <h2>{{ $page->taxi_topic2_title ?? 'Best Real Estate Software and AI Solutions' }}</h2>
+              <h2>Best Real Estate Software and AI Solutions</h2>
             </div>
             <div class="copy-stack">
-              @foreach(($page->taxi_topic2_paragraphs ?? []) as $p)
-                <p>{{ $p }}</p>
-              @endforeach
+              <p>Discover useful real estate software, AI tools, websites, and services that can help regular people, agents, investors, owners, and property businesses work smarter.</p>
+              <p>Find tools for property research, market analysis, price comparison, rental yield calculation, lead generation, content creation, AI property reports, buyer searches, and more.</p>
+              <p>Real Estate Taxi helps you understand which tools are useful, what they do, and how they can help you find opportunities or make better real estate decisions.</p>
+              <p>You do not need to be a real estate expert. The right tools can help anyone understand the market faster and find practical ways to earn from it.</p>
             </div>
           </div>
         </section>
@@ -575,20 +580,16 @@
           <div class="card-pad">
             <div class="topic-head">
               <span class="topic-number">03</span>
-              <h2>{{ $page->taxi_topic3_title ?? 'Global Residential Property Market Analysis' }}</h2>
+              <h2>Global Residential Property Market Analysis</h2>
             </div>
             <div class="copy-stack">
-              @foreach(($page->taxi_topic3_paragraphs ?? []) as $p)
-                <p>{{ $p }}</p>
-              @endforeach
+              <p>Get access to detailed and up-to-date residential property market reports, key metrics, and useful insights from countries around the world.</p>
             </div>
-            @if($page->taxi_topic3_question ?? null)
-              <p class="question-line">{{ $page->taxi_topic3_question }}</p>
-            @endif
+            <p class="question-line">Where could it make sense to look for a real estate investment?</p>
             <div class="copy-stack" style="margin-top:16px;">
-              @foreach(($page->taxi_topic3_after_paragraphs ?? []) as $p)
-                <p>{{ $p }}</p>
-              @endforeach
+              <p>If you want to know where real estate may produce better rental yield, where prices may still be affordable, or where a market may become interesting in the future, this is one of the fastest useful places to check.</p>
+              <p>Compare important market data such as property prices, rental yields, income levels, affordability, price growth, mortgage rates, taxes, and market trends.</p>
+              <p>It helps regular people get a clearer first picture before spending money, travelling to a location, or speaking with real estate agents and investors.</p>
             </div>
           </div>
         </section>
@@ -598,29 +599,25 @@
           <div class="card-pad">
             <div class="topic-head">
               <span class="topic-number">04</span>
-              <h2>{{ $page->taxi_topic4_title ?? 'Worldwide Property Prices Comparison' }}</h2>
+              <h2>Worldwide Property Prices Comparison</h2>
             </div>
-            @if($page->taxi_topic4_question ?? null)
-              <p class="question-line">{{ $page->taxi_topic4_question }}</p>
-            @endif
+            <p class="question-line">Is this city expensive, or could it still be interesting compared with other cities and countries?</p>
             <div class="copy-stack" style="margin-top:16px;">
-              @foreach(($page->taxi_topic4_paragraphs ?? []) as $p)
-                <p>{{ $p }}</p>
-              @endforeach
+              <p>Use the property prices comparison tool to compare real estate prices, apartment prices, rental prices, and affordability between different locations worldwide.</p>
+              <p>This is very useful for a quick comparison between cities and countries.</p>
             </div>
-            @if($page->taxi_topic4_list_title ?? null)
-              <p class="topic-list-title">{{ $page->taxi_topic4_list_title }}</p>
-              <ul class="check-list">
-                @foreach(($page->taxi_topic4_list_items ?? []) as $item)
-                  <li>{{ $item }}</li>
-                @endforeach
-              </ul>
-            @endif
-            @if($page->taxi_topic4_closing ?? null)
-              <div class="copy-stack" style="padding-top:18px;">
-                <p>{{ $page->taxi_topic4_closing }}</p>
-              </div>
-            @endif
+            <p class="topic-list-title">Useful for:</p>
+            <ul class="check-list">
+              <li>Property price comparison</li>
+              <li>Price-to-income ratio</li>
+              <li>Rental yield estimates</li>
+              <li>Affordability</li>
+              <li>City comparison</li>
+              <li>Quick first market feeling</li>
+            </ul>
+            <div class="copy-stack" style="padding-top:18px;">
+              <p>It helps you quickly see whether a city looks overpriced, affordable, or potentially interesting when compared with local income and possible rental returns.</p>
+            </div>
           </div>
         </section>
 
@@ -640,7 +637,7 @@
           <div class="footer-brand">
             <div class="brand-icon">🚕</div>
             <div style="font-size:16px;font-weight:900;color:#fff;letter-spacing:-.02em;">Real Estate Taxi</div>
-            <p>{{ $page->taxi_footer_description ?? 'Your free ride through the global real estate market. Tools, analysis, AI reports, and practical guides for regular people worldwide.' }}</p>
+            <p>Your free ride through the global real estate market. Tools, analysis, AI reports, and practical guides for regular people worldwide.</p>
           </div>
 
           <div class="footer-col">
@@ -664,8 +661,8 @@
           </div>
 
           <div class="footer-subscribe">
-            <h4>{{ $page->taxi_footer_subscribe_title ?? 'Stay Updated' }}</h4>
-            <p>{{ $page->taxi_footer_subscribe_text ?? 'Get our daily real estate market newsletter with practical tips, tools, and AI reports.' }}</p>
+            <h4>Stay Updated</h4>
+            <p>Get our daily real estate market newsletter with practical tips, tools, and AI reports.</p>
             <form class="sub-form" id="subForm">
               <input type="email" placeholder="EMAIL ADDRESS" aria-label="Email address" />
               <button type="submit">SIGN UP</button>

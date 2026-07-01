@@ -9,8 +9,9 @@ class AgencyAiReportController extends Controller
 {
     public function index()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
         $reports = collect();
 
         if ($profile) {

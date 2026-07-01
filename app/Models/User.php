@@ -140,6 +140,24 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         return AgencyProfile::where('assigned_manager_id', $this->id);
     }
 
+    /**
+     * Get the effective agency profile for the current user.
+     * For view-only managers, returns the first active agency profile.
+     */
+    public function getEffectiveAgencyProfile(): ?AgencyProfile
+    {
+        if ($this->agencyProfile) {
+            return $this->agencyProfile;
+        }
+
+        if ($this->role === 'manager' && $this->managerProfile?->can_view_agency_readonly) {
+            return AgencyProfile::whereHas('user', fn ($q) => $q->where('status', 'active'))
+                ->first();
+        }
+
+        return null;
+    }
+
     public function supportTickets()
     {
         return $this->hasMany(SupportTicket::class);

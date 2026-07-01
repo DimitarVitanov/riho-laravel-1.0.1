@@ -95,6 +95,12 @@
                                         <label class="form-check-label">Can Login As User</label>
                                     </div>
                                 </div>
+                                <div class="col-md-12 mt-3">
+                                    <div class="form-check" style="padding:12px;background:#fef3c7;border:1px solid #fbbf24;border-radius:8px;">
+                                        <input class="form-check-input" type="checkbox" name="can_view_agency_readonly" value="1">
+                                        <label class="form-check-label" style="color:#92400e;font-weight:600;">Can view the Real Estate Agency panel as a user, in view-only mode.</label>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mt-4">

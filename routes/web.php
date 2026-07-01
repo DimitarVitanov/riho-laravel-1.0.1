@@ -91,7 +91,12 @@ Route::get('/dashboard', function () {
     $user = auth()->user();
     if ($user->isOnWaitlist()) return view('dashboards.waitlist', compact('user'));
     if ($user->isAdmin()) return redirect()->route('admin.villabit.dashboard');
-    if ($user->isManager()) return redirect()->route('manager.dashboard');
+    if ($user->isManager()) {
+        if ($user->managerProfile?->can_view_agency_readonly) {
+            return redirect()->route('agency.dashboard');
+        }
+        return redirect()->route('manager.dashboard');
+    }
     if ($user->isAgency()) return redirect()->route('agency.dashboard');
     if ($user->isInvestor()) return redirect()->route('investor.dashboard');
     return redirect()->route('login');
@@ -226,7 +231,7 @@ Route::prefix('manager')->middleware(['auth', 'verified', 'role:manager'])->name
 | AGENCY Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agency'])->name('agency.')->group(function () {
+Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agency', 'view_only'])->name('agency.')->group(function () {
     Route::get('dashboard', [AgencyDashboardController::class, 'index'])->name('dashboard');
 
     // Settings

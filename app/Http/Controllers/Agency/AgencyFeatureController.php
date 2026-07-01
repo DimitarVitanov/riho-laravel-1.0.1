@@ -30,8 +30,9 @@ class AgencyFeatureController extends Controller
             abort(404);
         }
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
         $featureSetting = null;
         $latestReport = null;
 
@@ -145,8 +146,9 @@ class AgencyFeatureController extends Controller
 
     public function saveSettings(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
         
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -207,8 +209,9 @@ class AgencyFeatureController extends Controller
 
     public function viewLogs(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
         
         if (!$profile) {
             return redirect()->route('agency.dashboard')->with('error', 'Agency profile not found.');
@@ -227,8 +230,9 @@ class AgencyFeatureController extends Controller
 
     public function openPrompt(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
         
         if (!$profile) {
             return redirect()->route('agency.dashboard')->with('error', 'Agency profile not found.');
@@ -292,8 +296,9 @@ class AgencyFeatureController extends Controller
 
     public function exportLeads(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
         
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -338,8 +343,9 @@ class AgencyFeatureController extends Controller
 
     public function generateLocalSeoTargets(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -453,8 +459,9 @@ class AgencyFeatureController extends Controller
 
     public function generateLocalSeoPages(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -657,8 +664,9 @@ class AgencyFeatureController extends Controller
 
     public function previewLocalSeoPage(GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id) {
             abort(403);
@@ -669,8 +677,9 @@ class AgencyFeatureController extends Controller
 
     public function editLocalSeoPage(GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id) {
             abort(403);
@@ -681,8 +690,9 @@ class AgencyFeatureController extends Controller
 
     public function updateLocalSeoPage(Request $request, GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id) {
             abort(403);
@@ -707,8 +717,9 @@ class AgencyFeatureController extends Controller
 
     public function publishLocalSeoPage(Request $request, GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id) {
             abort(403);
@@ -735,8 +746,9 @@ class AgencyFeatureController extends Controller
 
     public function destroyLocalSeoPage(GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id) {
             abort(403);
@@ -749,8 +761,9 @@ class AgencyFeatureController extends Controller
 
     public function storeListing(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -796,8 +809,9 @@ class AgencyFeatureController extends Controller
 
     public function updateListing(Request $request, \App\Models\AgencyListing $listing)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $listing->agency_profile_id !== $profile->id) {
             abort(403);
@@ -839,8 +853,9 @@ class AgencyFeatureController extends Controller
 
     public function destroyListing(\App\Models\AgencyListing $listing)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $listing->agency_profile_id !== $profile->id) {
             abort(403);
@@ -855,8 +870,9 @@ class AgencyFeatureController extends Controller
 
     public function generateAuthorityPages(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -936,8 +952,9 @@ class AgencyFeatureController extends Controller
 
     public function generateDataBlocks(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -1043,8 +1060,9 @@ class AgencyFeatureController extends Controller
 
     public function previewAiSearchPage(GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
@@ -1055,8 +1073,9 @@ class AgencyFeatureController extends Controller
 
     public function editAiSearchPage(GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
@@ -1067,8 +1086,9 @@ class AgencyFeatureController extends Controller
 
     public function updateAiSearchPage(Request $request, GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
@@ -1093,8 +1113,9 @@ class AgencyFeatureController extends Controller
 
     public function publishAiSearchPage(Request $request, GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
@@ -1111,8 +1132,9 @@ class AgencyFeatureController extends Controller
 
     public function refreshAiSearchPage(Request $request, GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
@@ -1141,8 +1163,9 @@ class AgencyFeatureController extends Controller
 
     public function destroyAiSearchPage(GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_search_ranking') {
             abort(403);
@@ -1159,8 +1182,9 @@ class AgencyFeatureController extends Controller
 
     public function generateAuthorityReview(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -1341,8 +1365,9 @@ class AgencyFeatureController extends Controller
 
     public function previewAuthorityReview(GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
             abort(403);
@@ -1353,8 +1378,9 @@ class AgencyFeatureController extends Controller
 
     public function publishAuthorityReview(GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
             abort(403);
@@ -1371,8 +1397,9 @@ class AgencyFeatureController extends Controller
 
     public function refreshAuthorityReview(GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
             abort(403);
@@ -1393,8 +1420,9 @@ class AgencyFeatureController extends Controller
 
     public function destroyAuthorityReview(GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile || $page->agency_profile_id !== $profile->id || $page->feature_key !== 'ai_authority_builder') {
             abort(403);
@@ -1411,9 +1439,10 @@ class AgencyFeatureController extends Controller
 
     public function acceptAuthoritySuggestion(Request $request, AiSuggestion $suggestion)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id || $suggestion->feature_key !== 'ai_authority_builder') {
+        if ($suggestion->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id || $suggestion->feature_key !== 'ai_authority_builder') {
             abort(403);
         }
 
@@ -1440,9 +1469,10 @@ class AgencyFeatureController extends Controller
 
     public function skipAuthoritySuggestion(Request $request, AiSuggestion $suggestion)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id || $suggestion->feature_key !== 'ai_authority_builder') {
+        if ($suggestion->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id || $suggestion->feature_key !== 'ai_authority_builder') {
             abort(403);
         }
 
@@ -1453,9 +1483,10 @@ class AgencyFeatureController extends Controller
 
     public function acceptLocalSeoSuggestion(Request $request, AiSuggestion $suggestion)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id || $suggestion->feature_key !== 'local_seo_presence_boost') {
+        if ($suggestion->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id || $suggestion->feature_key !== 'local_seo_presence_boost') {
             abort(403);
         }
 
@@ -1482,9 +1513,10 @@ class AgencyFeatureController extends Controller
 
     public function skipLocalSeoSuggestion(Request $request, AiSuggestion $suggestion)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id || $suggestion->feature_key !== 'local_seo_presence_boost') {
+        if ($suggestion->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id || $suggestion->feature_key !== 'local_seo_presence_boost') {
             abort(403);
         }
 

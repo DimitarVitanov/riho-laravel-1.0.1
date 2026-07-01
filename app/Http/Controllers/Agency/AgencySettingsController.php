@@ -14,8 +14,9 @@ class AgencySettingsController extends Controller
 {
     public function languageSettings()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         return view('agency.settings.language', compact('user', 'profile'));
     }
@@ -27,11 +28,12 @@ class AgencySettingsController extends Controller
             'ai_content_language' => 'required|string|max:50',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $user->update(['preferred_language' => $request->panel_language]);
 
-        if ($user->agencyProfile) {
-            $user->agencyProfile->update([
+        if ($user->getEffectiveAgencyProfile()) {
+            $user->getEffectiveAgencyProfile()->update([
                 'ai_content_language' => $request->ai_content_language,
             ]);
         }
@@ -41,8 +43,9 @@ class AgencySettingsController extends Controller
 
     public function featureToggles()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
         $features = collect();
 
         if ($profile) {
@@ -61,8 +64,9 @@ class AgencySettingsController extends Controller
 
         $feature = AiFeatureSetting::findOrFail($request->feature_id);
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        if ($user->agencyProfile && $feature->agency_profile_id === $user->agencyProfile->id) {
+        if ($user->getEffectiveAgencyProfile() && $feature->agency_profile_id === $user->getEffectiveAgencyProfile()->id) {
             $feature->update(['is_enabled' => $request->boolean('is_enabled')]);
         }
 
@@ -71,8 +75,9 @@ class AgencySettingsController extends Controller
 
     public function domainSettings()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if ($profile && $profile->custom_domain) {
             app(DomainVerificationService::class)->verify($profile);
@@ -103,6 +108,7 @@ class AgencySettingsController extends Controller
 
     public function updateDomainSettings(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $domain = null;
 
@@ -125,8 +131,8 @@ class AgencySettingsController extends Controller
             $domain = $request->domain_part1 ? rtrim(strtolower($request->domain_part1), '/') : null;
         }
 
-        if ($user->agencyProfile) {
-            $user->agencyProfile->update(['custom_domain' => $domain]);
+        if ($user->getEffectiveAgencyProfile()) {
+            $user->getEffectiveAgencyProfile()->update(['custom_domain' => $domain]);
         }
 
         return back()->with('success', 'Domain settings saved.');
@@ -134,8 +140,9 @@ class AgencySettingsController extends Controller
 
     public function integrations()
     {
+        /** @var \App\Models\User $user */
         $user      = Auth::user();
-        $profile   = $user->agencyProfile;
+        $profile   = $user->getEffectiveAgencyProfile();
         $pageCount = $profile
             ? GeneratedPage::where('agency_profile_id', $profile->id)->where('status', 'published')->count()
             : 0;
@@ -150,9 +157,10 @@ class AgencySettingsController extends Controller
             'copyscape_api_key'  => 'nullable|string|max:255',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        if ($user->agencyProfile) {
-            $user->agencyProfile->update($request->only('copyscape_username', 'copyscape_api_key'));
+        if ($user->getEffectiveAgencyProfile()) {
+            $user->getEffectiveAgencyProfile()->update($request->only('copyscape_username', 'copyscape_api_key'));
         }
 
         return back()->with('success', 'Integration settings saved.');
@@ -160,8 +168,9 @@ class AgencySettingsController extends Controller
 
     public function brandSettings()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         return view('agency.settings.brand', compact('user', 'profile'));
     }
@@ -173,9 +182,10 @@ class AgencySettingsController extends Controller
             'brand_secondary_color' => 'nullable|string|max:20',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        if ($user->agencyProfile) {
-            $user->agencyProfile->update($request->only('brand_primary_color', 'brand_secondary_color'));
+        if ($user->getEffectiveAgencyProfile()) {
+            $user->getEffectiveAgencyProfile()->update($request->only('brand_primary_color', 'brand_secondary_color'));
         }
 
         return back()->with('success', 'Brand settings saved.');

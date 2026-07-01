@@ -13,8 +13,9 @@ class AgencyCompetitorController extends Controller
 {
     public function storeCompetitor(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -34,8 +35,9 @@ class AgencyCompetitorController extends Controller
 
     public function destroyCompetitor(CompetitorWebsite $competitor)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        if ($competitor->agency_profile_id !== $user->agencyProfile?->id) {
+        if ($competitor->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id) {
             abort(403);
         }
         $competitor->delete();
@@ -44,8 +46,9 @@ class AgencyCompetitorController extends Controller
 
     public function runScan(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -243,8 +246,9 @@ class AgencyCompetitorController extends Controller
 
     public function markActed(CompetitorScanResult $result)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        if ($result->agency_profile_id !== $user->agencyProfile?->id) {
+        if ($result->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id) {
             abort(403);
         }
         $result->update(['status' => 'acted']);
@@ -253,8 +257,9 @@ class AgencyCompetitorController extends Controller
 
     public function markDismissed(CompetitorScanResult $result)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        if ($result->agency_profile_id !== $user->agencyProfile?->id) {
+        if ($result->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id) {
             abort(403);
         }
         $result->update(['status' => 'dismissed']);
@@ -263,8 +268,9 @@ class AgencyCompetitorController extends Controller
 
     public function destroyResult(CompetitorScanResult $result)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        if ($result->agency_profile_id !== $user->agencyProfile?->id) {
+        if ($result->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id) {
             abort(403);
         }
         $result->delete();

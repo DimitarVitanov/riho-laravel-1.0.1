@@ -33,6 +33,7 @@
                         <p><strong>Can Manage Investors:</strong> {{ $user->managerProfile->can_manage_investors ? 'Yes' : 'No' }}</p>
                         <p><strong>Can Review AI:</strong> {{ $user->managerProfile->can_review_ai_outputs ? 'Yes' : 'No' }}</p>
                         <p><strong>Can Login As User:</strong> {{ $user->managerProfile->can_login_as_user ? 'Yes' : 'No' }}</p>
+                        <p><strong>Can View Agency (Read-Only):</strong> {{ $user->managerProfile->can_view_agency_readonly ? 'Yes' : 'No' }}</p>
                     @else
                         <p class="text-muted">No manager profile yet.</p>
                     @endif

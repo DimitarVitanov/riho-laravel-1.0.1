@@ -12,8 +12,9 @@ class AgencyDashboardController extends Controller
 {
     public function index()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
 
         $currentUsage = null;
         $aiFeatures = collect();

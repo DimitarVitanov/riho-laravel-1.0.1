@@ -23,6 +23,10 @@ class RoleMiddleware
             if ($user->role === $role) {
                 return $next($request);
             }
+            // Allow view-only managers to access agency routes
+            if ($role === 'real_estate_agency' && $user->role === 'manager' && $user->managerProfile?->can_view_agency_readonly) {
+                return $next($request);
+            }
         }
 
         if ($user->isOnWaitlist()) {

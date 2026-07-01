@@ -41,6 +41,7 @@ class UserManagementController extends Controller
             'can_prepare_payouts' => 'boolean',
             'can_view_financials' => 'boolean',
             'can_login_as_user' => 'boolean',
+            'can_view_agency_readonly' => 'boolean',
         ]);
 
         $user = User::create([
@@ -64,10 +65,15 @@ class UserManagementController extends Controller
             'can_prepare_payouts' => $request->boolean('can_prepare_payouts', false),
             'can_view_financials' => $request->boolean('can_view_financials', false),
             'can_login_as_user' => $request->boolean('can_login_as_user', false),
+            'can_view_agency_readonly' => $request->boolean('can_view_agency_readonly', false),
             'active_from' => now(),
         ]);
 
-        $user->notify(new ManagerAddedNotification());
+        if ($request->boolean('can_view_agency_readonly')) {
+            $user->notify(new \App\Notifications\ViewOnlyManagerAddedNotification());
+        } else {
+            $user->notify(new ManagerAddedNotification());
+        }
 
         return redirect()->route('admin.villabit.users.index')
             ->with('success', 'Manager created successfully.');

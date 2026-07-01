@@ -15,8 +15,9 @@ class DailyAiEmployeeController extends Controller
 {
     public function index(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
         
         if (!$profile) {
             return redirect()->route('agency.dashboard')->with('error', 'Agency profile not found.');
@@ -149,9 +150,10 @@ class DailyAiEmployeeController extends Controller
 
     public function acceptSuggestion(Request $request, AiSuggestion $suggestion)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id) {
+        if ($suggestion->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id) {
             abort(403);
         }
 
@@ -178,9 +180,10 @@ class DailyAiEmployeeController extends Controller
 
     public function skipSuggestion(Request $request, AiSuggestion $suggestion)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id) {
+        if ($suggestion->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id) {
             abort(403);
         }
 
@@ -191,9 +194,10 @@ class DailyAiEmployeeController extends Controller
 
     public function removeSuggestion(Request $request, AiSuggestion $suggestion)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id) {
+        if ($suggestion->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id) {
             abort(403);
         }
 
@@ -204,9 +208,10 @@ class DailyAiEmployeeController extends Controller
 
     public function markAsReviewed(Request $request, AiSuggestion $suggestion)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        if ($suggestion->agency_profile_id !== $user->agencyProfile?->id) {
+        if ($suggestion->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id) {
             abort(403);
         }
 
@@ -217,9 +222,10 @@ class DailyAiEmployeeController extends Controller
 
     public function publishContent(Request $request, GeneratedPage $page)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
-        if ($page->agency_profile_id !== $user->agencyProfile?->id) {
+        if ($page->agency_profile_id !== $user->getEffectiveAgencyProfile()?->id) {
             abort(403);
         }
 
@@ -239,8 +245,9 @@ class DailyAiEmployeeController extends Controller
 
     public function saveSettings(Request $request)
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
         
         if (!$profile) {
             return redirect()->back()->with('error', 'Agency profile not found.');
@@ -291,8 +298,9 @@ class DailyAiEmployeeController extends Controller
 
     public function viewLogs()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
         
         if (!$profile) {
             return redirect()->route('agency.dashboard')->with('error', 'Agency profile not found.');
@@ -317,8 +325,9 @@ class DailyAiEmployeeController extends Controller
 
     public function openPrompt()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        $profile = $user->agencyProfile;
+        $profile = $user->getEffectiveAgencyProfile();
         
         if (!$profile) {
             return redirect()->route('agency.dashboard')->with('error', 'Agency profile not found.');

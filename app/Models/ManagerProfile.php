@@ -18,6 +18,7 @@ class ManagerProfile extends Model
         'can_prepare_payouts',
         'can_view_financials',
         'can_login_as_user',
+        'can_view_agency_readonly',
         'daily_task_notes',
         'active_from',
         'active_until',
@@ -32,6 +33,7 @@ class ManagerProfile extends Model
             'can_prepare_payouts' => 'boolean',
             'can_view_financials' => 'boolean',
             'can_login_as_user' => 'boolean',
+            'can_view_agency_readonly' => 'boolean',
             'active_from' => 'date',
             'active_until' => 'date',
         ];

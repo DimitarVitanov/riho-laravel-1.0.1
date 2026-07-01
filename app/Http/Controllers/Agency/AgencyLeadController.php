@@ -11,7 +11,9 @@ class AgencyLeadController extends Controller
 {
     public function index()
     {
-        $profile = Auth::user()->agencyProfile;
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
         $leads = collect();
 
         if ($profile) {

@@ -37,7 +37,14 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
     </div>
 
     @if(session('success'))
-    <div class="vb-notice" style="margin-bottom:20px;background:#edf7ee;border-color:#86efac;">{{ session('success') }}</div>
+    <div class="vb-notice" style="margin-bottom:20px;background:#edf7ee;border-color:#86efac;">
+        <span style="display:inline-flex;align-items:center;gap:8px;">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#16a34a;border-radius:50%;flex-shrink:0;">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            {{ session('success') }}
+        </span>
+    </div>
     @endif
 
     {{-- Legal Disclaimer --}}
@@ -204,7 +211,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
             <div class="vb-notice" style="margin-bottom:16px;background:#fffbeb;border-color:#fbbf24;color:#92400e;font-size:12px;">
                 Do not submit copies of passports or sensitive documents here. Document uploads are requested separately through the secure upload section below.
             </div>
-            <button type="submit" class="vb-btn vb-btn-primary">Save Personal Information</button>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button type="submit" class="vb-btn vb-btn-primary">Save Personal Information</button>
+                @if(session('saved_section') === 'personal')
+                    <span style="display:inline-flex;align-items:center;gap:6px;color:#16a34a;font-weight:700;font-size:13px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:50%;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Saved</span>
+                @endif
+            </div>
         </form>
     </div>
 
@@ -290,7 +302,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                     </div>
                 </div>
             </div>
-            <button type="submit" class="vb-btn vb-btn-primary">Save Jurisdiction Information</button>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button type="submit" class="vb-btn vb-btn-primary">Save Jurisdiction Information</button>
+                @if(session('saved_section') === 'jurisdiction')
+                    <span style="display:inline-flex;align-items:center;gap:6px;color:#16a34a;font-weight:700;font-size:13px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:50%;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Saved</span>
+                @endif
+            </div>
         </form>
     </div>
 
@@ -321,7 +338,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                 <label class="vb-label">PEP Details</label>
                 <textarea name="pep_details" class="vb-input" rows="3" placeholder="Provide full PEP details if applicable">{{ isset($profile->pep_details['details']) ? $profile->pep_details['details'] : '' }}</textarea>
             </div>
-            <button type="submit" class="vb-btn vb-btn-primary">Save AML Declarations</button>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button type="submit" class="vb-btn vb-btn-primary">Save AML Declarations</button>
+                @if(session('saved_section') === 'aml')
+                    <span style="display:inline-flex;align-items:center;gap:6px;color:#16a34a;font-weight:700;font-size:13px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:50%;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Saved</span>
+                @endif
+            </div>
         </form>
     </div>
 
@@ -365,7 +387,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                     </div>
                 </div>
             </div>
-            <button type="submit" class="vb-btn vb-btn-primary">Save Source of Funds / Wealth</button>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button type="submit" class="vb-btn vb-btn-primary">Save Source of Funds / Wealth</button>
+                @if(session('saved_section') === 'source_of_funds')
+                    <span style="display:inline-flex;align-items:center;gap:6px;color:#16a34a;font-weight:700;font-size:13px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:50%;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Saved</span>
+                @endif
+            </div>
         </form>
     </div>
 
@@ -399,7 +426,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                     <label for="tax_advice_confirmed" style="font-size:13px;color:#374151;cursor:pointer;">I confirm I have obtained independent tax advice</label>
                 </div>
             </div>
-            <button type="submit" class="vb-btn vb-btn-primary">Save Tax Information</button>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button type="submit" class="vb-btn vb-btn-primary">Save Tax Information</button>
+                @if(session('saved_section') === 'tax')
+                    <span style="display:inline-flex;align-items:center;gap:6px;color:#16a34a;font-weight:700;font-size:13px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:50%;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Saved</span>
+                @endif
+            </div>
         </form>
     </div>
 
@@ -448,7 +480,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                     </select>
                 </div>
             </div>
-            <button type="submit" class="vb-btn vb-btn-primary">Save Banking Information</button>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button type="submit" class="vb-btn vb-btn-primary">Save Banking Information</button>
+                @if(session('saved_section') === 'banking')
+                    <span style="display:inline-flex;align-items:center;gap:6px;color:#16a34a;font-weight:700;font-size:13px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:50%;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Saved</span>
+                @endif
+            </div>
         </form>
     </div>
 
@@ -482,7 +519,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                 </div>
                 @endforeach
             </div>
-            <button type="submit" class="vb-btn vb-btn-primary">Save USA LLC Documents</button>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button type="submit" class="vb-btn vb-btn-primary">Save USA LLC Documents</button>
+                @if(session('saved_section') === 'payout' && ($profile->is_us_person ?? false))
+                    <span style="display:inline-flex;align-items:center;gap:6px;color:#16a34a;font-weight:700;font-size:13px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:50%;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Saved</span>
+                @endif
+            </div>
         </form>
     </div>
     @endif
@@ -521,7 +563,12 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
                 </div>
                 @endforeach
             </div>
-            <button type="submit" class="vb-btn vb-btn-primary">Save UK LLP Documents</button>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button type="submit" class="vb-btn vb-btn-primary">Save UK LLP Documents</button>
+                @if(session('saved_section') === 'payout' && !($profile->is_us_person ?? false))
+                    <span style="display:inline-flex;align-items:center;gap:6px;color:#16a34a;font-weight:700;font-size:13px;"><span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#16a34a;border-radius:50%;"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6.5L4.5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Saved</span>
+                @endif
+            </div>
         </form>
     </div>
     @endif

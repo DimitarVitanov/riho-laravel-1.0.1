@@ -34,11 +34,28 @@ class InvestorProfileController extends Controller
             }
         } elseif ($formType === 'payout') {
             $validated = $request->validate([
-                'citizenship_country' => 'nullable|string|max:100',
-                'residence_country'   => 'nullable|string|max:100',
-                'preferred_currency'  => 'nullable|string|max:10',
-                'payout_method'       => 'nullable|string|in:bank_wire,stripe,paypal,crypto,other',
+                'citizenship_country'    => 'nullable|string|max:100',
+                'residence_country'      => 'nullable|string|max:100',
+                'preferred_currency'     => 'nullable|string|max:10',
+                'payout_method'          => 'nullable|string|in:bank_wire,stripe,paypal,crypto,other',
+                'us_residential_address' => 'nullable|string|max:500',
+                'us_state'               => 'nullable|string|max:100',
+                'local_investor_classification' => 'nullable|string|max:50',
             ]);
+            // USA LLC boolean fields
+            $boolFields = [
+                'w9_signed', 'accredited_questionnaire_signed', 'subscription_agreement_signed',
+                'llc_agreement_signed', 'bad_actor_questionnaire_signed',
+                // UK LLP boolean fields
+                'not_us_person_confirmed', 'local_legal_advice_confirmed', 'participation_permitted_locally',
+                'llp_agreement_signed', 'admission_agreement_signed', 'capital_call_agreement_signed',
+                'risk_acknowledgement_signed',
+            ];
+            foreach ($boolFields as $field) {
+                if ($request->has($field)) {
+                    $validated[$field] = $request->boolean($field);
+                }
+            }
             if ($user->investorProfile) {
                 $user->investorProfile->update($validated);
             }
@@ -147,6 +164,6 @@ class InvestorProfileController extends Controller
             return back()->with('success', 'Your KYC application has been submitted. Our team will review it shortly.');
         }
 
-        return back()->with('success', 'Saved successfully.');
+        return back()->with('success', 'Saved successfully.')->with('saved_section', $formType);
     }
 }

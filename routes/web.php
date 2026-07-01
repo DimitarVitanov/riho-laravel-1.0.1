@@ -126,6 +126,7 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     // Managers
     Route::get('managers', [AdminManagerController::class, 'index'])->name('managers.index');
     Route::get('managers/{user}', [AdminManagerController::class, 'show'])->name('managers.show');
+    Route::put('managers/{user}', [AdminManagerController::class, 'update'])->name('managers.update');
 
     // Agencies
     Route::get('agencies', [AdminAgencyController::class, 'index'])->name('agencies.index');

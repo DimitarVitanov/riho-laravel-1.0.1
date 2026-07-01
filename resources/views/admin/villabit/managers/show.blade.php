@@ -18,6 +18,11 @@
                     <p><strong>Phone:</strong> {{ $user->phone ?? '—' }}</p>
                     <p><strong>Status:</strong> <span class="badge bg-{{ $user->status === 'active' ? 'success' : 'warning' }}">{{ ucfirst($user->status) }}</span></p>
                     <p><strong>Joined:</strong> {{ $user->created_at->format('M d, Y') }}</p>
+                    <hr>
+                    <form action="{{ route('admin.villabit.impersonate.start', $user) }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-info btn-sm">Login As This Manager</button>
+                    </form>
                 </div>
             </div>
         </div>

@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class UserManagementController extends Controller
 {
@@ -31,7 +32,7 @@ class UserManagementController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => ['required', 'email', Rule::unique('users', 'email')->whereNull('deleted_at')],
             'password' => 'required|min:8|confirmed',
             'job_title' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
@@ -91,7 +92,7 @@ class UserManagementController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => ['required', 'email', Rule::unique('users', 'email')->whereNull('deleted_at')],
             'password' => 'required|min:8|confirmed',
             'company_name' => 'required|string|max:255',
             'country' => 'required|string|max:255',
@@ -154,7 +155,7 @@ class UserManagementController extends Controller
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => ['required', 'email', Rule::unique('users', 'email')->whereNull('deleted_at')],
             'password' => 'required|min:8|confirmed',
             'country' => 'required|string|max:255',
             'assigned_manager_id' => 'nullable|exists:users,id',

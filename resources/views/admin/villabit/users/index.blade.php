@@ -84,7 +84,7 @@
                                                         'super_admin'       => 'bg-danger',
                                                         'admin'             => 'bg-warning text-dark',
                                                         'manager'           => 'bg-primary text-white',
-                                                        'real_estate_agency'=> 'bg-primary',
+                                                        'real_estate_agency'=> 'bg-primary text-white',
                                                         'investor'          => 'bg-success',
                                                     ];
                                                     $roleLabels = [

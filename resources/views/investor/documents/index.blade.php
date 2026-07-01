@@ -506,13 +506,13 @@ $phaseInfo = $phaseLabels[$phase] ?? $phaseLabels['initial'];
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
                 @foreach([
-                    ['not_us_person_confirmed','I confirm I am not a U.S. person'],
-                    ['local_legal_advice_confirmed','I have obtained independent legal and tax advice in my local jurisdiction'],
-                    ['participation_permitted_locally','Participation is permitted under my own local laws'],
-                    ['llp_agreement_signed','LLP Agreement / Deed of Adherence Signed'],
-                    ['admission_agreement_signed','Admission Agreement Signed'],
-                    ['capital_call_agreement_signed','Capital Call Agreement Signed'],
-                    ['risk_acknowledgement_signed','Risk Acknowledgement Signed'],
+                    ['not_us_person_confirmed','I confirm that I am not a U.S. person.'],
+                    ['local_legal_advice_confirmed','I confirm that I have obtained independent legal and tax advice in my local jurisdiction.'],
+                    ['participation_permitted_locally','I confirm that participation is permitted under my local laws.'],
+                    ['llp_agreement_signed','I confirm that I will sign the LLP Agreement / Deed of Adherence before my investment is accepted.'],
+                    ['admission_agreement_signed','I confirm that I will sign the Admission Agreement before my investment is accepted.'],
+                    ['capital_call_agreement_signed','I confirm that I will sign the Capital Call Agreement before making my investment payment.'],
+                    ['risk_acknowledgement_signed','I confirm that I will sign the Risk Acknowledgement before my investment is accepted.'],
                 ] as [$field, $label])
                 <div style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;">
                     <input type="hidden" name="{{ $field }}" value="0">

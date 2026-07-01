@@ -5,9 +5,10 @@
 <div class="container-fluid">
     <div class="vb-page-header">
         <div>
-            <h1>Generated Pages</h1>
-            <p>All AI-generated content pages for your agency, including uniqueness status and publish workflow.</p>
+            <h1>Authority Builder</h1>
+            <p>All AI-generated content pages for your agency. Create, edit, publish, and preview your public articles.</p>
         </div>
+        <a href="{{ route('agency.generated-pages.create') }}" class="vb-btn vb-btn-primary">+ Create Article</a>
     </div>
 
     @include('components.villabit.usage-banner')

@@ -158,6 +158,29 @@ class AgencySettingsController extends Controller
         return back()->with('success', 'Integration settings saved.');
     }
 
+    public function brandSettings()
+    {
+        $user = Auth::user();
+        $profile = $user->agencyProfile;
+
+        return view('agency.settings.brand', compact('user', 'profile'));
+    }
+
+    public function updateBrandSettings(Request $request)
+    {
+        $request->validate([
+            'brand_primary_color' => 'nullable|string|max:20',
+            'brand_secondary_color' => 'nullable|string|max:20',
+        ]);
+
+        $user = Auth::user();
+        if ($user->agencyProfile) {
+            $user->agencyProfile->update($request->only('brand_primary_color', 'brand_secondary_color'));
+        }
+
+        return back()->with('success', 'Brand settings saved.');
+    }
+
     public static function supportedPanelLanguages(): array
     {
         return [

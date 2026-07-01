@@ -239,6 +239,8 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::post('settings/domain', [AgencySettingsController::class, 'updateDomainSettings'])->name('settings.domain.update');
     Route::get('settings/integrations', [AgencySettingsController::class, 'integrations'])->name('settings.integrations');
     Route::put('settings/integrations', [AgencySettingsController::class, 'updateIntegrations'])->name('settings.integrations.update');
+    Route::get('settings/brand', [AgencySettingsController::class, 'brandSettings'])->name('settings.brand');
+    Route::put('settings/brand', [AgencySettingsController::class, 'updateBrandSettings'])->name('settings.brand.update');
 
     // Features
     Route::get('features/{feature}', [AgencyFeatureController::class, 'show'])->name('features.show');
@@ -321,9 +323,17 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     // Billing
     Route::get('billing', [AgencyBillingController::class, 'index'])->name('billing.index');
 
-    // Generated Pages
+    // Generated Pages (Authority Builder)
     Route::get('generated-pages', [AgencyGeneratedPageController::class, 'index'])->name('generated-pages.index');
+    Route::get('generated-pages/create', [AgencyGeneratedPageController::class, 'create'])->name('generated-pages.create');
+    Route::post('generated-pages', [AgencyGeneratedPageController::class, 'store'])->name('generated-pages.store');
     Route::get('generated-pages/{page}', [AgencyGeneratedPageController::class, 'show'])->name('generated-pages.show');
+    Route::get('generated-pages/{page}/edit', [AgencyGeneratedPageController::class, 'edit'])->name('generated-pages.edit');
+    Route::put('generated-pages/{page}', [AgencyGeneratedPageController::class, 'update'])->name('generated-pages.update');
+    Route::post('generated-pages/{page}/publish', [AgencyGeneratedPageController::class, 'publish'])->name('generated-pages.publish');
+    Route::post('generated-pages/{page}/unpublish', [AgencyGeneratedPageController::class, 'unpublish'])->name('generated-pages.unpublish');
+    Route::delete('generated-pages/{page}', [AgencyGeneratedPageController::class, 'destroy'])->name('generated-pages.destroy');
+    Route::get('generated-pages/{page}/preview', [AgencyGeneratedPageController::class, 'preview'])->name('generated-pages.preview');
 
     // Leads
     Route::get('leads', [AgencyLeadController::class, 'index'])->name('leads.index');

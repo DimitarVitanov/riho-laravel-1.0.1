@@ -83,7 +83,7 @@
                                                     $roleColors = [
                                                         'super_admin'       => 'bg-danger',
                                                         'admin'             => 'bg-warning text-dark',
-                                                        'manager'           => 'bg-info text-dark',
+                                                        'manager'           => 'bg-primary text-white',
                                                         'real_estate_agency'=> 'bg-primary',
                                                         'investor'          => 'bg-success',
                                                     ];

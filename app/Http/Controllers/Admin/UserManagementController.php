@@ -51,6 +51,7 @@ class UserManagementController extends Controller
             'password' => Hash::make($request->password),
             'role' => 'manager',
             'status' => 'active',
+            'email_verified_at' => now(),
             'created_by_admin_id' => auth()->id(),
         ]);
 

@@ -152,6 +152,9 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         }
 
         if ($this->role === 'manager' && $this->managerProfile?->can_view_agency_readonly) {
+            if ($this->managerProfile->view_agency_user_id) {
+                return AgencyProfile::where('user_id', $this->managerProfile->view_agency_user_id)->first();
+            }
             return AgencyProfile::whereHas('user', fn ($q) => $q->where('status', 'active'))
                 ->first();
         }

@@ -24,7 +24,8 @@ class UserManagementController extends Controller
 {
     public function createManager()
     {
-        return view('admin.villabit.users.create-manager');
+        $agencies = User::where('role', 'real_estate_agency')->where('status', 'active')->get();
+        return view('admin.villabit.users.create-manager', compact('agencies'));
     }
 
     public function storeManager(Request $request)
@@ -43,6 +44,7 @@ class UserManagementController extends Controller
             'can_view_financials' => 'boolean',
             'can_login_as_user' => 'boolean',
             'can_view_agency_readonly' => 'boolean',
+            'view_agency_user_id' => 'nullable|exists:users,id',
         ]);
 
         // Remove any soft-deleted user with the same email
@@ -71,6 +73,7 @@ class UserManagementController extends Controller
             'can_view_financials' => $request->boolean('can_view_financials', false),
             'can_login_as_user' => $request->boolean('can_login_as_user', false),
             'can_view_agency_readonly' => $request->boolean('can_view_agency_readonly', false),
+            'view_agency_user_id' => $request->view_agency_user_id,
             'active_from' => now(),
         ]);
 

@@ -132,6 +132,43 @@ class AdminAgencyController extends Controller
             ->with('success', 'Agency domain settings updated.');
     }
 
+    public function assignViewOnlyManager(Request $request, User $user)
+    {
+        $request->validate(['manager_user_id' => 'required|exists:users,id']);
+
+        $manager = User::findOrFail($request->manager_user_id);
+
+        if (!$manager->managerProfile) {
+            return redirect()->route('admin.villabit.agencies.show', $user)
+                ->with('error', 'This user does not have a manager profile.');
+        }
+
+        $manager->managerProfile->update([
+            'can_view_agency_readonly' => true,
+            'view_agency_user_id' => $user->id,
+        ]);
+
+        return redirect()->route('admin.villabit.agencies.show', $user)
+            ->with('success', "Manager {$manager->first_name} {$manager->last_name} assigned as view-only.");
+    }
+
+    public function removeViewOnlyManager(User $user)
+    {
+        $profile = \App\Models\ManagerProfile::where('view_agency_user_id', $user->id)
+            ->where('can_view_agency_readonly', true)
+            ->first();
+
+        if ($profile) {
+            $profile->update([
+                'can_view_agency_readonly' => false,
+                'view_agency_user_id' => null,
+            ]);
+        }
+
+        return redirect()->route('admin.villabit.agencies.show', $user)
+            ->with('success', 'View-only manager removed from this agency.');
+    }
+
     public function uploadSitemap(User $user, SitemapSftpUploader $uploader)
     {
         if (!$user->agencyProfile) {

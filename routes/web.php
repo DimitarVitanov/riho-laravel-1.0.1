@@ -134,6 +134,8 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::post('agencies/{user}/create-usage-limits', [AdminAgencyController::class, 'createUsageLimits'])->name('agencies.create-usage-limits');
     Route::post('agencies/{user}/domain-settings', [AdminAgencyController::class, 'updateDomainSettings'])->name('agencies.domain-settings.update');
     Route::post('agencies/{user}/upload-sitemap', [AdminAgencyController::class, 'uploadSitemap'])->name('agencies.upload-sitemap');
+    Route::post('agencies/{user}/assign-view-only-manager', [AdminAgencyController::class, 'assignViewOnlyManager'])->name('agencies.assign-view-only-manager');
+    Route::post('agencies/{user}/remove-view-only-manager', [AdminAgencyController::class, 'removeViewOnlyManager'])->name('agencies.remove-view-only-manager');
 
     // Investors
     Route::get('investors', [AdminInvestorController::class, 'index'])->name('investors.index');

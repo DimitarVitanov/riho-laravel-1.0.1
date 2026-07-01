@@ -98,9 +98,19 @@
                                 <div class="col-md-12 mt-3">
                                     <hr class="my-3">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="can_view_agency_readonly" value="1" id="can_view_agency_readonly">
+                                        <input class="form-check-input" type="checkbox" name="can_view_agency_readonly" value="1" id="can_view_agency_readonly" onchange="document.getElementById('agency-select-wrapper').style.display = this.checked ? 'block' : 'none'">
                                         <label class="form-check-label fw-semibold" for="can_view_agency_readonly">Can View Agency Panel (Read-Only)</label>
                                         <small class="d-block text-muted mt-1">Allows this manager to browse the Real Estate Agency dashboard and pages without being able to submit or modify any data.</small>
+                                    </div>
+                                    <div id="agency-select-wrapper" class="mt-3" style="display:none;">
+                                        <label class="form-label fw-semibold">Assign to Agency</label>
+                                        <select name="view_agency_user_id" class="form-select">
+                                            <option value="">— Select Agency —</option>
+                                            @foreach($agencies as $agency)
+                                                <option value="{{ $agency->id }}">{{ $agency->agencyProfile->agency_name ?? $agency->company_name }} ({{ $agency->email }})</option>
+                                            @endforeach
+                                        </select>
+                                        <small class="text-muted">Choose which agency this manager can view.</small>
                                     </div>
                                 </div>
                             </div>

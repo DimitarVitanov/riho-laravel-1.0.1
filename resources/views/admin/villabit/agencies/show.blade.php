@@ -57,6 +57,44 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0"><h5>View-Only Manager</h5></div>
+                <div class="card-body">
+                    @php
+                        $viewOnlyManager = \App\Models\ManagerProfile::where('view_agency_user_id', $user->id)
+                            ->where('can_view_agency_readonly', true)
+                            ->with('user')
+                            ->first();
+                    @endphp
+                    @if($viewOnlyManager)
+                        <p><strong>Assigned Manager:</strong> {{ $viewOnlyManager->user->first_name }} {{ $viewOnlyManager->user->last_name }} ({{ $viewOnlyManager->user->email }})</p>
+                        <form action="{{ route('admin.villabit.agencies.remove-view-only-manager', $user) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Remove view-only manager from this agency?')">Remove</button>
+                        </form>
+                    @else
+                        <form action="{{ route('admin.villabit.agencies.assign-view-only-manager', $user) }}" method="POST" class="row g-2 align-items-end">
+                            @csrf
+                            <div class="col-md-6">
+                                <label class="form-label">Select Manager</label>
+                                <select name="manager_user_id" class="form-select" required>
+                                    <option value="">— Select Manager —</option>
+                                    @foreach(\App\Models\User::where('role', 'manager')->where('status', 'active')->get() as $mgr)
+                                        <option value="{{ $mgr->id }}">{{ $mgr->first_name }} {{ $mgr->last_name }} ({{ $mgr->email }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary btn-sm">Assign as View-Only</button>
+                            </div>
+                        </form>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-header pb-0"><h5>Domain Settings</h5></div>

@@ -19,6 +19,7 @@ class ManagerProfile extends Model
         'can_view_financials',
         'can_login_as_user',
         'can_view_agency_readonly',
+        'view_agency_user_id',
         'daily_task_notes',
         'active_from',
         'active_until',
@@ -42,6 +43,11 @@ class ManagerProfile extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function viewAgency()
+    {
+        return $this->belongsTo(User::class, 'view_agency_user_id');
     }
 
     public function scopeActive($query)

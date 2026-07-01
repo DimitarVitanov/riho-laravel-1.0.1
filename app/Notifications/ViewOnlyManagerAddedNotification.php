@@ -32,7 +32,7 @@ class ViewOnlyManagerAddedNotification extends Notification
         }
 
         $permissionsText = !empty($permissions)
-            ? "Your granted permissions:\n\n" . implode("\n\n", $permissions)
+            ? "Your granted permissions:\n\n" . implode("  \n", $permissions)
             : 'No specific permissions have been assigned yet.';
 
         return (new MailMessage)

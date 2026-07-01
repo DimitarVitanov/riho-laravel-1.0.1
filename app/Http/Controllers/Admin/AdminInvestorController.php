@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\InvestorStatusUpdatedAdminNotification;
+use App\Notifications\InvestorStatusUpdatedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 class AdminInvestorController extends Controller
@@ -56,14 +59,23 @@ class AdminInvestorController extends Controller
 
         $profile = $user->investorProfile;
         if ($profile) {
-            $profile->update($request->only([
+            $changes = array_filter($request->only([
                 'kyc_status', 'aml_status', 'accreditation_status',
                 'eligible_structure', 'onboarding_phase',
             ]));
 
+            $profile->update($changes);
+
             if ($request->onboarding_phase === 'approved' && !$profile->kyc_approved_at) {
                 $profile->update(['kyc_approved_at' => now()]);
             }
+
+            // Notify investor
+            $user->notify(new InvestorStatusUpdatedNotification($changes));
+
+            // Notify admin(s)
+            $admins = User::whereIn('role', ['super_admin', 'admin'])->get();
+            Notification::send($admins, new InvestorStatusUpdatedAdminNotification($user->email, $changes));
         }
 
         return redirect()->route('admin.villabit.investors.show', $user)

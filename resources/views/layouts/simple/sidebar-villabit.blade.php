@@ -197,7 +197,7 @@
                 @endif
 
                 {{-- ===================== MANAGER SIDEBAR ===================== --}}
-                @elseif($user && $user->isManager())
+                @elseif($user && $user->isManager() && !$user->managerProfile?->can_view_agency_readonly)
                 <li class="sidebar-main-title"><div><h6>Manager Panel</h6></div></li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
@@ -269,7 +269,7 @@
                 </li>
 
                 {{-- ===================== AGENCY SIDEBAR ===================== --}}
-                @elseif($user && $user->isAgency())
+                @elseif($user && ($user->isAgency() || ($user->isManager() && $user->managerProfile?->can_view_agency_readonly)))
                 <li class="sidebar-main-title"><div><h6>{{ __('messages.agency_panel') }}</h6></div></li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>

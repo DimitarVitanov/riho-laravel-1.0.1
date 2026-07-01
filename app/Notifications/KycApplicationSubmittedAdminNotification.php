@@ -7,9 +7,16 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class KycApplicationReceivedNotification extends Notification implements ShouldQueue
+class KycApplicationSubmittedAdminNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    protected string $investorEmail;
+
+    public function __construct(string $investorEmail)
+    {
+        $this->investorEmail = $investorEmail;
+    }
 
     public function via($notifiable): array
     {
@@ -21,11 +28,11 @@ class KycApplicationReceivedNotification extends Notification implements ShouldQ
         $signature = "Kind regards,\n\nVILLA BIT AI Server Team\\\nAI Server For Real Estate Agencies\\\n┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄ ┄\\\nVilla Bit AI Really Works Better, More, And Cheaper Than A Human!\\\nhttps://villabit.ai";
 
         return (new MailMessage)
-            ->subject('KYC Application Received')
-            ->greeting("Hello {$notifiable->first_name},")
-            ->line('We have received your submitted KYC application.')
-            ->line('Villa Bit Capital will review your information and documents. If we need any additional information, documents, or clarification, we will contact you by email.')
-            ->line('Thank you for completing the KYC process.')
+            ->subject('New KYC Application Submitted')
+            ->greeting('Hello Villa Bit Capital Admin,')
+            ->line('A new KYC application has been submitted and needs to be reviewed.')
+            ->line("Email: {$this->investorEmail}")
+            ->line('Please review the submitted KYC information and documents.')
             ->salutation($signature);
     }
 }

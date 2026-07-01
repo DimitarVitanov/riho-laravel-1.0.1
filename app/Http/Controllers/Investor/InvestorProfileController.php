@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Investor;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Notifications\KycApplicationReceivedNotification;
+use App\Notifications\KycApplicationSubmittedAdminNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 
 class InvestorProfileController extends Controller
 {
@@ -162,6 +165,10 @@ class InvestorProfileController extends Controller
                     'kyc_status'       => 'pending',
                 ]);
                 $user->notify(new KycApplicationReceivedNotification());
+
+                // Notify admin(s)
+                $admins = User::whereIn('role', ['super_admin', 'admin'])->get();
+                Notification::send($admins, new KycApplicationSubmittedAdminNotification($user->email));
             }
             return back()->with('success', 'Your KYC application has been submitted. Our team will review it shortly.');
         }

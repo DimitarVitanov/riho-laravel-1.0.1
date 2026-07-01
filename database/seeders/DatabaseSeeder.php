@@ -19,5 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SettingSeeder::class);
         $this->call(LandingPageSeeder::class);
         $this->call(GlobalAiPromptSeeder::class);
+        $this->call(TaxiPageSeeder::class);
     }
 }

@@ -51,6 +51,11 @@ use App\Http\Controllers\Agency\AgencySupportController;
 use App\Http\Controllers\Admin\AdminAiSettingsController;
 use App\Http\Controllers\Agency\AgencySitemapController;
 use App\Http\Controllers\RealEstateTaxiController;
+use App\Http\Controllers\PublicPageController;
+
+// Public Agency Pages (Authority Builder) — served on agency custom domains
+Route::get('/blog', [PublicPageController::class, 'index'])->name('public.blog.index');
+Route::get('/blog/{slug}', [PublicPageController::class, 'show'])->name('public.blog.show');
 
 // Real Estate Taxi domain homepage
 Route::prefix('realestate')->group(function () {

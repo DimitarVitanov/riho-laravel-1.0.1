@@ -50,6 +50,14 @@ use App\Http\Controllers\Admin\AdminSupportTicketController;
 use App\Http\Controllers\Agency\AgencySupportController;
 use App\Http\Controllers\Admin\AdminAiSettingsController;
 use App\Http\Controllers\Agency\AgencySitemapController;
+use App\Http\Controllers\RealEstateTaxiController;
+
+// Real Estate Taxi domain homepage
+Route::prefix('realestate')->group(function () {
+    Route::get('/', [RealEstateTaxiController::class, 'home'])->name('realestatetaxi.home');
+    Route::get('/{any}', [RealEstateTaxiController::class, 'home'])
+        ->where('any', '.*');
+});
 
 // Home page redirects to marketing website
 Route::get('/', function () {

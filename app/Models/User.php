@@ -49,6 +49,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'referral_code',
         'privacy_accepted_at',
         'terms_accepted_at',
+        'email_verified_at',
     ];
 
     /**

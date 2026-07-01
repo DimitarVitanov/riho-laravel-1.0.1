@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Investor;
 
 use App\Http\Controllers\Controller;
+use App\Notifications\KycApplicationReceivedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -160,6 +161,7 @@ class InvestorProfileController extends Controller
                     'kyc_submitted_at' => now(),
                     'kyc_status'       => 'pending',
                 ]);
+                $user->notify(new KycApplicationReceivedNotification());
             }
             return back()->with('success', 'Your KYC application has been submitted. Our team will review it shortly.');
         }

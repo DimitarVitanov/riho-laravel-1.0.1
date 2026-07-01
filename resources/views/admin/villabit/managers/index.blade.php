@@ -31,7 +31,7 @@
                                     <td>{{ $m->managerProfile->department ?? '—' }}</td>
                                     <td><span class="badge bg-{{ $m->status === 'active' ? 'success' : 'warning' }}">{{ ucfirst($m->status) }}</span></td>
                                     <td>
-                                        <a href="{{ route('admin.villabit.managers.show', $m) }}" class="btn btn-outline-primary btn-sm">View</a>
+                                        <a href="{{ route('admin.villabit.managers.show', $m) }}" class="btn btn-outline-primary btn-sm">Edit</a>
                                         <form action="{{ route('admin.villabit.impersonate.start', $m) }}" method="POST" class="d-inline">@csrf<button class="btn btn-outline-info btn-sm">Login As</button></form>
                                         <form action="{{ route('admin.villabit.users.destroy', $m) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete {{ addslashes($m->first_name.' '.$m->last_name) }} and ALL related data? This cannot be undone.')">@csrf @method('DELETE')<button class="btn btn-outline-danger btn-sm">Delete</button></form>
                                     </td>

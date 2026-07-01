@@ -75,7 +75,8 @@ class AdminInvestorController extends Controller
 
             // Notify admin(s)
             $admins = User::whereIn('role', ['super_admin', 'admin'])->get();
-            Notification::send($admins, new InvestorStatusUpdatedAdminNotification($user->email, $changes));
+            $investorName = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: $user->name;
+            Notification::send($admins, new InvestorStatusUpdatedAdminNotification($user->email, $changes, $investorName));
         }
 
         return redirect()->route('admin.villabit.investors.show', $user)

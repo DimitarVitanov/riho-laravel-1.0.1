@@ -45,6 +45,9 @@ class UserManagementController extends Controller
             'can_view_agency_readonly' => 'boolean',
         ]);
 
+        // Remove any soft-deleted user with the same email
+        User::onlyTrashed()->where('email', $request->email)->forceDelete();
+
         $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
@@ -98,6 +101,9 @@ class UserManagementController extends Controller
             'country' => 'required|string|max:255',
             'assigned_manager_id' => 'nullable|exists:users,id',
         ]);
+
+        // Remove any soft-deleted user with the same email
+        User::onlyTrashed()->where('email', $request->email)->forceDelete();
 
         $user = User::create([
             'first_name' => $request->first_name,
@@ -160,6 +166,9 @@ class UserManagementController extends Controller
             'country' => 'required|string|max:255',
             'assigned_manager_id' => 'nullable|exists:users,id',
         ]);
+
+        // Remove any soft-deleted user with the same email
+        User::onlyTrashed()->where('email', $request->email)->forceDelete();
 
         $user = User::create([
             'first_name' => $request->first_name,

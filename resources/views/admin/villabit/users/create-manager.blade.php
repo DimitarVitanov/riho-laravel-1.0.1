@@ -96,9 +96,11 @@
                                     </div>
                                 </div>
                                 <div class="col-md-12 mt-3">
-                                    <div class="form-check" style="padding:12px;background:#fef3c7;border:1px solid #fbbf24;border-radius:8px;">
-                                        <input class="form-check-input" type="checkbox" name="can_view_agency_readonly" value="1">
-                                        <label class="form-check-label" style="color:#92400e;font-weight:600;">Can view the Real Estate Agency panel as a user, in view-only mode.</label>
+                                    <hr class="my-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="can_view_agency_readonly" value="1" id="can_view_agency_readonly">
+                                        <label class="form-check-label fw-semibold" for="can_view_agency_readonly">Can View Agency Panel (Read-Only)</label>
+                                        <small class="d-block text-muted mt-1">Allows this manager to browse the Real Estate Agency dashboard and pages without being able to submit or modify any data.</small>
                                     </div>
                                 </div>
                             </div>

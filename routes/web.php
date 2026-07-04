@@ -58,7 +58,7 @@ Route::get('/blog', [PublicPageController::class, 'index'])->name('public.blog.i
 Route::get('/blog/{slug}', [PublicPageController::class, 'show'])->name('public.blog.show');
 
 // Real Estate Taxi domain homepage
-Route::prefix('realestate')->group(function () {
+Route::domain('realestate.taxi')->group(function () {
     Route::get('/', [RealEstateTaxiController::class, 'home'])->name('realestatetaxi.home');
     Route::get('/{any}', [RealEstateTaxiController::class, 'home'])
         ->where('any', '.*');

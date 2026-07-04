@@ -54,10 +54,35 @@
 
                         <div class="page-body">
                                 @if(auth()->check() && auth()->user()->role === 'manager' && auth()->user()->managerProfile?->can_view_agency_readonly)
-                                    <div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:8px;padding:12px 20px;margin:15px 15px 0;display:flex;align-items:center;gap:10px;">
+                                    <div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:8px;padding:12px 20px;margin:15px 15px 20px;display:flex;align-items:center;gap:10px;">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                         <span style="color:#92400e;font-weight:600;">You are viewing this panel in <strong>view-only mode</strong>. You cannot submit any data.</span>
                                     </div>
+                                    <style>
+                                        .page-body button,
+                                        .page-body input[type="submit"],
+                                        .page-body .btn {
+                                            pointer-events: none !important;
+                                            opacity: 0.5 !important;
+                                            cursor: not-allowed !important;
+                                        }
+                                        .page-body form {
+                                            pointer-events: none !important;
+                                        }
+                                        .page-body input,
+                                        .page-body select,
+                                        .page-body textarea {
+                                            pointer-events: none !important;
+                                            background-color: #f3f4f6 !important;
+                                        }
+                                        .page-body .form-check-input {
+                                            pointer-events: none !important;
+                                        }
+                                        .page-body a.btn {
+                                            pointer-events: none !important;
+                                            opacity: 0.5 !important;
+                                        }
+                                    </style>
                                 @endif
                                 @yield('main_content')
                                 @yield('content')

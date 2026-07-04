@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Real Estate Taxi helps anyone profit from real estate, even without owning property." />
   <title>Real Estate Taxi — Free Global Real Estate Market Tools</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #f5f7fb;
@@ -27,11 +25,11 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
-      font-family: 'Nunito', 'Inter', ui-sans-serif, system-ui, sans-serif;
+      font-family: Nunito, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--body);
       background: var(--bg);
       line-height: 1.62;
-      font-size: 16px;
+      font-size: 17px;
     }
     a { color: inherit; text-decoration: none; }
     button, input { font: inherit; }
@@ -67,6 +65,19 @@
     .top-strip-right a { color: rgba(255,255,255,0.65); font-size: 12px; font-weight: 600; }
     .top-strip-right a:hover { color: #fff; }
     .strip-sep { color: rgba(255,255,255,.2); }
+    .strip-select {
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.85);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 6px;
+      cursor: pointer;
+      outline: none;
+    }
+    .strip-select:hover { background: rgba(255,255,255,.14); color: #fff; }
+    .strip-select option { color: #0a0a0a; }
 
     /* ── HEADER ── */
     .header {
@@ -78,7 +89,7 @@
       border-bottom: 1px solid var(--line);
       box-shadow: 0 2px 12px rgba(15,23,42,.04);
     }
-    .container { width: min(1420px, calc(100% - 36px)); margin: 0 auto; }
+    .container { width: min(1800px, calc(100% - 36px)); margin: 0 auto; }
     .header-inner {
       min-height: var(--header-h);
       display: flex;
@@ -96,7 +107,7 @@
       flex-shrink: 0;
     }
     .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
-    .brand-text b { font-size: 16px; letter-spacing: -.02em; color: #0f172a; font-weight: 900; }
+    .brand-text b { font-size: 17px; letter-spacing: -.02em; color: #0f172a; font-weight: 900; }
     .brand-text span { font-size: 11.5px; color: var(--muted); font-weight: 700; }
     .nav { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; }
     .nav a {
@@ -174,9 +185,18 @@
       font-weight: 900;
       color: #0f172a;
     }
+
+    .hero-title-2{
+      margin: 12px 0 14px;
+      font-size: clamp(30px, 3.4vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -1.6px;
+      font-weight: 900;
+      color:#0f172a;
+    }
     .hero-copy {
-      font-size: 17px;
-      color: var(--body);
+      font-size: 18px;
+      color: #3e4348;
       max-width: 820px;
       line-height: 1.7;
     }
@@ -210,7 +230,7 @@
       font-size: 20px; font-weight: 900; cursor: pointer;
     }
     .submit-arrow:hover { background: var(--teal-dark); }
-    .report-note { margin: 14px 0 0; color: #8a96a8; font-size: 13px; line-height: 1.6; }
+    .report-note { margin: 14px 0 0; color: #3e4348; font-size: 14px; line-height: 1.6; }
 
     /* ── AI IMAGE CARD ── */
     .ai-img-card {
@@ -228,7 +248,7 @@
     }
 
     /* ── COPY STACK ── */
-    .copy-stack p { color: var(--body); font-size: 16px; line-height: 1.72; }
+    .copy-stack p { color: #3e4348; font-size: 17px; line-height: 1.72; }
     .copy-stack p + p { margin-top: 14px; }
 
     /* ── PURPOSE CARD ── */
@@ -248,7 +268,7 @@
 
     /* ── FOCUS CARD ── */
     .focus-card h2 { margin: 12px 0 0; font-size: 30px; line-height: 1.14; letter-spacing: -.7px; color: #0f172a; }
-    .focus-copy { color: var(--body); font-size: 16px; margin-top: 10px; line-height: 1.72; }
+    .focus-copy { color: #3e4348; font-size: 17px; margin-top: 10px; line-height: 1.72; }
     .areas-list {
       margin: 22px 0 0; padding: 0; list-style: none;
       display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px;
@@ -299,18 +319,32 @@
 
     /* ── FOOTER ── */
     footer {
-      background: #111217;
+      background: #12141c;
       color: rgba(255,255,255,0.72);
-      font-size: 14px;
+      font-size: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    footer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .25;
+      pointer-events: none;
+      background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.03) 0%, transparent 25%),
+                  radial-gradient(circle at 80% 80%, rgba(255,255,255,.03) 0%, transparent 25%);
+      background-size: 60px 60px;
     }
     .footer-top {
       padding: 56px 0 40px;
       border-bottom: 1px solid rgba(255,255,255,.08);
+      position: relative;
+      z-index: 1;
     }
     .footer-grid {
       display: grid;
-      grid-template-columns: 1.8fr 1fr 1fr 1.6fr;
-      gap: 40px;
+      grid-template-columns: 1.2fr 1fr 1.2fr;
+      gap: 50px;
     }
     .footer-brand { }
     .footer-brand .brand-icon {
@@ -321,12 +355,14 @@
       font-size: 24px; margin-bottom: 14px;
     }
     .footer-brand p { font-size: 13.5px; line-height: 1.65; max-width: 260px; color: rgba(255,255,255,.55); margin-top: 10px; }
-    .footer-col h4 { color: #fff; font-size: 13px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 16px; }
-    .footer-col ul { list-style: none; padding: 0; display: grid; gap: 10px; }
+    .footer-col h4 { color: #fff; font-size: 13px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 20px; }
+    .footer-col ul { list-style: none; padding: 0; display: grid; gap: 12px; }
+    .footer-col ul li { display: flex; align-items: center; gap: 10px; }
+    .footer-col ul li::before { content: ">"; color: rgba(255,255,255,.35); font-size: 11px; font-weight: 900; }
     .footer-col ul li a { color: rgba(255,255,255,.55); font-size: 13.5px; font-weight: 600; }
     .footer-col ul li a:hover { color: var(--gold); }
-    .footer-subscribe h4 { color: #fff; font-size: 13px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; }
-    .footer-subscribe p { color: rgba(255,255,255,.5); font-size: 13px; margin-bottom: 14px; line-height: 1.5; }
+    .footer-subscribe h4 { color: #fff; font-size: 15px; font-weight: 900; letter-spacing: .04em; margin-bottom: 14px; }
+    .footer-subscribe p { color: rgba(255,255,255,.5); font-size: 13px; margin-bottom: 18px; line-height: 1.6; }
     .sub-form { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); }
     .sub-form input {
       flex: 1; min-width: 0;
@@ -337,17 +373,19 @@
     }
     .sub-form input::placeholder { color: rgba(255,255,255,.35); }
     .sub-form button {
-      height: 44px; padding: 0 18px;
+      height: 44px; padding: 0 22px;
       border: 0; border-radius: 0;
-      background: var(--teal); color: #fff;
+      background: #f5a623; color: #0a0a0a;
       font-size: 12px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase;
       cursor: pointer;
     }
-    .sub-form button:hover { background: var(--teal-dark); }
+    .sub-form button:hover { background: #e09418; }
     .footer-bottom {
       padding: 18px 0;
       display: flex; align-items: center; justify-content: space-between;
       gap: 16px; flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
     }
     .footer-bottom p { color: rgba(255,255,255,.35); font-size: 12.5px; }
     .footer-bottom-links { display: flex; gap: 20px; }
@@ -356,13 +394,15 @@
 
     /* ── CHECKERBOARD FOOTER STRIP ── */
     .taxi-strip {
-      height: 12px;
-      background-image: repeating-linear-gradient(
-        90deg,
-        #111217 0px, #111217 12px,
-        var(--gold) 12px, var(--gold) 24px
-      );
-      opacity: .35;
+      height: 16px;
+      background-image:
+        linear-gradient(45deg, #000 25%, transparent 25%),
+        linear-gradient(-45deg, #000 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #000 75%),
+        linear-gradient(-45deg, transparent 75%, #000 75%);
+      background-color: #fff;
+      background-size: 32px 32px;
+      background-position: 0 0, 0 16px, 16px -16px, -16px 0px;
     }
 
     /* ── RESPONSIVE ── */
@@ -415,14 +455,23 @@
     <div class="top-strip-inner">
       <div class="top-strip-left">
         <span class="badge">FREE</span>
-        Global Real Estate Market Tools &amp; AI Reports — No Registration Required
+        Real Estate Taxi is your FREE rule through the global real estate market!
       </div>
       <div class="top-strip-right">
         <a href="#ask">Ask AI</a>
         <span class="strip-sep">|</span>
         <a href="#focus">Solutions</a>
         <span class="strip-sep">|</span>
-        <a href="#why">About</a>
+        <select class="strip-select" aria-label="Currency" onchange="taxiSwitch('currency', this.value)">
+          @foreach($currencies as $code => $label)
+            <option value="{{ $code }}" {{ $currency === $code ? 'selected' : '' }}>{{ $label }}</option>
+          @endforeach
+        </select>
+        <select class="strip-select" aria-label="Language" onchange="taxiSwitch('lang', this.value)">
+          @foreach($languages as $code => $name)
+            <option value="{{ $code }}" {{ $locale === $code ? 'selected' : '' }}>{{ $name }}</option>
+          @endforeach
+        </select>
       </div>
     </div>
   </div>
@@ -472,7 +521,7 @@
       <div class="grid">
 
         {{-- 01 HERO --}}
-        <section class="card span-12">
+        <section class="card span-6">
           <div class="card-pad">
             <span class="number-label">01</span>
             <h1 class="hero-title">Real Estate Taxi is your FREE ride through the global real estate market!</h1>
@@ -481,10 +530,10 @@
         </section>
 
         {{-- 02 ASK AI --}}
-        <section class="card ask-card span-7" id="ask">
+        <section class="card ask-card span-6" id="ask">
           <div class="card-pad">
             <span class="number-label">02</span>
-            <h2>Ask anything about real estate, anywhere!</h2>
+            <h2 class="hero-title-2">Ask anything about real estate, anywhere!</h2>
             <form class="query-box" id="askForm">
               <input type="text" aria-label="Ask anything about real estate" placeholder="Type your question here." />
               <button class="submit-arrow" type="submit" aria-label="Submit question">↗</button>
@@ -493,13 +542,8 @@
           </div>
         </section>
 
-        {{-- AI IMAGE --}}
-        <section class="card ai-img-card span-5" aria-hidden="true">
-          <img src="/realestate-taxi/home1.png" alt="Real Estate Taxi AI" loading="lazy" />
-        </section>
-
-        {{-- 03 WHY --}}
-        <section class="card span-8" id="why">
+         {{-- 03 WHY --}}
+        <section class="card span-6" id="why">
           <div class="card-pad">
             <span class="number-label">03</span>
             <div class="copy-stack" style="padding-top:16px;">
@@ -511,19 +555,18 @@
           </div>
         </section>
 
-        {{-- 04 PURPOSE --}}
-        <section class="card purpose-card span-4">
-          <div class="card-pad">
-            <span class="number-label" style="color:rgba(255,255,255,.5);">04</span>
-            <p style="margin-top:14px;">Real Estate Taxi is here to inform regular people and give them professional tools to profit from real estate markets <strong>worldwide.</strong></p>
-          </div>
+        {{-- AI IMAGE --}}
+        <section class="card ai-img-card span-6" aria-hidden="true">
+          <img src="/realestate-taxi/home1.png" alt="Real Estate Taxi AI" loading="lazy" />
         </section>
+
+       
 
         {{-- 05 FOCUS --}}
         <section class="card focus-card span-12" id="focus">
           <div class="card-pad">
-            <span class="number-label">05</span>
-            <h2>Smart Real Estate Decisions Made Simple</h2>
+            <span class="number-label">04</span>
+            <h2 class="hero-title-2">Smart Real Estate Decisions Made Simple</h2>
             <p class="focus-copy">Real Estate Taxi helps regular people understand real estate and find practical ways to benefit from it, even without owning property or having money to invest.</p>
             <div class="copy-stack" style="margin-top:18px;">
               <p>We focus on four important areas that can help you make smarter real estate decisions:</p>
@@ -634,39 +677,31 @@
       <div class="container">
         <div class="footer-grid">
 
-          <div class="footer-brand">
-            <div class="brand-icon">🚕</div>
-            <div style="font-size:16px;font-weight:900;color:#fff;letter-spacing:-.02em;">Real Estate Taxi</div>
-            <p>Your free ride through the global real estate market. Tools, analysis, AI reports, and practical guides for regular people worldwide.</p>
-          </div>
-
-          <div class="footer-col">
-            <h4>Market Tools</h4>
-            <ul>
-              <li><a href="#ask">AI Property Report</a></li>
-              <li><a href="#market">Market Analysis</a></li>
-              <li><a href="#comparison">Price Comparison</a></li>
-              <li><a href="#software">RE Software</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-col">
-            <h4>Information</h4>
-            <ul>
-              <li><a href="#earn">Earn Without Property</a></li>
-              <li><a href="#why">About Us</a></li>
-              <li><a href="#focus">How It Works</a></li>
-              <li><a href="#ask">Get Free Report</a></li>
-            </ul>
-          </div>
-
           <div class="footer-subscribe">
-            <h4>Stay Updated</h4>
-            <p>Get our daily real estate market newsletter with practical tips, tools, and AI reports.</p>
+            <h4>SUBSCRIBE TO MAIL!</h4>
+            <p>Get our Daily email newsletter with Special Services, Updates, Offers and more.</p>
             <form class="sub-form" id="subForm">
               <input type="email" placeholder="EMAIL ADDRESS" aria-label="Email address" />
-              <button type="submit">SIGN UP</button>
+              <button type="submit">SIGNUP</button>
             </form>
+          </div>
+
+          <div class="footer-col">
+            <h4>WE GLAD TO OFFER</h4>
+            <ul>
+              <li><a href="#ask">24 / 7 Taxi Service To Any Where Around The City</a></li>
+              <li><a href="#market">Sending Taxi Booking Alert By SMS</a></li>
+              <li><a href="#software">GPS Tracking System For Location Guessing</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-col">
+            <h4>ABOUT US</h4>
+            <p style="font-size:13.5px;line-height:1.65;color:rgba(255,255,255,.55);margin-bottom:18px;">Hello we are Real Estate Taxi. We are here to provide you the best offers through our coupons and tools. We are here to provide you coupons.</p>
+            <div style="display:flex;align-items:flex-start;gap:12px;color:rgba(255,255,255,.55);font-size:13.5px;line-height:1.6;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 18px;margin-top:3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>A12 - Design Street,<br>Omaha, United States</span>
+            </div>
           </div>
 
         </div>
@@ -703,6 +738,12 @@
       document.getElementById('askForm').addEventListener('submit', function (e) { e.preventDefault(); });
       document.getElementById('subForm').addEventListener('submit', function (e) { e.preventDefault(); });
     })();
+
+    function taxiSwitch(key, value) {
+      var params = new URLSearchParams(window.location.search);
+      params.set(key, value);
+      window.location.search = params.toString();
+    }
   </script>
 </body>
 </html>

@@ -971,8 +971,43 @@
     </div>
   </footer>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="/assets/js/olmo-menu.js"></script>
+  <script>
+    /* OLMO mobile menu — minimal vanilla JS, no body-wrap */
+    (function () {
+      var toggle = document.getElementById('wsnavtoggle');
+      if (!toggle) return;
+      toggle.addEventListener('click', function () {
+        document.body.classList.toggle('wsactive');
+      });
+      document.querySelectorAll('.wsmenu-list a').forEach(function (link) {
+        link.addEventListener('click', function () {
+          document.body.classList.remove('wsactive');
+        });
+      });
+      /* Mobile sub-menu expanders */
+      document.querySelectorAll('.wsmenu > .wsmenu-list > li').forEach(function (li) {
+        var sub = li.querySelector('.sub-menu, .wsmegamenu');
+        if (!sub) return;
+        var btn = document.createElement('span');
+        btn.className = 'wsmenu-click';
+        btn.innerHTML = '<i class="wsmenu-arrow"></i>';
+        li.prepend(btn);
+        btn.addEventListener('click', function () {
+          btn.classList.toggle('ws-activearrow');
+          if (sub.style.display === 'block') { sub.style.display = ''; }
+          else { sub.style.display = 'block'; }
+        });
+      });
+      window.addEventListener('resize', function () {
+        if (window.innerWidth >= 992) {
+          document.body.classList.remove('wsactive');
+          document.querySelectorAll('.sub-menu, .wsmegamenu').forEach(function (el) {
+            el.removeAttribute('style');
+          });
+        }
+      });
+    })();
+  </script>
   <script>
     document.getElementById('askForm').addEventListener('submit', function (e) { e.preventDefault(); });
     document.getElementById('subForm').addEventListener('submit', function (e) { e.preventDefault(); });

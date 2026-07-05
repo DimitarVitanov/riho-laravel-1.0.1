@@ -113,6 +113,26 @@
         </div>
     </div>
 
+    {{-- Agency Sub-Prompt --}}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-1 fw-bold">LOCAL SEO Optional Additional Agency-Specific Instructions</h5>
+                    <small class="text-muted">Villa Bit AI Server already uses a complete expert AI prompt and proven logic for this feature. You can add additional suggestions that we can use as extra guidance to help the AI emphasize what matters most for your unique case.<br>These instructions do not replace or override the main Villa Bit AI Server strategy, quality controls, or platform rules. They simply add more specific AI targets and priorities for your real estate agency.</small>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('agency.local-seo.save-settings') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="feature" value="local_seo_presence_boost">
+                        <textarea name="agency_sub_prompt" class="form-control mb-3" rows="6" placeholder="E.g. Focus more on luxury sea-view villas. Emphasize proximity to marinas. Target English-speaking buyers from UK and Germany.">{{ old('agency_sub_prompt', $featureSetting->agency_sub_prompt ?? '') }}</textarea>
+                        <button type="submit" class="btn btn-dark">{{ __('messages.save') }}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- AI Target Generation --}}
     @if($featureSetting && $featureSetting->is_enabled)
     <div class="row mb-4">

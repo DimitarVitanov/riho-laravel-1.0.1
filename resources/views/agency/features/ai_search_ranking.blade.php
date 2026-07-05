@@ -48,6 +48,26 @@
         </div>
     </div>
 
+    {{-- Agency Sub-Prompt --}}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-1 fw-bold">AI SEARCH RANKING Optional Additional Agency-Specific Instructions</h5>
+                    <small class="text-muted">Villa Bit AI Server already uses a complete expert AI prompt and proven logic for this feature. You can add additional suggestions that we can use as extra guidance to help the AI emphasize what matters most for your unique case.<br>These instructions do not replace or override the main Villa Bit AI Server strategy, quality controls, or platform rules. They simply add more specific AI search ranking targets and priorities for your real estate agency.</small>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('agency.ai-search.save-settings') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="feature" value="ai_search_ranking">
+                        <textarea name="agency_sub_prompt" class="form-control mb-3" rows="6" placeholder="E.g. Prioritize AI Overview featured snippets for luxury property searches. Target buyers from Scandinavia. Emphasize investment yield data and legal purchase guides for foreigners.">{{ old('agency_sub_prompt', $featureSetting->agency_sub_prompt ?? '') }}</textarea>
+                        <button type="submit" class="btn btn-dark">{{ __('messages.save') }}</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- AI Search Summary Cards --}}
     <div class="row mb-4">
         <div class="col-md-3 mb-3">

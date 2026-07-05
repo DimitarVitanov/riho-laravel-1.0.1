@@ -8,7 +8,7 @@ class AiFeatureSetting extends Model
 {
     protected $fillable = [
         'agency_profile_id', 'feature_key', 'is_enabled',
-        'custom_prompt_override', 'ai_model_provider', 'ai_model_name',
+        'custom_prompt_override', 'agency_sub_prompt', 'ai_model_provider', 'ai_model_name',
         'frequency', 'last_run_at', 'next_run_at',
     ];
 

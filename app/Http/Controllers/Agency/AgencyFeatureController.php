@@ -196,6 +196,13 @@ class AgencyFeatureController extends Controller
             ]);
         }
 
+        // Update agency sub-prompt if provided
+        if ($request->has('agency_sub_prompt')) {
+            $featureSetting->update([
+                'agency_sub_prompt' => $request->input('agency_sub_prompt') ?: null,
+            ]);
+        }
+
         // Reset prompt to default if requested
         if ($request->input('reset_prompt')) {
             $featureSetting->update([

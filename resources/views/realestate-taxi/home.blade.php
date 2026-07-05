@@ -532,51 +532,177 @@
       .ai-img-card img { min-height: 220px; }
     }
 
-    /* MEGA MENU - scoped to .mega-* only, no page conflicts */
-    .mega-item { position: relative; display: flex; align-items: center; }
-    .mega-item > a { white-space: nowrap; }
-    .mega-drop,
-    .mega-panel {
+
+    /* ══════════════════════════════════════════════
+       OLMO MEGA MENU — scoped to #olmo-header only
+       All selectors prefixed so nothing leaks out
+    ══════════════════════════════════════════════ */
+    #olmo-header {
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(15,23,42,.08);
+      position: sticky;
+      top: 0;
+      z-index: 1030;
+    }
+    #olmo-header .wsmainwp {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      height: 72px;
+    }
+    #olmo-header .desktoplogo {
+      flex-shrink: 0;
+      margin-right: 32px;
+      display: flex;
+      align-items: center;
+    }
+    #olmo-header .desktoplogo img {
+      height: 48px;
+      width: auto;
+      display: block;
+    }
+    /* ─── Nav list ─── */
+    #olmo-header .wsmenu { flex: 1; }
+    #olmo-header .wsmenu-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+    #olmo-header .wsmenu-list > li {
+      position: relative;
+    }
+    #olmo-header .wsmenu-list > li > a {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0 16px;
+      height: 72px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #1f2937;
+      text-decoration: none;
+      white-space: nowrap;
+      letter-spacing: -.01em;
+      transition: color .2s;
+    }
+    #olmo-header .wsmenu-list > li > a:hover { color: #0d7377; }
+    #olmo-header .wsmenu-list > li > a.btn-header {
+      margin-left: 12px;
+      padding: 0 22px;
+      height: 42px;
+      background: #ffb31a;
+      color: #0a0a0a;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+    #olmo-header .wsmenu-list > li > a.btn-header:hover { background: #e6a000; color: #0a0a0a; }
+    /* ─── Arrow ─── */
+    #olmo-header .wsarrow {
+      display: inline-block;
+      width: 0; height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid currentColor;
+      margin-left: 2px;
+      vertical-align: middle;
+      opacity: .6;
+    }
+    /* ─── Dropdown sub-menu ─── */
+    #olmo-header .sub-menu {
       display: none;
       position: absolute;
-      top: calc(100% + 10px);
+      top: 100%;
       left: 0;
-      z-index: 9999;
+      min-width: 210px;
       background: #fff;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #e5eaf1;
+      border-radius: 10px;
+      box-shadow: 0 12px 32px rgba(15,23,42,.12);
+      list-style: none;
+      margin: 0;
+      padding: 8px 0;
+      z-index: 9999;
+    }
+    #olmo-header .wsmenu-list > li:hover > .sub-menu { display: block; }
+    #olmo-header .sub-menu li a {
+      display: block;
+      padding: 9px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      text-decoration: none;
+      transition: background .15s, color .15s;
+    }
+    #olmo-header .sub-menu li a:hover { background: #f0faf9; color: #0d7377; }
+    /* ─── Mega menu panel ─── */
+    #olmo-header .wsmegamenu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      background: #fff;
+      border: 1px solid #e5eaf1;
       border-radius: 12px;
       box-shadow: 0 16px 40px rgba(15,23,42,.13);
+      padding: 24px 28px;
+      z-index: 9999;
+    }
+    #olmo-header .mg_link:hover > .wsmegamenu { display: block; }
+    #olmo-header .wsmegamenu .mega-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0 24px;
+    }
+    #olmo-header .link-list {
       list-style: none;
       margin: 0;
       padding: 0;
     }
-    .mega-item:hover > .mega-drop,
-    .mega-item:hover > .mega-panel { display: block; }
-    .mega-drop { min-width: 200px; padding: 8px 0; }
-    .mega-drop li a {
-      display: block; padding: 9px 18px;
-      font-size: 13px; font-weight: 600;
-      color: #374151; text-decoration: none;
+    #olmo-header .link-list .col-head {
+      display: block;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      padding-bottom: 9px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #e5eaf1;
     }
-    .mega-drop li a:hover { background: #f0faf9; color: #0d7377; }
-    .mega-panel {
-      left: 50%; transform: translateX(-50%);
-      width: 660px; padding: 22px 26px;
+    #olmo-header .link-list li a {
+      display: block;
+      padding: 7px 0;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #374151;
+      text-decoration: none;
+      transition: color .15s;
     }
-    .mega-cols { display: grid; grid-template-columns: repeat(4,1fr); gap: 0 20px; }
-    .mega-col { list-style: none; padding: 0; margin: 0; }
-    .mega-col-head {
-      display: block; font-size: 10px; font-weight: 900;
-      letter-spacing: .08em; text-transform: uppercase;
-      color: #94a3b8; padding-bottom: 8px; margin-bottom: 4px;
-      border-bottom: 1px solid #e2e8f0;
+    #olmo-header .link-list li a:hover { color: #0d7377; }
+    /* ─── Mobile header (hidden on desktop) ─── */
+    #olmo-header .wsmobileheader { display: none; }
+    @media (max-width: 1024px) {
+      #olmo-header .wsmenu,
+      #olmo-header .desktoplogo { display: none; }
+      #olmo-header .wsmobileheader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+        padding: 0 18px;
+      }
+      #olmo-header .wsmobileheader img { height: 42px; width: auto; }
     }
-    .mega-col li a {
-      display: block; padding: 6px 0;
-      font-size: 13px; font-weight: 600;
-      color: #374151; text-decoration: none;
-    }
-    .mega-col li a:hover { color: #0d7377; }
   </style>
 </head>
 <body>
@@ -609,97 +735,99 @@
     </div>
   </div>
 
-  {{-- HEADER --}}
-  <header class="header">
-    <div class="container header-inner">
-      <a class="brand" href="#top" aria-label="Real Estate Taxi">
-        <img src="/assets/images/logo-small.png" alt="Real Estate Taxi" style="height:48px;width:auto;display:block;">
-      </a>
+  {{-- OLMO-STYLE MEGA MENU HEADER --}}
+  <header id="olmo-header">
 
-      <nav class="nav" aria-label="Main navigation">
-
-        <div class="mega-item">
-          <a href="#top">Explore <span class="arr">▾</span></a>
-          <div class="mega-panel">
-            <div class="mega-cols">
-              <ul class="mega-col">
-                <span class="mega-col-head">Discover</span>
-                <li><a href="#top">Overview</a></li>
-                <li><a href="#focus">What We Do</a></li>
-                <li><a href="#why">Why Real Estate</a></li>
-                <li><a href="#earn">Market Routes</a></li>
-              </ul>
-              <ul class="mega-col">
-                <span class="mega-col-head">Tools</span>
-                <li><a href="#areas">Top Areas</a></li>
-                <li><a href="#comparison">Price Comparison</a></li>
-                <li><a href="#topics">Expert Topics</a></li>
-                <li><a href="#ask">Ask AI</a></li>
-              </ul>
-              <ul class="mega-col">
-                <span class="mega-col-head">Metrics</span>
-                <li><a href="#focus">Rental Yield</a></li>
-                <li><a href="#focus">Price-to-Income</a></li>
-                <li><a href="#focus">ROI Calculator</a></li>
-                <li><a href="#focus">Market Score</a></li>
-              </ul>
-              <ul class="mega-col">
-                <span class="mega-col-head">Guides</span>
-                <li><a href="#topics">Buyer Tips</a></li>
-                <li><a href="#topics">Seller Tips</a></li>
-                <li><a href="#topics">Investor Tools</a></li>
-                <li><a href="#topics">Expert Topics</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="mega-item">
-          <a href="#focus">Solutions <span class="arr">▾</span></a>
-          <ul class="mega-drop">
-            <li><a href="#focus">AI Market Analysis</a></li>
-            <li><a href="#focus">Rental Yield Tool</a></li>
-            <li><a href="#comparison">Price Comparison</a></li>
-            <li><a href="#earn">Passive Income Routes</a></li>
-            <li><a href="#focus">ROI Calculator</a></li>
-          </ul>
-        </div>
-
-        <div class="mega-item">
-          <a href="#earn">Market Routes <span class="arr">▾</span></a>
-          <ul class="mega-drop">
-            <li><a href="#earn">Buy &amp; Hold</a></li>
-            <li><a href="#earn">Short-Term Rental</a></li>
-            <li><a href="#earn">Long-Term Rental</a></li>
-            <li><a href="#earn">Fix &amp; Flip</a></li>
-            <li><a href="#earn">REIT Investment</a></li>
-          </ul>
-        </div>
-
-        <a href="#areas">Top Areas</a>
-        <a href="#topics">Expert Topics</a>
-        <a href="#ask">Ask AI</a>
-
-      </nav>
-
-      <div class="header-actions">
-        <a class="ghost-btn" href="#why">Why Real Estate</a>
-        <a class="primary-btn" href="#ask">Get Report</a>
-        <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
-      </div>
+    <div class="wsmobileheader">
+      <a href="#top"><img src="/assets/images/logo-small.png" alt="Real Estate Taxi"></a>
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
     </div>
 
-    <div class="drawer" id="drawer">
-      <nav aria-label="Mobile navigation">
-        <a href="#top">Home</a>
-        <a href="#focus">Solutions</a>
-        <a href="#earn">Market Routes</a>
-        <a href="#comparison">Pricing View</a>
-        <a href="#why">About</a>
-        <a href="#ask">Ask AI</a>
+    <div class="wsmainwp">
+      <div class="desktoplogo">
+        <a href="#top"><img src="/assets/images/logo-small.png" alt="Real Estate Taxi"></a>
+      </div>
+
+      <nav class="wsmenu">
+        <ul class="wsmenu-list">
+
+          <li class="mg_link" aria-haspopup="true">
+            <a href="#top">Explore <span class="wsarrow"></span></a>
+            <div class="wsmegamenu">
+              <div class="mega-row">
+                <ul class="link-list">
+                  <span class="col-head">Discover</span>
+                  <li><a href="#top">Overview</a></li>
+                  <li><a href="#focus">What We Do</a></li>
+                  <li><a href="#why">Why Real Estate</a></li>
+                  <li><a href="#earn">Market Routes</a></li>
+                </ul>
+                <ul class="link-list">
+                  <span class="col-head">Tools</span>
+                  <li><a href="#areas">Top Areas</a></li>
+                  <li><a href="#comparison">Price Comparison</a></li>
+                  <li><a href="#topics">Expert Topics</a></li>
+                  <li><a href="#ask">Ask AI</a></li>
+                </ul>
+                <ul class="link-list">
+                  <span class="col-head">Metrics</span>
+                  <li><a href="#focus">Rental Yield</a></li>
+                  <li><a href="#focus">Price-to-Income</a></li>
+                  <li><a href="#focus">ROI Calculator</a></li>
+                  <li><a href="#focus">Market Score</a></li>
+                </ul>
+                <ul class="link-list">
+                  <span class="col-head">Guides</span>
+                  <li><a href="#topics">Buyer Tips</a></li>
+                  <li><a href="#topics">Seller Tips</a></li>
+                  <li><a href="#topics">Investor Tools</a></li>
+                  <li><a href="#topics">Expert Topics</a></li>
+                </ul>
+              </div>
+            </div>
+          </li>
+
+          <li aria-haspopup="true">
+            <a href="#focus">Solutions <span class="wsarrow"></span></a>
+            <ul class="sub-menu">
+              <li><a href="#focus">AI Market Analysis</a></li>
+              <li><a href="#focus">Rental Yield Tool</a></li>
+              <li><a href="#comparison">Price Comparison</a></li>
+              <li><a href="#earn">Passive Income Routes</a></li>
+              <li><a href="#focus">ROI Calculator</a></li>
+            </ul>
+          </li>
+
+          <li aria-haspopup="true">
+            <a href="#earn">Market Routes <span class="wsarrow"></span></a>
+            <ul class="sub-menu">
+              <li><a href="#earn">Buy &amp; Hold</a></li>
+              <li><a href="#earn">Short-Term Rental</a></li>
+              <li><a href="#earn">Long-Term Rental</a></li>
+              <li><a href="#earn">Fix &amp; Flip</a></li>
+              <li><a href="#earn">REIT Investment</a></li>
+            </ul>
+          </li>
+
+          <li><a href="#areas">Top Areas</a></li>
+          <li><a href="#topics">Expert Topics</a></li>
+          <li><a href="#ask" class="btn-header">Get Free Report</a></li>
+
+        </ul>
       </nav>
     </div>
   </header>
+
+  <div class="drawer" id="drawer">
+    <nav aria-label="Mobile navigation">
+      <a href="#top">Home</a>
+      <a href="#focus">Solutions</a>
+      <a href="#earn">Market Routes</a>
+      <a href="#comparison">Pricing View</a>
+      <a href="#why">About</a>
+      <a href="#ask">Ask AI</a>
+    </nav>
+  </div>
 
   {{-- MAIN --}}
   <main class="page" id="top">

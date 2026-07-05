@@ -626,7 +626,8 @@
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a.last-link {
       padding: 10px 0;
     }
-    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a:hover { color: #0d8d8c; }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a:hover { color: #0d8d8c; text-decoration: none !important; }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a { text-decoration: none !important; }
 
     /* ─── Arrow ─── */
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a .wsarrow {
@@ -655,9 +656,19 @@
       border: solid 1px #eee;
       border-radius: 4px;
       list-style: none;
-      display: none;
+      display: block;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
+      transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+      pointer-events: none;
     }
-    .olmo-nav-wrap .wsmenu > .wsmenu-list > li:hover > ul.sub-menu { display: block; }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li:hover > ul.sub-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > ul.sub-menu > li {
       position: relative;
       margin: 0;
@@ -678,13 +689,14 @@
       letter-spacing: 0;
       border-radius: 4px;
       white-space: nowrap;
-      transition: all 400ms ease-in-out;
-      text-decoration: none;
+      text-decoration: none !important;
+      transition: color 0.2s ease, padding-left 0.2s ease, background 0.2s ease;
     }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > ul.sub-menu > li > a:hover {
-      padding: 9px 9px 9px 12px;
+      padding: 9px 9px 9px 16px;
       color: #0d8d8c;
       background: #f0faf9;
+      text-decoration: none !important;
     }
 
     /* ─── Mega menu ─── */
@@ -704,7 +716,12 @@
       background: #ffffff;
       border-radius: 0 0 6px 6px;
       box-shadow: 0 12px 32px rgba(15,23,42,.12);
-      display: none;
+      display: block;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+      pointer-events: none;
     }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu.halfmenu {
       padding: 20px 24px;
@@ -714,8 +731,13 @@
       left: 0;
       top: 100%;
     }
-    .olmo-nav-wrap .wsmenu > .wsmenu-list > li.mg_link:hover > .wsmegamenu { display: block; }
-    .olmo-nav-wrap .wsmenu > .wsmenu-list > li:hover > .wsmegamenu.halfmenu { display: block; }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li.mg_link:hover > .wsmegamenu,
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li:hover > .wsmegamenu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
 
     /* ─── mega-cols: 4-column grid (desktop) ─── */
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .mega-cols {
@@ -758,11 +780,15 @@
       color: #888;
       font-size: 15px;
       font-weight: 400;
-      text-decoration: none;
+      text-decoration: none !important;
       white-space: nowrap;
-      transition: all 400ms ease-in-out;
+      transition: color 0.2s ease, padding-left 0.2s ease;
     }
-    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li a:hover { color: #0d8d8c; padding-left: 4px; }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li a:hover {
+      color: #0d8d8c;
+      padding-left: 4px;
+      text-decoration: none !important;
+    }
 
     /* ─── CTA button in nav ─── */
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a.btn-skyblue {
@@ -841,11 +867,18 @@
       /* Mobile sub-menu */
       .olmo-nav-wrap .wsmenu > .wsmenu-list > li > ul.sub-menu {
         display: none;
-        position: relative;
+        position: static !important;
         top: 0;
         background-color: #fff;
         border: none;
         padding: 0;
+        /* reset desktop animation */
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        transition: none !important;
+        pointer-events: auto !important;
+        white-space: normal;
       }
       .olmo-nav-wrap .wsmenu > .wsmenu-list > li > ul.sub-menu > li > a {
         line-height: 20px;
@@ -868,6 +901,12 @@
         box-shadow: none !important;
         border-radius: 0 !important;
         background: #f8f8f8 !important;
+        /* reset desktop animation */
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        transition: none !important;
+        pointer-events: auto !important;
       }
       .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu.halfmenu {
         width: 100% !important;
@@ -1426,45 +1465,108 @@
   <script>
     (function () {
 
-      /* ── OLMO mobile menu toggle ── */
-      var wrap  = document.getElementById('olmoNavWrap');
-      var toggle = document.getElementById('wsnavtoggle');
+      var wrap    = document.getElementById('olmoNavWrap');
+      var toggle  = document.getElementById('wsnavtoggle');
       var overlay = document.getElementById('olmoOverlay');
 
+      /* ── Slide helpers (replicate jQuery slideToggle) ── */
+      function slideDown(el) {
+        el.style.display = 'block';
+        el.style.overflow = 'hidden';
+        el.style.maxHeight = '0';
+        el.style.transition = 'max-height 0.35s ease';
+        requestAnimationFrame(function () {
+          el.style.maxHeight = el.scrollHeight + 'px';
+        });
+      }
+      function slideUp(el) {
+        el.style.maxHeight = el.scrollHeight + 'px';
+        el.style.overflow = 'hidden';
+        el.style.transition = 'max-height 0.35s ease';
+        requestAnimationFrame(function () {
+          el.style.maxHeight = '0';
+        });
+        setTimeout(function () {
+          el.style.display = 'none';
+          el.style.maxHeight = '';
+          el.style.overflow = '';
+          el.style.transition = '';
+        }, 360);
+      }
+
+      /* ── Mobile toggle ── */
       function openMenu()  { if (wrap) wrap.classList.add('wsactive'); }
-      function closeMenu() { if (wrap) wrap.classList.remove('wsactive'); }
+      function closeMenu() {
+        if (!wrap) return;
+        wrap.classList.remove('wsactive');
+        /* collapse any open panels */
+        document.querySelectorAll('.olmo-nav-wrap .wsmenu-click.ws-activearrow').forEach(function (c) {
+          c.classList.remove('ws-activearrow');
+          var sib = c.parentElement.querySelector('.sub-menu, .wsmegamenu');
+          if (sib) slideUp(sib);
+        });
+      }
 
       if (toggle) toggle.addEventListener('click', function () {
         wrap.classList.contains('wsactive') ? closeMenu() : openMenu();
       });
       if (overlay) overlay.addEventListener('click', closeMenu);
 
-      /* Mobile expand/collapse for sub-menus and mega menus */
+      /* ── Inject wsmenu-click spans (mobile expand arrows) ── */
       document.querySelectorAll('.olmo-nav-wrap .wsmenu > .wsmenu-list > li').forEach(function (li) {
         var panel = li.querySelector('.sub-menu, .wsmegamenu');
         if (!panel) return;
-        var click = document.createElement('span');
-        click.className = 'wsmenu-click';
+
+        /* hide panel initially for mobile slideToggle (desktop uses CSS opacity) */
+        panel.setAttribute('data-olmo-panel', '1');
+
+        var clickSpan = document.createElement('span');
+        clickSpan.className = 'wsmenu-click';
         var icon = document.createElement('i');
-        click.appendChild(icon);
-        li.insertBefore(click, li.firstChild);
-        click.addEventListener('click', function (e) {
+        clickSpan.appendChild(icon);
+        li.insertBefore(clickSpan, li.firstChild);
+
+        clickSpan.addEventListener('click', function (e) {
           e.stopPropagation();
-          var isOpen = click.classList.contains('ws-activearrow');
-          /* close all others */
-          document.querySelectorAll('.olmo-nav-wrap .wsmenu-click').forEach(function (c) {
+          if (window.innerWidth > 991) return; /* desktop handled by CSS hover */
+
+          var isOpen = clickSpan.classList.contains('ws-activearrow');
+
+          /* close all other open panels */
+          document.querySelectorAll('.olmo-nav-wrap .wsmenu-click.ws-activearrow').forEach(function (c) {
+            if (c === clickSpan) return;
             c.classList.remove('ws-activearrow');
             var sib = c.parentElement.querySelector('.sub-menu, .wsmegamenu');
-            if (sib) sib.style.display = '';
+            if (sib) slideUp(sib);
           });
-          if (!isOpen) {
-            click.classList.add('ws-activearrow');
-            panel.style.display = 'block';
+
+          if (isOpen) {
+            clickSpan.classList.remove('ws-activearrow');
+            slideUp(panel);
+          } else {
+            clickSpan.classList.add('ws-activearrow');
+            slideDown(panel);
           }
         });
       });
 
-      /* Close mobile menu when a link is clicked */
+      /* ── On resize: reset mobile inline styles when switching to desktop ── */
+      window.addEventListener('resize', function () {
+        if (window.innerWidth > 991) {
+          wrap.classList.remove('wsactive');
+          document.querySelectorAll('[data-olmo-panel]').forEach(function (p) {
+            p.style.display = '';
+            p.style.maxHeight = '';
+            p.style.overflow = '';
+            p.style.transition = '';
+          });
+          document.querySelectorAll('.olmo-nav-wrap .wsmenu-click').forEach(function (c) {
+            c.classList.remove('ws-activearrow');
+          });
+        }
+      });
+
+      /* Close mobile menu when a nav link is clicked */
       document.querySelectorAll('.olmo-nav-wrap .wsmenu a').forEach(function (a) {
         a.addEventListener('click', function () {
           if (window.innerWidth <= 991) closeMenu();

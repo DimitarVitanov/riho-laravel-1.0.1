@@ -116,6 +116,7 @@ class RealEstateTaxiController extends Controller
             'EUR' => 'Euro €',
             'GBP' => 'British Pound £',
             'CHF' => 'Swiss Franc',
+            'HRK' => 'Croatian Euro €',
             'JPY' => 'Japanese Yen ¥',
             'CNY' => 'Chinese Yuan ¥',
             'AUD' => 'Australian Dollar $',

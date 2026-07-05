@@ -61,7 +61,7 @@
                             <div class="row g-3 mt-2">
                                 <div class="col-md-4">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="can_manage_agencies" value="1" checked>
+                                        <input class="form-check-input" type="checkbox" name="can_manage_agencies" value="1">
                                         <label class="form-check-label">Can Manage Agencies</label>
                                     </div>
                                 </div>
@@ -73,7 +73,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="can_review_ai_outputs" value="1" checked>
+                                        <input class="form-check-input" type="checkbox" name="can_review_ai_outputs" value="1">
                                         <label class="form-check-label">Can Review AI Outputs</label>
                                     </div>
                                 </div>

@@ -531,6 +531,52 @@
       .submit-arrow { width: 100%; border-radius: 10px; }
       .ai-img-card img { min-height: 220px; }
     }
+
+    /* MEGA MENU - scoped to .mega-* only, no page conflicts */
+    .mega-item { position: relative; display: flex; align-items: center; }
+    .mega-item > a { white-space: nowrap; }
+    .mega-drop,
+    .mega-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      z-index: 9999;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 16px 40px rgba(15,23,42,.13);
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .mega-item:hover > .mega-drop,
+    .mega-item:hover > .mega-panel { display: block; }
+    .mega-drop { min-width: 200px; padding: 8px 0; }
+    .mega-drop li a {
+      display: block; padding: 9px 18px;
+      font-size: 13px; font-weight: 600;
+      color: #374151; text-decoration: none;
+    }
+    .mega-drop li a:hover { background: #f0faf9; color: #0d7377; }
+    .mega-panel {
+      left: 50%; transform: translateX(-50%);
+      width: 660px; padding: 22px 26px;
+    }
+    .mega-cols { display: grid; grid-template-columns: repeat(4,1fr); gap: 0 20px; }
+    .mega-col { list-style: none; padding: 0; margin: 0; }
+    .mega-col-head {
+      display: block; font-size: 10px; font-weight: 900;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: #94a3b8; padding-bottom: 8px; margin-bottom: 4px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .mega-col li a {
+      display: block; padding: 6px 0;
+      font-size: 13px; font-weight: 600;
+      color: #374151; text-decoration: none;
+    }
+    .mega-col li a:hover { color: #0d7377; }
   </style>
 </head>
 <body>
@@ -571,12 +617,69 @@
       </a>
 
       <nav class="nav" aria-label="Main navigation">
-        <a href="#top">Home <span class="arr">▾</span></a>
-        <a href="#focus">Solutions <span class="arr">▾</span></a>
-        <a href="#earn">Market Routes <span class="arr">▾</span></a>
-        <a href="#comparison">Pricing View <span class="arr">▾</span></a>
-        <a href="#why">About</a>
+
+        <div class="mega-item">
+          <a href="#top">Explore <span class="arr">▾</span></a>
+          <div class="mega-panel">
+            <div class="mega-cols">
+              <ul class="mega-col">
+                <span class="mega-col-head">Discover</span>
+                <li><a href="#top">Overview</a></li>
+                <li><a href="#focus">What We Do</a></li>
+                <li><a href="#why">Why Real Estate</a></li>
+                <li><a href="#earn">Market Routes</a></li>
+              </ul>
+              <ul class="mega-col">
+                <span class="mega-col-head">Tools</span>
+                <li><a href="#areas">Top Areas</a></li>
+                <li><a href="#comparison">Price Comparison</a></li>
+                <li><a href="#topics">Expert Topics</a></li>
+                <li><a href="#ask">Ask AI</a></li>
+              </ul>
+              <ul class="mega-col">
+                <span class="mega-col-head">Metrics</span>
+                <li><a href="#focus">Rental Yield</a></li>
+                <li><a href="#focus">Price-to-Income</a></li>
+                <li><a href="#focus">ROI Calculator</a></li>
+                <li><a href="#focus">Market Score</a></li>
+              </ul>
+              <ul class="mega-col">
+                <span class="mega-col-head">Guides</span>
+                <li><a href="#topics">Buyer Tips</a></li>
+                <li><a href="#topics">Seller Tips</a></li>
+                <li><a href="#topics">Investor Tools</a></li>
+                <li><a href="#topics">Expert Topics</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="mega-item">
+          <a href="#focus">Solutions <span class="arr">▾</span></a>
+          <ul class="mega-drop">
+            <li><a href="#focus">AI Market Analysis</a></li>
+            <li><a href="#focus">Rental Yield Tool</a></li>
+            <li><a href="#comparison">Price Comparison</a></li>
+            <li><a href="#earn">Passive Income Routes</a></li>
+            <li><a href="#focus">ROI Calculator</a></li>
+          </ul>
+        </div>
+
+        <div class="mega-item">
+          <a href="#earn">Market Routes <span class="arr">▾</span></a>
+          <ul class="mega-drop">
+            <li><a href="#earn">Buy &amp; Hold</a></li>
+            <li><a href="#earn">Short-Term Rental</a></li>
+            <li><a href="#earn">Long-Term Rental</a></li>
+            <li><a href="#earn">Fix &amp; Flip</a></li>
+            <li><a href="#earn">REIT Investment</a></li>
+          </ul>
+        </div>
+
+        <a href="#areas">Top Areas</a>
+        <a href="#topics">Expert Topics</a>
         <a href="#ask">Ask AI</a>
+
       </nav>
 
       <div class="header-actions">

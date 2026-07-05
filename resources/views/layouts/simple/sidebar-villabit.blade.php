@@ -284,56 +284,49 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.daily-ai-employee.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-to-do') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-to-do') }}"></use></svg>
+                        <span class="vb-icon vb-icon-1-1"></span>
                         <span>{{ __('messages.daily_ai_employee') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'invisible_lead_magnet') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-form') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-form') }}"></use></svg>
+                        <span class="vb-icon vb-icon-1-2"></span>
                         <span>{{ __('messages.invisible_lead_magnet') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'local_seo_presence_boost') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-search') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-search') }}"></use></svg>
+                        <span class="vb-icon vb-icon-1-3"></span>
                         <span>{{ __('messages.local_seo') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'ai_search_ranking') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-learning') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-learning') }}"></use></svg>
+                        <span class="vb-icon vb-icon-1-4"></span>
                         <span>{{ __('messages.ai_search_ranking') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'daily_competitor_scan') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-charts') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-charts') }}"></use></svg>
+                        <span class="vb-icon vb-icon-1-5"></span>
                         <span>{{ __('messages.competitor_scan') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'ai_authority_builder') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-editors') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-editors') }}"></use></svg>
+                        <span class="vb-icon vb-icon-2-1"></span>
                         <span>{{ __('messages.authority_builder') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'small_ai_actions') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-knob') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-knob') }}"></use></svg>
+                        <span class="vb-icon vb-icon-2-2"></span>
                         <span>{{ __('messages.small_ai_actions') }}</span>
                     </a>
                 </li>
@@ -342,16 +335,14 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.generated-pages.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-file') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-file') }}"></use></svg>
+                        <span class="vb-icon vb-icon-2-3"></span>
                         <span>{{ __('messages.generated_pages') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.leads.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-form') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-form') }}"></use></svg>
+                        <span class="vb-icon vb-icon-2-4"></span>
                         <span>{{ __('messages.leads') }}</span>
                     </a>
                 </li>
@@ -360,8 +351,7 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.domain') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-blog') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-blog') }}"></use></svg>
+                        <span class="vb-icon vb-icon-2-5"></span>
                         <span>Domain</span>
                     </a>
                 </li>

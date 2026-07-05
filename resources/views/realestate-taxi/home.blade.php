@@ -443,6 +443,7 @@
     .footer-col ul li::before { content: ">"; color: rgba(255,255,255,.35); font-size: 11px; font-weight: 900; }
     .footer-col ul li a { color: rgba(255,255,255,.55); font-size: 13.5px; font-weight: 600; }
     .footer-col ul li a:hover { color: var(--gold); }
+    .footer-subscribe{ padding:20px;}
     .footer-subscribe h4 { color: #fff; font-size: 15px; font-weight: 900; letter-spacing: .04em; margin-bottom: 14px; }
     .footer-subscribe p { color: rgba(255,255,255,.5); font-size: 13px; margin-bottom: 18px; line-height: 1.6; }
     .sub-form { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,.12); }
@@ -823,7 +824,7 @@
       <div class="container">
         <div class="footer-grid">
 
-          <div class="footer-subscribe">
+          <div class="footer-subscribe" style="border:1px solid #F2F2F2; ">
             <h4>SUBSCRIBE TO MAIL!</h4>
             <p>Get our Daily email newsletter with Special Services, Updates, Offers and more.</p>
             <form class="sub-form" id="subForm">

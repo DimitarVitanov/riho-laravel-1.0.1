@@ -518,19 +518,13 @@
     <div class="container">
       <div class="grid">
 
-        {{-- 01 HERO --}}
-        <section class="card span-6">
+        {{-- 01 + 02 HERO + ASK AI --}}
+        <section class="card ask-card span-12" id="ask">
           <div class="card-pad">
             <span class="number-label">01</span>
             <h1 class="hero-title">Real Estate Taxi is your FREE ride through the global real estate market!</h1>
             <p class="hero-copy">Real Estate Taxi helps anyone profit from real estate, even without owning property. It gives regular people a way to understand markets, compare prices, ask questions, and find practical ways to create value.</p>
-          </div>
-        </section>
-
-        {{-- 02 ASK AI --}}
-        <section class="card ask-card span-6" id="ask">
-          <div class="card-pad">
-            <span class="number-label">02</span>
+            <span class="number-label" style="margin-top:32px;display:block;">02</span>
             <h2 class="hero-title-2">Ask anything about real estate, anywhere!</h2>
             <form class="query-box" id="askForm">
               <input type="text" aria-label="Ask anything about real estate" placeholder="Type your question here." />

@@ -624,19 +624,17 @@
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a:hover { color: #0d8d8c; }
 
     /* ─── Arrow ─── */
-    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a .wsarrow:after {
-      border-left: 4px solid rgba(0,0,0,0);
-      border-right: 4px solid rgba(0,0,0,0);
-      border-top: 4px solid;
-      content: "";
-      float: right;
-      right: 15px;
-      height: 0;
-      margin: 0 0 0 10px;
-      position: absolute;
-      text-align: right;
-      top: 33px;
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a .wsarrow {
+      display: inline-block;
       width: 0;
+      height: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid currentColor;
+      vertical-align: middle;
+      margin-left: 4px;
+      opacity: 0.55;
+      position: static;
     }
 
     /* ─── Sub-menu ─── */
@@ -647,6 +645,7 @@
       margin: 0;
       padding: 12px;
       min-width: 200px;
+      white-space: nowrap;
       background-color: #fff;
       border: solid 1px #eee;
       border-radius: 4px;
@@ -665,7 +664,7 @@
       border-right: 0;
       text-align: left;
       display: block;
-      padding: 9px;
+      padding: 9px 14px;
       text-transform: none;
       color: #888;
       font-size: 15px;
@@ -673,6 +672,7 @@
       font-weight: 400;
       letter-spacing: 0;
       border-radius: 4px;
+      white-space: nowrap;
       transition: all 400ms ease-in-out;
       text-decoration: none;
     }
@@ -699,10 +699,11 @@
       display: none;
     }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu.halfmenu {
-      padding: 20px;
-      width: 40%;
+      padding: 20px 24px;
+      width: auto;
+      min-width: 340px;
       right: auto;
-      left: auto;
+      left: 0;
     }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li.mg_link:hover > .wsmegamenu { display: block; }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li:hover > .wsmegamenu.halfmenu { display: block; }
@@ -737,6 +738,7 @@
       font-size: 15px;
       font-weight: 400;
       text-decoration: none;
+      white-space: nowrap;
       transition: all 400ms ease-in-out;
     }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li a:hover { color: #0d8d8c; padding-left: 4px; }

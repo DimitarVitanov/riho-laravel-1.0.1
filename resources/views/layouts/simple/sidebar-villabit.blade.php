@@ -358,32 +358,28 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.language') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-internationalization') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-internationalization') }}"></use></svg>
+                        <span class="vb-icon vb-icon-3-1"></span>
                         <span>{{ __('messages.language_settings') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.features') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-knob') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-knob') }}"></use></svg>
+                        <span class="vb-icon vb-icon-3-2"></span>
                         <span>{{ __('messages.feature_toggles') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.usage-limits.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-charts') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-charts') }}"></use></svg>
+                        <span class="vb-icon vb-icon-3-3"></span>
                         <span>{{ __('messages.my_usage_limits') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.affiliate.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-ecommerce') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-ecommerce') }}"></use></svg>
+                        <span class="vb-icon vb-icon-3-4"></span>
                         <span>{{ __('messages.affiliate') }}</span>
                     </a>
                 </li>
@@ -392,8 +388,7 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.support.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-others') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-others') }}"></use></svg>
+                        <span class="vb-icon vb-icon-3-5"></span>
                         <span>{{ __('messages.messages_and_support') }}</span>
                     </a>
                 </li>

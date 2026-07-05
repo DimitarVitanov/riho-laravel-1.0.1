@@ -270,18 +270,94 @@
     .focus-card h2 { margin: 12px 0 0; font-size: 30px; line-height: 1.14; letter-spacing: -.7px; color: #0f172a; }
     .focus-copy { color: #3e4348; font-size: 17px; margin-top: 10px; line-height: 1.72; }
     .areas-list {
-      margin: 22px 0 0; padding: 0; list-style: none;
-      display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px;
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
     }
-    .areas-list li {
-      padding: 18px;
-      border: 1.5px solid var(--line);
-      border-radius: 12px;
-      background: #fcfdfe;
-      min-height: 120px;
+    .area-card {
+      position: relative;
+      min-height: 205px;
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #ffffff;
+      overflow: hidden;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      text-decoration: none;
+      color: inherit;
     }
-    .areas-list b { display: block; margin-bottom: 10px; color: var(--teal-dark); font-size: 11px; letter-spacing: .07em; font-weight: 900; }
-    .areas-list span { display: block; color: #1e3a5f; font-size: 13.5px; line-height: 1.48; font-weight: 900; }
+    .area-card:hover {
+      transform: translateY(-4px);
+      border-color: #0a0a0a;
+      box-shadow: 0 14px 28px rgba(10,10,10,.12);
+    }
+    .area-card::after {
+      content: "";
+      position: absolute;
+      right: -28px;
+      bottom: -30px;
+      width: 110px;
+      height: 110px;
+      border: 18px solid rgba(10,10,10,.035);
+      border-radius: 50%;
+    }
+    .area-icon {
+      width: 58px;
+      height: 58px;
+      flex: 0 0 58px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: #0a0a0a;
+      color: #ffb31a;
+      box-shadow: 0 7px 16px rgba(10,10,10,.15);
+    }
+    .area-icon svg {
+      width: 28px;
+      height: 28px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .area-content { position: relative; z-index: 1; }
+    .area-kicker {
+      display: block;
+      margin-bottom: 8px;
+      color: #0a0a0a;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .1em;
+    }
+    .area-content h3 {
+      margin: 0;
+      color: #0f172a;
+      font-size: 16px;
+      line-height: 1.22;
+      font-weight: 900;
+      letter-spacing: -.25px;
+    }
+    .area-content p {
+      margin: 10px 0 15px;
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .area-link {
+      color: #0a0a0a;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .area-link b {
+      margin-left: 5px;
+      color: #ffb31a;
+      font-size: 17px;
+    }
 
     /* ── TOPIC CARDS ── */
     .topic-card::after {
@@ -410,6 +486,7 @@
       .nav { gap: 2px; }
       .brand-text { display: none; }
       .areas-list { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .area-card { min-height: auto; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 1024px) {
@@ -442,6 +519,7 @@
       .hero-title { font-size: 33px; letter-spacing: -1.2px; }
       .ask-card h2, .focus-card h2, .topic-head h2 { font-size: 24px; }
       .areas-list, .check-list { grid-template-columns: 1fr; }
+      .area-card { min-height: auto; }
       .query-box { grid-template-columns: 1fr; }
       .submit-arrow { width: 100%; border-radius: 10px; }
       .ai-img-card img { min-height: 220px; }
@@ -563,12 +641,74 @@
             <div class="copy-stack" style="margin-top:18px;">
               <p>We focus on four important areas that can help you make smarter real estate decisions:</p>
             </div>
-            <ol class="areas-list">
-              <li><b>01</b><span>How to earn from real estate without buying property</span></li>
-              <li><b>02</b><span>Best real estate software and AI solutions</span></li>
-              <li><b>03</b><span>Global residential property market analysis</span></li>
-              <li><b>04</b><span>Worldwide property prices comparison</span></li>
-            </ol>
+            <div class="areas-list">
+
+              <a href="#earn" class="area-card">
+                <div class="area-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 19V10M10 19V5M16 19v-8M22 19H2"/>
+                    <path d="M3 8l6-5 5 3 7-5"/>
+                  </svg>
+                </div>
+                <div class="area-content">
+                  <span class="area-kicker">EARN</span>
+                  <h3>Earn From Real Estate Without Buying Property</h3>
+                  <p>Practical ways to create value without owning property.</p>
+                  <span class="area-link">Explore <b>→</b></span>
+                </div>
+              </a>
+
+              <a href="#software" class="area-card">
+                <div class="area-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    <path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4"/>
+                  </svg>
+                </div>
+                <div class="area-content">
+                  <span class="area-kicker">TOOLS</span>
+                  <h3>Best Real Estate Software &amp; AI Solutions</h3>
+                  <p>Useful tools and AI platforms for smarter decisions.</p>
+                  <span class="area-link">Explore <b>→</b></span>
+                </div>
+              </a>
+
+              <a href="#market" class="area-card">
+                <div class="area-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>
+                    <path d="M15 16l2 2 4-5"/>
+                  </svg>
+                </div>
+                <div class="area-content">
+                  <span class="area-kicker">MARKETS</span>
+                  <h3>Global Residential Property Market Analysis</h3>
+                  <p>Country and city insights from real estate markets.</p>
+                  <span class="area-link">Explore <b>→</b></span>
+                </div>
+              </a>
+
+              <a href="#comparison" class="area-card">
+                <div class="area-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 4h12l6 6-11 11L3 14V4z"/>
+                    <circle cx="8" cy="9" r="1.4"/>
+                    <path d="M14 16v-5M18 16V8M10 16v-2"/>
+                  </svg>
+                </div>
+                <div class="area-content">
+                  <span class="area-kicker">COMPARE</span>
+                  <h3>Worldwide Property Prices Comparison</h3>
+                  <p>Compare prices across cities, regions and countries.</p>
+                  <span class="area-link">Explore <b>→</b></span>
+                </div>
+              </a>
+
+            </div>
             <div class="copy-stack" style="margin-top:22px;">
               <p>Through these four areas, we help you find useful information, understand where opportunities may exist, compare markets, use better tools, and make more informed decisions.</p>
               <p>Our goal is to make real estate knowledge simpler and more useful for everyone. You do not need to be a real estate agent, investor, or property owner to understand how the market works and how you may benefit from it.</p>

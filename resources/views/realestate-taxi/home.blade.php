@@ -534,174 +534,416 @@
 
 
     /* ══════════════════════════════════════════════
-       OLMO MEGA MENU — scoped to #olmo-header only
-       All selectors prefixed so nothing leaks out
+       OLMO MEGA MENU — exact menu.css from OLMO theme
+       Scoped via .olmo-nav wrapper to avoid leaking
     ══════════════════════════════════════════════ */
-    #olmo-header {
-      width: 100%;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(15,23,42,.08);
+
+    /* ─── Sticky wrapper ─── */
+    .olmo-nav-wrap {
       position: sticky;
       top: 0;
       z-index: 1030;
+      width: 100%;
     }
-    #olmo-header .wsmainwp {
-      max-width: 1220px;
+
+    /* ─── wsmainfull ─── */
+    .olmo-nav-wrap .wsmainfull {
+      width: 100%;
+      height: auto;
+      background-color: #fff !important;
+      z-index: 999;
+      box-shadow: 0 2px 3px rgba(96,96,96,.1);
+      transition: all 450ms ease-in-out;
+    }
+
+    /* ─── wsmainwp ─── */
+    .olmo-nav-wrap .wsmainwp {
       margin: 0 auto;
+      max-width: 1220px;
       padding: 0 24px;
-      display: flex;
-      align-items: center;
-      height: 72px;
-    }
-    #olmo-header .desktoplogo {
-      flex-shrink: 0;
-      margin-right: 32px;
+      position: relative;
       display: flex;
       align-items: center;
     }
-    #olmo-header .desktoplogo img {
-      height: 48px;
-      width: auto;
-      display: block;
-    }
-    /* ─── Nav list ─── */
-    #olmo-header .wsmenu { flex: 1; }
-    #olmo-header .wsmenu-list {
-      list-style: none;
-      margin: 0;
+
+    /* ─── Desktop logo ─── */
+    .olmo-nav-wrap .desktoplogo {
       padding: 0;
-      display: flex;
-      align-items: center;
-      gap: 0;
+      margin: 0;
+      float: left;
+      line-height: 70px;
+      flex-shrink: 0;
+      margin-right: 24px;
     }
-    #olmo-header .wsmenu-list > li {
+    .olmo-nav-wrap .desktoplogo img {
+      vertical-align: middle;
+      height: 46px;
+      width: auto;
+    }
+
+    /* ─── wsmenu ─── */
+    .olmo-nav-wrap .wsmenu {
+      padding: 0;
+      float: right;
+      display: block;
+      flex: 1;
+    }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list {
+      text-align: left;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      padding: 0;
+      list-style: none;
+      align-items: center;
+    }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li {
+      text-align: center;
+      display: block;
+      padding: 0;
+      margin: 0;
+      float: left;
       position: relative;
     }
-    #olmo-header .wsmenu-list > li > a {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 0 16px;
-      height: 72px;
-      font-size: 15px;
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a {
+      display: block;
+      color: #555;
+      font-size: 14.5px;
       font-weight: 700;
-      color: #1f2937;
+      letter-spacing: 0.3px;
+      padding: 10px 18px 10px 14px;
+      line-height: 50px;
       text-decoration: none;
+      position: relative;
       white-space: nowrap;
-      letter-spacing: -.01em;
       transition: color .2s;
     }
-    #olmo-header .wsmenu-list > li > a:hover { color: #0d7377; }
-    #olmo-header .wsmenu-list > li > a.btn-header {
-      margin-left: 12px;
-      padding: 0 22px;
-      height: 42px;
-      background: #ffb31a;
-      color: #0a0a0a;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 14px;
-      letter-spacing: 0;
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a.last-link {
+      padding: 10px 0;
     }
-    #olmo-header .wsmenu-list > li > a.btn-header:hover { background: #e6a000; color: #0a0a0a; }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a:hover { color: #0d8d8c; }
+
     /* ─── Arrow ─── */
-    #olmo-header .wsarrow {
-      display: inline-block;
-      width: 0; height: 0;
-      border-left: 4px solid transparent;
-      border-right: 4px solid transparent;
-      border-top: 5px solid currentColor;
-      margin-left: 2px;
-      vertical-align: middle;
-      opacity: .6;
-    }
-    /* ─── Dropdown sub-menu ─── */
-    #olmo-header .sub-menu {
-      display: none;
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a .wsarrow:after {
+      border-left: 4px solid rgba(0,0,0,0);
+      border-right: 4px solid rgba(0,0,0,0);
+      border-top: 4px solid;
+      content: "";
+      float: right;
+      right: 15px;
+      height: 0;
+      margin: 0 0 0 10px;
       position: absolute;
-      top: 100%;
-      left: 0;
-      min-width: 210px;
-      background: #fff;
-      border: 1px solid #e5eaf1;
-      border-radius: 10px;
-      box-shadow: 0 12px 32px rgba(15,23,42,.12);
-      list-style: none;
+      text-align: right;
+      top: 33px;
+      width: 0;
+    }
+
+    /* ─── Sub-menu ─── */
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > ul.sub-menu {
+      position: absolute;
+      top: 70px;
+      z-index: 1000;
       margin: 0;
-      padding: 8px 0;
-      z-index: 9999;
-    }
-    #olmo-header .wsmenu-list > li:hover > .sub-menu { display: block; }
-    #olmo-header .sub-menu li a {
-      display: block;
-      padding: 9px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #374151;
-      text-decoration: none;
-      transition: background .15s, color .15s;
-    }
-    #olmo-header .sub-menu li a:hover { background: #f0faf9; color: #0d7377; }
-    /* ─── Mega menu panel ─── */
-    #olmo-header .wsmegamenu {
+      padding: 12px;
+      min-width: 200px;
+      background-color: #fff;
+      border: solid 1px #eee;
+      border-radius: 4px;
+      list-style: none;
       display: none;
+    }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li:hover > ul.sub-menu { display: block; }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > ul.sub-menu > li {
+      position: relative;
+      margin: 0;
+      padding: 0;
+      display: block;
+    }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > ul.sub-menu > li > a {
+      background-image: none;
+      border-right: 0;
+      text-align: left;
+      display: block;
+      padding: 9px;
+      text-transform: none;
+      color: #888;
+      font-size: 15px;
+      line-height: 22px;
+      font-weight: 400;
+      letter-spacing: 0;
+      border-radius: 4px;
+      transition: all 400ms ease-in-out;
+      text-decoration: none;
+    }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > ul.sub-menu > li > a:hover {
+      padding: 9px 9px 9px 12px;
+      color: #0d8d8c;
+      background: #f0faf9;
+    }
+
+    /* ─── Mega menu ─── */
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu {
+      width: 100%;
+      left: 0;
       position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 700px;
-      background: #fff;
-      border: 1px solid #e5eaf1;
-      border-radius: 12px;
-      box-shadow: 0 16px 40px rgba(15,23,42,.13);
-      padding: 24px 28px;
-      z-index: 9999;
+      top: 70px;
+      color: #000;
+      z-index: 1000;
+      margin: 0;
+      text-align: left;
+      padding: 20px 30px;
+      border: solid 1px #eee;
+      background-color: #fff;
+      border-radius: 4px;
+      display: none;
     }
-    #olmo-header .mg_link:hover > .wsmegamenu { display: block; }
-    #olmo-header .wsmegamenu .mega-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0 24px;
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu.halfmenu {
+      padding: 20px;
+      width: 40%;
+      right: auto;
+      left: auto;
     }
-    #olmo-header .link-list {
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li.mg_link:hover > .wsmegamenu { display: block; }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li:hover > .wsmegamenu.halfmenu { display: block; }
+
+    /* ─── link-list inside mega menu ─── */
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list {
       list-style: none;
       margin: 0;
       padding: 0;
     }
-    #olmo-header .link-list .col-head {
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li {
       display: block;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .09em;
-      text-transform: uppercase;
-      color: #94a3b8;
-      padding-bottom: 9px;
-      margin-bottom: 4px;
-      border-bottom: 1px solid #e5eaf1;
+      text-align: left;
+      border-bottom: 1px dashed #d0d0d0;
     }
-    #olmo-header .link-list li a {
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li.fst-li,
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li:last-child {
+      border-bottom: none;
+    }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li.fst-li a {
+      font-weight: 700;
+      color: #333;
+    }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li a {
+      line-height: 22px;
+      border-right: none;
+      text-align: left;
+      padding: 11px 0;
+      background: #fff;
       display: block;
-      padding: 7px 0;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: #374151;
+      color: #888;
+      font-size: 15px;
+      font-weight: 400;
       text-decoration: none;
-      transition: color .15s;
+      transition: all 400ms ease-in-out;
     }
-    #olmo-header .link-list li a:hover { color: #0d7377; }
-    /* ─── Mobile header (hidden on desktop) ─── */
-    #olmo-header .wsmobileheader { display: none; }
-    @media (max-width: 1024px) {
-      #olmo-header .wsmenu,
-      #olmo-header .desktoplogo { display: none; }
-      #olmo-header .wsmobileheader {
-        display: flex;
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li a:hover { color: #0d8d8c; padding-left: 4px; }
+
+    /* ─── CTA button in nav ─── */
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a.btn-skyblue {
+      display: inline-block;
+      line-height: 1;
+      padding: 12px 24px;
+      margin-left: 8px;
+      background: #ffb31a;
+      color: #0a0a0a !important;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background .2s;
+    }
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a.btn-skyblue:hover { background: #e6a000; }
+
+    /* ─── Mobile header — hidden on desktop ─── */
+    .olmo-nav-wrap .wsmobileheader { display: none; }
+
+    /* ─── Overlay black bg ─── */
+    .olmo-nav-wrap .overlapblackbg {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* ══ Mobile breakpoint ══ */
+    @media only screen and (max-width: 991px) {
+
+      .olmo-nav-wrap .desktoplogo { display: none !important; }
+      .olmo-nav-wrap .wsmainfull { height: 0; }
+
+      .olmo-nav-wrap .wsmenu {
+        width: 100%;
+        background: rgba(0,0,0,0);
+        right: 0;
+        overflow-y: hidden;
+        padding: 0;
+        top: 0;
+        visibility: hidden;
+        position: fixed;
+        margin: 0;
+      }
+      .olmo-nav-wrap .wsmenu > .wsmenu-list {
+        height: auto;
+        min-height: 100%;
+        width: 300px;
+        background: #fff;
+        padding-bottom: 0;
+        margin-right: -300px;
+        display: block;
+        text-align: center;
+        transition: all 0.25s ease-in-out;
+        flex-direction: column;
+        align-items: stretch;
+        overflow-y: auto;
+      }
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li {
+        width: 100%;
+        display: block;
+        float: none;
+        background-color: transparent;
+        position: relative;
+        white-space: inherit;
+        clear: right;
+      }
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a {
+        padding: 12px 32px 12px 17px;
+        font-size: 15px;
+        text-align: left;
+        color: #666;
+        line-height: 25px;
+        border-bottom: 1px solid rgba(0,0,0,.13);
+      }
+      /* Mobile sub-menu */
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li > ul.sub-menu {
+        display: none;
+        position: relative;
+        top: 0;
+        background-color: #fff;
+        border: none;
+        padding: 0;
+      }
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li > ul.sub-menu > li > a {
+        line-height: 20px;
+        font-size: 13px;
+        padding: 10px 0 10px 16px;
+        color: #383838;
+      }
+      /* Mobile mega menu */
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu {
+        color: #666;
+        display: none;
+        position: relative;
+        top: 0;
+        padding: 10px 0;
+        border: 0;
+        border-bottom: 1px solid rgba(0,0,0,.13);
+      }
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu.halfmenu {
+        width: 100%;
+        margin: 0;
+        padding: 5px 0 10px 0;
+      }
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li a {
+        font-size: 13px;
+        padding: 9px 14px;
+        color: #666;
+      }
+      /* Mobile header bar */
+      .olmo-nav-wrap .wsmobileheader {
+        width: 100%;
+        display: flex !important;
         align-items: center;
         justify-content: space-between;
-        height: 64px;
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 10002;
+        height: 60px;
         padding: 0 18px;
+        background: #fff;
+        box-shadow: 0 0 1px rgba(0,0,0,.3);
+        transition: all 0.25s ease-in-out;
       }
-      #olmo-header .wsmobileheader img { height: 42px; width: auto; }
+      .olmo-nav-wrap .wsmobileheader .smllogo img { height: 38px; width: auto; }
+
+      /* Hamburger arrow */
+      .olmo-nav-wrap .wsanimated-arrow {
+        cursor: pointer;
+        padding: 16px 35px 16px 0;
+        margin: 0;
+        position: relative;
+      }
+      .olmo-nav-wrap .wsanimated-arrow span,
+      .olmo-nav-wrap .wsanimated-arrow span:before,
+      .olmo-nav-wrap .wsanimated-arrow span:after {
+        cursor: pointer;
+        height: 3px;
+        width: 22px;
+        background: #555;
+        position: absolute;
+        display: block;
+        content: '';
+      }
+      .olmo-nav-wrap .wsanimated-arrow span:before { top: -7px; width: 26px; }
+      .olmo-nav-wrap .wsanimated-arrow span:after  { bottom: -7px; width: 20px; }
+      .olmo-nav-wrap .wsanimated-arrow span,
+      .olmo-nav-wrap .wsanimated-arrow span:before,
+      .olmo-nav-wrap .wsanimated-arrow span:after { transition: all 500ms ease-in-out; }
+
+      /* Active (open) state */
+      .olmo-nav-wrap.wsactive .wsmobileheader { margin-right: 300px; transition: all 0.25s ease-in-out; }
+      .olmo-nav-wrap.wsactive .wsmenu { overflow-y: scroll; visibility: visible; z-index: 10001; top: 0; }
+      .olmo-nav-wrap.wsactive .wsmenu > .wsmenu-list { margin-right: 0; transition: all 0.25s ease-in-out; }
+      .olmo-nav-wrap.wsactive .wsanimated-arrow span { background-color: transparent; }
+      .olmo-nav-wrap.wsactive .wsanimated-arrow span:before { transform: rotate(45deg); bottom: 0; top: 0; }
+      .olmo-nav-wrap.wsactive .wsanimated-arrow span:after  { transform: rotate(-45deg); }
+
+      /* Overlay */
+      .olmo-nav-wrap .overlapblackbg {
+        left: 0;
+        width: calc(100% - 300px);
+        height: 100vh;
+        min-height: 100%;
+        position: fixed;
+        top: 0;
+        opacity: 0;
+        visibility: hidden;
+        background-color: rgba(0,0,0,.45);
+        cursor: pointer;
+        z-index: 10000;
+      }
+      .olmo-nav-wrap.wsactive .overlapblackbg { opacity: 1; visibility: visible; }
+
+      /* Mobile expand arrows */
+      .olmo-nav-wrap .wsmenu-click {
+        height: 49px;
+        position: absolute;
+        top: 0; right: 0;
+        display: block;
+        cursor: pointer;
+        width: 100%;
+        z-index: 10;
+      }
+      .olmo-nav-wrap .wsmenu-click > i {
+        display: block;
+        height: 8px; width: 8px;
+        float: right;
+        transform: rotate(-225deg);
+        margin: 18px 18px 0 0;
+      }
+      .olmo-nav-wrap .wsmenu-click > i:before {
+        content: "";
+        width: 100%; height: 100%;
+        border-width: 1.5px 1.5px 0 0;
+        border-style: solid;
+        border-color: rgba(0,0,0,.4);
+        transition: .2s ease;
+        display: block;
+        transform-origin: 100% 0;
+      }
+      .olmo-nav-wrap .wsmenu-click.ws-activearrow > i { transform: rotate(-45deg); margin-top: 23px; }
     }
   </style>
 </head>
@@ -735,99 +977,135 @@
     </div>
   </div>
 
-  {{-- OLMO-STYLE MEGA MENU HEADER --}}
-  <header id="olmo-header">
+  {{-- OLMO EXACT MEGA MENU HEADER --}}
+  <div class="olmo-nav-wrap" id="olmoNavWrap">
 
-    <div class="wsmobileheader">
-      <a href="#top"><img src="/assets/images/logo-small.png" alt="Real Estate Taxi"></a>
-      <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
+    {{-- MOBILE HEADER --}}
+    <div class="wsmobileheader clearfix">
+      <span class="smllogo"><a href="#top"><img src="/assets/images/logo-small.png" alt="Real Estate Taxi"></a></span>
+      <a id="wsnavtoggle" class="wsanimated-arrow" aria-label="Toggle menu"><span></span></a>
     </div>
 
-    <div class="wsmainwp">
-      <div class="desktoplogo">
-        <a href="#top"><img src="/assets/images/logo-small.png" alt="Real Estate Taxi"></a>
-      </div>
+    {{-- FULL NAV --}}
+    <div class="wsmainfull menu clearfix">
+      <div class="wsmainwp clearfix">
 
-      <nav class="wsmenu">
-        <ul class="wsmenu-list">
+        {{-- DESKTOP LOGO --}}
+        <div class="desktoplogo">
+          <a href="#top"><img src="/assets/images/logo-small.png" alt="Real Estate Taxi logo"></a>
+        </div>
 
-          <li class="mg_link" aria-haspopup="true">
-            <a href="#top">Explore <span class="wsarrow"></span></a>
-            <div class="wsmegamenu">
-              <div class="mega-row">
-                <ul class="link-list">
-                  <span class="col-head">Discover</span>
-                  <li><a href="#top">Overview</a></li>
-                  <li><a href="#focus">What We Do</a></li>
-                  <li><a href="#why">Why Real Estate</a></li>
-                  <li><a href="#earn">Market Routes</a></li>
-                </ul>
-                <ul class="link-list">
-                  <span class="col-head">Tools</span>
-                  <li><a href="#areas">Top Areas</a></li>
-                  <li><a href="#comparison">Price Comparison</a></li>
-                  <li><a href="#topics">Expert Topics</a></li>
-                  <li><a href="#ask">Ask AI</a></li>
-                </ul>
-                <ul class="link-list">
-                  <span class="col-head">Metrics</span>
-                  <li><a href="#focus">Rental Yield</a></li>
-                  <li><a href="#focus">Price-to-Income</a></li>
-                  <li><a href="#focus">ROI Calculator</a></li>
-                  <li><a href="#focus">Market Score</a></li>
-                </ul>
-                <ul class="link-list">
-                  <span class="col-head">Guides</span>
-                  <li><a href="#topics">Buyer Tips</a></li>
-                  <li><a href="#topics">Seller Tips</a></li>
-                  <li><a href="#topics">Investor Tools</a></li>
-                  <li><a href="#topics">Expert Topics</a></li>
-                </ul>
+        {{-- MAIN MENU --}}
+        <nav class="wsmenu clearfix">
+          <ul class="wsmenu-list">
+
+            {{-- MEGAMENU: Explore --}}
+            <li aria-haspopup="true" class="mg_link">
+              <a href="#top">Explore <span class="wsarrow"></span></a>
+              <div class="wsmegamenu w-75 clearfix">
+                <div class="container">
+                  <div class="row">
+
+                    {{-- Column 1 --}}
+                    <ul class="col-md-12 col-lg-3 link-list">
+                      <li class="fst-li"><a href="#top">Overview</a></li>
+                      <li><a href="#focus">What We Do</a></li>
+                      <li><a href="#why">Why Real Estate</a></li>
+                      <li><a href="#earn">Market Routes</a></li>
+                      <li><a href="#areas">Top Areas</a></li>
+                      <li><a href="#comparison">Price Comparison</a></li>
+                      <li><a href="#topics">Expert Topics</a></li>
+                    </ul>
+
+                    {{-- Column 2 --}}
+                    <ul class="col-md-12 col-lg-3 link-list">
+                      <li class="fst-li"><a href="#focus">AI Market Analysis</a></li>
+                      <li><a href="#focus">Rental Yield Tool</a></li>
+                      <li><a href="#comparison">Price Comparison</a></li>
+                      <li><a href="#earn">Passive Income Routes</a></li>
+                      <li><a href="#focus">ROI Calculator</a></li>
+                      <li><a href="#focus">Market Score</a></li>
+                      <li><a href="#focus">Price-to-Income</a></li>
+                    </ul>
+
+                    {{-- Column 3 --}}
+                    <ul class="col-md-12 col-lg-3 link-list">
+                      <li class="fst-li"><a href="#earn">Buy &amp; Hold</a></li>
+                      <li><a href="#earn">Short-Term Rental</a></li>
+                      <li><a href="#earn">Long-Term Rental</a></li>
+                      <li><a href="#earn">Fix &amp; Flip</a></li>
+                      <li><a href="#earn">REIT Investment</a></li>
+                      <li><a href="#market">Market Signals</a></li>
+                      <li><a href="#topics">Investor Tools</a></li>
+                    </ul>
+
+                    {{-- Column 4 --}}
+                    <ul class="col-md-12 col-lg-3 link-list">
+                      <li class="fst-li"><a href="#topics">Buyer Tips</a></li>
+                      <li><a href="#topics">Seller Tips</a></li>
+                      <li><a href="#topics">Expert Topics</a></li>
+                      <li><a href="#software">Our Software</a></li>
+                      <li><a href="#ask">Ask AI</a></li>
+                    </ul>
+
+                  </div>{{-- End row --}}
+                </div>{{-- End container --}}
+              </div>{{-- End wsmegamenu --}}
+            </li>{{-- END MEGAMENU --}}
+
+            {{-- DROPDOWN: Solutions --}}
+            <li aria-haspopup="true">
+              <a href="#focus">Solutions <span class="wsarrow"></span></a>
+              <div class="wsmegamenu clearfix halfmenu">
+                <div class="container-fluid">
+                  <div class="row">
+                    <ul class="col-lg-6 link-list">
+                      <li><a href="#focus">AI Market Analysis</a></li>
+                      <li><a href="#focus">Rental Yield Tool</a></li>
+                      <li><a href="#comparison">Price Comparison</a></li>
+                    </ul>
+                    <ul class="col-lg-6 link-list">
+                      <li><a href="#earn">Passive Income Routes</a></li>
+                      <li><a href="#focus">ROI Calculator</a></li>
+                      <li><a href="#focus">Market Score</a></li>
+                    </ul>
+                  </div>
+                </div>
               </div>
-            </div>
-          </li>
+            </li>{{-- END DROPDOWN --}}
 
-          <li aria-haspopup="true">
-            <a href="#focus">Solutions <span class="wsarrow"></span></a>
-            <ul class="sub-menu">
-              <li><a href="#focus">AI Market Analysis</a></li>
-              <li><a href="#focus">Rental Yield Tool</a></li>
-              <li><a href="#comparison">Price Comparison</a></li>
-              <li><a href="#earn">Passive Income Routes</a></li>
-              <li><a href="#focus">ROI Calculator</a></li>
-            </ul>
-          </li>
+            {{-- DROPDOWN: Market Routes --}}
+            <li aria-haspopup="true">
+              <a href="#earn">Market Routes <span class="wsarrow"></span></a>
+              <ul class="sub-menu">
+                <li aria-haspopup="true"><a href="#earn">Buy &amp; Hold</a></li>
+                <li aria-haspopup="true"><a href="#earn">Short-Term Rental</a></li>
+                <li aria-haspopup="true"><a href="#earn">Long-Term Rental</a></li>
+                <li aria-haspopup="true"><a href="#earn">Fix &amp; Flip</a></li>
+                <li aria-haspopup="true"><a href="#earn">REIT Investment</a></li>
+              </ul>
+            </li>
 
-          <li aria-haspopup="true">
-            <a href="#earn">Market Routes <span class="wsarrow"></span></a>
-            <ul class="sub-menu">
-              <li><a href="#earn">Buy &amp; Hold</a></li>
-              <li><a href="#earn">Short-Term Rental</a></li>
-              <li><a href="#earn">Long-Term Rental</a></li>
-              <li><a href="#earn">Fix &amp; Flip</a></li>
-              <li><a href="#earn">REIT Investment</a></li>
-            </ul>
-          </li>
+            {{-- SIMPLE LINKS --}}
+            <li class="nl-simple" aria-haspopup="true"><a href="#areas">Top Areas</a></li>
+            <li class="nl-simple" aria-haspopup="true"><a href="#topics">Expert Topics</a></li>
+            <li class="nl-simple" aria-haspopup="true"><a href="#market">Markets</a></li>
 
-          <li><a href="#areas">Top Areas</a></li>
-          <li><a href="#topics">Expert Topics</a></li>
-          <li><a href="#ask" class="btn-header">Get Free Report</a></li>
+            {{-- CTA BUTTON --}}
+            <li class="nl-simple" aria-haspopup="true">
+              <a href="#ask" class="btn-skyblue last-link">Get Free Report</a>
+            </li>
 
-        </ul>
-      </nav>
-    </div>
-  </header>
+          </ul>
+        </nav>{{-- END MAIN MENU --}}
 
-  <div class="drawer" id="drawer">
-    <nav aria-label="Mobile navigation">
-      <a href="#top">Home</a>
-      <a href="#focus">Solutions</a>
-      <a href="#earn">Market Routes</a>
-      <a href="#comparison">Pricing View</a>
-      <a href="#why">About</a>
-      <a href="#ask">Ask AI</a>
-    </nav>
-  </div>
+        {{-- Mobile overlay --}}
+        <div class="overlapblackbg" id="olmoOverlay"></div>
+
+      </div>
+    </div>{{-- END FULL NAV --}}
+
+  </div>{{-- END olmo-nav-wrap --}}
 
   {{-- MAIN --}}
   <main class="page" id="top">
@@ -1100,19 +1378,53 @@
 
   <script>
     (function () {
-      var btn = document.getElementById('menuBtn');
-      var drawer = document.getElementById('drawer');
-      if (btn) {
-        btn.addEventListener('click', function () { drawer.classList.toggle('open'); });
-      }
-      document.querySelectorAll('#drawer a, .nav a, .ghost-btn, .primary-btn').forEach(function (link) {
-        link.addEventListener('click', function () { drawer.classList.remove('open'); });
+
+      /* ── OLMO mobile menu toggle ── */
+      var wrap  = document.getElementById('olmoNavWrap');
+      var toggle = document.getElementById('wsnavtoggle');
+      var overlay = document.getElementById('olmoOverlay');
+
+      function openMenu()  { if (wrap) wrap.classList.add('wsactive'); }
+      function closeMenu() { if (wrap) wrap.classList.remove('wsactive'); }
+
+      if (toggle) toggle.addEventListener('click', function () {
+        wrap.classList.contains('wsactive') ? closeMenu() : openMenu();
       });
-      document.addEventListener('click', function (e) {
-        if (drawer.classList.contains('open') && !drawer.contains(e.target) && !btn.contains(e.target)) {
-          drawer.classList.remove('open');
-        }
+      if (overlay) overlay.addEventListener('click', closeMenu);
+
+      /* Mobile expand/collapse for sub-menus and mega menus */
+      document.querySelectorAll('.olmo-nav-wrap .wsmenu > .wsmenu-list > li').forEach(function (li) {
+        var panel = li.querySelector('.sub-menu, .wsmegamenu');
+        if (!panel) return;
+        var click = document.createElement('span');
+        click.className = 'wsmenu-click';
+        var icon = document.createElement('i');
+        click.appendChild(icon);
+        li.insertBefore(click, li.firstChild);
+        click.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var isOpen = click.classList.contains('ws-activearrow');
+          /* close all others */
+          document.querySelectorAll('.olmo-nav-wrap .wsmenu-click').forEach(function (c) {
+            c.classList.remove('ws-activearrow');
+            var sib = c.parentElement.querySelector('.sub-menu, .wsmegamenu');
+            if (sib) sib.style.display = '';
+          });
+          if (!isOpen) {
+            click.classList.add('ws-activearrow');
+            panel.style.display = 'block';
+          }
+        });
       });
+
+      /* Close mobile menu when a link is clicked */
+      document.querySelectorAll('.olmo-nav-wrap .wsmenu a').forEach(function (a) {
+        a.addEventListener('click', function () {
+          if (window.innerWidth <= 991) closeMenu();
+        });
+      });
+
+      /* ── Form handlers ── */
       document.getElementById('askForm').addEventListener('submit', function (e) { e.preventDefault(); });
       document.getElementById('subForm').addEventListener('submit', function (e) { e.preventDefault(); });
     })();

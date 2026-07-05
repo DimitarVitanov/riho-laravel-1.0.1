@@ -824,7 +824,7 @@
       <div class="container">
         <div class="footer-grid">
 
-          <div class="footer-subscribe" style="border:1px solid #F2F2F2; ">
+          <div class="footer-subscribe" style="border:1px solid #F0F4F8; ">
             <h4>SUBSCRIBE TO MAIL!</h4>
             <p>Get our Daily email newsletter with Special Services, Updates, Offers and more.</p>
             <form class="sub-form" id="subForm">

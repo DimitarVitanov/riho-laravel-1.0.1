@@ -531,38 +531,7 @@
       .submit-arrow { width: 100%; border-radius: 10px; }
       .ai-img-card img { min-height: 220px; }
     }
-
-    /* ── OLMO MEGA MENU OVERRIDES ── */
-    .wsmainfull { background: #fff !important; box-shadow: 0 2px 16px rgba(15,23,42,.07) !important; }
-    .wsmainwp { max-width: 1400px; margin: 0 auto; padding: 0 18px; }
-    .wsmenu-list > li > a {
-      font-family: Nunito, Inter, ui-sans-serif, sans-serif;
-      font-size: 13.5px; font-weight: 700; color: #1f2937 !important;
-      padding: 10px 16px !important; letter-spacing: .01em;
-    }
-    .wsmenu-list > li > a:hover { color: #0d8d8c !important; }
-    .wsmegamenu { border-top: 3px solid #0d8d8c !important; border-radius: 0 0 12px 12px; }
-    .wsmegamenu .link-list li a { color: #374151; font-size: 13px; font-weight: 600; }
-    .wsmegamenu .link-list li a:hover { color: #0d8d8c; }
-    .wsmegamenu .fst-li a { color: #0a0a0a !important; font-weight: 800 !important; }
-    .sub-menu { border-top: 3px solid #0d8d8c !important; border-radius: 0 0 12px 12px; }
-    .sub-menu li a { font-size: 13px; font-weight: 600; color: #374151 !important; }
-    .sub-menu li a:hover { color: #0d8d8c !important; }
-    .taxi-header-btn {
-      background: #ffb31a; color: #0a0a0a !important;
-      border-radius: 8px; padding: 9px 20px !important;
-      font-weight: 900 !important; font-size: 13px !important;
-      margin-left: 8px;
-    }
-    .taxi-header-btn:hover { background: #e09418; color: #0a0a0a !important; }
-    .desktoplogo img { height: 46px; width: auto; }
-    .wsmobileheader { background: #fff !important; border-bottom: 1px solid #e5eaf1; }
-    .smllogo img { height: 38px; width: auto; }
-    @media (max-width: 991px) {
-      .wsmenu-list > li > a { font-size: 14px; }
-    }
   </style>
-  <link rel="stylesheet" href="/assets/css/olmo-menu.css">
 </head>
 <body>
 
@@ -594,113 +563,40 @@
     </div>
   </div>
 
-  {{-- HEADER (OLMO MEGA MENU) --}}
-  <header id="header" class="header tra-menu navbar-light">
-    <div class="header-wrapper">
+  {{-- HEADER --}}
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="#top" aria-label="Real Estate Taxi">
+        <img src="/assets/images/logo-small.png" alt="Real Estate Taxi" style="height:48px;width:auto;display:block;">
+      </a>
 
-      <!-- MOBILE HEADER -->
-      <div class="wsmobileheader clearfix">
-        <span class="smllogo">
-          <a href="#top"><img src="/assets/images/logo-small.png" alt="Real Estate Taxi"></a>
-        </span>
-        <a id="wsnavtoggle" class="wsanimated-arrow"><span></span></a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#top">Home <span class="arr">▾</span></a>
+        <a href="#focus">Solutions <span class="arr">▾</span></a>
+        <a href="#earn">Market Routes <span class="arr">▾</span></a>
+        <a href="#comparison">Pricing View <span class="arr">▾</span></a>
+        <a href="#why">About</a>
+        <a href="#ask">Ask AI</a>
+      </nav>
+
+      <div class="header-actions">
+        <a class="ghost-btn" href="#why">Why Real Estate</a>
+        <a class="primary-btn" href="#ask">Get Report</a>
+        <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
       </div>
+    </div>
 
-      <!-- NAVIGATION MENU -->
-      <div class="wsmainfull menu clearfix">
-        <div class="wsmainwp clearfix">
-
-          <!-- LOGO -->
-          <div class="desktoplogo">
-            <a href="#top"><img src="/assets/images/logo-small.png" alt="Real Estate Taxi"></a>
-          </div>
-
-          <!-- MAIN MENU -->
-          <nav class="wsmenu clearfix">
-            <ul class="wsmenu-list">
-
-              <!-- MEGA MENU: EXPLORE -->
-              <li aria-haspopup="true" class="mg_link">
-                <a href="#">Explore <span class="wsarrow"></span></a>
-                <div class="wsmegamenu w-75 clearfix">
-                  <div class="container">
-                    <div class="row">
-                      <ul class="col-md-12 col-lg-3 link-list">
-                        <li class="fst-li"><a href="#top">Overview</a></li>
-                        <li><a href="#focus">What We Do</a></li>
-                        <li><a href="#why">Why Real Estate</a></li>
-                        <li><a href="#earn">Market Routes</a></li>
-                      </ul>
-                      <ul class="col-md-12 col-lg-3 link-list">
-                        <li class="fst-li"><a href="#areas">Top Areas</a></li>
-                        <li><a href="#comparison">Price Comparison</a></li>
-                        <li><a href="#topics">Expert Topics</a></li>
-                        <li><a href="#ask">Ask AI</a></li>
-                      </ul>
-                      <ul class="col-md-12 col-lg-3 link-list">
-                        <li class="fst-li"><a href="#focus">Rental Yield</a></li>
-                        <li><a href="#focus">Price-to-Income</a></li>
-                        <li><a href="#focus">ROI Calculator</a></li>
-                        <li><a href="#focus">Market Score</a></li>
-                      </ul>
-                      <ul class="col-md-12 col-lg-3 link-list">
-                        <li class="fst-li"><a href="#topics">Guides</a></li>
-                        <li><a href="#topics">Buyer Tips</a></li>
-                        <li><a href="#topics">Seller Tips</a></li>
-                        <li><a href="#topics">Investor Tools</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </li>
-
-              <!-- DROPDOWN: SOLUTIONS -->
-              <li aria-haspopup="true">
-                <a href="#">Solutions <span class="wsarrow"></span></a>
-                <ul class="sub-menu">
-                  <li aria-haspopup="true"><a href="#focus">AI Market Analysis</a></li>
-                  <li aria-haspopup="true"><a href="#focus">Rental Yield Tool</a></li>
-                  <li aria-haspopup="true"><a href="#comparison">Price Comparison</a></li>
-                  <li aria-haspopup="true"><a href="#earn">Passive Income Routes</a></li>
-                  <li aria-haspopup="true"><a href="#focus">ROI Calculator</a></li>
-                </ul>
-              </li>
-
-              <!-- DROPDOWN: MARKET ROUTES -->
-              <li aria-haspopup="true">
-                <a href="#">Market Routes <span class="wsarrow"></span></a>
-                <ul class="sub-menu">
-                  <li aria-haspopup="true"><a href="#earn">Buy &amp; Hold</a></li>
-                  <li aria-haspopup="true"><a href="#earn">Short-Term Rental</a></li>
-                  <li aria-haspopup="true"><a href="#earn">Long-Term Rental</a></li>
-                  <li aria-haspopup="true"><a href="#earn">Fix &amp; Flip</a></li>
-                  <li aria-haspopup="true"><a href="#earn">REIT Investment</a></li>
-                </ul>
-              </li>
-
-              <!-- SIMPLE LINK -->
-              <li class="nl-simple" aria-haspopup="true">
-                <a href="#areas">Top Areas</a>
-              </li>
-
-              <!-- SIMPLE LINK -->
-              <li class="nl-simple" aria-haspopup="true">
-                <a href="#topics">Expert Topics</a>
-              </li>
-
-              <!-- CTA BUTTON -->
-              <li class="nl-simple" aria-haspopup="true">
-                <a href="#ask" class="taxi-header-btn last-link">Get Free Report</a>
-              </li>
-
-            </ul>
-          </nav><!-- END MAIN MENU -->
-
-        </div>
-      </div><!-- END NAVIGATION MENU -->
-
-    </div><!-- End header-wrapper -->
-  </header><!-- END HEADER -->
+    <div class="drawer" id="drawer">
+      <nav aria-label="Mobile navigation">
+        <a href="#top">Home</a>
+        <a href="#focus">Solutions</a>
+        <a href="#earn">Market Routes</a>
+        <a href="#comparison">Pricing View</a>
+        <a href="#why">About</a>
+        <a href="#ask">Ask AI</a>
+      </nav>
+    </div>
+  </header>
 
   {{-- MAIN --}}
   <main class="page" id="top">
@@ -972,45 +868,23 @@
   </footer>
 
   <script>
-    /* OLMO mobile menu — minimal vanilla JS, no body-wrap */
     (function () {
-      var toggle = document.getElementById('wsnavtoggle');
-      if (!toggle) return;
-      toggle.addEventListener('click', function () {
-        document.body.classList.toggle('wsactive');
+      var btn = document.getElementById('menuBtn');
+      var drawer = document.getElementById('drawer');
+      if (btn) {
+        btn.addEventListener('click', function () { drawer.classList.toggle('open'); });
+      }
+      document.querySelectorAll('#drawer a, .nav a, .ghost-btn, .primary-btn').forEach(function (link) {
+        link.addEventListener('click', function () { drawer.classList.remove('open'); });
       });
-      document.querySelectorAll('.wsmenu-list a').forEach(function (link) {
-        link.addEventListener('click', function () {
-          document.body.classList.remove('wsactive');
-        });
-      });
-      /* Mobile sub-menu expanders */
-      document.querySelectorAll('.wsmenu > .wsmenu-list > li').forEach(function (li) {
-        var sub = li.querySelector('.sub-menu, .wsmegamenu');
-        if (!sub) return;
-        var btn = document.createElement('span');
-        btn.className = 'wsmenu-click';
-        btn.innerHTML = '<i class="wsmenu-arrow"></i>';
-        li.prepend(btn);
-        btn.addEventListener('click', function () {
-          btn.classList.toggle('ws-activearrow');
-          if (sub.style.display === 'block') { sub.style.display = ''; }
-          else { sub.style.display = 'block'; }
-        });
-      });
-      window.addEventListener('resize', function () {
-        if (window.innerWidth >= 992) {
-          document.body.classList.remove('wsactive');
-          document.querySelectorAll('.sub-menu, .wsmegamenu').forEach(function (el) {
-            el.removeAttribute('style');
-          });
+      document.addEventListener('click', function (e) {
+        if (drawer.classList.contains('open') && !drawer.contains(e.target) && !btn.contains(e.target)) {
+          drawer.classList.remove('open');
         }
       });
+      document.getElementById('askForm').addEventListener('submit', function (e) { e.preventDefault(); });
+      document.getElementById('subForm').addEventListener('submit', function (e) { e.preventDefault(); });
     })();
-  </script>
-  <script>
-    document.getElementById('askForm').addEventListener('submit', function (e) { e.preventDefault(); });
-    document.getElementById('subForm').addEventListener('submit', function (e) { e.preventDefault(); });
 
     function taxiSwitch(key, value) {
       var params = new URLSearchParams(window.location.search);

@@ -373,11 +373,17 @@
       border-bottom: 1px solid var(--line);
     }
     .topic-number {
-      width: 40px; height: 40px; flex: 0 0 40px;
+      width: 48px; height: 48px; flex: 0 0 48px;
       display: grid; place-items: center;
-      border-radius: 10px; color: #fff;
-      background: var(--teal);
-      font-size: 13px; font-weight: 900;
+      border-radius: 13px;
+      background: #0a0a0a;
+      color: #ffb31a;
+      box-shadow: 0 7px 16px rgba(10,10,10,.15);
+    }
+    .topic-number svg {
+      width: 24px; height: 24px;
+      fill: none; stroke: currentColor;
+      stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round;
     }
     .topic-head h2 { margin: 2px 0 0; font-size: 23px; line-height: 1.2; letter-spacing: -.5px; color: #0f172a; }
     .topic-card .copy-stack { padding-top: 20px; }
@@ -723,7 +729,9 @@
         <section class="card topic-card span-6" id="earn" data-no="01">
           <div class="card-pad">
             <div class="topic-head">
-              <span class="topic-number">01</span>
+              <span class="topic-number">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V10M10 19V5M16 19v-8M22 19H2"/><path d="M3 8l6-5 5 3 7-5"/></svg>
+              </span>
               <h2>How to Earn From Real Estate Without Buying Property</h2>
             </div>
             <div class="copy-stack">
@@ -738,7 +746,9 @@
         <section class="card topic-card span-6" id="software" data-no="02">
           <div class="card-pad">
             <div class="topic-head">
-              <span class="topic-number">02</span>
+              <span class="topic-number">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M10 6.5h4M6.5 10v4M17.5 10v4M10 17.5h4"/></svg>
+              </span>
               <h2>Best Real Estate Software and AI Solutions</h2>
             </div>
             <div class="copy-stack">
@@ -754,7 +764,9 @@
         <section class="card topic-card span-6" id="market" data-no="03">
           <div class="card-pad">
             <div class="topic-head">
-              <span class="topic-number">03</span>
+              <span class="topic-number">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>
+              </span>
               <h2>Global Residential Property Market Analysis</h2>
             </div>
             <div class="copy-stack">
@@ -773,7 +785,9 @@
         <section class="card topic-card span-6" id="comparison" data-no="04">
           <div class="card-pad">
             <div class="topic-head">
-              <span class="topic-number">04</span>
+              <span class="topic-number">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h12l6 6-11 11L3 14V4z"/><circle cx="8" cy="9" r="1.4"/><path d="M14 16v-5M18 16V8M10 16v-2"/></svg>
+              </span>
               <h2>Worldwide Property Prices Comparison</h2>
             </div>
             <p class="question-line">Is this city expensive, or could it still be interesting compared with other cities and countries?</p>

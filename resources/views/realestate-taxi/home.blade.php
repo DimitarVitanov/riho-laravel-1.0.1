@@ -554,6 +554,7 @@
       z-index: 999;
       box-shadow: 0 2px 3px rgba(96,96,96,.1);
       transition: all 450ms ease-in-out;
+      position: relative;
     }
 
     /* ─── wsmainwp ─── */
@@ -561,7 +562,7 @@
       margin: 0 auto;
       max-width: 1220px;
       padding: 0 24px;
-      position: relative;
+      position: static;
       display: flex;
       align-items: center;
     }
@@ -603,6 +604,10 @@
       padding: 0;
       margin: 0;
       float: left;
+      position: static;
+    }
+    /* halfmenu and sub-menu need their parent li to be relative */
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li:not(.mg_link) {
       position: relative;
     }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > a {
@@ -686,16 +691,19 @@
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu {
       width: 100%;
       left: 0;
+      right: 0;
       position: absolute;
-      top: 70px;
+      top: 100%;
       color: #000;
       z-index: 1000;
       margin: 0;
       text-align: left;
-      padding: 20px 30px;
-      border: solid 1px #eee;
-      background-color: #fff;
-      border-radius: 4px;
+      padding: 24px 32px;
+      border: solid 1px #e5eaf1;
+      background-color: #ffffff;
+      background: #ffffff;
+      border-radius: 0 0 6px 6px;
+      box-shadow: 0 12px 32px rgba(15,23,42,.12);
       display: none;
     }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu.halfmenu {
@@ -704,6 +712,7 @@
       min-width: 340px;
       right: auto;
       left: 0;
+      top: 100%;
     }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li.mg_link:hover > .wsmegamenu { display: block; }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li:hover > .wsmegamenu.halfmenu { display: block; }

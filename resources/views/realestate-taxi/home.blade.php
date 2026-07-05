@@ -475,16 +475,16 @@
     .footer-bottom-links a:hover { color: rgba(255,255,255,.7); }
 
     /* ── CHECKERBOARD FOOTER STRIP ── */
-    .taxi-strip {
-      height: 16px;
-      background-image:
-        linear-gradient(45deg, #000 25%, transparent 25%),
-        linear-gradient(-45deg, #000 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #000 75%),
-        linear-gradient(-45deg, transparent 75%, #000 75%);
-      background-color: #fff;
-      background-size: 32px 32px;
-      background-position: 0 0, 0 16px, 16px -16px, -16px 0px;
+    .taxi-checker-line {
+      width: 100%;
+      height: 12px;
+      background:
+        conic-gradient(
+          #ffffff 25%,
+          #0a0b0c 0 50%,
+          #ffffff 0 75%,
+          #0a0b0c 0
+        ) 0 0 / 12px 12px;
     }
 
     /* ── RESPONSIVE ── */
@@ -815,7 +815,7 @@
   </main>
 
   {{-- CHECKERBOARD TAXI STRIP --}}
-  <div class="taxi-strip"></div>
+  <div class="taxi-checker-line"></div>
 
   {{-- FOOTER --}}
   <footer>

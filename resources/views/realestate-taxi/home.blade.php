@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Real Estate Taxi helps anyone profit from real estate, even without owning property." />
   <title>Real Estate Taxi — Free Global Real Estate Market Tools</title>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" />
   <style>
     :root {
       --bg: #f5f7fb;
@@ -544,6 +545,10 @@
       top: 0;
       z-index: 1030;
       width: 100%;
+      font-family: 'Satoshi', sans-serif !important;
+    }
+    .olmo-nav-wrap * {
+      font-family: 'Satoshi', sans-serif !important;
     }
 
     /* ─── wsmainfull ─── */

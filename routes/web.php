@@ -59,9 +59,13 @@ Route::get('/blog/{slug}', [PublicPageController::class, 'show'])->name('public.
 
 // Real Estate Taxi domain homepage
 Route::domain('realestate.taxi')->group(function () {
-    Route::get('/', [RealEstateTaxiController::class, 'home'])->name('realestatetaxi.home');
-    Route::get('/{any}', [RealEstateTaxiController::class, 'home'])
+    Route::get('/{any?}', [RealEstateTaxiController::class, 'home'])->name('realestatetaxi.home')
         ->where('any', '.*');
+});
+
+// Real Estate Taxi fallback via prefix (for local/testing)
+Route::prefix('realestate')->group(function () {
+    Route::get('/', [RealEstateTaxiController::class, 'home']);
 });
 
 // Home page redirects to marketing website

@@ -708,6 +708,18 @@
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li.mg_link:hover > .wsmegamenu { display: block; }
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li:hover > .wsmegamenu.halfmenu { display: block; }
 
+    /* ─── mega-cols: 4-column grid (desktop) ─── */
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .mega-cols {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0 32px;
+    }
+    /* ─── half-cols: 2-column grid for halfmenu ─── */
+    .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .half-cols {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0 24px;
+    }
     /* ─── link-list inside mega menu ─── */
     .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list {
       list-style: none;
@@ -832,25 +844,53 @@
         padding: 10px 0 10px 16px;
         color: #383838;
       }
-      /* Mobile mega menu */
+      /* Mobile mega menu — inline within the slide panel */
       .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu {
         color: #666;
         display: none;
-        position: relative;
-        top: 0;
-        padding: 10px 0;
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 0 0 8px 0;
         border: 0;
         border-bottom: 1px solid rgba(0,0,0,.13);
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        background: #f8f8f8 !important;
       }
       .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu.halfmenu {
-        width: 100%;
+        width: 100% !important;
+        min-width: 0 !important;
         margin: 0;
-        padding: 5px 0 10px 0;
+        padding: 0 0 8px 0;
+      }
+      /* Override grid columns to single column on mobile */
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .mega-cols,
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .half-cols {
+        display: block;
+      }
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list {
+        padding: 0;
+      }
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li {
+        border-bottom: 0;
       }
       .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li a {
         font-size: 13px;
-        padding: 9px 14px;
-        color: #666;
+        padding: 9px 14px 9px 24px;
+        color: #555;
+        white-space: normal;
+      }
+      .olmo-nav-wrap .wsmenu > .wsmenu-list > li > .wsmegamenu .link-list li.fst-li a {
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: #999;
+        padding-bottom: 4px;
+        padding-top: 12px;
       }
       /* Mobile header bar */
       .olmo-nav-wrap .wsmobileheader {
@@ -1004,54 +1044,52 @@
             {{-- MEGAMENU: Explore --}}
             <li aria-haspopup="true" class="mg_link">
               <a href="#top">Explore <span class="wsarrow"></span></a>
-              <div class="wsmegamenu w-75 clearfix">
-                <div class="container">
-                  <div class="row">
+              <div class="wsmegamenu clearfix">
+                <div class="mega-cols">
 
-                    {{-- Column 1 --}}
-                    <ul class="col-md-12 col-lg-3 link-list">
-                      <li class="fst-li"><a href="#top">Overview</a></li>
-                      <li><a href="#focus">What We Do</a></li>
-                      <li><a href="#why">Why Real Estate</a></li>
-                      <li><a href="#earn">Market Routes</a></li>
-                      <li><a href="#areas">Top Areas</a></li>
-                      <li><a href="#comparison">Price Comparison</a></li>
-                      <li><a href="#topics">Expert Topics</a></li>
-                    </ul>
+                  {{-- Column 1 --}}
+                  <ul class="link-list">
+                    <li class="fst-li"><a href="#top">Overview</a></li>
+                    <li><a href="#focus">What We Do</a></li>
+                    <li><a href="#why">Why Real Estate</a></li>
+                    <li><a href="#earn">Market Routes</a></li>
+                    <li><a href="#areas">Top Areas</a></li>
+                    <li><a href="#comparison">Price Comparison</a></li>
+                    <li><a href="#topics">Expert Topics</a></li>
+                  </ul>
 
-                    {{-- Column 2 --}}
-                    <ul class="col-md-12 col-lg-3 link-list">
-                      <li class="fst-li"><a href="#focus">AI Market Analysis</a></li>
-                      <li><a href="#focus">Rental Yield Tool</a></li>
-                      <li><a href="#comparison">Price Comparison</a></li>
-                      <li><a href="#earn">Passive Income Routes</a></li>
-                      <li><a href="#focus">ROI Calculator</a></li>
-                      <li><a href="#focus">Market Score</a></li>
-                      <li><a href="#focus">Price-to-Income</a></li>
-                    </ul>
+                  {{-- Column 2 --}}
+                  <ul class="link-list">
+                    <li class="fst-li"><a href="#focus">AI Market Analysis</a></li>
+                    <li><a href="#focus">Rental Yield Tool</a></li>
+                    <li><a href="#comparison">Price Comparison</a></li>
+                    <li><a href="#earn">Passive Income Routes</a></li>
+                    <li><a href="#focus">ROI Calculator</a></li>
+                    <li><a href="#focus">Market Score</a></li>
+                    <li><a href="#focus">Price-to-Income</a></li>
+                  </ul>
 
-                    {{-- Column 3 --}}
-                    <ul class="col-md-12 col-lg-3 link-list">
-                      <li class="fst-li"><a href="#earn">Buy &amp; Hold</a></li>
-                      <li><a href="#earn">Short-Term Rental</a></li>
-                      <li><a href="#earn">Long-Term Rental</a></li>
-                      <li><a href="#earn">Fix &amp; Flip</a></li>
-                      <li><a href="#earn">REIT Investment</a></li>
-                      <li><a href="#market">Market Signals</a></li>
-                      <li><a href="#topics">Investor Tools</a></li>
-                    </ul>
+                  {{-- Column 3 --}}
+                  <ul class="link-list">
+                    <li class="fst-li"><a href="#earn">Buy &amp; Hold</a></li>
+                    <li><a href="#earn">Short-Term Rental</a></li>
+                    <li><a href="#earn">Long-Term Rental</a></li>
+                    <li><a href="#earn">Fix &amp; Flip</a></li>
+                    <li><a href="#earn">REIT Investment</a></li>
+                    <li><a href="#market">Market Signals</a></li>
+                    <li><a href="#topics">Investor Tools</a></li>
+                  </ul>
 
-                    {{-- Column 4 --}}
-                    <ul class="col-md-12 col-lg-3 link-list">
-                      <li class="fst-li"><a href="#topics">Buyer Tips</a></li>
-                      <li><a href="#topics">Seller Tips</a></li>
-                      <li><a href="#topics">Expert Topics</a></li>
-                      <li><a href="#software">Our Software</a></li>
-                      <li><a href="#ask">Ask AI</a></li>
-                    </ul>
+                  {{-- Column 4 --}}
+                  <ul class="link-list">
+                    <li class="fst-li"><a href="#topics">Buyer Tips</a></li>
+                    <li><a href="#topics">Seller Tips</a></li>
+                    <li><a href="#topics">Expert Topics</a></li>
+                    <li><a href="#software">Our Software</a></li>
+                    <li><a href="#ask">Ask AI</a></li>
+                  </ul>
 
-                  </div>{{-- End row --}}
-                </div>{{-- End container --}}
+                </div>{{-- End mega-cols --}}
               </div>{{-- End wsmegamenu --}}
             </li>{{-- END MEGAMENU --}}
 
@@ -1059,19 +1097,17 @@
             <li aria-haspopup="true">
               <a href="#focus">Solutions <span class="wsarrow"></span></a>
               <div class="wsmegamenu clearfix halfmenu">
-                <div class="container-fluid">
-                  <div class="row">
-                    <ul class="col-lg-6 link-list">
-                      <li><a href="#focus">AI Market Analysis</a></li>
-                      <li><a href="#focus">Rental Yield Tool</a></li>
-                      <li><a href="#comparison">Price Comparison</a></li>
-                    </ul>
-                    <ul class="col-lg-6 link-list">
-                      <li><a href="#earn">Passive Income Routes</a></li>
-                      <li><a href="#focus">ROI Calculator</a></li>
-                      <li><a href="#focus">Market Score</a></li>
-                    </ul>
-                  </div>
+                <div class="half-cols">
+                  <ul class="link-list">
+                    <li><a href="#focus">AI Market Analysis</a></li>
+                    <li><a href="#focus">Rental Yield Tool</a></li>
+                    <li><a href="#comparison">Price Comparison</a></li>
+                  </ul>
+                  <ul class="link-list">
+                    <li><a href="#earn">Passive Income Routes</a></li>
+                    <li><a href="#focus">ROI Calculator</a></li>
+                    <li><a href="#focus">Market Score</a></li>
+                  </ul>
                 </div>
               </div>
             </li>{{-- END DROPDOWN --}}

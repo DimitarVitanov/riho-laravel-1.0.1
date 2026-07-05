@@ -368,7 +368,7 @@
       pointer-events: none;
     }
     .topic-head {
-      display: flex; align-items: flex-start; gap: 14px;
+      display: flex; align-items: center; gap: 14px;
       padding-bottom: 18px;
       border-bottom: 1px solid var(--line);
     }

@@ -454,7 +454,9 @@
   <div class="top-strip">
     <div class="top-strip-inner">
       <div class="top-strip-left">
+        <!-- 
         <span class="badge">FREE</span>
+        -->
         Real Estate Taxi is your FREE rule through the global real estate market!
       </div>
       <div class="top-strip-right">

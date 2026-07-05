@@ -482,11 +482,7 @@
   <header class="header">
     <div class="container header-inner">
       <a class="brand" href="#top" aria-label="Real Estate Taxi">
-        <div class="brand-icon">🚕</div>
-        <div class="brand-text">
-          <b>Real Estate Taxi</b>
-          <span>Global real estate market tools</span>
-        </div>
+        <img src="/assets/images/logo-small.png" alt="Real Estate Taxi" style="height:48px;width:auto;display:block;">
       </a>
 
       <nav class="nav" aria-label="Main navigation">

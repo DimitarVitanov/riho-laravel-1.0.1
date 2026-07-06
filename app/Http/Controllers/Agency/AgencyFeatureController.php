@@ -831,6 +831,31 @@ class AgencyFeatureController extends Controller
             ->with('edit_campaign_id', $campaignId);
     }
 
+    public function assignListingCampaign(Request $request, \App\Models\AgencyListing $listing)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
+
+        if (!$profile || $listing->agency_profile_id !== $profile->id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'local_seo_campaign_id' => 'nullable|exists:local_seo_campaigns,id',
+        ]);
+
+        $campaignId = null;
+        if (!empty($validated['local_seo_campaign_id'])) {
+            $campaign = $profile->localSeoCampaigns()->find($validated['local_seo_campaign_id']);
+            $campaignId = $campaign?->id;
+        }
+
+        $listing->update(['local_seo_campaign_id' => $campaignId]);
+
+        return redirect()->back()->with('success', 'Listing campaign updated.');
+    }
+
     public function updateListing(Request $request, \App\Models\AgencyListing $listing)
     {
         /** @var \App\Models\User $user */

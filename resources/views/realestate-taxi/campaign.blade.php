@@ -276,16 +276,28 @@
     }
     .listing-img {
       width: 100%;
-      aspect-ratio: 16 / 10;
-      background: #e5eaf1;
+      aspect-ratio: 3 / 2;
+      background: #eef2f7;
       object-fit: cover;
       display: block;
     }
     .listing-img.empty {
-      display: grid; place-items: center;
-      color: var(--muted);
-      font-size: 13px;
+      display: grid;
+      place-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #0f2027, #1a3a3a);
+    }
+    .listing-img.empty svg {
+      width: 34px; height: 34px;
+      fill: none; stroke: var(--gold);
+      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .listing-img.empty span {
+      color: rgba(255,255,255,.6);
+      font-size: 12px;
       font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
     }
     .listing-body { position: relative; z-index: 1; padding: 20px; flex: 1; display: flex; flex-direction: column; }
     .listing-body h3 {
@@ -571,30 +583,37 @@
         {{-- FEATURED LISTINGS --}}
         @php $listings = $campaign->listings()->where('status', 'active')->latest()->get(); @endphp
         @if($listings->isNotEmpty())
-        <section class="span-12" style="margin-top: 10px;">
-          <span class="number-label" style="margin-bottom: 14px; display: inline-block;">Featured Listings</span>
-          <div class="grid">
-            @foreach($listings as $listing)
-            <article class="listing-card span-4">
-              @if(!empty($listing->images[0]))
-                <img class="listing-img" src="{{ $listing->images[0] }}" alt="{{ $listing->title }}" loading="lazy">
-              @else
-                <div class="listing-img empty">No image</div>
-              @endif
-              <div class="listing-body">
-                <h3>{{ $listing->title }}</h3>
-                <div class="listing-meta">
-                  <span class="badge">{{ $listing->property_type ?: 'Property' }}</span>
-                  <span>{{ $listing->location ?? $campaign->primary_city }}</span>
-                </div>
-                <p>{{ \Illuminate\Support\Str::limit($listing->description, 140) }}</p>
-                @if($listing->formatted_price)
-                  <div class="listing-price">{{ $listing->formatted_price }}</div>
+        <section class="card focus-card span-12">
+          <div class="card-pad">
+            <span class="number-label">Featured Listings</span>
+            <h2>Properties in {{ $campaign->primary_city }}</h2>
+            <p class="focus-copy">A selection of properties from our {{ $campaign->name }} campaign.</p>
+            <div class="grid" style="margin-top: 22px;">
+              @foreach($listings as $listing)
+              <article class="listing-card span-4">
+                @if(!empty($listing->images[0]))
+                  <img class="listing-img" src="{{ $listing->images[0] }}" alt="{{ $listing->title }}" loading="lazy">
+                @else
+                  <div class="listing-img empty">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+                    <span>No image</span>
+                  </div>
                 @endif
-                <a href="mailto:{{ $profile->contact_email }}?subject=Inquiry: {{ urlencode($listing->title) }}" class="listing-btn">Request details</a>
-              </div>
-            </article>
-            @endforeach
+                <div class="listing-body">
+                  <h3>{{ $listing->title }}</h3>
+                  <div class="listing-meta">
+                    <span class="badge">{{ $listing->property_type ?: 'Property' }}</span>
+                    <span>{{ $listing->location ?? $campaign->primary_city }}</span>
+                  </div>
+                  <p>{{ \Illuminate\Support\Str::limit($listing->description, 140) }}</p>
+                  @if($listing->formatted_price)
+                    <div class="listing-price">{{ $listing->formatted_price }}</div>
+                  @endif
+                  <a href="mailto:{{ $profile->contact_email }}?subject=Inquiry: {{ urlencode($listing->title) }}" class="listing-btn">Request details</a>
+                </div>
+              </article>
+              @endforeach
+            </div>
           </div>
         </section>
         @endif

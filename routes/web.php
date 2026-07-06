@@ -297,6 +297,7 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
 
     // Agency Listings
     Route::post('local-seo-presence-boost/listings', [AgencyFeatureController::class, 'storeListing'])->name('local-seo.listings.store');
+    Route::post('local-seo-presence-boost/listings/{listing}/campaign', [AgencyFeatureController::class, 'assignListingCampaign'])->name('local-seo.listings.assign-campaign');
     Route::put('local-seo-presence-boost/listings/{listing}', [AgencyFeatureController::class, 'updateListing'])->name('local-seo.listings.update');
     Route::delete('local-seo-presence-boost/listings/{listing}', [AgencyFeatureController::class, 'destroyListing'])->name('local-seo.listings.destroy');
 

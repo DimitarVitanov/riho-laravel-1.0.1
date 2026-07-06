@@ -440,11 +440,20 @@
                 <div class="card-body">
                     <form action="{{ route('agency.local-seo.listings.store') }}" method="POST" enctype="multipart/form-data" class="mb-4">
                         @csrf
-                        <input type="hidden" name="local_seo_campaign_id" value="{{ $editCampaign->id ?? '' }}">
-                        @if($editCampaign)
-                            <p class="small text-muted">Listings you add here are automatically linked to campaign <strong>{{ $editCampaign->name }}</strong>.</p>
-                        @endif
                         <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label text-muted small fw-bold">Campaign</label>
+                                <select name="local_seo_campaign_id" class="form-select" required>
+                                    <option value="">— Select a campaign —</option>
+                                    @foreach($campaigns as $campaignOption)
+                                        <option value="{{ $campaignOption->id }}"
+                                            {{ (string)($editCampaign->id ?? '') === (string)$campaignOption->id ? 'selected' : '' }}>
+                                            {{ $campaignOption->name }}{{ $campaignOption->primary_city ? ' — ' . $campaignOption->primary_city : '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">The listing will be linked to this campaign and shown on its page.</small>
+                            </div>
                             <div class="col-md-4">
                                 <label class="form-label text-muted small fw-bold">{{ __('messages.listing_title') }}</label>
                                 <input type="text" name="title" class="form-control" placeholder="{{ __('messages.listing_title_placeholder') }}" required>
@@ -493,6 +502,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>{{ __('messages.title') }}</th>
+                                        <th>Campaign</th>
                                         <th>{{ __('messages.location') }}</th>
                                         <th>{{ __('messages.price') }}</th>
                                         <th>{{ __('messages.images') }}</th>
@@ -504,6 +514,20 @@
                                     @foreach($listings as $listing)
                                     <tr>
                                         <td><strong>{{ $listing->title }}</strong></td>
+                                        <td>
+                                            <form action="{{ route('agency.local-seo.listings.assign-campaign', $listing) }}" method="POST">
+                                                @csrf
+                                                <select name="local_seo_campaign_id" class="form-select form-select-sm" style="min-width: 180px;" onchange="this.form.submit()">
+                                                    <option value="">— Unlinked —</option>
+                                                    @foreach($campaigns as $campaignOption)
+                                                        <option value="{{ $campaignOption->id }}"
+                                                            {{ (string)$listing->local_seo_campaign_id === (string)$campaignOption->id ? 'selected' : '' }}>
+                                                            {{ $campaignOption->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </form>
+                                        </td>
                                         <td>{{ $listing->location ?? '—' }}</td>
                                         <td>{{ $listing->formatted_price ?? '—' }}</td>
                                         <td>

@@ -46,6 +46,17 @@
                                     </select>
                                     @error('ai_content_language')<span class="text-danger">{{ $message }}</span>@enderror
                                 </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Content Uniqueness Method</label>
+                                    <p class="text-muted small">How generated content is verified as unique before publishing.</p>
+                                    <select name="uniqueness_check_method" id="uniquenessMethodSelect" class="form-select">
+                                        @foreach(\App\Http\Controllers\Agency\AgencySettingsController::uniquenessCheckMethods() as $key => $label)
+                                            <option value="{{ $key }}" {{ ($profile->uniqueness_check_method ?? 'villabit_ai') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('uniqueness_check_method')<span class="text-danger">{{ $message }}</span>@enderror
+                                </div>
                             </div>
 
                             <div class="mt-4">
@@ -56,7 +67,7 @@
                 </div>
 
                 {{-- Copyscape --}}
-                <div class="card mt-4">
+                <div class="card mt-4" id="copyscapeCard" style="{{ ($profile->uniqueness_check_method ?? 'villabit_ai') === 'copyscape' ? '' : 'display:none;' }}">
                     <div class="card-header pb-0">
                         <h5>🔍 Copyscape — Content Uniqueness Check</h5>
                         <small class="text-muted">Enter your own Copyscape credentials to use your account for uniqueness checking on your generated content.</small>
@@ -97,4 +108,15 @@
             </div>
         </div>
     </div>
+
+    <script>
+        (function () {
+            var select = document.getElementById('uniquenessMethodSelect');
+            var card = document.getElementById('copyscapeCard');
+            if (!select || !card) return;
+            select.addEventListener('change', function () {
+                card.style.display = this.value === 'copyscape' ? '' : 'none';
+            });
+        })();
+    </script>
 @endsection

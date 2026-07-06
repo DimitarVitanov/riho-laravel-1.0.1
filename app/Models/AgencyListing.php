@@ -11,6 +11,7 @@ class AgencyListing extends Model
 
     protected $fillable = [
         'agency_profile_id',
+        'local_seo_campaign_id',
         'title',
         'property_type',
         'location',
@@ -29,6 +30,11 @@ class AgencyListing extends Model
     public function agencyProfile()
     {
         return $this->belongsTo(AgencyProfile::class);
+    }
+
+    public function campaign()
+    {
+        return $this->belongsTo(LocalSeoCampaign::class, 'local_seo_campaign_id');
     }
 
     public function getImagesAttribute()

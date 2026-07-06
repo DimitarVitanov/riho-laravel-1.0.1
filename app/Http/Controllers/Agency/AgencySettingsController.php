@@ -26,6 +26,7 @@ class AgencySettingsController extends Controller
         $request->validate([
             'panel_language' => 'required|string|max:10',
             'ai_content_language' => 'required|string|max:50',
+            'uniqueness_check_method' => 'required|string|in:' . implode(',', array_keys(self::uniquenessCheckMethods())),
         ]);
 
         /** @var \App\Models\User $user */
@@ -35,6 +36,7 @@ class AgencySettingsController extends Controller
         if ($user->getEffectiveAgencyProfile()) {
             $user->getEffectiveAgencyProfile()->update([
                 'ai_content_language' => $request->ai_content_language,
+                'uniqueness_check_method' => $request->uniqueness_check_method,
             ]);
         }
 
@@ -189,6 +191,15 @@ class AgencySettingsController extends Controller
         }
 
         return back()->with('success', 'Brand settings saved.');
+    }
+
+    public static function uniquenessCheckMethods(): array
+    {
+        return [
+            'villabit_manual' => 'Villa Bit AI checked & manually approved',
+            'villabit_ai'     => 'Villa Bit AI uniqueness check passed',
+            'copyscape'       => 'Copyscape uniqueness check passed',
+        ];
     }
 
     public static function supportedPanelLanguages(): array

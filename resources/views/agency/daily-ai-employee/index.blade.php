@@ -38,7 +38,7 @@
                                 <input type="hidden" name="is_enabled" value="1">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label text-muted small fw-bold">AI posting language</label>
+                                <label class="form-label text-muted small fw-bold">AI posting language1</label>
                                 <select name="ai_language" class="form-select">
                                     @php
                                         $languages = \App\Http\Controllers\Agency\AgencySettingsController::supportedAiContentLanguages();

@@ -23,6 +23,7 @@ use App\Http\Controllers\Manager\ManagerSupportNoteController;
 use App\Http\Controllers\Agency\AgencyDashboardController;
 use App\Http\Controllers\Agency\AgencySettingsController;
 use App\Http\Controllers\Agency\AgencyFeatureController;
+use App\Http\Controllers\Agency\LocalSeoCampaignController;
 use App\Http\Controllers\Agency\DailyAiEmployeeController;
 use App\Http\Controllers\Agency\AgencyAiReportController;
 use App\Http\Controllers\Agency\AgencyUsageLimitController;
@@ -285,6 +286,14 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::put('local-seo-presence-boost/pages/{page}', [AgencyFeatureController::class, 'updateLocalSeoPage'])->name('local-seo.pages.update');
     Route::post('local-seo-presence-boost/pages/{page}/publish', [AgencyFeatureController::class, 'publishLocalSeoPage'])->name('local-seo.pages.publish');
     Route::delete('local-seo-presence-boost/pages/{page}', [AgencyFeatureController::class, 'destroyLocalSeoPage'])->name('local-seo.pages.destroy');
+
+    // Local SEO Campaigns (multi-campaign builder)
+    Route::post('local-seo-presence-boost/campaigns', [LocalSeoCampaignController::class, 'storeDraft'])->name('local-seo.campaigns.store');
+    Route::post('local-seo-presence-boost/campaigns/suggest-places', [LocalSeoCampaignController::class, 'suggestPlaces'])->name('local-seo.campaigns.suggest-places');
+    Route::get('local-seo-presence-boost/campaigns/{campaign}/preview', [LocalSeoCampaignController::class, 'preview'])->name('local-seo.campaigns.preview');
+    Route::post('local-seo-presence-boost/campaigns/{campaign}/toggle', [LocalSeoCampaignController::class, 'toggleStatus'])->name('local-seo.campaigns.toggle');
+    Route::post('local-seo-presence-boost/campaigns/{campaign}/publish', [LocalSeoCampaignController::class, 'publish'])->name('local-seo.campaigns.publish');
+    Route::delete('local-seo-presence-boost/campaigns/{campaign}', [LocalSeoCampaignController::class, 'destroy'])->name('local-seo.campaigns.destroy');
 
     // Agency Listings
     Route::post('local-seo-presence-boost/listings', [AgencyFeatureController::class, 'storeListing'])->name('local-seo.listings.store');

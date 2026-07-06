@@ -189,6 +189,7 @@ class RoleSeeder extends Seeder
             'account_type' => null,
             'role' => 'super_admin',
             'status' => 'active',
+            'email_verified_at' => now(),
         ]);
         $user->assignRole($admin);
 

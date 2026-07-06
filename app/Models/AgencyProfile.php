@@ -40,6 +40,7 @@ class AgencyProfile extends Model
         'sitemap_url',
         'copyscape_username',
         'copyscape_api_key',
+        'uniqueness_check_method',
         'contact_email',
         'contact_phone',
         'agency_logo_path',
@@ -107,6 +108,11 @@ class AgencyProfile extends Model
     public function localSeoTargets()
     {
         return $this->hasMany(LocalSeoTarget::class);
+    }
+
+    public function localSeoCampaigns()
+    {
+        return $this->hasMany(LocalSeoCampaign::class);
     }
 
     public function generatedPages()

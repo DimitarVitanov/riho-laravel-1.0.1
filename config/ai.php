@@ -30,7 +30,7 @@ return [
     */
     'google' => [
         'api_key' => env('GOOGLE_AI_API_KEY'),
-        'default_model' => env('GOOGLE_AI_DEFAULT_MODEL', 'gemini-pro'),
+        'default_model' => env('GOOGLE_AI_DEFAULT_MODEL', 'gemini-2.5-flash'),
     ],
 
     /*

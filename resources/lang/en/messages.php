@@ -262,6 +262,7 @@ return [
     'location' => 'Location',
     'location_placeholder' => 'e.g. New York, Manhattan',
     'price' => 'Price',
+    'description' => 'Description',
     'images' => 'Images',
     'images_help' => 'Upload multiple images. Max 5MB each.',
     'add_listing' => 'Add Listing',

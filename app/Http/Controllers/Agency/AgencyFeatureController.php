@@ -78,6 +78,14 @@ class AgencyFeatureController extends Controller
                     ->where('status', 'active')
                     ->latest()
                     ->get() : collect();
+                $viewData['campaigns'] = $profile ? $profile->localSeoCampaigns()
+                    ->withCount('listings')
+                    ->latest()
+                    ->get() : collect();
+                $editId = session('edit_campaign_id', request('edit_campaign_id'));
+                $viewData['editCampaign'] = $editId && $profile
+                    ? $profile->localSeoCampaigns()->find($editId)
+                    : null;
             }
 
             if ($feature === 'ai_search_ranking') {
@@ -790,7 +798,14 @@ class AgencyFeatureController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'status' => 'nullable|string|in:active,inactive',
+            'local_seo_campaign_id' => 'nullable|exists:local_seo_campaigns,id',
         ]);
+
+        $campaignId = null;
+        if (!empty($validated['local_seo_campaign_id'])) {
+            $campaign = $profile->localSeoCampaigns()->find($validated['local_seo_campaign_id']);
+            $campaignId = $campaign?->id;
+        }
 
         $images = [];
         if ($request->hasFile('images')) {
@@ -801,6 +816,7 @@ class AgencyFeatureController extends Controller
         }
 
         $profile->agencyListings()->create([
+            'local_seo_campaign_id' => $campaignId,
             'title' => $validated['title'],
             'property_type' => $validated['property_type'] ?? null,
             'location' => $validated['location'] ?? null,
@@ -811,7 +827,8 @@ class AgencyFeatureController extends Controller
             'status' => $validated['status'] ?? 'active',
         ]);
 
-        return redirect()->back()->with('success', 'Listing added successfully.');
+        return redirect()->back()->with('success', 'Listing added successfully.')
+            ->with('edit_campaign_id', $campaignId);
     }
 
     public function updateListing(Request $request, \App\Models\AgencyListing $listing)

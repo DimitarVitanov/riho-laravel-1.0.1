@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AgencyProfile;
 use App\Models\GeneratedPage;
+use App\Models\LocalSeoCampaign;
 use Illuminate\Http\Request;
 
 class PublicPageController extends Controller
@@ -22,6 +23,21 @@ class PublicPageController extends Controller
             ->where('slug', $slug)
             ->published()
             ->firstOrFail();
+
+        // Local SEO campaigns render with the realestate.taxi design.
+        if ($page->feature_key === 'local_seo_presence_boost') {
+            $campaign = LocalSeoCampaign::where('generated_page_id', $page->id)
+                ->where('agency_profile_id', $profile->id)
+                ->first();
+
+            if ($campaign) {
+                return view('realestate-taxi.campaign', [
+                    'page' => $page,
+                    'campaign' => $campaign,
+                    'profile' => $profile,
+                ]);
+            }
+        }
 
         return view('public-pages.article', [
             'page' => $page,

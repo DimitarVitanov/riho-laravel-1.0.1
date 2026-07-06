@@ -11,7 +11,17 @@
 @section('content')
 <div class="container-fluid local-seo-feature">
 
-    {{-- Main Settings Card --}}
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+            </ul>
+        </div>
+    @endif
+  {{-- Main Settings Card --}}
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
@@ -47,23 +57,20 @@
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label text-muted small fw-bold">{{ __('messages.ai_posting_language') }}</label>
-                                <select name="ai_language" class="form-select">
-                                    @php
-                                        $languages = \App\Http\Controllers\Agency\AgencySettingsController::supportedAiContentLanguages();
-                                    @endphp
-                                    @foreach($languages as $lang)
-                                        <option value="{{ $lang }}" {{ ($profile->ai_content_language ?? 'English') === $lang ? 'selected' : '' }}>{{ $lang }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="form-control bg-light">
+                                    <span class="fw-bold text-dark">{{ $profile->ai_content_language ?? 'English' }}</span>
+                                </div>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label class="form-label text-muted small fw-bold">{{ __('messages.uniqueness_status') }}</label>
                                 <div class="form-control bg-light">
-                                    <span class="fw-bold">{{ __('messages.passed_before_publish') }}</span>
+                                    <span class="fw-bold text-dark">{{ \App\Http\Controllers\Agency\AgencySettingsController::uniquenessCheckMethods()[$profile->uniqueness_check_method ?? 'villabit_ai'] ?? __('messages.passed_before_publish') }}</span>
                                 </div>
                             </div>
                         </div>
 
+                        {{-- Hidden per request: only Feature Status / AI Posting Language / Uniqueness Status are shown --}}
+                        @if(false)
                         {{-- Location Targeting Row --}}
                         <div class="border rounded p-3 mb-3 bg-light">
                             <h6 class="fw-bold text-dark mb-3"><i class="fa fa-map-marker me-2"></i>{{ __('messages.location_targeting') }}</h6>
@@ -107,12 +114,215 @@
                                 <a href="{{ route('agency.local-seo.prompt') }}" class="btn btn-outline-secondary w-100">{{ __('messages.open_prompt') }}</a>
                             </div>
                         </div>
+                        @endif
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
+        {{-- ============ CAMPAIGNS TABLE ============ --}}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-1 fw-bold">Your Campaigns</h5>
+                    <small class="text-muted">Activate, edit or remove your Local SEO campaigns.</small>
+                </div>
+                <div class="card-body p-0">
+                    @if($campaigns->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>USE</th>
+                                        <th>CAMPAIGN</th>
+                                        <th>MARKET</th>
+                                        <th>COVERAGE</th>
+                                        <th>LISTINGS</th>
+                                        <th>STATUS</th>
+                                        <th class="text-end">ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($campaigns as $campaign)
+                                    <tr>
+                                        <td>
+                                            <form action="{{ route('agency.local-seo.campaigns.toggle', $campaign) }}" method="POST">
+                                                @csrf
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" onchange="this.form.submit()"
+                                                           {{ $campaign->status === 'published' ? 'checked' : '' }}>
+                                                </div>
+                                            </form>
+                                        </td>
+                                        <td><strong>{{ $campaign->name }}</strong></td>
+                                        <td>{{ $campaign->primary_city ?? '—' }}</td>
+                                        <td>{{ $campaign->coverage_area ? $campaign->coverage_area . ' ' . $campaign->coverage_unit : '—' }}</td>
+                                        <td><span class="badge bg-secondary">{{ $campaign->listings_count }}</span></td>
+                                        <td>
+                                            @if($campaign->status === 'published')
+                                                <span class="badge bg-success">Active</span>
+                                            @elseif($campaign->status === 'unpublished')
+                                                <span class="badge bg-warning text-dark">Unpublished</span>
+                                            @else
+                                                <span class="badge bg-light text-dark border">Draft</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{{ route('agency.local-seo.campaigns.preview', $campaign) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Preview</a>
+                                            <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?edit_campaign_id={{ $campaign->id }}" class="btn btn-sm btn-outline-dark">Edit</a>
+                                            <form action="{{ route('agency.local-seo.campaigns.destroy', $campaign) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this campaign?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-4">
+                            <p class="text-muted mb-0">No campaigns yet. Define your first campaign above.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- ============ SECTION 1: Define Campaign ============ --}}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-1 fw-bold"><span class="badge bg-dark rounded-circle me-2">1</span>Define Your Local SEO Campaign</h5>
+                    <small class="text-muted">These rules tell AI where the agency works, its coverage area, and how it positions itself.</small>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('agency.local-seo.campaigns.store') }}" method="POST" id="campaignForm">
+                        @csrf
+                        <input type="hidden" name="campaign_id" value="{{ $editCampaign->id ?? '' }}">
+                        <input type="hidden" name="primary_city" id="primaryCity" value="{{ $editCampaign->primary_city ?? '' }}">
+                        <input type="hidden" name="country" id="primaryCountry" value="{{ $editCampaign->country ?? '' }}">
+                        <input type="hidden" name="latitude" id="primaryLat" value="{{ $editCampaign->latitude ?? '' }}">
+                        <input type="hidden" name="longitude" id="primaryLng" value="{{ $editCampaign->longitude ?? '' }}">
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Campaign Name *</label>
+                                <input type="text" name="name" class="form-control" required
+                                       value="{{ $editCampaign->name ?? '' }}"
+                                       placeholder="E.g. Split & Dalmatia Luxury Property 2026">
+                                <small class="text-muted">Internal name. Used to find this campaign later.</small>
+                            </div>
+                            <div class="col-md-6 position-relative">
+                                <label class="form-label text-muted small fw-bold">Primary Market / Main City *</label>
+                                <input type="text" id="citySearch" class="form-control" autocomplete="off"
+                                       value="{{ $editCampaign ? trim(($editCampaign->primary_city ?? '') . ($editCampaign->country ? ', ' . $editCampaign->country : '')) : '' }}"
+                                       placeholder="Start typing a city…">
+                                <div id="citySuggestions" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display:none; max-height: 240px; overflow-y:auto;"></div>
+                                <small class="text-muted">Location autocomplete. Saves city + country + coordinates.</small>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small fw-bold">Coverage Area *</label>
+                                <div class="input-group">
+                                    <input type="number" name="coverage_area" id="coverageArea" class="form-control" min="1" max="1000"
+                                           value="{{ $editCampaign->coverage_area ?? 50 }}">
+                                    <select name="coverage_unit" id="coverageUnit" class="form-select" style="max-width: 90px;">
+                                        <option value="km" {{ ($editCampaign->coverage_unit ?? 'km') === 'km' ? 'selected' : '' }}>km</option>
+                                        <option value="mi" {{ ($editCampaign->coverage_unit ?? '') === 'mi' ? 'selected' : '' }}>miles</option>
+                                    </select>
+                                </div>
+                                <small class="text-muted">AI suggests relevant places inside this boundary.</small>
+                            </div>
+
+                            <div class="col-md-8">
+                                <label class="form-label text-muted small fw-bold d-flex justify-content-between align-items-center">
+                                    <span>Places Inside Coverage Area</span>
+                                    <button type="button" class="btn btn-sm btn-outline-dark" id="suggestPlacesBtn">
+                                        <i class="fa fa-magic me-1"></i>AI suggest places
+                                    </button>
+                                </label>
+                                <div id="placesList" class="border rounded p-2 bg-light" style="min-height: 60px; max-height: 220px; overflow-y:auto;">
+                                    @php $existingPlaces = $editCampaign->target_places ?? []; @endphp
+                                    @if(!empty($existingPlaces))
+                                        @foreach($existingPlaces as $i => $place)
+                                            <label class="d-flex align-items-start gap-2 mb-1 place-item">
+                                                <input type="checkbox" checked onchange="togglePlace(this)">
+                                                <input type="hidden" name="target_places[{{ $i }}][name]" value="{{ $place['name'] ?? '' }}">
+                                                <input type="hidden" name="target_places[{{ $i }}][type]" value="{{ $place['type'] ?? '' }}">
+                                                <input type="hidden" name="target_places[{{ $i }}][distance]" value="{{ $place['distance'] ?? '' }}">
+                                                <input type="hidden" name="target_places[{{ $i }}][reason]" value="{{ $place['reason'] ?? '' }}">
+                                                <input type="hidden" name="target_places[{{ $i }}][priority]" value="{{ $place['priority'] ?? '' }}">
+                                                <span><strong>{{ $place['name'] ?? '' }}</strong> <span class="text-muted small">{{ $place['type'] ?? '' }} · {{ $place['distance'] ?? '' }}</span></span>
+                                            </label>
+                                        @endforeach
+                                    @else
+                                        <p class="text-muted small mb-0" id="placesEmpty">Set a city + coverage, then click "AI suggest places".</p>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label text-muted small fw-bold">Agency-Specific Positioning Note</label>
+                                <textarea name="positioning_note" class="form-control" rows="6"
+                                          placeholder="Add extra guidance for the AI beyond the main strategy. E.g. Emphasize sea view, marinas, rental potential and trusted local guidance.">{{ $editCampaign->positioning_note ?? '' }}</textarea>
+                                <small class="text-muted">This is added on top of the main Villa Bit AI prompt. The AI checks the main prompt and only adds your extra, non-duplicate specifications.</small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            @if($editCampaign)
+                                <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}" class="btn btn-outline-secondary me-2">Cancel edit</a>
+                            @endif
+                            <button type="submit" class="btn btn-dark">Save Draft</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    {{-- ============ SECTION 3: Publishing (only when editing a campaign) ============ --}}
+    @if($editCampaign)
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-1 fw-bold"><span class="badge bg-dark rounded-circle me-2">3</span>Publish</h5>
+                    <small class="text-muted">Publish "{{ $editCampaign->name }}" to your connected domain.</small>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('agency.local-seo.campaigns.publish', $editCampaign) }}" method="POST">
+                        @csrf
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Publishing Domain</label>
+                                <input type="text" class="form-control bg-light" value="{{ $profile->custom_domain ?? 'Not connected yet' }}" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Page URL Slug</label>
+                                <input type="text" name="page_slug" class="form-control"
+                                       value="{{ $editCampaign->page_slug ?? ('/' . \Illuminate\Support\Str::slug('real-estate-' . ($editCampaign->primary_city ?: $editCampaign->name)) . '/') }}">
+                                <small class="text-muted">Suggested automatically — you can change it.</small>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-dark">Save & Publish</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Hidden per request (legacy sections) --}}
+    @if(false)
     {{-- Agency Sub-Prompt --}}
     <div class="row mb-4">
         <div class="col-12">
@@ -217,6 +427,7 @@
         </div>
     </div>
     @endif
+    @endif
 
     {{-- Agency Listings Section --}}
     <div class="row mb-4">
@@ -229,6 +440,10 @@
                 <div class="card-body">
                     <form action="{{ route('agency.local-seo.listings.store') }}" method="POST" enctype="multipart/form-data" class="mb-4">
                         @csrf
+                        <input type="hidden" name="local_seo_campaign_id" value="{{ $editCampaign->id ?? '' }}">
+                        @if($editCampaign)
+                            <p class="small text-muted">Listings you add here are automatically linked to campaign <strong>{{ $editCampaign->name }}</strong>.</p>
+                        @endif
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label text-muted small fw-bold">{{ __('messages.listing_title') }}</label>
@@ -263,7 +478,8 @@
                                 <input type="file" name="images[]" class="form-control" multiple accept="image/*">
                                 <small class="text-muted">{{ __('messages.images_help') }}</small>
                             </div>
-                            <div class="col-md-6 d-flex align-items-end">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold d-block">&nbsp;</label>
                                 <button type="submit" class="btn btn-dark">
                                     <i class="fa fa-plus me-1"></i>{{ __('messages.add_listing') }}
                                 </button>
@@ -322,6 +538,8 @@
         </div>
     </div>
 
+    {{-- Hidden per request (legacy sections) --}}
+    @if(false)
     {{-- Pending Suggestions Section --}}
     <div class="row mb-4">
         <div class="col-12">
@@ -480,6 +698,7 @@
             </div>
         </div>
     </div>
+    @endif
 </div>
 
 <script>
@@ -493,6 +712,122 @@
         } else {
             statusDisplay.innerHTML = '<span class="fw-bold text-muted"><i class="fa fa-circle-o me-2"></i>{{ __('messages.off_not_active') }}</span>';
         }
+        // Persist immediately since the Save button is hidden.
+        document.getElementById('settingsForm').submit();
     }
+
+    // ---- Primary Market / Main City autocomplete (OpenStreetMap Nominatim) ----
+    (function () {
+        var input = document.getElementById('citySearch');
+        var box = document.getElementById('citySuggestions');
+        if (!input || !box) return;
+
+        var timer = null;
+
+        function hideBox() { box.style.display = 'none'; box.innerHTML = ''; }
+
+        input.addEventListener('input', function () {
+            var q = input.value.trim();
+            clearTimeout(timer);
+            if (q.length < 3) { hideBox(); return; }
+            timer = setTimeout(function () {
+                fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&featuretype=city&q=' + encodeURIComponent(q), {
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (results) {
+                    box.innerHTML = '';
+                    if (!results || !results.length) { hideBox(); return; }
+                    results.forEach(function (item) {
+                        var addr = item.address || {};
+                        var city = addr.city || addr.town || addr.village || addr.municipality || addr.county || item.display_name.split(',')[0];
+                        var country = addr.country || '';
+                        var a = document.createElement('button');
+                        a.type = 'button';
+                        a.className = 'list-group-item list-group-item-action';
+                        a.textContent = item.display_name;
+                        a.addEventListener('click', function () {
+                            input.value = city + (country ? ', ' + country : '');
+                            document.getElementById('primaryCity').value = city;
+                            document.getElementById('primaryCountry').value = country;
+                            document.getElementById('primaryLat').value = item.lat || '';
+                            document.getElementById('primaryLng').value = item.lon || '';
+                            hideBox();
+                        });
+                        box.appendChild(a);
+                    });
+                    box.style.display = 'block';
+                })
+                .catch(hideBox);
+            }, 350);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!box.contains(e.target) && e.target !== input) hideBox();
+        });
+    })();
+
+    // ---- AI suggest places inside coverage area ----
+    function togglePlace(cb) {
+        var label = cb.closest('.place-item');
+        if (!label) return;
+        label.querySelectorAll('input[type=hidden]').forEach(function (h) { h.disabled = !cb.checked; });
+    }
+
+    (function () {
+        var btn = document.getElementById('suggestPlacesBtn');
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+            var city = document.getElementById('primaryCity').value || document.getElementById('citySearch').value;
+            var country = document.getElementById('primaryCountry').value;
+            var coverage = document.getElementById('coverageArea').value;
+            var unit = document.getElementById('coverageUnit').value;
+            var list = document.getElementById('placesList');
+
+            if (!city || !coverage) { alert('Please set a city and coverage area first.'); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i>Thinking…';
+
+            fetch('{{ route('agency.local-seo.campaigns.suggest-places') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ primary_city: city, country: country, coverage_area: parseInt(coverage, 10), coverage_unit: unit })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                var places = (data && data.places) || [];
+                list.innerHTML = '';
+                if (!places.length) {
+                    list.innerHTML = '<p class="text-muted small mb-0">No suggestions returned. Check that the AI key is configured, or add places manually later.</p>';
+                    return;
+                }
+                places.forEach(function (p, i) {
+                    var label = document.createElement('label');
+                    label.className = 'd-flex align-items-start gap-2 mb-1 place-item';
+                    label.innerHTML =
+                        '<input type="checkbox" checked onchange="togglePlace(this)">' +
+                        '<input type="hidden" name="target_places[' + i + '][name]" value="' + (p.name || '').replace(/"/g, '&quot;') + '">' +
+                        '<input type="hidden" name="target_places[' + i + '][type]" value="' + (p.type || '').replace(/"/g, '&quot;') + '">' +
+                        '<input type="hidden" name="target_places[' + i + '][distance]" value="' + (p.distance || '').replace(/"/g, '&quot;') + '">' +
+                        '<input type="hidden" name="target_places[' + i + '][reason]" value="' + (p.reason || '').replace(/"/g, '&quot;') + '">' +
+                        '<input type="hidden" name="target_places[' + i + '][priority]" value="' + (p.priority || '').replace(/"/g, '&quot;') + '">' +
+                        '<span><strong>' + (p.name || '') + '</strong> <span class="text-muted small">' + (p.type || '') + ' · ' + (p.distance || '') + ' · ' + (p.priority || '') + '</span></span>';
+                    list.appendChild(label);
+                });
+            })
+            .catch(function () {
+                list.innerHTML = '<p class="text-danger small mb-0">Could not fetch suggestions. Please try again.</p>';
+            })
+            .finally(function () {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa fa-magic me-1"></i>AI suggest places';
+            });
+        });
+    })();
 </script>
 @endsection

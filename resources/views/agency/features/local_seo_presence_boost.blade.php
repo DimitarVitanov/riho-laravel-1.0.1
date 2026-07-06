@@ -196,7 +196,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold"><span class="badge bg-dark rounded-circle me-2">1</span>Define Your Local SEO Campaign</h5>
+                    <h5 class="mb-1 fw-bold"><span class="badge rounded-circle me-2" style="background:#0a0a0a;color:#fff;">1</span>Define Your Local SEO Campaign</h5>
                     <small class="text-muted">These rules tell AI where the agency works, its coverage area, and how it positions itself.</small>
                 </div>
                 <div class="card-body">
@@ -293,7 +293,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold"><span class="badge bg-dark rounded-circle me-2">3</span>Publish</h5>
+                    <h5 class="mb-1 fw-bold"><span class="badge rounded-circle me-2" style="background:#0a0a0a;color:#fff;">3</span>Publish</h5>
                     <small class="text-muted">Publish "{{ $editCampaign->name }}" to your connected domain.</small>
                 </div>
                 <div class="card-body">

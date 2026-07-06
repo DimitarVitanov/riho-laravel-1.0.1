@@ -1,701 +1,358 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="{{ $page->meta_description ?? $campaign->positioning_note }}" />
-  <title>{{ $page->seo_title ?? $campaign->name }}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #f5f7fb;
-      --card: #ffffff;
-      --ink: #0f172a;
-      --body: #3e4348;
-      --muted: #74839a;
-      --line: #e5eaf1;
-      --accent: {{ $profile->brand_primary_color ?? '#0d8d8c' }};
-      --accent-dark: {{ $profile->brand_secondary_color ?? '#086f70' }};
-      --accent-soft: {{ $profile->brand_primary_color ? $profile->brand_primary_color . '14' : '#eef9f9' }};
-      --gold: #ffb31a;
-      --black: #0a0a0a;
-      --shadow: 0 10px 30px rgba(15,23,42,.06);
-      --radius: 14px;
-      --header-h: 72px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Nunito', 'Inter', ui-sans-serif, system-ui, sans-serif;
-      color: var(--body);
-      background: var(--bg);
-      line-height: 1.62;
-      font-size: 17px;
-    }
-    a { color: inherit; text-decoration: none; }
-    button, input { font: inherit; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="{{ $page->meta_description ?? $campaign->positioning_note }}">
+<title>{{ $page->seo_title ?? $campaign->name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0a0b0c;
+  --soft: #f5f6f7;
+  --line: #dde1e5;
+  --muted: #69717a;
+  --accent: {{ $profile->brand_primary_color ?? '#0a0b0c' }};
+  --accent-dark: {{ $profile->brand_secondary_color ?? '#000000' }};
+  --accent-soft: #f1f3f5;
+  --pop: #eef1f4;
+  --warn: #8a6100;
+  --warn-soft: #fff5d8;
+  --low: #eef1f4;
+  --white: #ffffff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #eef0f2;
+  color: var(--ink);
+  font-family: Inter, Montserrat, Arial, sans-serif;
+  line-height: 1.45;
+}
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
 
-    /* ── HEADER ── */
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(255,255,255,.96);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--line);
-      box-shadow: 0 2px 12px rgba(15,23,42,.04);
-    }
-    .container { width: min(1800px, calc(100% - 36px)); margin: 0 auto; }
-    .container-wide { width: min(1800px, calc(100% - 36px)); margin: 0 auto; }
-    .header-inner {
-      min-height: var(--header-h);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-    .brand { display: inline-flex; align-items: center; gap: 14px; }
-    .brand-icon {
-      width: 44px; height: 44px;
-      background: linear-gradient(135deg, var(--accent-dark), var(--accent));
-      border-radius: 12px;
-      display: grid; place-items: center;
-      color: #fff;
-      font-size: 20px;
-      font-weight: 900;
-      flex-shrink: 0;
-    }
-    .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
-    .brand-text b { font-size: 16px; letter-spacing: -.02em; color: var(--ink); font-weight: 900; }
-    .brand-text span { font-size: 11px; color: var(--muted); font-weight: 700; }
-    .header-actions { display: flex; align-items: center; gap: 10px; }
-    .primary-btn {
-      min-height: 42px;
-      display: inline-flex; align-items: center; justify-content: center;
-      padding: 0 18px;
-      border-radius: 11px;
-      border: 1.5px solid var(--accent);
-      background: var(--accent);
-      color: #fff;
-      font-weight: 800;
-      font-size: 13.5px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .primary-btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+.page { max-width: 1560px; margin: 0 auto; padding: 24px 24px 64px; }
 
-    /* ── MAIN GRID ── */
-    .page { padding: 28px 0 48px; }
-    .grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 20px; }
-    .card {
-      position: relative;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-    .card-pad { padding: 30px; }
-    .span-12 { grid-column: span 12; }
-    .span-6 { grid-column: span 6; }
-    .span-4 { grid-column: span 4; }
-    .span-3 { grid-column: span 3; }
+/* ── TOP BAR ── */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  margin-bottom: 22px;
+}
+.brand { display: inline-flex; align-items: center; gap: 12px; }
+.brand-icon {
+  width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+  color: #fff; font-weight: 900; font-size: 19px;
+}
+.brand b { display: block; font-size: 16px; font-weight: 900; letter-spacing: -.01em; }
+.brand span { display: block; font-size: 11.5px; color: var(--muted); font-weight: 700; }
+.topbar .cta {
+  background: var(--accent); color: #fff; border-radius: 9px;
+  padding: 10px 16px; font-weight: 800; font-size: 13.5px;
+}
+.topbar .cta:hover { background: var(--accent-dark); }
 
-    .number-label {
-      color: var(--accent-dark);
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: .13em;
-      display: inline-flex; align-items: center; gap: 7px;
-      text-transform: uppercase;
-    }
-    .number-label::before {
-      content: "";
-      display: inline-block;
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--gold);
-    }
+/* ── HERO ── */
+.hero {
+  padding: 30px 32px; border-radius: 16px; background: var(--ink); color: #fff;
+  box-shadow: 0 14px 38px rgba(0,0,0,.13); position: relative; overflow: hidden;
+}
+.hero::after { content: ""; position: absolute; right: -60px; top: -60px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.05), transparent 70%); pointer-events: none; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; color: rgba(255,255,255,.6); font-weight: 800; font-size: 12px; letter-spacing: .11em; text-transform: uppercase; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+.hero h1 { margin: 12px 0 12px; font-size: clamp(30px,4vw,52px); line-height: 1.05; letter-spacing: -.8px; font-weight: 900; }
+.hero h1::after { content: ""; display: block; width: 64px; height: 4px; border-radius: 3px; background: #fff; margin-top: 16px; }
+.hero p { margin: 0; color: #d7dde0; max-width: 900px; font-size: 17px; position: relative; z-index: 1; }
 
-    /* ── HERO ── */
-    .hero-title {
-      margin: 12px 0 14px;
-      font-size: clamp(32px, 4vw, 54px);
-      line-height: 1.06;
-      letter-spacing: -1.6px;
-      font-weight: 900;
-      color: var(--ink);
-    }
-    .hero-copy {
-      font-size: 18px;
-      color: var(--body);
-      max-width: 820px;
-      line-height: 1.7;
-    }
-    .query-box {
-      display: grid;
-      grid-template-columns: minmax(0,1fr) auto;
-      gap: 10px;
-      padding: 8px;
-      border: 1.5px solid #dfe7ef;
-      border-radius: 13px;
-      background: #fbfcfe;
-      margin-top: 22px;
-    }
-    .query-box input {
-      min-width: 0;
-      height: 46px;
-      padding: 0 14px;
-      border: 0; outline: 0;
-      background: transparent;
-      color: var(--ink);
-      font-size: 15px;
-    }
-    .query-box input::placeholder { color: #94a3b8; }
-    .submit-arrow {
-      width: 46px; height: 46px;
-      display: grid; place-items: center;
-      border: 0; border-radius: 10px;
-      background: var(--accent); color: #fff;
-      font-size: 20px; font-weight: 900; cursor: pointer;
-    }
-    .submit-arrow:hover { background: var(--accent-dark); }
+/* ── CONTEXT META BAR ── */
+.context {
+  margin-top: 18px; padding: 13px 15px; background: #fff; border: 1px solid var(--line);
+  border-radius: 11px; display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 9px;
+}
+.context .meta { padding: 9px 11px; background: var(--soft); border-radius: 8px; min-width: 0; }
+.meta b { display: block; font-size: 11px; letter-spacing: .05em; color: var(--muted); text-transform: uppercase; margin-bottom: 3px; }
+.meta span { font-weight: 800; font-size: 14px; overflow-wrap: anywhere; }
 
-    /* ── COPY STACK ── */
-    .copy-stack p { color: var(--body); font-size: 17px; line-height: 1.72; }
-    .copy-stack p + p { margin-top: 14px; }
+/* ── STEP CARDS ── */
+.steps { margin-top: 24px; display: grid; gap: 20px; }
+.step {
+  background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 24px;
+  box-shadow: 0 7px 18px rgba(22,28,35,.04);
+}
+.step-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; border-bottom: 1px solid var(--line); padding-bottom: 16px; margin-bottom: 20px; }
+.step-number { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: #fff; font-weight: 900; font-size: 14px; margin-right: 11px; flex-shrink: 0; box-shadow: 0 6px 14px rgba(10,11,12,.18); }
+.step h2 { margin: 0; font-size: 22px; line-height: 1.2; display: flex; align-items: center; }
+.step .lead { margin: 9px 0 0; color: var(--muted); font-size: 14.5px; max-width: 820px; }
+.output { padding: 10px 13px; background: var(--ink); color: #fff; border-radius: 8px; font-size: 12.5px; font-weight: 800; white-space: nowrap; }
 
-    /* ── FOCUS AREAS ── */
-    .focus-card h2 { margin: 12px 0 0; font-size: 28px; line-height: 1.14; letter-spacing: -.6px; color: var(--ink); }
-    .focus-copy { color: var(--body); font-size: 17px; margin-top: 10px; line-height: 1.72; }
-    .areas-list {
-      margin-top: 22px;
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-    }
-    .area-card {
-      position: relative;
-      min-height: 190px;
-      padding: 20px;
-      display: flex;
-      align-items: flex-start;
-      gap: 15px;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      background: #ffffff;
-      overflow: hidden;
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-      text-decoration: none;
-      color: inherit;
-    }
-    .area-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--black);
-      box-shadow: 0 14px 28px rgba(10,10,10,.12);
-    }
-    .area-card::after {
-      content: "";
-      position: absolute;
-      right: -28px;
-      bottom: -30px;
-      width: 110px;
-      height: 110px;
-      border: 18px solid rgba(10,10,10,.035);
-      border-radius: 50%;
-    }
-    .area-icon {
-      width: 54px; height: 54px;
-      flex: 0 0 54px;
-      display: grid; place-items: center;
-      border-radius: 14px;
-      background: var(--black);
-      color: var(--gold);
-      box-shadow: 0 7px 16px rgba(10,10,10,.15);
-    }
-    .area-icon svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-    .area-content { position: relative; z-index: 1; }
-    .area-kicker {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--black);
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-    }
-    .area-content h3 {
-      margin: 0;
-      color: var(--ink);
-      font-size: 15px;
-      line-height: 1.22;
-      font-weight: 900;
-      letter-spacing: -.25px;
-    }
-    .area-content p {
-      margin: 10px 0 15px;
-      color: #64748b;
-      font-size: 13px;
-      line-height: 1.45;
-    }
-    .area-link {
-      color: var(--black);
-      font-size: 13px;
-      font-weight: 900;
-    }
-    .area-link b { margin-left: 5px; color: var(--gold); font-size: 17px; }
+.copy-stack p { color: #3e4348; font-size: 15.5px; line-height: 1.7; }
+.copy-stack p + p { margin-top: 12px; }
 
-    /* ── LISTING CARDS ── */
-    .listing-card {
-      position: relative;
-      border: 1px solid #e2e8f0;
-      border-radius: var(--radius);
-      background: var(--card);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-    }
-    .listing-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--black);
-      box-shadow: 0 14px 28px rgba(10,10,10,.12);
-    }
-    .listing-card::after {
-      content: "";
-      position: absolute;
-      right: -28px;
-      bottom: -30px;
-      width: 110px;
-      height: 110px;
-      border: 18px solid rgba(10,10,10,.035);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    .listing-img {
-      width: 100%;
-      aspect-ratio: 3 / 2;
-      background: #eef2f7;
-      object-fit: cover;
-      display: block;
-    }
-    .listing-img.empty {
-      display: grid;
-      place-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, #0f2027, #1a3a3a);
-    }
-    .listing-img.empty svg {
-      width: 34px; height: 34px;
-      fill: none; stroke: var(--gold);
-      stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
-    }
-    .listing-img.empty span {
-      color: rgba(255,255,255,.6);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-    }
-    .listing-body { position: relative; z-index: 1; padding: 20px; flex: 1; display: flex; flex-direction: column; }
-    .listing-body h3 {
-      font-size: 17px;
-      font-weight: 900;
-      color: var(--ink);
-      margin-bottom: 8px;
-      line-height: 1.25;
-    }
-    .listing-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 700;
-    }
-    .listing-meta .badge {
-      background: var(--accent-soft);
-      color: var(--accent-dark);
-      padding: 3px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-    }
-    .listing-body p {
-      font-size: 14.5px;
-      line-height: 1.6;
-      color: var(--body);
-      margin-bottom: 14px;
-      flex: 1;
-    }
-    .listing-price {
-      font-size: 18px;
-      font-weight: 900;
-      color: var(--ink);
-      margin-bottom: 12px;
-    }
-    .listing-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px 16px;
-      border-radius: 10px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 800;
-      transition: background .15s;
-    }
-    .listing-btn:hover { background: var(--accent-dark); }
+/* ── ASK AI ── */
+.query-box {
+  display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px;
+  padding: 8px; border: 1.5px solid #cfd4d9; border-radius: 11px; background: #fbfcfc;
+}
+.query-box input { min-width: 0; height: 44px; padding: 0 14px; border: 0; outline: 0; background: transparent; font-size: 15px; }
+.query-box input::placeholder { color: #9aa2ab; }
+.submit-arrow { width: 46px; height: 46px; display: grid; place-items: center; border: 0; border-radius: 9px; background: var(--accent); color: #fff; font-size: 20px; font-weight: 900; cursor: pointer; }
+.submit-arrow:hover { background: var(--accent-dark); }
 
-    /* ── TOPIC CARDS ── */
-    .topic-card::after {
-      content: attr(data-no);
-      position: absolute; right: 16px; bottom: -36px;
-      color: #f0f4f8;
-      font-size: 142px; line-height: 1; font-weight: 900; letter-spacing: -8px;
-      pointer-events: none;
-    }
-    .topic-head {
-      display: flex; align-items: center; gap: 14px;
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--line);
-    }
-    .topic-number {
-      width: 48px; height: 48px; flex: 0 0 48px;
-      display: grid; place-items: center;
-      border-radius: 13px;
-      background: var(--black);
-      color: var(--gold);
-      box-shadow: 0 7px 16px rgba(10,10,10,.15);
-    }
-    .topic-number svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
-    .topic-head h2 { margin: 2px 0 0; font-size: 22px; line-height: 1.2; letter-spacing: -.5px; color: var(--ink); }
-    .topic-card .copy-stack { padding-top: 20px; }
-    .question-line {
-      margin: 18px 0 0; padding: 13px 15px;
-      border-left: 3px solid var(--gold);
-      border-radius: 0 9px 9px 0;
-      color: #1e3a5f; background: #fff8e7;
-      font-size: 14.5px; font-weight: 900; line-height: 1.5;
-    }
+/* ── TABLE ── */
+.table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 10px; margin-top: 4px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 720px; }
+th { text-align: left; color: #58616a; font-size: 10px; letter-spacing: .05em; text-transform: uppercase; background: #f7f8f9; }
+th, td { padding: 12px; border-bottom: 1px solid #edf0f2; vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+.badge { display: inline-block; border-radius: 999px; padding: 3px 9px; font-size: 10px; font-weight: 800; letter-spacing: .03em; }
+.badge.high { background: var(--accent-soft); color: var(--accent-dark); }
+.badge.medium { background: var(--warn-soft); color: var(--warn); }
+.badge.low { background: var(--low); color: #5c656d; }
 
-    /* ── FOOTER ── */
-    footer {
-      background: #12141c;
-      color: rgba(255,255,255,0.72);
-      font-size: 16px;
-      position: relative;
-      overflow: hidden;
-    }
-    footer::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: .25;
-      pointer-events: none;
-      background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.03) 0%, transparent 25%),
-                  radial-gradient(circle at 80% 80%, rgba(255,255,255,.03) 0%, transparent 25%);
-      background-size: 60px 60px;
-    }
-    .footer-top {
-      padding: 48px 0 36px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      position: relative;
-      z-index: 1;
-    }
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr 1.2fr;
-      gap: 40px;
-    }
-    .footer-brand .brand-icon {
-      width: 44px; height: 44px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-      border-radius: 12px;
-      display: grid; place-items: center;
-      color: #fff;
-      font-size: 22px; margin-bottom: 14px;
-    }
-    .footer-brand p { font-size: 13.5px; line-height: 1.65; max-width: 280px; color: rgba(255,255,255,.55); margin-top: 10px; }
-    .footer-col h4 { color: #fff; font-size: 13px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 18px; }
-    .footer-col ul { list-style: none; padding: 0; display: grid; gap: 10px; }
-    .footer-col ul li { display: flex; align-items: center; gap: 10px; }
-    .footer-col ul li::before { content: ">"; color: rgba(255,255,255,.35); font-size: 11px; font-weight: 900; }
-    .footer-col ul li a { color: rgba(255,255,255,.55); font-size: 13.5px; font-weight: 600; }
-    .footer-col ul li a:hover { color: var(--gold); }
-    .footer-bottom {
-      padding: 18px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px; flex-wrap: wrap;
-      position: relative;
-      z-index: 1;
-    }
-    .footer-bottom p { color: rgba(255,255,255,.35); font-size: 12.5px; }
-    .footer-bottom-links { display: flex; gap: 20px; }
-    .footer-bottom-links a { color: rgba(255,255,255,.35); font-size: 12.5px; font-weight: 600; }
-    .footer-bottom-links a:hover { color: rgba(255,255,255,.7); }
+/* ── INLINE MINI CARDS ── */
+.inline-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-top: 18px; }
+.mini { border: 1px solid var(--line); border-radius: 10px; padding: 14px; background: #fbfcfc; }
+.mini strong { display: block; font-size: 14px; margin-bottom: 5px; }
+.mini p { margin: 0; font-size: 12.5px; color: var(--muted); }
+.mini .tiny { display: block; font-size: 11px; color: var(--accent-dark); font-weight: 800; margin-top: 10px; }
 
-    .taxi-checker-line {
-      width: 100%;
-      height: 12px;
-      background:
-        conic-gradient(
-          #ffffff 25%,
-          #0a0b0c 0 50%,
-          #ffffff 0 75%,
-          #0a0b0c 0
-        ) 0 0 / 12px 12px;
-    }
+/* ── LISTINGS ── */
+.listing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.listing-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; display: flex; flex-direction: column; transition: box-shadow .18s ease, transform .18s ease; }
+.listing-card:hover { transform: translateY(-3px); box-shadow: 0 14px 28px rgba(22,28,35,.10); }
+.listing-img { width: 100%; aspect-ratio: 3/2; object-fit: cover; display: block; background: #eef2f5; }
+.listing-img.empty { display: grid; place-items: center; gap: 8px; background: linear-gradient(135deg, #16181c, #0a0b0c); }
+.listing-img.empty svg { width: 32px; height: 32px; fill: none; stroke: rgba(255,255,255,.55); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.listing-img.empty span { color: rgba(255,255,255,.55); font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.listing-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+.listing-body h3 { font-size: 16px; font-weight: 800; margin: 0 0 8px; line-height: 1.25; }
+.listing-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 12.5px; color: var(--muted); font-weight: 700; flex-wrap: wrap; }
+.listing-body .desc { font-size: 13.5px; line-height: 1.6; color: #3e4348; margin: 0 0 14px; flex: 1; }
+.listing-price { font-size: 17px; font-weight: 900; margin-bottom: 12px; }
+.listing-btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 13px; font-weight: 800; }
+.listing-btn:hover { background: var(--accent-dark); }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 1200px) {
-      .areas-list { grid-template-columns: repeat(2,minmax(0,1fr)); }
-      .area-card { min-height: auto; }
-      .footer-grid { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 1024px) {
-      .span-6, .span-4, .span-3 { grid-column: span 12; }
-      .listing-img { aspect-ratio: 16 / 9; }
-    }
-    @media (max-width: 768px) {
-      .footer-grid { grid-template-columns: 1fr; gap: 28px; }
-      .header-actions { display: none; }
-    }
-    @media (max-width: 680px) {
-      .container { width: min(100% - 22px, 1200px); }
-      .page { padding-top: 18px; }
-      .card-pad { padding: 22px; }
-      .hero-title { font-size: 30px; letter-spacing: -1px; }
-      .query-box { grid-template-columns: 1fr; }
-      .submit-arrow { width: 100%; border-radius: 10px; }
-      .areas-list { grid-template-columns: 1fr; }
-    }
-  </style>
+/* ── TWO-COLUMN GRID ── */
+.grid { display: grid; grid-template-columns: repeat(12,1fr); gap: 20px; }
+.col-8 { grid-column: span 8; }
+.col-6 { grid-column: span 6; }
+.col-4 { grid-column: span 4; }
+
+/* ── CTA BAND ── */
+.cta-band { background: var(--ink); border-color: var(--ink); position: relative; overflow: hidden; }
+.cta-band::after { content: ""; position: absolute; right: -50px; bottom: -70px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.06), transparent 70%); pointer-events: none; }
+.cta-band-inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; position: relative; z-index: 1; }
+.cta-title { color: #fff; margin: 10px 0 8px; font-size: clamp(22px,2.5vw,32px); line-height: 1.15; letter-spacing: -.4px; font-weight: 900; }
+.cta-sub { color: #d7dde0; margin: 0; font-size: 15px; max-width: 620px; }
+.cta-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.cta-btn { display: inline-flex; align-items: center; justify-content: center; padding: 13px 22px; border-radius: 10px; font-weight: 800; font-size: 14px; white-space: nowrap; }
+.cta-btn.gold { background: #fff; color: #0a0a0a; }
+.cta-btn.gold:hover { background: #e9edf1; }
+.cta-btn.ghost { background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.2); }
+.cta-btn.ghost:hover { background: rgba(255,255,255,.16); }
+
+/* ── FOOTER NOTE ── */
+.footer-note { margin-top: 26px; padding: 18px 20px; border-left: 4px solid var(--ink); background: #f5f6f7; font-size: 14px; border-radius: 0 10px 10px 0; }
+.footer-note b { color: var(--ink); }
+
+footer { margin-top: 30px; padding: 22px 0; text-align: center; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+
+@media (max-width: 980px) {
+  .context { grid-template-columns: 1fr 1fr; }
+  .inline-cards { grid-template-columns: 1fr 1fr; }
+  .listing-grid { grid-template-columns: 1fr 1fr; }
+  .col-8, .col-6, .col-4 { grid-column: span 12; }
+}
+@media (max-width: 560px) {
+  .page { padding: 14px 12px 40px; }
+  .hero, .step { padding: 18px; border-radius: 12px; }
+  .context, .inline-cards, .listing-grid { grid-template-columns: 1fr; }
+  .step-head { flex-direction: column; }
+  .output { white-space: normal; }
+}
+</style>
 </head>
 <body>
+<main class="page" id="top">
 
-  {{-- HEADER --}}
-  <header class="header">
-    <div class="container-wide header-inner">
-      <a class="brand" href="/">
-        @if($profile->agency_logo_path)
-          <img src="{{ asset('storage/' . $profile->agency_logo_path) }}" alt="{{ $profile->agency_name }}" height="44">
-        @else
-          <span class="brand-icon">{{ strtoupper(substr($profile->agency_name, 0, 1)) }}</span>
-        @endif
-        <span class="brand-text">
-          <b>{{ $profile->agency_name }}</b>
-          <span>{{ $profile->city ?? $campaign->primary_city }} Real Estate</span>
-        </span>
-      </a>
-      <div class="header-actions">
-        <a href="mailto:{{ $profile->contact_email }}" class="primary-btn">Contact Agency</a>
+  {{-- TOP BAR --}}
+  <div class="topbar">
+    <a class="brand" href="/">
+      @if($profile->agency_logo_path)
+        <img src="{{ asset('storage/' . $profile->agency_logo_path) }}" alt="{{ $profile->agency_name }}" height="42">
+      @else
+        <span class="brand-icon">{{ strtoupper(substr($profile->agency_name, 0, 1)) }}</span>
+      @endif
+      <span>
+        <b>{{ $profile->agency_name }}</b>
+        <span>{{ $profile->city ?? $campaign->primary_city }} Real Estate</span>
+      </span>
+    </a>
+    @if($profile->contact_email)
+      <a href="mailto:{{ $profile->contact_email }}" class="cta">Contact Agency</a>
+    @endif
+  </div>
+
+  {{-- HERO --}}
+  <section class="hero">
+    <div class="eyebrow">Local Real Estate{{ $campaign->country ? ' — ' . $campaign->country : '' }}</div>
+    <h1>{{ $campaign->name }}</h1>
+    <p>{{ $campaign->positioning_note ?: 'Explore real estate opportunities in ' . $campaign->primary_city . ' and the surrounding area. We cover the places that matter most for buyers, sellers, and investors.' }}</p>
+  </section>
+
+  {{-- CONTEXT META BAR --}}
+  @php $listings = $campaign->listings()->where('status', 'active')->latest()->get(); @endphp
+  <section class="context">
+    <div class="meta"><b>Market</b><span>{{ $campaign->primary_city ?? '—' }}</span></div>
+    <div class="meta"><b>Coverage</b><span>{{ $campaign->coverage_area ? $campaign->coverage_area . ' ' . $campaign->coverage_unit : '—' }}</span></div>
+    <div class="meta"><b>Listings</b><span>{{ $listings->count() }} active</span></div>
+    <div class="meta"><b>Language</b><span>{{ $profile->ai_content_language ?? 'English' }}</span></div>
+    <div class="meta"><b>Status</b><span>{{ $campaign->isPublished() ? 'Published' : ucfirst($campaign->status) }}</span></div>
+  </section>
+
+  <section class="steps">
+
+    {{-- ASK AI --}}
+    <article class="step">
+      <div class="step-head">
+        <div>
+          <h2><span class="step-number">AI</span>Ask anything about {{ $campaign->primary_city }} real estate</h2>
+          <p class="lead">Villa Bit AI analyzes your question and prepares a complete report based on this market.</p>
+        </div>
+        <div class="output">OUTPUT → Instant AI report</div>
       </div>
-    </div>
-  </header>
+      <form class="query-box" onsubmit="event.preventDefault(); alert('AI agent coming soon.');">
+        <input type="text" placeholder="What property types are available in {{ $campaign->primary_city }}?" aria-label="Ask about {{ $campaign->primary_city }} real estate">
+        <button class="submit-arrow" type="submit" aria-label="Submit">↗</button>
+      </form>
+    </article>
 
-  {{-- MAIN --}}
-  <main class="page" id="top">
-    <div class="container">
-      <div class="grid">
-
-        {{-- HERO + ASK AI --}}
-        <section class="card ask-card span-12">
-          <div class="card-pad">
-            <span class="number-label">Local Market</span>
-            <h1 class="hero-title">{{ $campaign->name }}</h1>
-            <p class="hero-copy">
-              {{ $campaign->positioning_note ?: 'Explore real estate opportunities in ' . $campaign->primary_city . ' and the surrounding area. We cover the places that matter most for buyers, sellers, and investors.' }}
-            </p>
-
-            <span class="number-label" style="margin-top:32px;display:block;">Ask AI</span>
-            <h2 style="font-size: clamp(24px, 3vw, 34px); font-weight: 900; color: var(--ink); margin: 12px 0 16px;">Ask anything about {{ $campaign->primary_city }} real estate</h2>
-            <form class="query-box" onsubmit="event.preventDefault(); alert('AI agent coming soon.');">
-              <input type="text" placeholder="What property types are available in {{ $campaign->primary_city }}?" aria-label="Ask about {{ $campaign->primary_city }} real estate" />
-              <button class="submit-arrow" type="submit" aria-label="Submit">↗</button>
-            </form>
-            <p class="report-note" style="margin-top:14px; color: var(--body); font-size: 14px; line-height: 1.6;">
-              Villa Bit AI will analyze your question and prepare a report based on this market.
-            </p>
-          </div>
-        </section>
-
-        {{-- WHY THIS MARKET --}}
-        <section class="card span-6">
-          <div class="card-pad">
-            <span class="number-label">Why {{ $campaign->primary_city }}</span>
-            <div class="copy-stack" style="padding-top:16px;">
-              <p>{{ $campaign->primary_city }} is the center of this campaign. We track listings, market signals, and buyer interest across the surrounding region.</p>
-              <p>Whether you are looking for a family home, a rental investment, or a holiday property, we focus on the locations that match your goals.</p>
-            </div>
-          </div>
-        </section>
-
-        {{-- COVERAGE MAP CARD --}}
-        <section class="card span-6">
-          <div class="card-pad" style="min-height: 100%; display: flex; flex-direction: column; justify-content: center;">
-            <span class="number-label">Coverage Area</span>
-            <h2 style="font-size: 24px; font-weight: 900; color: var(--ink); margin: 12px 0 14px;">{{ $campaign->coverage_area }} {{ $campaign->coverage_unit }} around {{ $campaign->primary_city }}</h2>
-            <div class="copy-stack">
-              <p>Our campaign targets places within {{ $campaign->coverage_area }} {{ $campaign->coverage_unit }} of {{ $campaign->primary_city }}. This helps us reach buyers and sellers searching in the wider market, not only the city center.</p>
-            </div>
-          </div>
-        </section>
-
-        {{-- FOCUS AREAS --}}
-        @php $targetPlaces = $campaign->target_places ?? []; @endphp
-        @if(count($targetPlaces) > 0)
-        <section class="card focus-card span-12">
-          <div class="card-pad">
-            <span class="number-label">Nearby Areas</span>
-            <h2>Areas we cover around {{ $campaign->primary_city }}</h2>
-            <p class="focus-copy">These nearby places are included in our local SEO campaign. Click any area to explore relevant properties and market information.</p>
-            <div class="areas-list">
-              @foreach($targetPlaces as $place)
-              <div class="area-card">
-                <div class="area-icon">
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                  </svg>
-                </div>
-                <div class="area-content">
-                  <span class="area-kicker">{{ strtoupper($place['type'] ?? 'Area') }}</span>
-                  <h3>{{ $place['name'] ?? '' }}</h3>
-                  <p>{{ $place['reason'] ?? ('Approximately ' . ($place['distance'] ?? '') . ' from ' . $campaign->primary_city) }}</p>
-                  <span class="area-link">Explore <b>→</b></span>
-                </div>
-              </div>
-              @endforeach
-            </div>
-          </div>
-        </section>
-        @endif
-
-        {{-- FEATURED LISTINGS --}}
-        @php $listings = $campaign->listings()->where('status', 'active')->latest()->get(); @endphp
-        @if($listings->isNotEmpty())
-        <section class="card focus-card span-12">
-          <div class="card-pad">
-            <span class="number-label">Featured Listings</span>
-            <h2>Properties in {{ $campaign->primary_city }}</h2>
-            <p class="focus-copy">A selection of properties from our {{ $campaign->name }} campaign.</p>
-            <div class="grid" style="margin-top: 22px;">
-              @foreach($listings as $listing)
-              <article class="listing-card span-4">
-                @if(!empty($listing->images[0]))
-                  <img class="listing-img" src="{{ $listing->images[0] }}" alt="{{ $listing->title }}" loading="lazy">
-                @else
-                  <div class="listing-img empty">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
-                    <span>No image</span>
-                  </div>
-                @endif
-                <div class="listing-body">
-                  <h3>{{ $listing->title }}</h3>
-                  <div class="listing-meta">
-                    <span class="badge">{{ $listing->property_type ?: 'Property' }}</span>
-                    <span>{{ $listing->location ?? $campaign->primary_city }}</span>
-                  </div>
-                  <p>{{ \Illuminate\Support\Str::limit($listing->description, 140) }}</p>
-                  @if($listing->formatted_price)
-                    <div class="listing-price">{{ $listing->formatted_price }}</div>
-                  @endif
-                  <a href="mailto:{{ $profile->contact_email }}?subject=Inquiry: {{ urlencode($listing->title) }}" class="listing-btn">Request details</a>
-                </div>
-              </article>
-              @endforeach
-            </div>
-          </div>
-        </section>
-        @endif
-
-        {{-- ABOUT THE AGENCY --}}
-        <section class="card topic-card span-6" data-no="01">
-          <div class="card-pad">
-            <div class="topic-head">
-              <span class="topic-number">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-              </span>
-              <h2>About {{ $profile->agency_name }}</h2>
-            </div>
-            <div class="copy-stack">
-              <p>{{ $profile->agency_name }} is a real estate agency focused on {{ $campaign->primary_city }} and the surrounding region.</p>
-              <p>We combine local market knowledge with AI-powered tools to help buyers and sellers make better decisions.</p>
-            </div>
-            <p class="question-line">How can we help you find the right property in {{ $campaign->primary_city }}?</p>
-          </div>
-        </section>
-
-        {{-- CONTACT TOPIC --}}
-        <section class="card topic-card span-6" data-no="02">
-          <div class="card-pad">
-            <div class="topic-head">
-              <span class="topic-number">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="M4 8l8 5 8-5"/></svg>
-              </span>
-              <h2>Get in Touch</h2>
-            </div>
-            <div class="copy-stack">
-              <p>Ready to explore {{ $campaign->primary_city }} real estate? Reach out and we will guide you through the market.</p>
-            </div>
-            <p class="question-line">{{ $profile->contact_email ? 'Email: ' . $profile->contact_email : '' }} {{ $profile->contact_phone ? '· Phone: ' . $profile->contact_phone : '' }}</p>
-          </div>
-        </section>
-
+    {{-- AREAS WE COVER --}}
+    @php $targetPlaces = $campaign->target_places ?? []; @endphp
+    @if(count($targetPlaces) > 0)
+    <article class="step">
+      <div class="step-head">
+        <div>
+          <h2><span class="step-number">1</span>Areas we cover around {{ $campaign->primary_city }}</h2>
+          <p class="lead">These nearby places are part of our local campaign — the locations that matter most for buyers, sellers, and investors.</p>
+        </div>
+        <div class="output">OUTPUT → Coverage map</div>
       </div>
-    </div>
-  </main>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Location</th><th>Type</th><th>Distance</th><th>Why it matters</th><th>Priority</th></tr>
+          </thead>
+          <tbody>
+            @foreach($targetPlaces as $place)
+            <tr>
+              <td><b>{{ $place['name'] ?? '' }}</b></td>
+              <td>{{ $place['type'] ?? '—' }}</td>
+              <td>{{ $place['distance'] ?? '—' }}</td>
+              <td>{{ $place['reason'] ?? '—' }}</td>
+              <td>
+                @php $prio = strtoupper($place['priority'] ?? 'MEDIUM'); @endphp
+                <span class="badge {{ $prio === 'HIGH' ? 'high' : ($prio === 'LOW' ? 'low' : 'medium') }}">{{ $prio }}</span>
+              </td>
+            </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+    </article>
+    @endif
 
-  {{-- CHECKERBOARD TAXI STRIP --}}
-  <div class="taxi-checker-line"></div>
+    {{-- FEATURED LISTINGS --}}
+    @if($listings->isNotEmpty())
+    <article class="step">
+      <div class="step-head">
+        <div>
+          <h2><span class="step-number">2</span>Featured properties in {{ $campaign->primary_city }}</h2>
+          <p class="lead">A selection of properties from the {{ $campaign->name }} campaign.</p>
+        </div>
+        <div class="output">OUTPUT → {{ $listings->count() }} listings</div>
+      </div>
+      <div class="listing-grid">
+        @foreach($listings as $listing)
+        <div class="listing-card">
+          @if(!empty($listing->images[0]))
+            <img class="listing-img" src="{{ $listing->images[0] }}" alt="{{ $listing->title }}" loading="lazy">
+          @else
+            <div class="listing-img empty">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+              <span>No image</span>
+            </div>
+          @endif
+          <div class="listing-body">
+            <h3>{{ $listing->title }}</h3>
+            <div class="listing-meta">
+              <span class="badge high">{{ $listing->property_type ?: 'Property' }}</span>
+              <span>{{ $listing->location ?? $campaign->primary_city }}</span>
+            </div>
+            <p class="desc">{{ \Illuminate\Support\Str::limit($listing->description, 130) }}</p>
+            @if($listing->formatted_price)
+              <div class="listing-price">{{ $listing->formatted_price }}</div>
+            @endif
+            <a href="mailto:{{ $profile->contact_email }}?subject=Inquiry: {{ urlencode($listing->title) }}" class="listing-btn">Request details</a>
+          </div>
+        </div>
+        @endforeach
+      </div>
+    </article>
+    @endif
 
-  {{-- FOOTER --}}
+    {{-- ABOUT (full width) --}}
+    <article class="step">
+      <div class="step-head">
+        <div>
+          <h2><span class="step-number">3</span>About {{ $profile->agency_name }}</h2>
+          <p class="lead">Local market expertise combined with AI-powered tools.</p>
+        </div>
+        <div class="output">OUTPUT → Trusted guidance</div>
+      </div>
+      <div class="copy-stack">
+        <p>{{ $profile->agency_name }} is a real estate agency focused on {{ $campaign->primary_city }} and the surrounding region. We track listings, market signals, and buyer interest across the wider market — helping you make better decisions with clear, local knowledge.</p>
+      </div>
+      <div class="inline-cards">
+        <div class="mini"><strong>Local Coverage</strong><p>{{ $campaign->coverage_area }} {{ $campaign->coverage_unit }} around {{ $campaign->primary_city }}.</p><span class="tiny">→ Wider market reach</span></div>
+        <div class="mini"><strong>Active Listings</strong><p>{{ $listings->count() }} properties in this campaign.</p><span class="tiny">→ Real inventory</span></div>
+        <div class="mini"><strong>AI Reports</strong><p>Instant market answers for buyers.</p><span class="tiny">→ Faster decisions</span></div>
+        <div class="mini"><strong>Direct Contact</strong><p>Talk to the agency, no middleman.</p><span class="tiny">→ Trusted guidance</span></div>
+      </div>
+    </article>
+
+    {{-- CONTACT (full-width dark CTA band) --}}
+    <article class="step cta-band">
+      <div class="cta-band-inner">
+        <div>
+          <span class="eyebrow">Get in touch</span>
+          <h2 class="cta-title">Ready to explore {{ $campaign->primary_city }} real estate?</h2>
+          <p class="cta-sub">Reach out and we will guide you through the market — no middleman.</p>
+        </div>
+        <div class="cta-actions">
+          @if($profile->contact_email)
+            <a href="mailto:{{ $profile->contact_email }}" class="cta-btn gold">Email {{ $profile->agency_name }}</a>
+          @endif
+          @if($profile->contact_phone)
+            <a href="tel:{{ $profile->contact_phone }}" class="cta-btn ghost">{{ $profile->contact_phone }}</a>
+          @endif
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <div class="footer-note">
+    <b>{{ $profile->agency_name }}</b> — Local real estate expertise in {{ $campaign->primary_city }} and nearby areas. Every property and figure shown here comes from real agency data.
+  </div>
+
   <footer>
-    <div class="footer-top">
-      <div class="container-wide">
-        <div class="footer-grid">
-          <div class="footer-brand">
-            <div class="brand-icon">{{ strtoupper(substr($profile->agency_name, 0, 1)) }}</div>
-            <p>{{ $profile->agency_name }} — Local real estate expertise in {{ $campaign->primary_city }} and nearby areas.</p>
-          </div>
-          <div class="footer-col">
-            <h4>Quick Links</h4>
-            <ul>
-              <li><a href="#top">Home</a></li>
-              <li><a href="#" onclick="alert('Listings page coming soon.'); return false;">Listings</a></li>
-              <li><a href="#" onclick="alert('AI Report coming soon.'); return false;">AI Report</a></li>
-            </ul>
-          </div>
-          <div class="footer-col">
-            <h4>Contact</h4>
-            <ul>
-              @if($profile->contact_email)<li><a href="mailto:{{ $profile->contact_email }}">{{ $profile->contact_email }}</a></li>@endif
-              @if($profile->contact_phone)<li><a href="tel:{{ $profile->contact_phone }}">{{ $profile->contact_phone }}</a></li>@endif
-              @if($profile->city || $profile->country)<li><a href="#">{{ $profile->city }}{{ $profile->city && $profile->country ? ', ' : '' }}{{ $profile->country }}</a></li>@endif
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container-wide">
-      <div class="footer-bottom">
-        <p>&copy; {{ date('Y') }} {{ $profile->agency_name }}. All rights reserved.</p>
-        <div class="footer-bottom-links">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Use</a>
-        </div>
-      </div>
-    </div>
+    &copy; {{ date('Y') }} {{ $profile->agency_name }}. All rights reserved.
   </footer>
 
+</main>
 </body>
 </html>

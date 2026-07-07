@@ -1169,10 +1169,10 @@
                 if (allMatches.length > 0) {
                     var table = '<table class="table table-sm table-bordered"><thead><tr><th>Source</th><th>Found On</th><th>Similarity</th></tr></thead><tbody>';
                     allMatches.forEach(function(m) {
-                        var badgeClass = m.source === 'Internal' ? 'bg-dark' : (m.source === 'Google' ? 'bg-success' : 'bg-info');
+                        var badgeClass = m.source === 'Internal' ? 'bg-dark' : (m.source === 'Google' ? 'bg-warning text-dark' : 'bg-info');
                         var titleHtml = m.url ? '<a href="' + m.url + '" target="_blank" rel="noopener">' + m.title + '</a>' : m.title;
                         table += '<tr><td><span class="badge ' + badgeClass + '">' + m.source + '</span></td>';
-                        table += '<td>' + titleHtml + '</td>';
+                        table += '<td class="bg-dark">' + titleHtml + '</td>';
                         table += '<td>' + m.percent + '%</td></tr>';
                     });
                     table += '</tbody></table>';

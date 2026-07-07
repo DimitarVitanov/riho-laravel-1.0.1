@@ -80,6 +80,9 @@ final class GoogleFirstPageChecker
         $results = [];
         $totalSimilarFound = 0;
         $highestSimilarity = 0.0;
+        $debugInfo = [];
+
+        Log::info('Google check starting', ['phrases' => $phrases]);
 
         foreach ($phrases as $index => $phrase) {
             // Rate limiting - wait between requests
@@ -89,9 +92,21 @@ final class GoogleFirstPageChecker
 
             $googleResults = $this->searchGoogle($phrase);
 
+            $debugInfo[] = [
+                'phrase' => $phrase,
+                'results_count' => $googleResults ? count($googleResults) : 0,
+            ];
+
             if ($googleResults === null) {
+                Log::warning('Google search returned null', ['phrase' => $phrase]);
                 continue; // Skip if search failed
             }
+
+            Log::info('Google search results', [
+                'phrase' => $phrase,
+                'count' => count($googleResults),
+                'first_result' => $googleResults[0] ?? null,
+            ]);
 
             $phraseResult = [
                 'phrase' => $phrase,
@@ -130,7 +145,9 @@ final class GoogleFirstPageChecker
             'phrases_checked' => count($phrases),
             'similar_results_found' => $totalSimilarFound,
             'highest_similarity' => round($highestSimilarity, 1),
+            'max_similarity_percent' => round($highestSimilarity, 1),
             'results' => $results,
+            'debug' => $debugInfo,
             'error' => null,
         ];
     }
@@ -206,14 +223,14 @@ final class GoogleFirstPageChecker
     }
 
     /**
-     * Search Google and parse first page results.
+     * Search using DuckDuckGo HTML version (scraping-friendly).
      * 
      * @return array<array{title:string, url:string, snippet:string}>|null
      */
     private function searchGoogle(string $query): ?array
     {
         // Check cache first (1 hour)
-        $cacheKey = 'google_search_' . md5($query);
+        $cacheKey = 'ddg_search_' . md5($query);
         $cached = Cache::get($cacheKey);
         
         if ($cached !== null) {
@@ -223,22 +240,19 @@ final class GoogleFirstPageChecker
         try {
             $userAgent = self::USER_AGENTS[array_rand(self::USER_AGENTS)];
             
+            // Use DuckDuckGo HTML version - much more scraping-friendly
             $response = Http::timeout(15)
                 ->withHeaders([
                     'User-Agent' => $userAgent,
                     'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                     'Accept-Language' => 'en-US,en;q=0.9',
-                    'Accept-Encoding' => 'gzip, deflate',
-                    'Connection' => 'keep-alive',
                 ])
-                ->get('https://www.google.com/search', [
+                ->get('https://html.duckduckgo.com/html/', [
                     'q' => '"' . $query . '"', // Exact phrase search
-                    'num' => 10,
-                    'hl' => 'en',
                 ]);
 
             if (!$response->successful()) {
-                Log::warning('Google search failed', [
+                Log::warning('DuckDuckGo search failed', [
                     'status' => $response->status(),
                     'query' => $query,
                 ]);
@@ -246,7 +260,7 @@ final class GoogleFirstPageChecker
             }
 
             $html = $response->body();
-            $results = $this->parseGoogleResults($html);
+            $results = $this->parseDuckDuckGoResults($html);
 
             // Cache for 1 hour
             Cache::put($cacheKey, $results, 3600);
@@ -254,12 +268,57 @@ final class GoogleFirstPageChecker
             return $results;
 
         } catch (\Exception $e) {
-            Log::error('Google search exception', [
+            Log::error('DuckDuckGo search exception', [
                 'error' => $e->getMessage(),
                 'query' => $query,
             ]);
             return null;
         }
+    }
+
+    /**
+     * Parse DuckDuckGo HTML results.
+     * 
+     * @return array<array{title:string, url:string, snippet:string}>
+     */
+    private function parseDuckDuckGoResults(string $html): array
+    {
+        $results = [];
+
+        // DuckDuckGo HTML structure is simple and consistent
+        // Results are in <div class="result"> with <a class="result__a"> for title/URL
+        // and <a class="result__snippet"> for snippet
+
+        // Find all result links
+        preg_match_all('/<a[^>]+class="result__a"[^>]+href="([^"]+)"[^>]*>(.*?)<\/a>/is', $html, $linkMatches, PREG_SET_ORDER);
+        
+        // Find all snippets
+        preg_match_all('/<a[^>]+class="result__snippet"[^>]*>(.*?)<\/a>/is', $html, $snippetMatches);
+        $snippets = $snippetMatches[1] ?? [];
+
+        foreach ($linkMatches as $i => $match) {
+            $url = $match[1] ?? '';
+            $title = strip_tags($match[2] ?? '');
+            $snippet = strip_tags($snippets[$i] ?? '');
+
+            // DuckDuckGo uses redirect URLs, extract actual URL
+            if (str_contains($url, 'uddg=')) {
+                preg_match('/uddg=([^&]+)/', $url, $uddgMatch);
+                $url = urldecode($uddgMatch[1] ?? $url);
+            }
+
+            if ($title && $url && filter_var($url, FILTER_VALIDATE_URL)) {
+                $results[] = [
+                    'title' => html_entity_decode($title, ENT_QUOTES, 'UTF-8'),
+                    'url' => $url,
+                    'snippet' => html_entity_decode($snippet, ENT_QUOTES, 'UTF-8'),
+                ];
+            }
+        }
+
+        Log::info('Parsed DuckDuckGo results', ['count' => count($results)]);
+
+        return array_slice($results, 0, 10);
     }
 
     /**
@@ -271,60 +330,103 @@ final class GoogleFirstPageChecker
     {
         $results = [];
 
-        // Google's result structure changes, but we look for common patterns
-        // Each result typically has: title in <h3>, URL in <a href>, snippet in <span> or <div>
+        Log::debug('Google HTML length: ' . strlen($html));
+        
+        // Debug: Save HTML to file to inspect structure
+        file_put_contents(storage_path('logs/google_response.html'), $html);
 
-        // Pattern 1: Look for result divs
-        preg_match_all('/<div class="[^"]*"[^>]*>.*?<h3[^>]*>(.*?)<\/h3>.*?<a[^>]*href="([^"]*)"[^>]*>.*?<\/a>.*?<span[^>]*>(.*?)<\/span>/is', $html, $matches, PREG_SET_ORDER);
+        // Method 1: Find all <a> tags with /url?q= (Google's redirect URLs)
+        preg_match_all('/<a[^>]+href="\/url\?q=([^&"]+)[^"]*"[^>]*>/i', $html, $urlMatches);
+        
+        $foundUrls = [];
+        foreach ($urlMatches[1] ?? [] as $encodedUrl) {
+            $url = urldecode($encodedUrl);
+            // Skip Google internal links
+            if (!str_contains($url, 'google.com') && 
+                !str_contains($url, 'youtube.com/results') &&
+                filter_var($url, FILTER_VALIDATE_URL)) {
+                $foundUrls[] = $url;
+            }
+        }
+        $foundUrls = array_unique($foundUrls);
 
-        if (empty($matches)) {
-            // Pattern 2: Simpler extraction
-            preg_match_all('/<a[^>]*href="\/url\?q=([^&"]+)[^"]*"[^>]*>.*?<h3[^>]*>(.*?)<\/h3>/is', $html, $urlMatches, PREG_SET_ORDER);
-            
-            foreach ($urlMatches as $match) {
-                $url = urldecode($match[1] ?? '');
-                $title = strip_tags($match[2] ?? '');
+        // Method 2: Find all <h3> tags (titles)
+        preg_match_all('/<h3[^>]*>(.*?)<\/h3>/is', $html, $titleMatches);
+        $titles = array_map(function($t) {
+            return html_entity_decode(strip_tags($t), ENT_QUOTES, 'UTF-8');
+        }, $titleMatches[1] ?? []);
+
+        // Method 3: Look for data-snf or data-sncf divs (Google's result containers)
+        preg_match_all('/data-(?:snf|sncf|sokoban-container)[^>]*>.*?<h3[^>]*>(.*?)<\/h3>.*?<a[^>]+href="([^"]*)"[^>]*>/is', $html, $containerMatches, PREG_SET_ORDER);
+
+        if (!empty($containerMatches)) {
+            foreach ($containerMatches as $match) {
+                $title = html_entity_decode(strip_tags($match[1] ?? ''), ENT_QUOTES, 'UTF-8');
+                $url = $match[2] ?? '';
                 
-                if ($url && $title && !str_contains($url, 'google.com')) {
+                if (str_contains($url, '/url?q=')) {
+                    preg_match('/\/url\?q=([^&]+)/', $url, $urlMatch);
+                    $url = urldecode($urlMatch[1] ?? '');
+                }
+
+                if ($title && $url && !str_contains($url, 'google.com')) {
+                    $results[] = ['title' => $title, 'url' => $url, 'snippet' => ''];
+                }
+            }
+        }
+
+        // If no results yet, combine URLs and titles
+        if (empty($results) && !empty($foundUrls)) {
+            foreach ($foundUrls as $i => $url) {
+                $title = $titles[$i] ?? parse_url($url, PHP_URL_HOST) ?? $url;
+                $results[] = [
+                    'title' => $title,
+                    'url' => $url,
+                    'snippet' => '',
+                ];
+            }
+        }
+
+        // Method 4: Look for cite tags (URL display)
+        if (empty($results)) {
+            preg_match_all('/<cite[^>]*>([^<]+)<\/cite>/i', $html, $citeMatches);
+            foreach ($citeMatches[1] ?? [] as $i => $cite) {
+                $cite = strip_tags($cite);
+                if (filter_var('https://' . $cite, FILTER_VALIDATE_URL) || filter_var($cite, FILTER_VALIDATE_URL)) {
+                    $url = str_starts_with($cite, 'http') ? $cite : 'https://' . $cite;
                     $results[] = [
-                        'title' => html_entity_decode($title, ENT_QUOTES, 'UTF-8'),
+                        'title' => $titles[$i] ?? $cite,
                         'url' => $url,
                         'snippet' => '',
                     ];
                 }
             }
-        } else {
-            foreach ($matches as $match) {
-                $title = strip_tags($match[1] ?? '');
-                $url = $match[2] ?? '';
-                $snippet = strip_tags($match[3] ?? '');
+        }
 
-                // Clean URL if it's a Google redirect
-                if (str_contains($url, '/url?q=')) {
-                    preg_match('/\/url\?q=([^&]+)/', $url, $urlMatch);
-                    $url = urldecode($urlMatch[1] ?? $url);
-                }
+        // Extract snippets from the page
+        preg_match_all('/<span[^>]*>([^<]{80,400})<\/span>/i', $html, $snippetMatches);
+        $snippets = array_filter($snippetMatches[1] ?? [], function($s) {
+            $s = strip_tags($s);
+            // Filter out navigation/UI text
+            return strlen($s) > 80 && 
+                   !str_contains(strtolower($s), 'sign in') &&
+                   !str_contains(strtolower($s), 'settings') &&
+                   preg_match('/[a-z]{3,}/i', $s);
+        });
+        $snippets = array_values($snippets);
 
-                if ($title && !str_contains($url, 'google.com')) {
-                    $results[] = [
-                        'title' => html_entity_decode($title, ENT_QUOTES, 'UTF-8'),
-                        'url' => $url,
-                        'snippet' => html_entity_decode($snippet, ENT_QUOTES, 'UTF-8'),
-                    ];
-                }
+        // Assign snippets to results
+        foreach ($results as $i => &$result) {
+            if (empty($result['snippet']) && isset($snippets[$i])) {
+                $result['snippet'] = html_entity_decode(strip_tags($snippets[$i]), ENT_QUOTES, 'UTF-8');
             }
         }
 
-        // Also try to extract snippets separately if we have URLs but no snippets
-        if (!empty($results) && empty($results[0]['snippet'])) {
-            preg_match_all('/<span[^>]*class="[^"]*"[^>]*>([^<]{50,300})<\/span>/i', $html, $snippetMatches);
-            
-            foreach ($snippetMatches[1] ?? [] as $index => $snippet) {
-                if (isset($results[$index])) {
-                    $results[$index]['snippet'] = html_entity_decode(strip_tags($snippet), ENT_QUOTES, 'UTF-8');
-                }
-            }
-        }
+        Log::info('Parsed Google results', [
+            'found_urls' => count($foundUrls),
+            'found_titles' => count($titles),
+            'final_results' => count($results),
+        ]);
 
         return array_slice($results, 0, 10);
     }

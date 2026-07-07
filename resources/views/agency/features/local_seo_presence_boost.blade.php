@@ -332,18 +332,48 @@
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
+                        @if(isset($campaigns) && $campaigns->count() > 0)
                         <div class="col-12">
-                            <label class="form-label text-muted small fw-bold">Paste or type content to check</label>
-                            <textarea id="uniquenessText" class="form-control" rows="6" placeholder="Paste your AI-generated article text here..."></textarea>
+                            <label class="form-label text-muted small fw-bold">Select campaign to check</label>
+                            <div class="input-group">
+                                <select id="campaignSelect" class="form-select">
+                                    <option value="">-- Select a campaign --</option>
+                                    @foreach($campaigns as $campaign)
+                                    <option value="{{ $campaign->id }}" data-name="{{ $campaign->name }}">
+                                        {{ $campaign->name }} ({{ $campaign->primary_city ?? 'No city' }})
+                                    </option>
+                                    @endforeach
+                                </select>
+                                <button type="button" id="loadCampaignContent" class="btn btn-outline-dark">
+                                    <i class="fa fa-download me-1"></i> Load Content
+                                </button>
+                            </div>
+                            <small class="text-muted">Load AI-generated content from your campaign to check for uniqueness.</small>
+                        </div>
+                        <div class="col-12">
+                            <hr class="my-2">
+                        </div>
+                        @endif
+                        <div class="col-12">
+                            <label class="form-label text-muted small fw-bold">Content to check</label>
+                            <textarea id="uniquenessText" class="form-control" rows="6" placeholder="Select a campaign above or paste content manually..."></textarea>
                         </div>
                         <div class="col-12">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="includeInternal" checked>
-                                <label class="form-check-label" for="includeInternal">Internal check (your content)</label>
+                                <input class="form-check-input" type="checkbox" id="includeInternal" checked disabled>
+                                <label class="form-check-label" for="includeInternal">Internal check</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="includeGoogle" checked>
+                                <label class="form-check-label" for="includeGoogle">Google 1st page <span class="badge bg-success">FREE</span></label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" id="includeCopyscape">
-                                <label class="form-check-label" for="includeCopyscape">Copyscape (Internet) <span class="badge bg-secondary">~$0.03</span></label>
+                                <label class="form-check-label" for="includeCopyscape">Copyscape <span class="badge bg-secondary">~$0.03</span></label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="autoRewrite" checked>
+                                <label class="form-check-label" for="autoRewrite"><strong>Auto-rewrite if duplicate</strong> <span class="badge bg-dark">AI</span></label>
                             </div>
                         </div>
                         <div class="col-12">
@@ -954,10 +984,67 @@
             document.getElementById('copyscapeStatus').innerHTML = '<i class="fa fa-times-circle text-danger"></i> Status check failed';
         });
 
+        // Load campaign content for uniqueness check
+        var loadBtn = document.getElementById('loadCampaignContent');
+        if (loadBtn) {
+            loadBtn.addEventListener('click', function() {
+                var select = document.getElementById('campaignSelect');
+                var campaignId = select.value;
+                var btn = this;
+                var textarea = document.getElementById('uniquenessText');
+
+                if (!campaignId) {
+                    alert('Please select a campaign first.');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Loading...';
+
+                fetch('/agency/local-seo-presence-boost/campaigns/' + campaignId + '/content', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.success && data.content) {
+                        textarea.value = data.content;
+                        textarea.style.backgroundColor = '#d4edda';
+                        setTimeout(function() {
+                            textarea.style.backgroundColor = '';
+                        }, 1000);
+                        // Show word count
+                        var wordCount = data.word_count || 0;
+                        var info = document.createElement('small');
+                        info.className = 'text-success d-block mt-1';
+                        info.innerHTML = '<i class="fa fa-check me-1"></i> Loaded "' + data.campaign_name + '" (' + wordCount + ' words)';
+                        textarea.parentNode.appendChild(info);
+                        setTimeout(function() { info.remove(); }, 5000);
+                    } else {
+                        var msg = data.message || 'Campaign has minimal content. Add positioning notes, target places, or listings to generate meaningful content for uniqueness checking.';
+                        alert(msg);
+                    }
+                })
+                .catch(function(err) {
+                    alert('Failed to load campaign content.');
+                    console.error(err);
+                })
+                .finally(function() {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa fa-download me-1"></i> Load Content';
+                });
+            });
+        }
+
         // Run uniqueness check
         document.getElementById('runUniquenessCheck').addEventListener('click', function() {
             var text = document.getElementById('uniquenessText').value.trim();
+            var includeGoogle = document.getElementById('includeGoogle').checked;
             var includeCopyscape = document.getElementById('includeCopyscape').checked;
+            var autoRewrite = document.getElementById('autoRewrite').checked;
             var btn = this;
             var resultDiv = document.getElementById('uniquenessResult');
             var alertDiv = document.getElementById('uniquenessAlert');
@@ -971,7 +1058,11 @@
             }
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Checking...';
+            var checkingText = '<i class="fa fa-spinner fa-spin me-1"></i> Checking';
+            if (includeGoogle) checkingText += ' Google';
+            if (autoRewrite) checkingText += ' + AI rewrite ready';
+            checkingText += '...';
+            btn.innerHTML = checkingText;
             resultDiv.style.display = 'none';
 
             fetch('{{ route('agency.local-seo.check-uniqueness') }}', {
@@ -983,7 +1074,9 @@
                 },
                 body: JSON.stringify({
                     text: text,
-                    include_copyscape: includeCopyscape
+                    include_google: includeGoogle,
+                    include_copyscape: includeCopyscape,
+                    auto_rewrite: autoRewrite
                 })
             })
             .then(function(r) { return r.json(); })
@@ -1006,37 +1099,100 @@
                     verdictEl.innerHTML = '<i class="fa fa-question-circle me-1"></i> Error';
                 }
 
-                summaryEl.textContent = data.summary || '';
+                // Build detailed summary showing all checks
+                var summaryParts = [];
+                
+                // Internal check result
+                if (data.internal) {
+                    var intVerdict = data.internal.verdict || 'unknown';
+                    var intPercent = data.internal.repeated_new_text_percent || 0;
+                    summaryParts.push('Internal: ' + intVerdict + ' (' + intPercent + '%)');
+                }
+                
+                // Google check result
+                if (data.google) {
+                    var googleVerdict = data.google.verdict || 'unknown';
+                    var googleSimilar = data.google.max_similarity_percent || 0;
+                    summaryParts.push('Google: ' + googleVerdict + ' (' + googleSimilar + '% similar)');
+                }
+                
+                // Copyscape check result
+                if (data.copyscape) {
+                    var csVerdict = data.copyscape.verdict || 'unknown';
+                    var csPercent = data.copyscape.percent_matched || 0;
+                    var csCredits = data.copyscape.credits_remaining;
+                    var csText = 'Copyscape: ' + csVerdict + ' (' + csPercent + '% matched)';
+                    if (csCredits !== null && csCredits !== undefined) {
+                        csText += ' [' + csCredits + ' credits left]';
+                    }
+                    summaryParts.push(csText);
+                } else if (includeCopyscape) {
+                    summaryParts.push('Copyscape: not run (check credentials)');
+                }
+                
+                summaryEl.innerHTML = summaryParts.join(' | ');
 
                 // Show matches if any
                 matchesEl.innerHTML = '';
                 var allMatches = [];
 
+                // Internal matches
                 if (data.internal && data.internal.matches && data.internal.matches.length > 0) {
                     allMatches = allMatches.concat(data.internal.matches.map(function(m) {
-                        m.source = 'Internal';
-                        return m;
+                        return { source: 'Internal', title: m.title || 'Page #' + m.id, url: '', percent: m.repeated_new_text_percent || 0 };
                     }));
                 }
 
+                // Google matches
+                if (data.google && data.google.results && data.google.results.length > 0) {
+                    data.google.results.forEach(function(phraseResult) {
+                        if (phraseResult.google_results && phraseResult.google_results.length > 0) {
+                            phraseResult.google_results.forEach(function(gr) {
+                                allMatches.push({
+                                    source: 'Google',
+                                    title: gr.title || gr.url,
+                                    url: gr.url,
+                                    percent: gr.similarity_percent || 0
+                                });
+                            });
+                        }
+                    });
+                }
+
+                // Copyscape matches
                 if (data.copyscape && data.copyscape.matches && data.copyscape.matches.length > 0) {
                     allMatches = allMatches.concat(data.copyscape.matches.map(function(m) {
-                        m.source = 'Internet';
-                        return m;
+                        return { source: 'Copyscape', title: m.title || m.url, url: m.url, percent: m.percent_matched || 0 };
                     }));
                 }
 
                 if (allMatches.length > 0) {
-                    var table = '<table class="table table-sm table-bordered"><thead><tr><th>Source</th><th>Match</th><th>Overlap</th></tr></thead><tbody>';
+                    var table = '<table class="table table-sm table-bordered"><thead><tr><th>Source</th><th>Found On</th><th>Similarity</th></tr></thead><tbody>';
                     allMatches.forEach(function(m) {
-                        var title = m.title || m.url || 'Page #' + m.id;
-                        var percent = m.repeated_new_text_percent || m.percent_matched || 0;
-                        table += '<tr><td><span class="badge ' + (m.source === 'Internal' ? 'bg-dark' : 'bg-info') + '">' + m.source + '</span></td>';
-                        table += '<td>' + title + '</td>';
-                        table += '<td>' + percent + '%</td></tr>';
+                        var badgeClass = m.source === 'Internal' ? 'bg-dark' : (m.source === 'Google' ? 'bg-success' : 'bg-info');
+                        var titleHtml = m.url ? '<a href="' + m.url + '" target="_blank" rel="noopener">' + m.title + '</a>' : m.title;
+                        table += '<tr><td><span class="badge ' + badgeClass + '">' + m.source + '</span></td>';
+                        table += '<td>' + titleHtml + '</td>';
+                        table += '<td>' + m.percent + '%</td></tr>';
                     });
                     table += '</tbody></table>';
                     matchesEl.innerHTML = table;
+                } else if (data.overall_verdict === 'passed') {
+                    matchesEl.innerHTML = '<p class="text-success mb-0"><i class="fa fa-check me-1"></i> No similar content found. Your text appears to be unique!</p>';
+                }
+
+                // Show rewritten text if available
+                if (data.rewrite && data.rewrite.success && data.rewrite.rewritten_text) {
+                    var rewriteHtml = '<div class="card mt-3 border-success">';
+                    rewriteHtml += '<div class="card-header bg-success text-white"><i class="fa fa-magic me-2"></i><strong>✓ Auto-Rewritten Unique Version</strong></div>';
+                    rewriteHtml += '<div class="card-body">';
+                    rewriteHtml += '<p class="text-muted small mb-2">' + (data.rewrite.message || 'Text has been rewritten to be unique.') + '</p>';
+                    rewriteHtml += '<textarea class="form-control" rows="8" id="rewrittenText" readonly>' + data.rewrite.rewritten_text.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</textarea>';
+                    rewriteHtml += '<div class="mt-2">';
+                    rewriteHtml += '<button type="button" class="btn btn-success btn-sm me-2" onclick="copyRewrittenText()"><i class="fa fa-copy me-1"></i> Copy to Clipboard</button>';
+                    rewriteHtml += '<button type="button" class="btn btn-outline-dark btn-sm" onclick="useRewrittenText()"><i class="fa fa-arrow-up me-1"></i> Use This Text</button>';
+                    rewriteHtml += '</div></div></div>';
+                    matchesEl.innerHTML += rewriteHtml;
                 }
             })
             .catch(function(err) {
@@ -1052,5 +1208,41 @@
             });
         });
     })();
+
+    // Helper functions for rewritten text
+    function copyRewrittenText() {
+        var textarea = document.getElementById('rewrittenText');
+        if (textarea) {
+            textarea.select();
+            document.execCommand('copy');
+            // Show feedback
+            var btn = event.target.closest('button');
+            var originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa fa-check me-1"></i> Copied!';
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-success');
+            setTimeout(function() {
+                btn.innerHTML = originalHtml;
+                btn.classList.remove('btn-outline-success');
+                btn.classList.add('btn-success');
+            }, 2000);
+        }
+    }
+
+    function useRewrittenText() {
+        var rewrittenTextarea = document.getElementById('rewrittenText');
+        var originalTextarea = document.getElementById('uniquenessText');
+        if (rewrittenTextarea && originalTextarea) {
+            originalTextarea.value = rewrittenTextarea.value;
+            // Scroll to top and show feedback
+            originalTextarea.scrollIntoView({ behavior: 'smooth' });
+            originalTextarea.focus();
+            // Flash effect
+            originalTextarea.style.backgroundColor = '#d4edda';
+            setTimeout(function() {
+                originalTextarea.style.backgroundColor = '';
+            }, 1000);
+        }
+    }
 </script>
 @endsection

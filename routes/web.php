@@ -298,6 +298,7 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     // Uniqueness Checking
     Route::post('local-seo-presence-boost/check-uniqueness', [LocalSeoCampaignController::class, 'checkUniqueness'])->name('local-seo.check-uniqueness');
     Route::get('local-seo-presence-boost/copyscape-status', [LocalSeoCampaignController::class, 'copyscapeStatus'])->name('local-seo.copyscape-status');
+    Route::get('local-seo-presence-boost/campaigns/{campaign}/content', [LocalSeoCampaignController::class, 'getCampaignContent'])->name('local-seo.campaigns.content');
 
     // Agency Listings
     Route::post('local-seo-presence-boost/listings', [AgencyFeatureController::class, 'storeListing'])->name('local-seo.listings.store');

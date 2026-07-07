@@ -858,38 +858,46 @@ body .page-body-wrapper a.vb-domain-support-link:not(.sidebar-link):not(.menu-li
 .step-icon.pending { background: #f0f0f1; color: #aaa; }
 
 /* ============================================================
-   VB Custom Sidebar Icons — PNG sprite sheets
-   Sheet 1 (1.png): 5 icons — robot, magnet, pin, magnify+arrow, radar
-   Sheet 2 (2.png): 5 icons — shield, wand, doc, people, globe
+   Sidebar SVG Icons — clean styling, center aligned
    ============================================================ */
-.vb-icon {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    background-repeat: no-repeat;
-    background-size: 500% auto;
-    flex-shrink: 0;
-    filter: invert(1) brightness(0.6);
+
+/* Center align icons with text in sidebar */
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li .sidebar-link,
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li a.sidebar-link,
+.sidebar-wrapper .sidebar-main .sidebar-links .sidebar-list .sidebar-link,
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links li a {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 10px 20px !important;
 }
-.sidebar-link:hover .vb-icon,
-.sidebar-link.active .vb-icon {
-    filter: invert(1) brightness(1);
+
+/* SVG icon sizing */
+.sidebar-wrapper .sidebar-main .sidebar-links li a svg,
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li a svg {
+    flex-shrink: 0 !important;
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
 }
-/* Sheet 1 */
-.vb-icon-1-1 { background-image: url('/assets/images/ikone/1.png'); background-position: 0% 50%; }
-.vb-icon-1-2 { background-image: url('/assets/images/ikone/1.png'); background-position: 25% 50%; }
-.vb-icon-1-3 { background-image: url('/assets/images/ikone/1.png'); background-position: 50% 50%; }
-.vb-icon-1-4 { background-image: url('/assets/images/ikone/1.png'); background-position: 75% 50%; }
-.vb-icon-1-5 { background-image: url('/assets/images/ikone/1.png'); background-position: 100% 50%; }
-/* Sheet 2 */
-.vb-icon-2-1 { background-image: url('/assets/images/ikone/2.png'); background-position: 0% 50%; }
-.vb-icon-2-2 { background-image: url('/assets/images/ikone/2.png'); background-position: 25% 50%; }
-.vb-icon-2-3 { background-image: url('/assets/images/ikone/2.png'); background-position: 50% 50%; }
-.vb-icon-2-4 { background-image: url('/assets/images/ikone/2.png'); background-position: 75% 50%; }
-.vb-icon-2-5 { background-image: url('/assets/images/ikone/2.png'); background-position: 100% 50%; }
-/* Sheet 3 */
-.vb-icon-3-1 { background-image: url('/assets/images/ikone/3.png'); background-position: 0% 50%; }
-.vb-icon-3-2 { background-image: url('/assets/images/ikone/3.png'); background-position: 25% 50%; }
-.vb-icon-3-3 { background-image: url('/assets/images/ikone/3.png'); background-position: 50% 50%; }
-.vb-icon-3-4 { background-image: url('/assets/images/ikone/3.png'); background-position: 75% 50%; }
-.vb-icon-3-5 { background-image: url('/assets/images/ikone/3.png'); background-position: 100% 50%; }
+
+/* Hide fill-icon, show only stroke-icon */
+.sidebar-wrapper .sidebar-link svg.fill-icon,
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li a svg.fill-icon {
+    display: none !important;
+}
+
+/* Stroke icon styling */
+.sidebar-wrapper .sidebar-link svg.stroke-icon,
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li a svg.stroke-icon {
+    display: inline-block !important;
+    stroke: #9ca3af !important;
+}
+
+/* Active/hover state */
+.sidebar-wrapper .sidebar-link:hover svg.stroke-icon,
+.sidebar-wrapper .sidebar-link.active svg.stroke-icon,
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li a:hover svg.stroke-icon,
+.page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li a.active svg.stroke-icon {
+    stroke: #ffffff !important;
+}

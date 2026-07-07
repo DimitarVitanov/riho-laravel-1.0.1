@@ -22,10 +22,10 @@ final class CopyscapeChecker
     private string $apiKey;
     private string $apiUrl = 'https://www.copyscape.com/api/';
 
-    public function __construct()
+    public function __construct(?string $username = null, ?string $apiKey = null)
     {
-        $this->username = config('services.copyscape.username', '');
-        $this->apiKey = config('services.copyscape.api_key', '');
+        $this->username = $username ?? config('services.copyscape.username', '');
+        $this->apiKey = $apiKey ?? config('services.copyscape.api_key', '');
     }
 
     public function isConfigured(): bool

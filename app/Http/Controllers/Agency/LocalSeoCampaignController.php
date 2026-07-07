@@ -286,15 +286,27 @@ class LocalSeoCampaignController extends Controller
 
         $validated = $request->validate([
             'text' => 'required|string|min:50',
+            'include_google' => 'boolean',
             'include_copyscape' => 'boolean',
+            'auto_rewrite' => 'boolean',
         ]);
 
-        $service = new UniquenessService();
+        // Pass agency's Copyscape credentials if they want to use Copyscape
+        $copyscapeUsername = null;
+        $copyscapeApiKey = null;
+        if ($validated['include_copyscape'] ?? false) {
+            $copyscapeUsername = $profile->copyscape_username;
+            $copyscapeApiKey = $profile->copyscape_api_key;
+        }
+
+        $service = new UniquenessService($copyscapeUsername, $copyscapeApiKey);
 
         $result = $service->check(
             $validated['text'],
             $profile->id,
-            $validated['include_copyscape'] ?? false
+            $validated['include_google'] ?? true,   // Google is FREE, enabled by default
+            $validated['include_copyscape'] ?? false,
+            $validated['auto_rewrite'] ?? false     // Auto-rewrite when duplicates found
         );
 
         return response()->json($result);
@@ -311,11 +323,121 @@ class LocalSeoCampaignController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $service = new UniquenessService();
+        // Check if agency has Copyscape credentials configured
+        $hasCredentials = !empty($profile->copyscape_username) && !empty($profile->copyscape_api_key);
+
+        if ($hasCredentials) {
+            // Try to get balance using agency's credentials
+            $checker = new \App\Services\CopyscapeChecker(
+                $profile->copyscape_username,
+                $profile->copyscape_api_key
+            );
+            $balance = $checker->getBalance();
+
+            return response()->json([
+                'configured' => true,
+                'balance' => $balance,
+            ]);
+        }
 
         return response()->json([
-            'configured' => $service->isCopyscapeAvailable(),
-            'balance' => $service->getCopyscapeBalance(),
+            'configured' => false,
+            'balance' => null,
+        ]);
+    }
+
+    /**
+     * Get campaign content for uniqueness checking.
+     * Extracts all AI-generated text from the campaign preview.
+     * GET /agency/local-seo-presence-boost/campaigns/{campaign}/content
+     */
+    public function getCampaignContent(LocalSeoCampaign $campaign)
+    {
+        $profile = $this->profileOrFail();
+        if (!$profile || $campaign->agency_profile_id !== $profile->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Build comprehensive content from all campaign elements
+        $contentParts = [];
+
+        // 1. Campaign header/intro
+        $city = $campaign->primary_city ?? 'this area';
+        $contentParts[] = "Explore real estate opportunities in {$city} and the surrounding area. We cover the places that matter most for buyers, sellers, and investors.";
+
+        // 2. Areas we cover - with AI-generated "Why it matters" descriptions
+        $places = $campaign->target_places ?? [];
+        if (!empty($places)) {
+            $placesSection = "Areas we cover around {$city}:\n";
+            foreach ($places as $place) {
+                $name = $place['name'] ?? '';
+                $type = $place['type'] ?? '';
+                $distance = $place['distance'] ?? '';
+                $whyItMatters = $place['why_it_matters'] ?? $place['description'] ?? '';
+                
+                if ($name) {
+                    $placesSection .= "\n• {$name}";
+                    if ($type) $placesSection .= " ({$type})";
+                    if ($distance) $placesSection .= " — {$distance}";
+                    if ($whyItMatters) $placesSection .= "\n  {$whyItMatters}";
+                }
+            }
+            $contentParts[] = $placesSection;
+        }
+
+        // 3. Featured listings
+        $listings = $campaign->listings()->get();
+        if ($listings->isNotEmpty()) {
+            $listingsSection = "Featured properties in {$city}:\n";
+            foreach ($listings as $listing) {
+                $listingsSection .= "\n• " . $listing->title;
+                if ($listing->location) {
+                    $listingsSection .= " — " . $listing->location;
+                }
+                if ($listing->description) {
+                    $listingsSection .= "\n  " . $listing->description;
+                }
+            }
+            $contentParts[] = $listingsSection;
+        }
+
+        // 4. About section / positioning note
+        if ($campaign->positioning_note) {
+            $contentParts[] = $campaign->positioning_note;
+        }
+
+        // 5. Agency description
+        $agencyName = $profile->agency_name ?? 'Our agency';
+        $contentParts[] = "{$agencyName} is a real estate agency focused on {$city} and the surrounding region. We track listings, market signals, and buyer interest across the wider market — helping you make better decisions with clear, local knowledge.";
+
+        // Combine all content with proper line breaks
+        $fullContent = implode("\n\n", $contentParts);
+
+        // Clean up but preserve line breaks
+        $plainText = strip_tags($fullContent);
+        $plainText = html_entity_decode($plainText, ENT_QUOTES, 'UTF-8');
+        // Normalize multiple spaces but keep newlines
+        $plainText = preg_replace('/[ \t]+/', ' ', $plainText);
+        $plainText = preg_replace('/\n\s*\n/', "\n\n", $plainText);
+        $plainText = trim($plainText);
+
+        $wordCount = str_word_count($plainText);
+
+        if ($wordCount < 30) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Campaign has minimal content (' . $wordCount . ' words). Add more target places with descriptions or listings.',
+                'campaign_id' => $campaign->id,
+                'campaign_name' => $campaign->name,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'campaign_id' => $campaign->id,
+            'campaign_name' => $campaign->name,
+            'content' => $plainText,
+            'word_count' => $wordCount,
         ]);
     }
 }

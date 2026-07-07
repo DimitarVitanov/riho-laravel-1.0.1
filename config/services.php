@@ -49,4 +49,9 @@ return [
         'redirect' => env('FACEBOOK_REDIRECT_URI'),
     ],
 
+    'copyscape' => [
+        'username' => env('COPYSCAPE_USERNAME'),
+        'api_key' => env('COPYSCAPE_API_KEY'),
+    ],
+
 ];

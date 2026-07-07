@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LocalSeoCampaign;
 use App\Models\GeneratedPage;
 use App\Services\PlaceSuggestionService;
+use App\Services\UniquenessService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -270,5 +271,51 @@ class LocalSeoCampaignController extends Controller
         }
 
         return $html;
+    }
+
+    /**
+     * Check uniqueness of text content.
+     * POST /agency/local-seo-presence-boost/check-uniqueness
+     */
+    public function checkUniqueness(Request $request)
+    {
+        $profile = $this->profileOrFail();
+        if (!$profile) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'text' => 'required|string|min:50',
+            'include_copyscape' => 'boolean',
+        ]);
+
+        $service = new UniquenessService();
+
+        $result = $service->check(
+            $validated['text'],
+            $profile->id,
+            $validated['include_copyscape'] ?? false
+        );
+
+        return response()->json($result);
+    }
+
+    /**
+     * Get Copyscape status and balance.
+     * GET /agency/local-seo-presence-boost/copyscape-status
+     */
+    public function copyscapeStatus()
+    {
+        $profile = $this->profileOrFail();
+        if (!$profile) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $service = new UniquenessService();
+
+        return response()->json([
+            'configured' => $service->isCopyscapeAvailable(),
+            'balance' => $service->getCopyscapeBalance(),
+        ]);
     }
 }

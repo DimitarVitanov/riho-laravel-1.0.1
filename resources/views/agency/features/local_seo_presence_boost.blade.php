@@ -8,6 +8,36 @@
     <li class="breadcrumb-item active">{{ __('messages.local_seo') }}</li>
 @endsection
 
+@push('css')
+<style>
+/* Local SEO page: +1px font sizes */
+.local-seo-feature { font-size: 15px; }
+.local-seo-feature .form-label { font-size: 13px; }
+.local-seo-feature .form-control, .local-seo-feature .form-select { font-size: 15px; }
+.local-seo-feature .btn { font-size: 15px; }
+.local-seo-feature h5 { font-size: 19px; }
+.local-seo-feature small, .local-seo-feature .small { font-size: 13px; }
+.local-seo-feature .text-muted { font-size: 13px; }
+.local-seo-feature .card-header h5 { font-size: 18px; }
+.local-seo-feature table { font-size: 14px; }
+
+/* Perfect circle for step numbers */
+.local-seo-feature .step-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #0a0a0a;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+</style>
+@endpush
+
 @section('content')
 <div class="container-fluid local-seo-feature">
 
@@ -196,7 +226,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold"><span class="badge rounded-circle me-2" style="background:#0a0a0a;color:#fff;">1</span>Define Your Local SEO Campaign</h5>
+                    <h5 class="mb-1 fw-bold"><span class="step-circle me-2">1</span>Define Your Local SEO Campaign</h5>
                     <small class="text-muted">These rules tell AI where the agency works, its coverage area, and how it positions itself.</small>
                 </div>
                 <div class="card-body">
@@ -287,13 +317,61 @@
 
 
 
+    {{-- ============ UNIQUENESS CHECKER ============ --}}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1 fw-bold"><i class="fa fa-shield-alt me-2"></i>Content Uniqueness Checker</h5>
+                        <small class="text-muted">Check AI-generated content for duplicates before publishing.</small>
+                    </div>
+                    <div id="copyscapeStatus" class="text-muted small">
+                        <i class="fa fa-spinner fa-spin"></i> Loading Copyscape status...
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label text-muted small fw-bold">Paste or type content to check</label>
+                            <textarea id="uniquenessText" class="form-control" rows="6" placeholder="Paste your AI-generated article text here..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="includeInternal" checked>
+                                <label class="form-check-label" for="includeInternal">Internal check (your content)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="includeCopyscape">
+                                <label class="form-check-label" for="includeCopyscape">Copyscape (Internet) <span class="badge bg-secondary">~$0.03</span></label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button type="button" id="runUniquenessCheck" class="btn btn-dark">
+                                <i class="fa fa-search me-1"></i> Run Uniqueness Check
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="uniquenessResult" class="mt-4" style="display:none;">
+                        <div class="alert" id="uniquenessAlert">
+                            <strong id="uniquenessVerdict"></strong>
+                            <p id="uniquenessSummary" class="mb-0 mt-1"></p>
+                        </div>
+                        <div id="uniquenessMatches" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- ============ SECTION 3: Publishing (only when editing a campaign) ============ --}}
     @if($editCampaign)
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold"><span class="badge rounded-circle me-2" style="background:#0a0a0a;color:#fff;">3</span>Publish</h5>
+                    <h5 class="mb-1 fw-bold"><span class="step-circle me-2">3</span>Publish</h5>
                     <small class="text-muted">Publish "{{ $editCampaign->name }}" to your connected domain.</small>
                 </div>
                 <div class="card-body">
@@ -434,7 +512,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold">{{ __('messages.agency_listings') }}</h5>
+                    <h5 class="mb-1 fw-bold"><span class="step-circle me-2">2</span>{{ __('messages.agency_listings') }}</h5>
                     <small class="text-muted">{{ __('messages.add_real_estate_listings') }}</small>
                 </div>
                 <div class="card-body">
@@ -850,6 +928,127 @@
             .finally(function () {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa fa-magic me-1"></i>AI suggest places';
+            });
+        });
+    })();
+
+    // ============ UNIQUENESS CHECKER ============
+    (function() {
+        // Load Copyscape status on page load
+        fetch('{{ route('agency.local-seo.copyscape-status') }}', {
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var el = document.getElementById('copyscapeStatus');
+            if (data.configured) {
+                var balanceText = data.balance !== null ? ' (' + data.balance + ' credits)' : '';
+                el.innerHTML = '<i class="fa fa-check-circle text-success"></i> Copyscape configured' + balanceText;
+                document.getElementById('includeCopyscape').disabled = false;
+            } else {
+                el.innerHTML = '<i class="fa fa-exclamation-circle text-warning"></i> Copyscape not configured';
+                document.getElementById('includeCopyscape').disabled = true;
+            }
+        })
+        .catch(function() {
+            document.getElementById('copyscapeStatus').innerHTML = '<i class="fa fa-times-circle text-danger"></i> Status check failed';
+        });
+
+        // Run uniqueness check
+        document.getElementById('runUniquenessCheck').addEventListener('click', function() {
+            var text = document.getElementById('uniquenessText').value.trim();
+            var includeCopyscape = document.getElementById('includeCopyscape').checked;
+            var btn = this;
+            var resultDiv = document.getElementById('uniquenessResult');
+            var alertDiv = document.getElementById('uniquenessAlert');
+            var verdictEl = document.getElementById('uniquenessVerdict');
+            var summaryEl = document.getElementById('uniquenessSummary');
+            var matchesEl = document.getElementById('uniquenessMatches');
+
+            if (text.length < 50) {
+                alert('Please enter at least 50 characters to check.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Checking...';
+            resultDiv.style.display = 'none';
+
+            fetch('{{ route('agency.local-seo.check-uniqueness') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: text,
+                    include_copyscape: includeCopyscape
+                })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                resultDiv.style.display = 'block';
+
+                // Set alert class based on verdict
+                alertDiv.className = 'alert';
+                if (data.overall_verdict === 'passed') {
+                    alertDiv.classList.add('alert-success');
+                    verdictEl.innerHTML = '<i class="fa fa-check-circle me-1"></i> Passed';
+                } else if (data.overall_verdict === 'review') {
+                    alertDiv.classList.add('alert-warning');
+                    verdictEl.innerHTML = '<i class="fa fa-exclamation-triangle me-1"></i> Needs Review';
+                } else if (data.overall_verdict === 'failed') {
+                    alertDiv.classList.add('alert-danger');
+                    verdictEl.innerHTML = '<i class="fa fa-times-circle me-1"></i> Failed';
+                } else {
+                    alertDiv.classList.add('alert-secondary');
+                    verdictEl.innerHTML = '<i class="fa fa-question-circle me-1"></i> Error';
+                }
+
+                summaryEl.textContent = data.summary || '';
+
+                // Show matches if any
+                matchesEl.innerHTML = '';
+                var allMatches = [];
+
+                if (data.internal && data.internal.matches && data.internal.matches.length > 0) {
+                    allMatches = allMatches.concat(data.internal.matches.map(function(m) {
+                        m.source = 'Internal';
+                        return m;
+                    }));
+                }
+
+                if (data.copyscape && data.copyscape.matches && data.copyscape.matches.length > 0) {
+                    allMatches = allMatches.concat(data.copyscape.matches.map(function(m) {
+                        m.source = 'Internet';
+                        return m;
+                    }));
+                }
+
+                if (allMatches.length > 0) {
+                    var table = '<table class="table table-sm table-bordered"><thead><tr><th>Source</th><th>Match</th><th>Overlap</th></tr></thead><tbody>';
+                    allMatches.forEach(function(m) {
+                        var title = m.title || m.url || 'Page #' + m.id;
+                        var percent = m.repeated_new_text_percent || m.percent_matched || 0;
+                        table += '<tr><td><span class="badge ' + (m.source === 'Internal' ? 'bg-dark' : 'bg-info') + '">' + m.source + '</span></td>';
+                        table += '<td>' + title + '</td>';
+                        table += '<td>' + percent + '%</td></tr>';
+                    });
+                    table += '</tbody></table>';
+                    matchesEl.innerHTML = table;
+                }
+            })
+            .catch(function(err) {
+                resultDiv.style.display = 'block';
+                alertDiv.className = 'alert alert-danger';
+                verdictEl.innerHTML = '<i class="fa fa-times-circle me-1"></i> Error';
+                summaryEl.textContent = 'Failed to run uniqueness check. Please try again.';
+                matchesEl.innerHTML = '';
+            })
+            .finally(function() {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa fa-search me-1"></i> Run Uniqueness Check';
             });
         });
     })();

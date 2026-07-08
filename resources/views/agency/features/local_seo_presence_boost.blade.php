@@ -213,6 +213,14 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
+                                            <form action="{{ route('agency.local-seo.campaigns.toggle', $campaign) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @if($campaign->status === 'published')
+                                                    <button type="submit" class="btn btn-sm btn-outline-warning" onclick="return confirm('Unpublish this campaign? It will be removed from the server.')">Unpublish</button>
+                                                @else
+                                                    <button type="submit" class="btn btn-sm btn-success">Publish</button>
+                                                @endif
+                                            </form>
                                             <a href="{{ route('agency.local-seo.campaigns.preview', $campaign) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Preview</a>
                                             <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?edit_campaign_id={{ $campaign->id }}" class="btn btn-sm btn-outline-dark">Edit</a>
                                             <form action="{{ route('agency.local-seo.campaigns.destroy', $campaign) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this campaign?')">
@@ -619,24 +627,6 @@
                                 </div>
                             </div>
 
-                            {{-- Approval Status --}}
-                            <div class="col-12">
-                                <h6 class="fw-bold mb-3">Content Approval</h6>
-                                <div class="d-flex align-items-center gap-3">
-                                    <select name="approval_status" class="form-select" style="max-width: 350px;">
-                                        <option value="villa_bit_approved" {{ ($editCampaign->page_settings['approval_status'] ?? '') === 'villa_bit_approved' ? 'selected' : '' }}>
-                                            Villa Bit AI checked & manually approved
-                                        </option>
-                                        <option value="auto_approved" {{ ($editCampaign->page_settings['approval_status'] ?? '') === 'auto_approved' ? 'selected' : '' }}>
-                                            Auto-approved (AI only)
-                                        </option>
-                                        <option value="pending" {{ ($editCampaign->page_settings['approval_status'] ?? 'pending') === 'pending' ? 'selected' : '' }}>
-                                            Pending review
-                                        </option>
-                                    </select>
-                                    <small class="text-muted">How generated content is verified before publishing.</small>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="d-flex justify-content-end mt-4">

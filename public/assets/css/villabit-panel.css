@@ -928,3 +928,121 @@ body .page-body-wrapper a.vb-domain-support-link:not(.sidebar-link):not(.menu-li
 .sidebar-wrapper .sidebar-link.active img.svg-icon {
     opacity: 1;
 }
+
+/* ============================================================
+   Global Card Styles - Match Campaign Page Design
+   Rounded corners, drop shadows, 1px borders
+   ============================================================ */
+.page-body-wrapper .card {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+    transition: box-shadow 0.2s ease !important;
+    overflow: hidden;
+}
+
+.page-body-wrapper .card:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07) !important;
+}
+
+.page-body-wrapper .card .card-header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    padding: 20px 24px !important;
+    border-radius: 16px 16px 0 0 !important;
+}
+
+.page-body-wrapper .card .card-header h5,
+.page-body-wrapper .card .card-header h4,
+.page-body-wrapper .card .card-header h6 {
+    font-weight: 700 !important;
+    color: #111827 !important;
+    margin: 0 !important;
+}
+
+.page-body-wrapper .card .card-body {
+    padding: 24px !important;
+}
+
+.page-body-wrapper .card .card-footer {
+    background: #f9fafb !important;
+    border-top: 1px solid #e5e7eb !important;
+    padding: 16px 24px !important;
+    border-radius: 0 0 16px 16px !important;
+}
+
+/* Form controls inside cards */
+.page-body-wrapper .card .form-control,
+.page-body-wrapper .card .form-select {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 10px !important;
+    padding: 12px 16px !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.page-body-wrapper .card .form-control:focus,
+.page-body-wrapper .card .form-select:focus {
+    border-color: #111827 !important;
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.1) !important;
+}
+
+/* Buttons inside cards */
+.page-body-wrapper .card .btn {
+    border-radius: 10px !important;
+    padding: 12px 20px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.page-body-wrapper .card .btn-sm {
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+}
+
+/* Tables inside cards */
+.page-body-wrapper .card .table {
+    margin-bottom: 0 !important;
+}
+
+.page-body-wrapper .card .table th {
+    background: #f9fafb !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    font-weight: 600 !important;
+    color: #374151 !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding: 14px 16px !important;
+}
+
+.page-body-wrapper .card .table td {
+    border-bottom: 1px solid #f3f4f6 !important;
+    padding: 14px 16px !important;
+    vertical-align: middle !important;
+}
+
+.page-body-wrapper .card .table tbody tr:hover {
+    background: #f9fafb !important;
+}
+
+/* Badges */
+.page-body-wrapper .badge {
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+}
+
+/* Alert boxes */
+.page-body-wrapper .alert {
+    border-radius: 12px !important;
+    border: 1px solid !important;
+    padding: 16px 20px !important;
+}
+
+/* Inner boxes/sections */
+.page-body-wrapper .card .bg-light,
+.page-body-wrapper .card [style*="background:#f"] {
+    border-radius: 12px !important;
+}

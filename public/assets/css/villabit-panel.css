@@ -901,3 +901,30 @@ body .page-body-wrapper a.vb-domain-support-link:not(.sidebar-link):not(.menu-li
 .page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links li a.active svg.stroke-icon {
     stroke: #ffffff !important;
 }
+
+/* ============================================================
+   Custom SVG Icon Images (white transparent icons)
+   ============================================================ */
+.sidebar-wrapper img.svg-icon {
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    opacity: 0.7;
+    filter: brightness(0) invert(1);
+    transition: opacity 0.2s ease;
+}
+
+/* Hide fill-icon img, show only stroke-icon img */
+.sidebar-wrapper .sidebar-link img.fill-icon {
+    display: none !important;
+}
+
+.sidebar-wrapper .sidebar-link img.stroke-icon {
+    display: inline-block !important;
+}
+
+/* Hover/active state for img icons */
+.sidebar-wrapper .sidebar-link:hover img.svg-icon,
+.sidebar-wrapper .sidebar-link.active img.svg-icon {
+    opacity: 1;
+}

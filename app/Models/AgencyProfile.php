@@ -51,6 +51,15 @@ class AgencyProfile extends Model
         'assigned_manager_id',
         'ai_status',
         'ai_content_language',
+        'website_primary_color',
+        'website_secondary_color',
+        'website_accent_color',
+        'website_header_style',
+        'website_footer_style',
+        'website_show_logo_in_header',
+        'website_show_contact_in_header',
+        'website_show_social_in_footer',
+        'website_custom_css',
     ];
 
     protected function casts(): array

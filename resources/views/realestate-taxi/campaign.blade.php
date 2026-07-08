@@ -11,22 +11,28 @@
   $aboutText = $aiContent['about_content'] ?? null;
   $listings = $campaign->listings()->where('status', 'active')->latest()->get();
   $targetPlaces = $campaign->target_places ?? [];
+  
+  // Get brand colors from agency profile
+  $primaryColor = $profile->website_primary_color ?? $profile->brand_primary_color ?? '#0f0f0f';
+  $secondaryColor = $profile->website_secondary_color ?? $profile->brand_secondary_color ?? '#374151';
+  $accentColor = $profile->website_accent_color ?? '#3b82f6';
 @endphp
 <meta name="description" content="{{ $aiContent['meta_description'] ?? $campaign->positioning_note ?? '' }}">
 <title>{{ $campaign->name }} | {{ $profile->agency_name }}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink: #0f0f0f;
+  --ink: {{ $primaryColor }};
   --bg: #f4f5f6;
   --card: #ffffff;
   --line: #e4e6e9;
-  --muted: #71767b;
-  --accent: #0f0f0f;
+  --muted: {{ $secondaryColor }};
+  --accent: {{ $accentColor }};
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; line-height: 1.6; }
-a { color: inherit; text-decoration: none; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
 img { max-width: 100%; }
 
 .wrap { max-width: 1280px; margin: 0 auto; padding: 32px 24px 80px; }
@@ -37,7 +43,8 @@ img { max-width: 100%; }
 .logo-icon { width: 48px; height: 48px; background: var(--ink); color: #fff; border-radius: 12px; display: grid; place-items: center; font-weight: 700; font-size: 20px; }
 .logo-text { font-weight: 700; font-size: 18px; }
 .logo-sub { font-size: 13px; color: var(--muted); font-weight: 400; }
-.header-btn { background: var(--ink); color: #fff; padding: 14px 28px; border-radius: 50px; font-weight: 600; font-size: 14px; }
+.header-btn { background: var(--ink); color: #fff; padding: 14px 28px; border-radius: 50px; font-weight: 600; font-size: 14px; transition: all 0.2s; }
+.header-btn:hover { background: var(--accent); text-decoration: none; }
 
 /* Hero */
 .hero { background: var(--ink); color: #fff; border-radius: 20px; padding: 48px; margin-bottom: 24px; }
@@ -47,21 +54,23 @@ img { max-width: 100%; }
 
 /* Stats Row */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-.stat-box { background: var(--card); border-radius: 16px; padding: 28px; text-align: center; border: 1px solid var(--line); }
-.stat-val { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+.stat-box { background: var(--card); border-radius: 16px; padding: 28px; text-align: center; border: 1px solid var(--line); transition: all 0.2s; }
+.stat-box:hover { border-color: var(--accent); }
+.stat-val { font-size: 32px; font-weight: 800; margin-bottom: 4px; color: var(--ink); }
 .stat-label { font-size: 13px; color: var(--muted); font-weight: 500; }
 
 /* Section */
 .section { background: var(--card); border-radius: 20px; padding: 36px; margin-bottom: 24px; border: 1px solid var(--line); }
 .section-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; gap: 20px; }
-.section-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+.section-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--ink); }
 .section-desc { font-size: 15px; color: var(--muted); max-width: 600px; }
-.section-badge { background: var(--bg); padding: 10px 16px; border-radius: 50px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.section-badge { background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 50px; font-size: 13px; font-weight: 600; white-space: nowrap; }
 
 /* Areas Grid - 3 per row */
 .areas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.area-box { background: var(--bg); border-radius: 14px; padding: 24px; }
-.area-name { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.area-box { background: var(--bg); border-radius: 14px; padding: 24px; transition: all 0.2s; border: 2px solid transparent; }
+.area-box:hover { border-color: var(--accent); }
+.area-name { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: var(--ink); }
 .area-meta { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
 .area-desc { font-size: 14px; color: #444; line-height: 1.6; }
 .area-priority { display: inline-block; margin-top: 12px; padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
@@ -71,12 +80,13 @@ img { max-width: 100%; }
 
 /* Listings Grid - 3 per row */
 .listings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.listing-card { background: var(--bg); border-radius: 14px; overflow: hidden; }
+.listing-card { background: var(--bg); border-radius: 14px; overflow: hidden; transition: all 0.2s; border: 2px solid transparent; }
+.listing-card:hover { border-color: var(--accent); transform: translateY(-4px); }
 .listing-img { aspect-ratio: 16/10; background: #ddd; }
 .listing-img img { width: 100%; height: 100%; object-fit: cover; }
 .listing-body { padding: 20px; }
-.listing-price { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
-.listing-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.listing-price { font-size: 22px; font-weight: 800; margin-bottom: 6px; color: var(--accent); }
+.listing-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: var(--ink); }
 .listing-loc { font-size: 13px; color: var(--muted); }
 
 /* FAQ Accordion - 2 columns */
@@ -84,10 +94,12 @@ img { max-width: 100%; }
 .faq-item { border-bottom: 1px solid var(--line); }
 .faq-q { 
   width: 100%; padding: 20px 0; background: none; border: none; 
-  font: inherit; font-size: 15px; font-weight: 600; text-align: left; 
+  font: inherit; font-size: 15px; font-weight: 600; text-align: left; color: var(--ink);
   cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  transition: color 0.2s;
 }
-.faq-q::after { content: '+'; font-size: 20px; color: var(--muted); font-weight: 300; flex-shrink: 0; }
+.faq-q:hover { color: var(--accent); }
+.faq-q::after { content: '+'; font-size: 20px; color: var(--accent); font-weight: 300; flex-shrink: 0; }
 .faq-item.open .faq-q::after { content: '−'; }
 .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
 .faq-item.open .faq-a { max-height: 300px; }
@@ -96,8 +108,9 @@ img { max-width: 100%; }
 /* About - 4 mini cards */
 .about-text { font-size: 16px; color: #444; line-height: 1.8; margin-bottom: 28px; max-width: 800px; }
 .mini-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.mini-box { background: var(--bg); border-radius: 14px; padding: 20px; }
-.mini-box strong { display: block; font-size: 15px; margin-bottom: 6px; }
+.mini-box { background: var(--bg); border-radius: 14px; padding: 20px; transition: all 0.2s; border: 2px solid transparent; }
+.mini-box:hover { border-color: var(--accent); }
+.mini-box strong { display: block; font-size: 15px; margin-bottom: 6px; color: var(--ink); }
 .mini-box p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
 
 /* CTA */
@@ -105,8 +118,10 @@ img { max-width: 100%; }
 .cta-content h3 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
 .cta-content p { font-size: 16px; opacity: 0.7; max-width: 500px; }
 .cta-btns { display: flex; gap: 12px; }
-.btn-white { background: #fff; color: var(--ink); padding: 16px 32px; border-radius: 50px; font-weight: 700; font-size: 15px; }
-.btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.3); padding: 14px 30px; border-radius: 50px; font-weight: 600; font-size: 15px; }
+.btn-white { background: #fff; color: var(--ink); padding: 16px 32px; border-radius: 50px; font-weight: 700; font-size: 15px; transition: all 0.2s; }
+.btn-white:hover { background: var(--accent); color: #fff; text-decoration: none; }
+.btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.3); padding: 14px 30px; border-radius: 50px; font-weight: 600; font-size: 15px; transition: all 0.2s; }
+.btn-outline:hover { border-color: var(--accent); background: var(--accent); text-decoration: none; }
 
 /* Footer */
 .footer { text-align: center; padding: 32px 0; color: var(--muted); font-size: 13px; }

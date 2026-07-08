@@ -252,4 +252,48 @@ class AgencySettingsController extends Controller
             'Tamil', 'Hebrew', 'Persian', 'Swahili',
         ];
     }
+
+    public function websiteDesign()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
+
+        return view('agency.settings.website-design', compact('user', 'profile'));
+    }
+
+    public function updateWebsiteDesign(Request $request)
+    {
+        $request->validate([
+            'primary_color' => 'nullable|string|max:7',
+            'secondary_color' => 'nullable|string|max:7',
+            'accent_color' => 'nullable|string|max:7',
+            'header_style' => 'nullable|string|in:minimal,standard,full',
+            'footer_style' => 'nullable|string|in:minimal,standard,full',
+            'show_logo_in_header' => 'nullable|boolean',
+            'show_contact_in_header' => 'nullable|boolean',
+            'show_social_in_footer' => 'nullable|boolean',
+            'custom_css' => 'nullable|string|max:10000',
+        ]);
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
+
+        if ($profile) {
+            $profile->update([
+                'website_primary_color' => $request->primary_color,
+                'website_secondary_color' => $request->secondary_color,
+                'website_accent_color' => $request->accent_color,
+                'website_header_style' => $request->header_style,
+                'website_footer_style' => $request->footer_style,
+                'website_show_logo_in_header' => $request->boolean('show_logo_in_header'),
+                'website_show_contact_in_header' => $request->boolean('show_contact_in_header'),
+                'website_show_social_in_footer' => $request->boolean('show_social_in_footer'),
+                'website_custom_css' => $request->custom_css,
+            ]);
+        }
+
+        return back()->with('success', 'Website design settings updated.');
+    }
 }

@@ -250,6 +250,8 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::post('settings/features/toggle', [AgencySettingsController::class, 'updateFeatureToggle'])->name('settings.features.toggle');
     Route::get('settings/domain', [AgencySettingsController::class, 'domainSettings'])->name('settings.domain');
     Route::post('settings/domain', [AgencySettingsController::class, 'updateDomainSettings'])->name('settings.domain.update');
+    Route::get('settings/website-design', [AgencySettingsController::class, 'websiteDesign'])->name('settings.website-design');
+    Route::post('settings/website-design', [AgencySettingsController::class, 'updateWebsiteDesign'])->name('settings.website-design.update');
     Route::get('settings/integrations', [AgencySettingsController::class, 'integrations'])->name('settings.integrations');
     Route::put('settings/integrations', [AgencySettingsController::class, 'updateIntegrations'])->name('settings.integrations.update');
     Route::get('settings/brand', [AgencySettingsController::class, 'brandSettings'])->name('settings.brand');

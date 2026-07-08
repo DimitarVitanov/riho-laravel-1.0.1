@@ -65,24 +65,24 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.dashboard') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/dashboard.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/dashboard.svg') }}" alt="">
                         <span>Dashboard</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.users.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-user') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-user') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/user_management.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/user_management.svg') }}" alt="">
                         <span>User Management</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-user') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-user') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/add_users.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/add_users.svg') }}" alt="">
                         <span>Add Users</span>
                     </a>
                     <ul class="sidebar-submenu">
@@ -94,24 +94,24 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.managers.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-user') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-user') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/managers.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/managers.svg') }}" alt="">
                         <span>Managers</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.agencies.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-user') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-user') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/agencies.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/agencies.svg') }}" alt="">
                         <span>Agencies</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.investors.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-user') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-user') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/investors.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/investors.svg') }}" alt="">
                         <span>Investors</span>
                     </a>
                 </li>
@@ -120,32 +120,32 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.content-review.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-file') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-file') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/content_review.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/content_review.svg') }}" alt="">
                         <span>Content Review</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.ai-prompts.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-editors') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-editors') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/global_ai_prompts.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/global_ai_prompts.svg') }}" alt="">
                         <span>Global AI Prompts</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.usage-limits.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-charts') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-charts') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/usage_limits.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/usage_limits.svg') }}" alt="">
                         <span>Usage Limits</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.ai-settings.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-widget') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-widget') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/ai_api_settings.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/ai_api_settings.svg') }}" alt="">
                         <span>AI API Settings</span>
                     </a>
                 </li>
@@ -154,8 +154,8 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.support-tickets.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-others') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-others') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/support_tickets.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/support_tickets.svg') }}" alt="">
                         <span>Support Tickets</span>
                     </a>
                 </li>
@@ -164,24 +164,24 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.affiliate-tracking') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-charts') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-charts') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/affiliate_tracking.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/affiliate_tracking.svg') }}" alt="">
                         <span>Affiliate Tracking</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.affiliate-commissions') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-to-do') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-to-do') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/commissions.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/commissions.svg') }}" alt="">
                         <span>Commissions</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.affiliate-payouts') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-ecommerce') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-ecommerce') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/payouts.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/payouts.svg') }}" alt="">
                         <span>Payouts</span>
                     </a>
                 </li>
@@ -274,8 +274,8 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.dashboard') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/dashboard.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/dashboard.svg') }}" alt="">
                         <span>{{ __('messages.dashboard') }}</span>
                     </a>
                 </li>
@@ -284,56 +284,56 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.daily-ai-employee.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-widget') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-widget') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/01_daily_ai_employee_robot.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/01_daily_ai_employee_robot.svg') }}" alt="">
                         <span>{{ __('messages.daily_ai_employee') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'invisible_lead_magnet') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-contact') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-contact') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/02_invisible_lead_magnet.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/02_invisible_lead_magnet.svg') }}" alt="">
                         <span>{{ __('messages.invisible_lead_magnet') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'local_seo_presence_boost') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-maps') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-maps') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/03_local_seo_pin_search.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/03_local_seo_pin_search.svg') }}" alt="">
                         <span>{{ __('messages.local_seo') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'ai_search_ranking') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-search') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-search') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/04_ai_search_ranking.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/04_ai_search_ranking.svg') }}" alt="">
                         <span>{{ __('messages.ai_search_ranking') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'daily_competitor_scan') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-charts') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-charts') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
                         <span>{{ __('messages.competitor_scan') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'ai_authority_builder') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-builders') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-builders') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/06_authority_builder_shield_check.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/06_authority_builder_shield_check.svg') }}" alt="">
                         <span>{{ __('messages.authority_builder') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'small_ai_actions') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-animation') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-animation') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/07_small_ai_actions_magic_wand.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/07_small_ai_actions_magic_wand.svg') }}" alt="">
                         <span>{{ __('messages.small_ai_actions') }}</span>
                     </a>
                 </li>
@@ -342,16 +342,16 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.generated-pages.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-file') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-file') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/08_generated_pages_document.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/08_generated_pages_document.svg') }}" alt="">
                         <span>{{ __('messages.generated_pages') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.leads.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-user') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-user') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/09_leads_people.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/09_leads_people.svg') }}" alt="">
                         <span>{{ __('messages.leads') }}</span>
                     </a>
                 </li>
@@ -360,40 +360,48 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.domain') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-landing-page') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-landing-page') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/10_domain_globe.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/10_domain_globe.svg') }}" alt="">
                         <span>Domain</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.website-design') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/website_design.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/website_design.svg') }}" alt="">
+                        <span>Website Design</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.language') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-internationalization') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-internationalization') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/11_language_settings_globe_translation.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/11_language_settings_globe_translation.svg') }}" alt="">
                         <span>{{ __('messages.language_settings') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.features') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-ui-kits') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-ui-kits') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/12_feature_toggles_sliders.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/12_feature_toggles_sliders.svg') }}" alt="">
                         <span>{{ __('messages.feature_toggles') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.usage-limits.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-charts') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-charts') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/13_my_usage_limits_gauge.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/13_my_usage_limits_gauge.svg') }}" alt="">
                         <span>{{ __('messages.my_usage_limits') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.affiliate.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-ecommerce') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-ecommerce') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
                         <span>{{ __('messages.affiliate') }}</span>
                     </a>
                 </li>
@@ -402,8 +410,8 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.support.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-support-tickets') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-support-tickets') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/15_messages_support_chat_question.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/15_messages_support_chat_question.svg') }}" alt="">
                         <span>{{ __('messages.messages_and_support') }}</span>
                     </a>
                 </li>
@@ -414,72 +422,72 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('investor.dashboard') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-home') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-home') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/dashboard.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/dashboard.svg') }}" alt="">
                         <span>Dashboard</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('investor.investments.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-charts') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-charts') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/my_investments.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/my_investments.svg') }}" alt="">
                         <span>My Investments</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('investor.capital-calls.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-ecommerce') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-ecommerce') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/capital_calls.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/capital_calls.svg') }}" alt="">
                         <span>Capital Calls</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('investor.earnings.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-to-do') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-to-do') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/earnings.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/earnings.svg') }}" alt="">
                         <span>Earnings</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('investor.payouts.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-ecommerce') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-ecommerce') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/payouts.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/payouts.svg') }}" alt="">
                         <span>Payouts</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('investor.documents.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-file') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-file') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/kyc_documents.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/kyc_documents.svg') }}" alt="">
                         <span>KYC Documents</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('investor.projects.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-widget') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-widget') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/project_reports.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/project_reports.svg') }}" alt="">
                         <span>Project Reports</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('investor.profile.show') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-settings') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-settings') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/settings.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/settings.svg') }}" alt="">
                         <span>Settings</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('investor.affiliate.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-ecommerce') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-ecommerce') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/affiliate.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/affiliate.svg') }}" alt="">
                         <span>{{ __('messages.affiliate') }}</span>
                     </a>
                 </li>
@@ -488,8 +496,8 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('investor.support.index') }}">
-                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-others') }}"></use></svg>
-                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-others') }}"></use></svg>
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/messages_support.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/messages_support.svg') }}" alt="">
                         <span>Messages & Support</span>
                     </a>
                 </li>

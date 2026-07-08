@@ -28,16 +28,10 @@ class PageSftpUploader
             // Render the full HTML page
             $html = $this->renderCampaignHtml($campaign, $profile);
 
-            // Determine remote path
+            // Determine remote path - use sftp_path directly, don't add /blog since it's already in the path
             $remotePath = rtrim($profile->sftp_path ?: '/public_html', '/');
-            
-            // Extract folder from custom_domain if it contains a path (e.g., "villareadycroatia.com/blog")
-            $domainFolder = $this->extractFolderFromDomain($profile->custom_domain);
-            if ($domainFolder) {
-                $remotePath .= '/' . $domainFolder;
-            }
 
-            // Build the file path from slug
+            // Build the file path from slug (slug already contains just the page name like "real-estate-brac")
             $slug = trim($campaign->page_slug ?? 'real-estate-' . ($campaign->primary_city ?? 'page'), '/');
             $filePath = $remotePath . '/' . $slug . '/index.html';
 
@@ -89,11 +83,8 @@ class PageSftpUploader
         }
 
         try {
+            // Use sftp_path directly - it should already point to the correct folder
             $remotePath = rtrim($profile->sftp_path ?: '/public_html', '/');
-            $domainFolder = $this->extractFolderFromDomain($profile->custom_domain);
-            if ($domainFolder) {
-                $remotePath .= '/' . $domainFolder;
-            }
 
             $slug = trim($campaign->page_slug ?? '', '/');
             if (!$slug) {
@@ -137,16 +128,6 @@ class PageSftpUploader
         $adapter = new SftpAdapter($provider, '/');
 
         return new Filesystem($adapter);
-    }
-
-    protected function extractFolderFromDomain(?string $customDomain): ?string
-    {
-        if (!$customDomain || !str_contains($customDomain, '/')) {
-            return null;
-        }
-
-        $parts = explode('/', $customDomain, 2);
-        return $parts[1] ?? null;
     }
 
     protected function renderCampaignHtml(LocalSeoCampaign $campaign, AgencyProfile $profile): string

@@ -293,6 +293,7 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::get('local-seo-presence-boost/campaigns/{campaign}/preview', [LocalSeoCampaignController::class, 'preview'])->name('local-seo.campaigns.preview');
     Route::post('local-seo-presence-boost/campaigns/{campaign}/toggle', [LocalSeoCampaignController::class, 'toggleStatus'])->name('local-seo.campaigns.toggle');
     Route::post('local-seo-presence-boost/campaigns/{campaign}/publish', [LocalSeoCampaignController::class, 'publish'])->name('local-seo.campaigns.publish');
+    Route::post('local-seo-presence-boost/campaigns/{campaign}/settings', [LocalSeoCampaignController::class, 'updateSettings'])->name('local-seo.campaigns.update-settings');
     Route::delete('local-seo-presence-boost/campaigns/{campaign}', [LocalSeoCampaignController::class, 'destroy'])->name('local-seo.campaigns.destroy');
 
     // Uniqueness Checking
@@ -303,6 +304,7 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     // Agency Listings
     Route::post('local-seo-presence-boost/listings', [AgencyFeatureController::class, 'storeListing'])->name('local-seo.listings.store');
     Route::post('local-seo-presence-boost/listings/{listing}/campaign', [AgencyFeatureController::class, 'assignListingCampaign'])->name('local-seo.listings.assign-campaign');
+    Route::post('local-seo-presence-boost/listings/{listing}/campaigns', [AgencyFeatureController::class, 'assignListingCampaigns'])->name('local-seo.listings.assign-campaigns');
     Route::put('local-seo-presence-boost/listings/{listing}', [AgencyFeatureController::class, 'updateListing'])->name('local-seo.listings.update');
     Route::delete('local-seo-presence-boost/listings/{listing}', [AgencyFeatureController::class, 'destroyListing'])->name('local-seo.listings.destroy');
 

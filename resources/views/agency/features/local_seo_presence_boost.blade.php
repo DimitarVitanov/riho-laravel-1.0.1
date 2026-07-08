@@ -8,7 +8,7 @@
     <li class="breadcrumb-item active">{{ __('messages.local_seo') }}</li>
 @endsection
 
-@push('css')
+@section('css')
 <style>
 /* Local SEO page: +1px font sizes */
 .local-seo-feature { font-size: 15px; }
@@ -21,22 +21,35 @@
 .local-seo-feature .card-header h5 { font-size: 18px; }
 .local-seo-feature table { font-size: 14px; }
 
-/* Perfect circle for step numbers */
+/* Card styling matching mockup - subtle shadow */
+.local-seo-feature .card {
+    border: 1px solid #dde1e5;
+    border-radius: 16px;
+    box-shadow: 0 7px 18px rgba(22,28,35,.04);
+}
+.local-seo-feature .card-header {
+    border-radius: 16px 16px 0 0;
+}
+.local-seo-feature .card-body {
+    border-radius: 0 0 16px 16px;
+}
+
+/* Perfect circle for step numbers - black background */
 .local-seo-feature .step-circle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 31px;
+    height: 31px;
     border-radius: 50%;
-    background: #0a0a0a;
+    background: #0a0b0c;
     color: #fff;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 800;
     flex-shrink: 0;
 }
 </style>
-@endpush
+@endsection
 
 @section('content')
 <div class="container-fluid local-seo-feature">
@@ -401,7 +414,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold"><span class="step-circle me-2">3</span>Publish</h5>
+                    <h5 class="mb-1 fw-bold"><span class="step-circle me-2">2</span>Publish</h5>
                     <small class="text-muted">Publish "{{ $editCampaign->name }}" to your connected domain.</small>
                 </div>
                 <div class="card-body">
@@ -409,8 +422,8 @@
                         @csrf
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold">Publishing Domain</label>
-                                <input type="text" class="form-control bg-light" value="{{ $profile->custom_domain ?? 'Not connected yet' }}" readonly>
+                                <label class="form-label text-muted small fw-bold text-dark" style="color:black">Publishing Domain</label>
+                                <input type="text" class="form-control bg-light text-dark" value="{{ $profile->custom_domain ?? 'Not connected yet' }}" readonly>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold">Page URL Slug</label>
@@ -537,12 +550,113 @@
     @endif
     @endif
 
+    {{-- ============ VILLA BIT AI OFFICE - Page Settings ============ --}}
+    @if($editCampaign)
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-1 fw-bold"><i class="fa fa-building me-2"></i>Villa Bit AI Office</h5>
+                    <small class="text-muted">Configure how your published Local SEO page will look.</small>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('agency.local-seo.campaigns.update-settings', $editCampaign) }}" method="POST">
+                        @csrf
+                        <div class="row g-4">
+                            {{-- Page Sections Toggle --}}
+                            <div class="col-12">
+                                <h6 class="fw-bold mb-3">Page Sections</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="showLeadMagnet" name="show_lead_magnet" value="1"
+                                                {{ ($editCampaign->page_settings['show_lead_magnet'] ?? true) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="showLeadMagnet">
+                                                <i class="fa fa-magnet me-1"></i> Show Invisible Lead Magnet
+                                            </label>
+                                            <small class="d-block text-muted">Display lead capture form on the published page</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="showFaq" name="show_faq" value="1"
+                                                {{ ($editCampaign->page_settings['show_faq'] ?? true) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="showFaq">
+                                                <i class="fa fa-question-circle me-1"></i> Show FAQ Section
+                                            </label>
+                                            <small class="d-block text-muted">Display 6 AI-generated FAQ questions</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="showListings" name="show_listings" value="1"
+                                                {{ ($editCampaign->page_settings['show_listings'] ?? true) ? 'checked' : '' }}>
+                                            <label class="form-check-label fw-bold" for="showListings">
+                                                <i class="fa fa-home me-1"></i> Show Listings Section
+                                            </label>
+                                            <small class="d-block text-muted">Display property listings on the page</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Listings Distribution --}}
+                            <div class="col-12">
+                                <h6 class="fw-bold mb-3">Listings Distribution</h6>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label text-muted small fw-bold">Featured Listings (%)</label>
+                                        <input type="number" name="featured_listings_percent" class="form-control" 
+                                               value="{{ $editCampaign->page_settings['featured_listings_percent'] ?? 10 }}" min="0" max="100">
+                                        <small class="text-muted">Percentage of listings shown as featured (larger cards)</small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label text-muted small fw-bold">Regular Listings (%)</label>
+                                        <input type="number" name="regular_listings_percent" class="form-control" 
+                                               value="{{ $editCampaign->page_settings['regular_listings_percent'] ?? 6 }}" min="0" max="100">
+                                        <small class="text-muted">Percentage of listings shown in regular grid</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Approval Status --}}
+                            <div class="col-12">
+                                <h6 class="fw-bold mb-3">Content Approval</h6>
+                                <div class="d-flex align-items-center gap-3">
+                                    <select name="approval_status" class="form-select" style="max-width: 350px;">
+                                        <option value="villa_bit_approved" {{ ($editCampaign->page_settings['approval_status'] ?? '') === 'villa_bit_approved' ? 'selected' : '' }}>
+                                            Villa Bit AI checked & manually approved
+                                        </option>
+                                        <option value="auto_approved" {{ ($editCampaign->page_settings['approval_status'] ?? '') === 'auto_approved' ? 'selected' : '' }}>
+                                            Auto-approved (AI only)
+                                        </option>
+                                        <option value="pending" {{ ($editCampaign->page_settings['approval_status'] ?? 'pending') === 'pending' ? 'selected' : '' }}>
+                                            Pending review
+                                        </option>
+                                    </select>
+                                    <small class="text-muted">How generated content is verified before publishing.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-dark">
+                                <i class="fa fa-save me-1"></i> Save Page Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- Agency Listings Section --}}
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold"><span class="step-circle me-2">2</span>{{ __('messages.agency_listings') }}</h5>
+                    <h5 class="mb-1 fw-bold"><span class="step-circle me-2">3</span>{{ __('messages.agency_listings') }}</h5>
                     <small class="text-muted">{{ __('messages.add_real_estate_listings') }}</small>
                 </div>
                 <div class="card-body">
@@ -550,9 +664,8 @@
                         @csrf
                         <div class="row g-3">
                             <div class="col-12">
-                                <label class="form-label text-muted small fw-bold">Campaign</label>
-                                <select name="local_seo_campaign_id" class="form-select" required>
-                                    <option value="">— Select a campaign —</option>
+                                <label class="form-label text-muted small fw-bold">Campaigns</label>
+                                <select name="campaign_ids[]" class="form-select select2-campaigns" multiple required>
                                     @foreach($campaigns as $campaignOption)
                                         <option value="{{ $campaignOption->id }}"
                                             {{ (string)($editCampaign->id ?? '') === (string)$campaignOption->id ? 'selected' : '' }}>
@@ -560,7 +673,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <small class="text-muted">The listing will be linked to this campaign and shown on its page.</small>
+                                <small class="text-muted">Select one or more campaigns. The listing will appear on all selected campaign pages.</small>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label text-muted small fw-bold">{{ __('messages.listing_title') }}</label>
@@ -623,17 +736,17 @@
                                     <tr>
                                         <td><strong>{{ $listing->title }}</strong></td>
                                         <td>
-                                            <form action="{{ route('agency.local-seo.listings.assign-campaign', $listing) }}" method="POST">
+                                            <form action="{{ route('agency.local-seo.listings.assign-campaigns', $listing) }}" method="POST" class="listing-campaigns-form">
                                                 @csrf
-                                                <select name="local_seo_campaign_id" class="form-select form-select-sm" style="min-width: 180px;" onchange="this.form.submit()">
-                                                    <option value="">— Unlinked —</option>
+                                                <select name="campaign_ids[]" class="form-select form-select-sm select2-listing-campaigns" style="min-width: 200px;" multiple data-listing-id="{{ $listing->id }}">
                                                     @foreach($campaigns as $campaignOption)
                                                         <option value="{{ $campaignOption->id }}"
-                                                            {{ (string)$listing->local_seo_campaign_id === (string)$campaignOption->id ? 'selected' : '' }}>
+                                                            {{ $listing->campaigns->contains($campaignOption->id) ? 'selected' : '' }}>
                                                             {{ $campaignOption->name }}
                                                         </option>
                                                     @endforeach
                                                 </select>
+                                                <button type="submit" class="btn btn-sm btn-outline-dark mt-1 d-none save-campaigns-btn">Save</button>
                                             </form>
                                         </td>
                                         <td>{{ $listing->location ?? '—' }}</td>
@@ -1244,5 +1357,33 @@
             }, 1000);
         }
     }
+</script>
+@endsection
+
+@section('scripts')
+<script>
+    // Initialize Select2 for campaign multi-selects (must be after Select2 is loaded)
+    $(document).ready(function() {
+        // For new listing form
+        if ($('.select2-campaigns').length) {
+            $('.select2-campaigns').select2({
+                placeholder: 'Select campaigns...',
+                allowClear: true,
+                width: '100%'
+            });
+        }
+
+        // For listing table - inline campaign selects
+        if ($('.select2-listing-campaigns').length) {
+            $('.select2-listing-campaigns').select2({
+                placeholder: 'Select campaigns...',
+                allowClear: true,
+                width: '100%'
+            }).on('change', function() {
+                // Show save button when selection changes
+                $(this).closest('form').find('.save-campaigns-btn').removeClass('d-none');
+            });
+        }
+    });
 </script>
 @endsection

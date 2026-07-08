@@ -21,6 +21,7 @@ class LocalSeoCampaign extends Model
         'target_places',
         'positioning_note',
         'page_slug',
+        'page_settings',
         'status',
         'generated_page_id',
         'published_at',
@@ -28,6 +29,7 @@ class LocalSeoCampaign extends Model
 
     protected $casts = [
         'target_places' => 'array',
+        'page_settings' => 'array',
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
         'published_at' => 'datetime',
@@ -38,9 +40,13 @@ class LocalSeoCampaign extends Model
         return $this->belongsTo(AgencyProfile::class);
     }
 
+    /**
+     * Many-to-many relationship with listings
+     */
     public function listings()
     {
-        return $this->hasMany(AgencyListing::class);
+        return $this->belongsToMany(AgencyListing::class, 'agency_listing_local_seo_campaign')
+            ->withTimestamps();
     }
 
     public function generatedPage()

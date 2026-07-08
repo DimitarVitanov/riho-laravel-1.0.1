@@ -111,6 +111,29 @@ class LocalSeoCampaignController extends Controller
     }
 
     /**
+     * Update page settings for a campaign (Villa Bit AI Office section).
+     */
+    public function updateSettings(Request $request, LocalSeoCampaign $campaign)
+    {
+        $profile = $this->profileOrFail();
+        $this->authorizeCampaign($campaign, $profile);
+
+        $pageSettings = [
+            'show_lead_magnet' => $request->boolean('show_lead_magnet'),
+            'show_faq' => $request->boolean('show_faq'),
+            'show_listings' => $request->boolean('show_listings'),
+            'featured_listings_percent' => (int) $request->input('featured_listings_percent', 10),
+            'regular_listings_percent' => (int) $request->input('regular_listings_percent', 6),
+            'approval_status' => $request->input('approval_status', 'pending'),
+        ];
+
+        $campaign->update(['page_settings' => $pageSettings]);
+
+        return redirect()->route('agency.features.show', ['feature' => 'local_seo_presence_boost', 'edit_campaign_id' => $campaign->id])
+            ->with('success', 'Page settings saved.');
+    }
+
+    /**
      * Render the realestate.taxi-styled campaign page for previewing,
      * even before it is published.
      */

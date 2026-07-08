@@ -204,7 +204,16 @@ footer { margin-top: 30px; padding: 22px 0; text-align: center; color: var(--mut
   </section>
 
   {{-- CONTEXT META BAR --}}
-  @php $listings = $campaign->listings()->where('status', 'active')->latest()->get(); @endphp
+  @php 
+    $listings = $campaign->listings()->where('status', 'active')->latest()->get();
+    $pageSettings = $campaign->page_settings ?? [];
+    $showLeadMagnet = $pageSettings['show_lead_magnet'] ?? true;
+    $showFaq = $pageSettings['show_faq'] ?? true;
+    $showListings = $pageSettings['show_listings'] ?? true;
+    $featuredPercent = $pageSettings['featured_listings_percent'] ?? 10;
+    $regularPercent = $pageSettings['regular_listings_percent'] ?? 6;
+    $approvalStatus = $pageSettings['approval_status'] ?? 'pending';
+  @endphp
   <section class="context">
     <div class="meta"><b>Market</b><span>{{ $campaign->primary_city ?? '—' }}</span></div>
     <div class="meta"><b>Coverage</b><span>{{ $campaign->coverage_area ? $campaign->coverage_area . ' ' . $campaign->coverage_unit : '—' }}</span></div>
@@ -265,8 +274,71 @@ footer { margin-top: 30px; padding: 22px 0; text-align: center; color: var(--mut
     </article>
     @endif
 
+    {{-- INVISIBLE LEAD MAGNET --}}
+    @if($showLeadMagnet)
+    <article class="step" style="background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);">
+      <div class="step-head">
+        <div>
+          <h2><span class="step-number">📧</span>Get exclusive {{ $campaign->primary_city }} market insights</h2>
+          <p class="lead">Subscribe to receive property alerts, market reports, and investment opportunities directly to your inbox.</p>
+        </div>
+        <div class="output">OUTPUT → Personalized alerts</div>
+      </div>
+      <form class="query-box" style="max-width: 600px;" onsubmit="event.preventDefault(); alert('Lead magnet form submitted!');">
+        <input type="email" name="email" placeholder="Enter your email address" aria-label="Email for property alerts" required>
+        <button class="submit-arrow" type="submit" aria-label="Subscribe">→</button>
+      </form>
+      <p style="margin-top: 12px; font-size: 12px; color: var(--muted);">
+        <i>We respect your privacy. Unsubscribe anytime.</i>
+      </p>
+    </article>
+    @endif
+
+    {{-- FAQ SECTION --}}
+    @if($showFaq)
+    <article class="step">
+      <div class="step-head">
+        <div>
+          <h2><span class="step-number">?</span>Frequently asked questions about {{ $campaign->primary_city }}</h2>
+          <p class="lead">Common questions from buyers and investors about this market.</p>
+        </div>
+        <div class="output">OUTPUT → Expert answers</div>
+      </div>
+      <div class="faq-list" style="display: grid; gap: 12px;">
+        @php
+          $faqs = [
+            ['q' => 'What types of properties are available in ' . $campaign->primary_city . '?', 'a' => 'The ' . $campaign->primary_city . ' market offers a diverse range of properties including apartments, villas, houses, and land plots. Our agency specializes in matching buyers with the right property type for their needs.'],
+            ['q' => 'What is the average property price in this area?', 'a' => 'Property prices vary significantly based on location, size, and condition. Contact our agency for current market analysis and personalized price guidance.'],
+            ['q' => 'Is ' . $campaign->primary_city . ' a good area for real estate investment?', 'a' => 'Yes, ' . $campaign->primary_city . ' offers strong investment potential with growing demand, tourism appeal, and infrastructure development. We can provide detailed ROI analysis.'],
+            ['q' => 'What is the buying process for foreign buyers?', 'a' => 'Foreign buyers can purchase property with proper documentation. Our agency guides you through the entire process including legal requirements and paperwork.'],
+            ['q' => 'How long does a typical property transaction take?', 'a' => 'A standard transaction takes 30-60 days from offer acceptance to completion. We ensure all steps are handled efficiently.'],
+            ['q' => 'Do you offer property management services?', 'a' => 'Yes, we offer comprehensive property management including rental management, maintenance, and tenant relations for investment properties.'],
+          ];
+        @endphp
+        @foreach($faqs as $index => $faq)
+        <details class="faq-item" style="border: 1px solid var(--line); border-radius: 10px; padding: 0;">
+          <summary style="padding: 16px 18px; cursor: pointer; font-weight: 700; font-size: 15px; list-style: none; display: flex; justify-content: space-between; align-items: center;">
+            {{ $faq['q'] }}
+            <span style="font-size: 18px; color: var(--muted);">+</span>
+          </summary>
+          <div style="padding: 0 18px 16px; color: #3e4348; font-size: 14px; line-height: 1.7;">
+            {{ $faq['a'] }}
+          </div>
+        </details>
+        @endforeach
+      </div>
+    </article>
+    @endif
+
     {{-- FEATURED LISTINGS --}}
-    @if($listings->isNotEmpty())
+    @if($showListings && $listings->isNotEmpty())
+    @php
+      $totalListings = $listings->count();
+      $featuredCount = max(1, (int) ceil($totalListings * $featuredPercent / 100));
+      $regularCount = max(1, (int) ceil($totalListings * $regularPercent / 100));
+      $featuredListings = $listings->take($featuredCount);
+      $regularListings = $listings->skip($featuredCount)->take($regularCount);
+    @endphp
     <article class="step">
       <div class="step-head">
         <div>
@@ -275,8 +347,44 @@ footer { margin-top: 30px; padding: 22px 0; text-align: center; color: var(--mut
         </div>
         <div class="output">OUTPUT → {{ $listings->count() }} listings</div>
       </div>
+      
+      {{-- Featured listings (larger cards) --}}
+      @if($featuredListings->isNotEmpty())
+      <h4 style="margin: 0 0 16px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">Featured Properties</h4>
+      <div class="listing-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 24px;">
+        @foreach($featuredListings as $listing)
+        <div class="listing-card" style="border: 2px solid var(--accent);">
+          @if(!empty($listing->images[0]))
+            <img class="listing-img" src="{{ $listing->images[0] }}" alt="{{ $listing->title }}" loading="lazy">
+          @else
+            <div class="listing-img empty">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+              <span>No image</span>
+            </div>
+          @endif
+          <div class="listing-body">
+            <span class="badge high" style="margin-bottom: 8px;">⭐ Featured</span>
+            <h3>{{ $listing->title }}</h3>
+            <div class="listing-meta">
+              <span class="badge high">{{ $listing->property_type ?: 'Property' }}</span>
+              <span>{{ $listing->location ?? $campaign->primary_city }}</span>
+            </div>
+            <p class="desc">{{ \Illuminate\Support\Str::limit($listing->description, 180) }}</p>
+            @if($listing->formatted_price)
+              <div class="listing-price">{{ $listing->formatted_price }}</div>
+            @endif
+            <a href="mailto:{{ $profile->contact_email }}?subject=Inquiry: {{ urlencode($listing->title) }}" class="listing-btn">Request details</a>
+          </div>
+        </div>
+        @endforeach
+      </div>
+      @endif
+
+      {{-- Regular listings (smaller grid) --}}
+      @if($regularListings->isNotEmpty())
+      <h4 style="margin: 0 0 16px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;">More Properties</h4>
       <div class="listing-grid">
-        @foreach($listings as $listing)
+        @foreach($regularListings as $listing)
         <div class="listing-card">
           @if(!empty($listing->images[0]))
             <img class="listing-img" src="{{ $listing->images[0] }}" alt="{{ $listing->title }}" loading="lazy">
@@ -301,6 +409,7 @@ footer { margin-top: 30px; padding: 22px 0; text-align: center; color: var(--mut
         </div>
         @endforeach
       </div>
+      @endif
     </article>
     @endif
 
@@ -347,6 +456,12 @@ footer { margin-top: 30px; padding: 22px 0; text-align: center; color: var(--mut
 
   <div class="footer-note">
     <b>{{ $profile->agency_name }}</b> — Local real estate expertise in {{ $campaign->primary_city }} and nearby areas. Every property and figure shown here comes from real agency data.
+    @if($approvalStatus === 'villa_bit_approved')
+      <br><span style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 6px 12px; background: #e8f5e9; border-radius: 6px; font-size: 12px; font-weight: 700; color: #2e7d32;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        Villa Bit AI checked & manually approved
+      </span>
+    @endif
   </div>
 
   <footer>

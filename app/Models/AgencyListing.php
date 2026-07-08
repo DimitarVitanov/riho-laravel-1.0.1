@@ -32,9 +32,21 @@ class AgencyListing extends Model
         return $this->belongsTo(AgencyProfile::class);
     }
 
+    /**
+     * @deprecated Use campaigns() instead
+     */
     public function campaign()
     {
         return $this->belongsTo(LocalSeoCampaign::class, 'local_seo_campaign_id');
+    }
+
+    /**
+     * Many-to-many relationship with campaigns
+     */
+    public function campaigns()
+    {
+        return $this->belongsToMany(LocalSeoCampaign::class, 'agency_listing_local_seo_campaign')
+            ->withTimestamps();
     }
 
     public function getImagesAttribute()

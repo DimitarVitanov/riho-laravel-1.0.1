@@ -75,6 +75,7 @@ class AgencyFeatureController extends Controller
                     ->latest()
                     ->paginate(10) : collect();
                 $viewData['listings'] = $profile ? $profile->agencyListings()
+                    ->with('campaigns')
                     ->where('status', 'active')
                     ->latest()
                     ->get() : collect();
@@ -784,10 +785,6 @@ class AgencyFeatureController extends Controller
             return redirect()->back()->with('error', 'Agency profile not found.');
         }
 
-        if (!$profile) {
-            return redirect()->back()->with('error', 'Agency profile not found.');
-        }
-
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'property_type' => 'nullable|string|max:100',
@@ -798,13 +795,17 @@ class AgencyFeatureController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'status' => 'nullable|string|in:active,inactive',
-            'local_seo_campaign_id' => 'nullable|exists:local_seo_campaigns,id',
+            'campaign_ids' => 'required|array|min:1',
+            'campaign_ids.*' => 'exists:local_seo_campaigns,id',
         ]);
 
-        $campaignId = null;
-        if (!empty($validated['local_seo_campaign_id'])) {
-            $campaign = $profile->localSeoCampaigns()->find($validated['local_seo_campaign_id']);
-            $campaignId = $campaign?->id;
+        // Verify all campaigns belong to this agency
+        $campaignIds = collect($validated['campaign_ids'])->filter(function ($id) use ($profile) {
+            return $profile->localSeoCampaigns()->where('id', $id)->exists();
+        })->values()->all();
+
+        if (empty($campaignIds)) {
+            return redirect()->back()->with('error', 'Please select at least one valid campaign.');
         }
 
         $images = [];
@@ -815,8 +816,7 @@ class AgencyFeatureController extends Controller
             }
         }
 
-        $profile->agencyListings()->create([
-            'local_seo_campaign_id' => $campaignId,
+        $listing = $profile->agencyListings()->create([
             'title' => $validated['title'],
             'property_type' => $validated['property_type'] ?? null,
             'location' => $validated['location'] ?? null,
@@ -827,8 +827,10 @@ class AgencyFeatureController extends Controller
             'status' => $validated['status'] ?? 'active',
         ]);
 
-        return redirect()->back()->with('success', 'Listing added successfully.')
-            ->with('edit_campaign_id', $campaignId);
+        // Attach campaigns via pivot table
+        $listing->campaigns()->attach($campaignIds);
+
+        return redirect()->back()->with('success', 'Listing added successfully.');
     }
 
     public function assignListingCampaign(Request $request, \App\Models\AgencyListing $listing)
@@ -854,6 +856,35 @@ class AgencyFeatureController extends Controller
         $listing->update(['local_seo_campaign_id' => $campaignId]);
 
         return redirect()->back()->with('success', 'Listing campaign updated.');
+    }
+
+    /**
+     * Assign multiple campaigns to a listing (many-to-many)
+     */
+    public function assignListingCampaigns(Request $request, \App\Models\AgencyListing $listing)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
+
+        if (!$profile || $listing->agency_profile_id !== $profile->id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'campaign_ids' => 'nullable|array',
+            'campaign_ids.*' => 'exists:local_seo_campaigns,id',
+        ]);
+
+        // Verify all campaigns belong to this agency
+        $campaignIds = collect($validated['campaign_ids'] ?? [])->filter(function ($id) use ($profile) {
+            return $profile->localSeoCampaigns()->where('id', $id)->exists();
+        })->values()->all();
+
+        // Sync campaigns (replaces all existing associations)
+        $listing->campaigns()->sync($campaignIds);
+
+        return redirect()->back()->with('success', 'Listing campaigns updated.');
     }
 
     public function updateListing(Request $request, \App\Models\AgencyListing $listing)

@@ -296,6 +296,10 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::post('local-seo-presence-boost/campaigns/{campaign}/settings', [LocalSeoCampaignController::class, 'updateSettings'])->name('local-seo.campaigns.update-settings');
     Route::delete('local-seo-presence-boost/campaigns/{campaign}', [LocalSeoCampaignController::class, 'destroy'])->name('local-seo.campaigns.destroy');
 
+    // AI Content Generation
+    Route::post('local-seo-presence-boost/campaigns/{campaign}/generate-content', [LocalSeoCampaignController::class, 'generateContent'])->name('local-seo.campaigns.generate-content');
+    Route::post('local-seo-presence-boost/campaigns/{campaign}/check-and-publish', [LocalSeoCampaignController::class, 'checkAndPublish'])->name('local-seo.campaigns.check-and-publish');
+
     // Uniqueness Checking
     Route::post('local-seo-presence-boost/check-uniqueness', [LocalSeoCampaignController::class, 'checkUniqueness'])->name('local-seo.check-uniqueness');
     Route::get('local-seo-presence-boost/copyscape-status', [LocalSeoCampaignController::class, 'copyscapeStatus'])->name('local-seo.copyscape-status');

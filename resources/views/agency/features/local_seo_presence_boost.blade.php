@@ -272,6 +272,9 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
+                                            <button type="button" class="btn btn-sm btn-outline-primary regenerate-ai-btn" data-campaign-id="{{ $campaign->id }}" title="Regenerate AI Content">
+                                                <i class="fa fa-magic"></i>
+                                            </button>
                                             <a href="{{ route('agency.local-seo.campaigns.preview', $campaign) }}" target="_blank" class="btn btn-sm btn-outline-secondary">Preview</a>
                                             <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?edit_campaign_id={{ $campaign->id }}" class="btn btn-sm btn-dark">Edit</a>
                                             <form action="{{ route('agency.local-seo.campaigns.destroy', $campaign) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this campaign?')">
@@ -489,7 +492,9 @@
                     </div>
                 </div>
                 <div class="actions-bar">
-                    <a href="{{ route('agency.local-seo.campaigns.preview', $editCampaign) }}" target="_blank" class="btn btn-outline-secondary">Preview Page</a>
+                    <button type="button" id="checkAndPublish" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;" data-campaign-id="{{ $editCampaign->id }}">
+                        <i class="fa fa-shield me-1"></i> Check Uniqueness First
+                    </button>
                     <button type="submit" class="btn btn-accent">Publish Now</button>
                 </div>
             </form>
@@ -1532,6 +1537,121 @@
             }, 1000);
         }
     }
+
+    // Generate AI Content button
+    (function() {
+        var btn = document.getElementById('generateAiContent');
+        if (!btn) return;
+
+        btn.addEventListener('click', function() {
+            var campaignId = btn.getAttribute('data-campaign-id');
+            var resultDiv = document.getElementById('aiGenerationResult');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Generating...';
+            resultDiv.style.display = 'none';
+
+            fetch('/agency/local-seo-presence-boost/campaigns/' + campaignId + '/generate-content', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                resultDiv.style.display = 'block';
+                if (data.success) {
+                    resultDiv.innerHTML = '<div class="alert alert-success"><i class="fa fa-check-circle me-1"></i> <strong>Content Generated!</strong> ' + data.word_count + ' words created. <a href="javascript:location.reload()">Refresh</a> to see updated status, or <a href="' + btn.closest('.card').querySelector('a[target="_blank"]').href + '" target="_blank">Preview Page</a>.</div>';
+                } else {
+                    resultDiv.innerHTML = '<div class="alert alert-danger"><i class="fa fa-times-circle me-1"></i> ' + (data.message || 'Generation failed.') + '</div>';
+                }
+            })
+            .catch(function(err) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = '<div class="alert alert-danger"><i class="fa fa-times-circle me-1"></i> Error generating content. Please try again.</div>';
+            })
+            .finally(function() {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa fa-magic me-1"></i> Generate AI Content';
+            });
+        });
+    })();
+
+    // Check Uniqueness before publishing
+    (function() {
+        var btn = document.getElementById('checkAndPublish');
+        if (!btn) return;
+
+        btn.addEventListener('click', function() {
+            var campaignId = btn.getAttribute('data-campaign-id');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i> Checking...';
+
+            fetch('/agency/local-seo-presence-boost/campaigns/' + campaignId + '/check-and-publish', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.can_publish) {
+                    alert('✓ ' + data.message + '\n\nYou can now publish safely.');
+                } else {
+                    alert('⚠ ' + data.message + '\n\nConsider regenerating content or reviewing matches.');
+                }
+                location.reload();
+            })
+            .catch(function(err) {
+                alert('Error checking uniqueness. Please try again.');
+            })
+            .finally(function() {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa fa-shield me-1"></i> Check Uniqueness First';
+            });
+        });
+    })();
+
+    // Regenerate AI Content buttons (in campaign table)
+    document.querySelectorAll('.regenerate-ai-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var campaignId = btn.getAttribute('data-campaign-id');
+            
+            if (!confirm('Regenerate AI content for this campaign? This will replace existing content.')) {
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+
+            fetch('/agency/local-seo-presence-boost/campaigns/' + campaignId + '/generate-content', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    alert('✓ AI Content Generated!\n\n' + data.word_count + ' words created.');
+                    location.reload();
+                } else {
+                    alert('⚠ Generation failed: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(function(err) {
+                alert('Error generating content. Please try again.');
+            })
+            .finally(function() {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa fa-magic"></i>';
+            });
+        });
+    });
 </script>
 @endsection
 

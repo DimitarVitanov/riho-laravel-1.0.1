@@ -7,6 +7,7 @@ use App\Models\LocalSeoCampaign;
 use App\Models\GeneratedPage;
 use App\Services\PlaceSuggestionService;
 use App\Services\UniquenessService;
+use App\Services\LocalSeoContentGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -72,9 +73,25 @@ class LocalSeoCampaignController extends Controller
             $message = 'Campaign draft saved.';
         }
 
+        // Auto-generate AI content in background
+        $this->generateAiContentAsync($campaign, $profile);
+
         return redirect()->route('agency.features.show', ['feature' => 'local_seo_presence_boost'])
             ->with('success', $message)
             ->with('edit_campaign_id', $campaign->id);
+    }
+
+    /**
+     * Generate AI content asynchronously (non-blocking).
+     */
+    protected function generateAiContentAsync(LocalSeoCampaign $campaign, $profile): void
+    {
+        try {
+            $generator = new LocalSeoContentGenerator();
+            $generator->generateForCampaign($campaign, $profile);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('AI content generation failed: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -498,5 +515,123 @@ class LocalSeoCampaignController extends Controller
             'content' => $plainText,
             'word_count' => $wordCount,
         ]);
+    }
+
+    /**
+     * Generate AI content for a campaign.
+     * POST /agency/local-seo-presence-boost/campaigns/{campaign}/generate-content
+     */
+    public function generateContent(LocalSeoCampaign $campaign, LocalSeoContentGenerator $generator)
+    {
+        $profile = $this->profileOrFail();
+        $this->authorizeCampaign($campaign, $profile);
+
+        $result = $generator->generateForCampaign($campaign, $profile);
+
+        if (isset($result['error'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Content generation failed: ' . $result['error'],
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'AI content generated successfully!',
+            'word_count' => $result['word_count'] ?? 0,
+            'generated_at' => $result['generated_at'] ?? now()->toIso8601String(),
+        ]);
+    }
+
+    /**
+     * Check uniqueness and publish if passed.
+     * POST /agency/local-seo-presence-boost/campaigns/{campaign}/check-and-publish
+     */
+    public function checkAndPublish(Request $request, LocalSeoCampaign $campaign)
+    {
+        $profile = $this->profileOrFail();
+        $this->authorizeCampaign($campaign, $profile);
+
+        // Get campaign content for uniqueness check
+        $content = $this->extractCampaignText($campaign, $profile);
+
+        if (strlen($content) < 100) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Not enough content to check. Generate AI content first.',
+            ], 400);
+        }
+
+        // Check uniqueness
+        $service = new UniquenessService(
+            $profile->copyscape_username,
+            $profile->copyscape_api_key
+        );
+
+        $result = $service->check($content, $profile->id, true, false, false);
+
+        // Save result
+        $campaign->update([
+            'content_uniqueness_status' => $result['verdict'] ?? 'unknown',
+            'uniqueness_result' => $result,
+        ]);
+
+        // If passed, allow publishing
+        if (($result['verdict'] ?? '') === 'unique' || ($result['verdict'] ?? '') === 'likely_unique') {
+            return response()->json([
+                'success' => true,
+                'can_publish' => true,
+                'verdict' => $result['verdict'],
+                'message' => 'Content is unique! Ready to publish.',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'can_publish' => false,
+            'verdict' => $result['verdict'] ?? 'unknown',
+            'message' => 'Content may have duplicates. Review before publishing.',
+            'matches' => $result['matches'] ?? [],
+        ]);
+    }
+
+    /**
+     * Extract all text content from campaign for uniqueness checking.
+     */
+    protected function extractCampaignText(LocalSeoCampaign $campaign, $profile): string
+    {
+        $parts = [];
+        $aiContent = $campaign->ai_generated_content ?? [];
+
+        // Hero content
+        if (!empty($aiContent['hero_content'])) {
+            $parts[] = $aiContent['hero_content'];
+        }
+
+        // Area descriptions
+        foreach ($aiContent['area_descriptions'] ?? [] as $area) {
+            if (!empty($area['description'])) {
+                $parts[] = $area['description'];
+            }
+        }
+
+        // FAQ content
+        foreach ($aiContent['faq_content'] ?? [] as $faq) {
+            if (!empty($faq['answer'])) {
+                $parts[] = $faq['answer'];
+            }
+        }
+
+        // About content
+        if (!empty($aiContent['about_content'])) {
+            $parts[] = $aiContent['about_content'];
+        }
+
+        // Positioning note
+        if (!empty($campaign->positioning_note)) {
+            $parts[] = $campaign->positioning_note;
+        }
+
+        return implode("\n\n", $parts);
     }
 }

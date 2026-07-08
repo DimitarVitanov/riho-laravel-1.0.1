@@ -22,6 +22,10 @@ class LocalSeoCampaign extends Model
         'positioning_note',
         'page_slug',
         'page_settings',
+        'ai_generated_content',
+        'content_generated_at',
+        'content_uniqueness_status',
+        'uniqueness_result',
         'status',
         'generated_page_id',
         'published_at',
@@ -30,8 +34,11 @@ class LocalSeoCampaign extends Model
     protected $casts = [
         'target_places' => 'array',
         'page_settings' => 'array',
+        'ai_generated_content' => 'array',
+        'uniqueness_result' => 'array',
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
+        'content_generated_at' => 'datetime',
         'published_at' => 'datetime',
     ];
 

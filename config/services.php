@@ -54,4 +54,20 @@ return [
         'api_key' => env('COPYSCAPE_API_KEY'),
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'organization' => env('OPENAI_ORGANIZATION'),
+        'model' => env('OPENAI_DEFAULT_MODEL', 'gpt-4'),
+    ],
+
+    'anthropic' => [
+        'api_key' => env('ANTHROPIC_API_KEY'),
+        'model' => env('ANTHROPIC_DEFAULT_MODEL', 'claude-sonnet-4-20250514'),
+    ],
+
+    'gemini' => [
+        'api_key' => env('GOOGLE_AI_API_KEY'),
+        'model' => env('GOOGLE_AI_DEFAULT_MODEL', 'gemini-pro'),
+    ],
+
 ];

@@ -906,9 +906,9 @@ body .page-body-wrapper a.vb-domain-support-link:not(.sidebar-link):not(.menu-li
    Custom SVG Icon Images (white transparent icons)
    ============================================================ */
 .sidebar-wrapper img.svg-icon {
-    width: 24px !important;
-    height: 24px !important;
-    min-width: 24px !important;
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
     opacity: 0.8;
     filter: brightness(0) invert(1);
     transition: opacity 0.2s ease;

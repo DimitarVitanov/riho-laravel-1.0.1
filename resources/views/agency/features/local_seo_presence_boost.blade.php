@@ -10,44 +10,129 @@
 
 @section('css')
 <style>
-/* Local SEO page: +1px font sizes */
-.local-seo-feature { font-size: 15px; }
-.local-seo-feature .form-label { font-size: 13px; }
-.local-seo-feature .form-control, .local-seo-feature .form-select { font-size: 15px; }
-.local-seo-feature .btn { font-size: 15px; }
-.local-seo-feature h5 { font-size: 19px; }
-.local-seo-feature small, .local-seo-feature .small { font-size: 13px; }
-.local-seo-feature .text-muted { font-size: 13px; }
-.local-seo-feature .card-header h5 { font-size: 18px; }
-.local-seo-feature table { font-size: 14px; }
+:root {
+  --ink: #0a0b0c;
+  --soft: #f5f6f7;
+  --line: #dde1e5;
+  --muted: #69717a;
+  --accent: #1d8d64;
+  --accent-soft: #e7f6ef;
+}
 
-/* Card styling matching mockup - subtle shadow */
+/* Local SEO page - exact mockup match */
+.local-seo-feature { font-size: 14px; line-height: 1.45; }
+.local-seo-feature .form-label { display: block; font-size: 12px; font-weight: 800; color: #3e454c; margin: 0 0 5px; }
+.local-seo-feature .form-control, .local-seo-feature .form-select { 
+    display: block; width: 100%; font-size: 14px; 
+    border: 1px solid #cfd4d9; border-radius: 8px; 
+    padding: 10px 11px; min-height: 40px;
+    color: #262c31; background: #fff;
+}
+.local-seo-feature .btn { font-size: 13px; font-weight: 800; border-radius: 8px; padding: 10px 14px; border: 0; cursor: pointer; }
+.local-seo-feature .btn-accent { background: var(--accent); color: #fff !important; }
+.local-seo-feature .btn-accent:hover { background: #176347; color: #fff !important; }
+.local-seo-feature .btn.btn-outline-secondary,
+.local-seo-feature a.btn.btn-outline-secondary,
+.local-seo-feature .actions-bar .btn-outline-secondary { 
+    background: #fff !important; 
+    color: #26303a !important; 
+    border: 1px solid #cfd4d9 !important; 
+}
+.local-seo-feature .btn.btn-outline-secondary:hover,
+.local-seo-feature a.btn.btn-outline-secondary:hover { 
+    background: #f5f6f7 !important; 
+    color: #0a0b0c !important; 
+}
+.local-seo-feature .btn-dark { background: var(--ink); color: #fff !important; }
+.local-seo-feature h5 { margin: 0; font-size: 21px; line-height: 1.2; display: flex; align-items: center; gap: 6px; }
+.local-seo-feature small, .local-seo-feature .text-muted { font-size: 12px; color: var(--muted); }
+.local-seo-feature .help-text { font-size: 11.5px; color: var(--muted); margin: 5px 0 0; }
+.local-seo-feature table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.local-seo-feature th { 
+    text-align: left; font-size: 10px; letter-spacing: .05em; 
+    text-transform: uppercase; color: #58616a; background: #f7f8f9; 
+}
+.local-seo-feature th, .local-seo-feature td { padding: 10px; border-bottom: 1px solid #edf0f2; vertical-align: top; }
+.local-seo-feature tr:last-child td { border-bottom: 0; }
+
+/* Card styling - exact mockup */
 .local-seo-feature .card {
-    border: 1px solid #dde1e5;
+    background: #fff;
+    border: 1px solid var(--line);
     border-radius: 16px;
-    box-shadow: 0 7px 18px rgba(22,28,35,.04);
+    box-shadow: none;
+    margin-bottom: 0;
 }
 .local-seo-feature .card-header {
+    display: flex; justify-content: space-between; gap: 16px; align-items: flex-start;
+    border-bottom: 1px solid var(--line);
+    padding: 21px;
     border-radius: 16px 16px 0 0;
+    background: #fff;
 }
 .local-seo-feature .card-body {
+    padding: 21px;
     border-radius: 0 0 16px 16px;
 }
 
-/* Perfect circle for step numbers - black background */
+/* Step numbers - black circle */
 .local-seo-feature .step-circle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 31px;
-    height: 31px;
-    border-radius: 50%;
-    background: #0a0b0c;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 800;
-    flex-shrink: 0;
+    display: inline-grid; place-items: center;
+    width: 31px; height: 31px; border-radius: 50%;
+    background: var(--ink); color: #fff;
+    font-size: 14px; font-weight: 800;
+    margin-right: 9px;
 }
+
+/* Output badge */
+.local-seo-feature .output-badge {
+    padding: 10px 13px;
+    background: var(--accent-soft);
+    color: #176347;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* Flow arrow between steps */
+.local-seo-feature .flow-arrow {
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 86px;
+    color: #4d5a62; text-align: center; font-size: 13px; font-weight: 700;
+}
+.local-seo-feature .flow-arrow .arrow { font-size: 42px; color: var(--accent); line-height: .72; margin-top: 6px; }
+.local-seo-feature .flow-arrow .caption { 
+    background: #eef9f4; color: #226f53; 
+    padding: 6px 11px; border-radius: 999px; border: 1px solid #cfe9dc;
+    font-size: 13px;
+}
+
+/* Actions bar */
+.local-seo-feature .actions-bar {
+    display: flex; justify-content: space-between; gap: 10px; align-items: center;
+    margin-top: 19px; padding-top: 16px;
+    border-top: 1px solid var(--line);
+    flex-wrap: wrap;
+}
+
+/* Table wrap */
+.local-seo-feature .table-wrap {
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+}
+.local-seo-feature .table-wrap table { margin-bottom: 0; min-width: 700px; }
+
+/* Badge styles */
+.local-seo-feature .badge-high { display: inline-block; border-radius: 999px; padding: 3px 7px; font-size: 10px; font-weight: 800; background: #e7f6ef; color: #176347; }
+.local-seo-feature .badge-medium { display: inline-block; border-radius: 999px; padding: 3px 7px; font-size: 10px; font-weight: 800; background: #fff5d8; color: #765303; }
+.local-seo-feature .badge-low { display: inline-block; border-radius: 999px; padding: 3px 7px; font-size: 10px; font-weight: 800; background: #eef1f4; color: #5c656d; }
+
+/* Row spacing - tighter like mockup */
+.local-seo-feature .row.mb-4 { margin-bottom: 0 !important; }
+.local-seo-feature .row.g-3 { gap: 13px; }
 </style>
 @endsection
 
@@ -64,127 +149,101 @@
             </ul>
         </div>
     @endif
-  {{-- Main Settings Card --}}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
-                    <div>
-                        <h5 class="mb-1 fw-bold">{{ __('messages.local_seo') }}</h5>
-                        <small class="text-muted">{{ __('messages.feature_status') }}</small>
-                    </div>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="featureToggle"
-                            {{ $featureSetting && $featureSetting->is_enabled ? 'checked' : '' }}
-                            style="width: 3em; height: 1.5em;"
-                            onchange="toggleFeature(this)">
-                    </div>
-                </div>
 
-                <div class="card-body">
-                    <form action="{{ route('agency.local-seo.save-settings') }}" method="POST" id="settingsForm">
-                        @csrf
-                        <input type="hidden" name="feature" value="local_seo_presence_boost">
-                        <input type="hidden" name="is_enabled" id="isEnabledInput" value="{{ $featureSetting && $featureSetting->is_enabled ? '1' : '0' }}">
+    {{-- Back link when editing/creating --}}
+    @if(request('create_campaign') || request('edit_campaign_id'))
+    <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-block;margin-bottom:16px;">← Back to Campaigns</a>
+    @endif
 
-                        {{-- Settings Row --}}
-                        <div class="row mb-3">
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label text-muted small fw-bold">{{ __('messages.feature_status') }}</label>
-                                <div class="form-control bg-light" id="statusDisplay">
-                                    <span class="fw-bold {{ $featureSetting && $featureSetting->is_enabled ? 'text-dark' : 'text-muted' }}">
-                                        <i class="fa {{ $featureSetting && $featureSetting->is_enabled ? 'fa-check-circle' : 'fa-circle-o' }} me-2"></i>
-                                        {{ $featureSetting && $featureSetting->is_enabled ? __('messages.on_collecting_leads') : __('messages.off_not_active') }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label text-muted small fw-bold">{{ __('messages.ai_posting_language') }}</label>
-                                <div class="form-control bg-light">
-                                    <span class="fw-bold text-dark">{{ $profile->ai_content_language ?? 'English' }}</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label class="form-label text-muted small fw-bold">{{ __('messages.uniqueness_status') }}</label>
-                                <div class="form-control bg-light">
-                                    <span class="fw-bold text-dark">{{ \App\Http\Controllers\Agency\AgencySettingsController::uniquenessCheckMethods()[$profile->uniqueness_check_method ?? 'villabit_ai'] ?? __('messages.passed_before_publish') }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Hidden per request: only Feature Status / AI Posting Language / Uniqueness Status are shown --}}
-                        @if(false)
-                        {{-- Location Targeting Row --}}
-                        <div class="border rounded p-3 mb-3 bg-light">
-                            <h6 class="fw-bold text-dark mb-3"><i class="fa fa-map-marker me-2"></i>{{ __('messages.location_targeting') }}</h6>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold">{{ __('messages.target_city') }}</label>
-                                    <input type="text" name="target_city" class="form-control" value="{{ $profile->target_city ?? '' }}" placeholder="{{ __('messages.target_city_placeholder') }}">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted small fw-bold">{{ __('messages.target_radius_km') }}</label>
-                                    <div class="input-group">
-                                        <input type="number" name="target_radius_km" class="form-control" value="{{ $profile->target_radius_km ?? 30 }}" min="5" max="200">
-                                        <span class="input-group-text">km</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Progress Bar --}}
-                        <div class="progress mb-4" style="height: 8px;">
-                            <div class="progress-bar bg-dark" role="progressbar" style="width: {{ $featureSetting && $featureSetting->is_enabled ? '100%' : '0%' }}"></div>
-                        </div>
-
-                        {{-- Daily AI Report Section --}}
-                        <div class="border rounded p-3 mb-3">
-                            <h6 class="fw-bold mb-2">{{ __('messages.daily_ai_report') }}</h6>
-                            <p class="text-muted mb-0">
-                                {{ $latestReport->ai_actions_summary ?? __('messages.local_seo_ai_summary') }}
-                            </p>
-                        </div>
-
-                        {{-- Action Buttons --}}
-                        <div class="row g-2">
-                            <div class="col-12 col-md-auto">
-                                <button type="submit" class="btn btn-dark w-100">{{ __('messages.save') }}</button>
-                            </div>
-                            <div class="col-12 col-md-auto">
-                                <a href="{{ route('agency.local-seo.logs') }}" class="btn btn-outline-secondary w-100">{{ __('messages.view_logs') }}</a>
-                            </div>
-                            <div class="col-12 col-md-auto">
-                                <a href="{{ route('agency.local-seo.prompt') }}" class="btn btn-outline-secondary w-100">{{ __('messages.open_prompt') }}</a>
-                            </div>
-                        </div>
-                        @endif
-                    </form>
-                </div>
+    {{-- ============ MAIN SETTINGS CARD ============ --}}
+    <div class="card" style="margin-bottom:26px;">
+        <div class="card-header">
+            <div>
+                <h5 style="font-size:18px;">{{ __('messages.local_seo') }}</h5>
+                <p style="margin:4px 0 0;color:var(--muted);font-size:13px;">{{ __('messages.feature_status') }}</p>
             </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="featureToggle"
+                    {{ $featureSetting && $featureSetting->is_enabled ? 'checked' : '' }}
+                    style="width: 3em; height: 1.5em;"
+                    onchange="toggleFeature(this)">
+            </div>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('agency.local-seo.save-settings') }}" method="POST" id="settingsForm">
+                @csrf
+                <input type="hidden" name="feature" value="local_seo_presence_boost">
+                <input type="hidden" name="is_enabled" id="isEnabledInput" value="{{ $featureSetting && $featureSetting->is_enabled ? '1' : '0' }}">
+
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:13px;">
+                    <div>
+                        <label class="form-label">{{ __('messages.feature_status') }}</label>
+                        <div class="form-control" style="background:var(--soft);" id="statusDisplay">
+                            <span style="font-weight:750;color:{{ $featureSetting && $featureSetting->is_enabled ? '#0a0b0c' : 'var(--muted)' }}">
+                                <i class="fa {{ $featureSetting && $featureSetting->is_enabled ? 'fa-check-circle' : 'fa-circle-o' }}" style="margin-right:8px;"></i>
+                                {{ $featureSetting && $featureSetting->is_enabled ? __('messages.on_collecting_leads') : __('messages.off_not_active') }}
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">{{ __('messages.ai_posting_language') }}</label>
+                        <div class="form-control" style="background:var(--soft);">
+                            <span style="font-weight:750;">{{ $profile->ai_content_language ?? 'English' }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">{{ __('messages.uniqueness_status') }}</label>
+                        <div class="form-control" style="background:var(--soft);">
+                            <span style="font-weight:750;">{{ \App\Http\Controllers\Agency\AgencySettingsController::uniquenessCheckMethods()[$profile->uniqueness_check_method ?? 'villabit_ai'] ?? __('messages.passed_before_publish') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
-        {{-- ============ CAMPAIGNS TABLE ============ --}}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold">Your Campaigns</h5>
-                    <small class="text-muted">Activate, edit or remove your Local SEO campaigns.</small>
-                </div>
-                <div class="card-body p-0">
+    {{-- ============ ACTION BUTTONS BAR ============ --}}
+    @if(!request('create_campaign') && !request('edit_campaign_id') && !request('add_listing') && !request('show_listings'))
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+        <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?create_campaign=1" class="btn btn-accent">
+            <i class="fa fa-plus me-1"></i> Add Campaign
+        </a>
+        <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?add_listing=1" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">
+            <i class="fa fa-plus me-1"></i> Add Listing
+        </a>
+        <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?show_listings=1" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">
+            <i class="fa fa-list me-1"></i> Show Listings
+        </a>
+    </div>
+    @endif
+
+    {{-- ============ CAMPAIGNS TABLE (hidden when adding listing or showing listings) ============ --}}
+    @if(!request('add_listing') && !request('show_listings'))
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h5><span class="step-circle">●</span>Your Campaigns</h5>
+                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">Manage your Local SEO campaigns</p>
+            </div>
+            @if(request('create_campaign') || request('edit_campaign_id'))
+            <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">
+                ← Back
+            </a>
+            @endif
+        </div>
+        <div class="card-body" style="padding:0;">
                     @if($campaigns->count() > 0)
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0 align-middle">
-                                <thead class="table-light">
+                        <div class="table-wrap">
+                            <table class="table mb-0">
+                                <thead>
                                     <tr>
-                                        <th>USE</th>
-                                        <th>CAMPAIGN</th>
-                                        <th>MARKET</th>
-                                        <th>COVERAGE</th>
-                                        <th>LISTINGS</th>
-                                        <th>STATUS</th>
-                                        <th class="text-end">ACTION</th>
+                                        <th style="width:50px">Use</th>
+                                        <th>Campaign</th>
+                                        <th>Market</th>
+                                        <th>Coverage</th>
+                                        <th>Listings</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -205,24 +264,16 @@
                                         <td><span class="badge bg-secondary">{{ $campaign->listings_count }}</span></td>
                                         <td>
                                             @if($campaign->status === 'published')
-                                                <span class="badge bg-success">Active</span>
+                                                <span class="badge badge-high">Active</span>
                                             @elseif($campaign->status === 'unpublished')
-                                                <span class="badge bg-warning text-dark">Unpublished</span>
+                                                <span class="badge badge-medium">Unpublished</span>
                                             @else
-                                                <span class="badge bg-light text-dark border">Draft</span>
+                                                <span class="badge badge-low">Draft</span>
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <form action="{{ route('agency.local-seo.campaigns.toggle', $campaign) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @if($campaign->status === 'published')
-                                                    <button type="submit" class="btn btn-sm btn-outline-warning" onclick="return confirm('Unpublish this campaign? It will be removed from the server.')">Unpublish</button>
-                                                @else
-                                                    <button type="submit" class="btn btn-sm btn-success">Publish</button>
-                                                @endif
-                                            </form>
-                                            <a href="{{ route('agency.local-seo.campaigns.preview', $campaign) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">Preview</a>
-                                            <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?edit_campaign_id={{ $campaign->id }}" class="btn btn-sm btn-outline-dark">Edit</a>
+                                            <a href="{{ route('agency.local-seo.campaigns.preview', $campaign) }}" target="_blank" class="btn btn-sm btn-outline-secondary">Preview</a>
+                                            <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?edit_campaign_id={{ $campaign->id }}" class="btn btn-sm btn-dark">Edit</a>
                                             <form action="{{ route('agency.local-seo.campaigns.destroy', $campaign) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this campaign?')">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
@@ -234,22 +285,27 @@
                             </table>
                         </div>
                     @else
-                        <div class="text-center py-4">
-                            <p class="text-muted mb-0">No campaigns yet. Define your first campaign above.</p>
+                        <div class="text-center py-5">
+                            <p class="text-muted mb-3">No campaigns yet.</p>
+                            <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?create_campaign=1" class="btn btn-accent">
+                                <i class="fa fa-plus me-1"></i> Create Your First Campaign
+                            </a>
                         </div>
                     @endif
-                </div>
-            </div>
         </div>
     </div>
-    {{-- ============ SECTION 1: Define Campaign ============ --}}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold"><span class="step-circle me-2">1</span>Define Your Local SEO Campaign</h5>
-                    <small class="text-muted">These rules tell AI where the agency works, its coverage area, and how it positions itself.</small>
-                </div>
+    @endif {{-- End of campaigns table conditional --}}
+
+    {{-- ============ SECTION 1: Define Campaign (only shown when creating/editing) ============ --}}
+    @if(request('create_campaign') || $editCampaign)
+    <div class="card" style="margin-top:26px;">
+        <div class="card-header">
+            <div>
+                <h5><span class="step-circle">1</span>{{ $editCampaign ? 'Edit Campaign' : 'Define Your Local SEO Campaign' }}</h5>
+                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">These rules tell AI where the agency works, what it sells, whom it wants to reach.</p>
+            </div>
+            <span class="output-badge">OUTPUT → Campaign rules</span>
+        </div>
                 <div class="card-body">
                     <form action="{{ route('agency.local-seo.campaigns.store') }}" method="POST" id="campaignForm">
                         @csrf
@@ -324,35 +380,29 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end mt-4">
-                            @if($editCampaign)
-                                <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}" class="btn btn-outline-secondary me-2">Cancel edit</a>
-                            @endif
-                            <button type="submit" class="btn btn-dark">Save Draft</button>
+                        <div class="actions-bar">
+                            <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">← Back to Campaigns</a>
+                            <button type="submit" class="btn btn-accent">{{ $editCampaign ? 'Save Changes' : 'Create Campaign' }}</button>
                         </div>
                     </form>
-                </div>
-            </div>
         </div>
     </div>
+    @endif
 
-
-
-    {{-- ============ UNIQUENESS CHECKER ============ --}}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="mb-1 fw-bold"><i class="fa fa-shield-alt me-2"></i>Content Uniqueness Checker</h5>
-                        <small class="text-muted">Check AI-generated content for duplicates before publishing.</small>
-                    </div>
-                    <div id="copyscapeStatus" class="text-muted small">
-                        <i class="fa fa-spinner fa-spin"></i> Loading Copyscape status...
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
+    {{-- ============ UNIQUENESS CHECKER (only when editing) ============ --}}
+    @if($editCampaign)
+    <div class="card" style="margin-top:26px;">
+        <div class="card-header">
+            <div>
+                <h5><span class="step-circle">2</span>Content Uniqueness Checker</h5>
+                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">Check AI-generated content for duplicates before publishing.</p>
+            </div>
+            <div id="copyscapeStatus" class="text-muted small">
+                <i class="fa fa-spinner fa-spin"></i> Loading Copyscape status...
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
                         @if(isset($campaigns) && $campaigns->count() > 0)
                         <div class="col-12">
                             <label class="form-label text-muted small fw-bold">Select campaign to check</label>
@@ -404,51 +454,48 @@
                         </div>
                     </div>
 
-                    <div id="uniquenessResult" class="mt-4" style="display:none;">
-                        <div class="alert" id="uniquenessAlert">
-                            <strong id="uniquenessVerdict"></strong>
-                            <p id="uniquenessSummary" class="mb-0 mt-1"></p>
-                        </div>
-                        <div id="uniquenessMatches" class="mt-3"></div>
-                    </div>
+            <div id="uniquenessResult" class="mt-4" style="display:none;">
+                <div class="alert" id="uniquenessAlert">
+                    <strong id="uniquenessVerdict"></strong>
+                    <p id="uniquenessSummary" class="mb-0 mt-1"></p>
                 </div>
+                <div id="uniquenessMatches" class="mt-3"></div>
             </div>
         </div>
     </div>
 
-    {{-- ============ SECTION 3: Publishing (only when editing a campaign) ============ --}}
-    @if($editCampaign)
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold"><span class="step-circle me-2">2</span>Publish</h5>
-                    <small class="text-muted">Publish "{{ $editCampaign->name }}" to your connected domain.</small>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('agency.local-seo.campaigns.publish', $editCampaign) }}" method="POST">
-                        @csrf
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold text-dark" style="color:black">Publishing Domain</label>
-                                <input type="text" class="form-control bg-light text-dark" value="{{ $profile->custom_domain ?? 'Not connected yet' }}" readonly>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold">Page URL Slug</label>
-                                <input type="text" name="page_slug" class="form-control"
-                                       value="{{ $editCampaign->page_slug ?? ('/' . \Illuminate\Support\Str::slug('real-estate-' . ($editCampaign->primary_city ?: $editCampaign->name)) . '/') }}">
-                                <small class="text-muted">Suggested automatically — you can change it.</small>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-end mt-4">
-                            <button type="submit" class="btn btn-dark">Save & Publish</button>
-                        </div>
-                    </form>
-                </div>
+    {{-- ============ SECTION 3: Publishing ============ --}}
+    <div class="card" style="margin-top:26px;">
+        <div class="card-header">
+            <div>
+                <h5><span class="step-circle">3</span>Publish</h5>
+                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">Publish "{{ $editCampaign->name }}" to your connected domain.</p>
             </div>
+            <span class="output-badge">OUTPUT → Published page</span>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('agency.local-seo.campaigns.publish', $editCampaign) }}" method="POST">
+                @csrf
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;">
+                    <div>
+                        <label class="form-label">Publishing Domain</label>
+                        <input type="text" class="form-control" style="background:var(--soft);" value="{{ $profile->custom_domain ?? 'Not connected yet' }}" readonly>
+                    </div>
+                    <div>
+                        <label class="form-label">Page URL Slug</label>
+                        <input type="text" name="page_slug" class="form-control"
+                               value="{{ $editCampaign->page_slug ?? ('/' . \Illuminate\Support\Str::slug('real-estate-' . ($editCampaign->primary_city ?: $editCampaign->name)) . '/') }}">
+                        <div class="help-text">Suggested automatically — you can change it.</div>
+                    </div>
+                </div>
+                <div class="actions-bar">
+                    <a href="{{ route('agency.local-seo.campaigns.preview', $editCampaign) }}" target="_blank" class="btn btn-outline-secondary">Preview Page</a>
+                    <button type="submit" class="btn btn-accent">Publish Now</button>
+                </div>
+            </form>
         </div>
     </div>
-    @endif
+    @endif {{-- End of editCampaign sections --}}
 
     {{-- Hidden per request (legacy sections) --}}
     @if(false)
@@ -556,18 +603,19 @@
         </div>
     </div>
     @endif
-    @endif
+    @endif {{-- End of @if(false) legacy sections --}}
 
-    {{-- ============ VILLA BIT AI OFFICE - Page Settings ============ --}}
+    {{-- ============ VILLA BIT AI OFFICE - Page Settings (only when editing) ============ --}}
     @if($editCampaign)
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold"><i class="fa fa-building me-2"></i>Villa Bit AI Office</h5>
-                    <small class="text-muted">Configure how your published Local SEO page will look.</small>
-                </div>
-                <div class="card-body">
+    <div class="card" style="margin-top:26px;">
+        <div class="card-header">
+            <div>
+                <h5><span class="step-circle">4</span>Villa Bit AI Office</h5>
+                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">Configure how your published page will look.</p>
+            </div>
+            <span class="output-badge">OUTPUT → Page settings</span>
+        </div>
+        <div class="card-body">
                     <form action="{{ route('agency.local-seo.campaigns.update-settings', $editCampaign) }}" method="POST">
                         @csrf
                         <div class="row g-4">
@@ -629,149 +677,286 @@
 
                         </div>
 
-                        <div class="d-flex justify-content-end mt-4">
-                            <button type="submit" class="btn btn-dark">
-                                <i class="fa fa-save me-1"></i> Save Page Settings
-                            </button>
+                        <div class="actions-bar">
+                            <span></span>
+                            <button type="submit" class="btn btn-accent">Save Page Settings</button>
                         </div>
                     </form>
-                </div>
+        </div>
+    </div>
+
+    @endif {{-- End of Villa Bit AI Office --}}
+
+    {{-- ============ SHOW LISTINGS TABLE (only when show_listings) ============ --}}
+    @if(request('show_listings'))
+    <div class="card" style="margin-top:26px;">
+        <div class="card-header">
+            <div>
+                <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-block;margin-bottom:8px;">← Back</a>
+                <h5><span class="step-circle">●</span>Your Listings</h5>
+                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">All property listings across your campaigns</p>
             </div>
+            <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?add_listing=1" class="btn btn-accent">
+                <i class="fa fa-plus me-1"></i> Add Listing
+            </a>
+        </div>
+        <div class="card-body" style="padding:0;">
+            @if($listings->count() > 0)
+                <div class="table-wrap">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width:80px;">Preview</th>
+                                <th>Title</th>
+                                <th>Campaign</th>
+                                <th>Location</th>
+                                <th>Price</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($listings as $listing)
+                            <tr>
+                                <td>
+                                    @if(count($listing->images) > 0)
+                                        <img src="{{ asset('storage/' . $listing->images[0]) }}" alt="" style="width:60px;height:45px;object-fit:cover;border-radius:6px;">
+                                    @else
+                                        <div style="width:60px;height:45px;background:#f5f6f7;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#ccc;"><i class="fa fa-image"></i></div>
+                                    @endif
+                                </td>
+                                <td>
+                                    <strong>{{ $listing->title }}</strong>
+                                    @if($listing->property_type)
+                                    <br><span style="font-size:11px;color:var(--muted);">{{ $listing->property_type }}</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @foreach($listing->campaigns as $camp)
+                                        <span class="badge bg-light text-dark" style="font-size:10px;">{{ $camp->name }}</span>
+                                    @endforeach
+                                </td>
+                                <td>{{ $listing->location ?? '—' }}</td>
+                                <td>
+                                    @if($listing->price)
+                                        <strong>{{ number_format($listing->price, 0, ',', '.') }}</strong> {{ $listing->currency ?? 'EUR' }}
+                                    @else
+                                        —
+                                    @endif
+                                </td>
+                                <td class="text-end" style="white-space:nowrap;">
+                                    <button type="button" class="btn btn-sm btn-outline-dark" onclick="previewListing({{ $listing->id }})">Preview</button>
+                                    <form action="{{ route('agency.local-seo.listings.destroy', $listing) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this listing?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="text-center py-5">
+                    <p class="text-muted mb-3">No listings yet.</p>
+                    <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?add_listing=1" class="btn btn-accent">
+                        <i class="fa fa-plus me-1"></i> Add Your First Listing
+                    </a>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    {{-- Listing Preview Modal --}}
+    <div id="listingPreviewModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:16px;max-width:600px;width:90%;max-height:90vh;overflow:auto;position:relative;">
+            <button onclick="closePreviewModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;color:#666;">×</button>
+            <div id="listingPreviewContent" style="padding:24px;"></div>
+        </div>
+    </div>
+
+    @php
+        $listingsJson = [];
+        foreach($listings as $listing) {
+            $listingsJson[$listing->id] = [
+                'title' => $listing->title,
+                'property_type' => $listing->property_type ?? '',
+                'location' => $listing->location ?? '',
+                'price' => $listing->price ? number_format($listing->price, 0, ',', '.') . ' ' . ($listing->currency ?? 'EUR') : '',
+                'description' => $listing->description ?? '',
+                'images' => $listing->images ?? [],
+                'campaigns' => $listing->campaigns->pluck('name')->toArray()
+            ];
+        }
+    @endphp
+    <script>
+    var listingsData = {!! json_encode($listingsJson) !!};
+
+    function previewListing(id) {
+        var data = listingsData[id];
+        if (!data) return;
+        
+        var imagesHtml = '';
+        if (data.images && data.images.length > 0) {
+            imagesHtml = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">';
+            data.images.forEach(function(img) {
+                imagesHtml += '<img src="/storage/' + img + '" style="width:120px;height:90px;object-fit:cover;border-radius:8px;">';
+            });
+            imagesHtml += '</div>';
+        }
+
+        var campaignsHtml = data.campaigns.map(function(c) {
+            return '<span style="background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:11px;margin-right:4px;">' + c + '</span>';
+        }).join('');
+
+        var html = imagesHtml +
+            '<h4 style="margin:0 0 8px;font-size:20px;">' + data.title + '</h4>' +
+            (data.property_type ? '<p style="color:#666;margin:0 0 12px;font-size:13px;">' + data.property_type + '</p>' : '') +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">' +
+                '<div><strong style="font-size:11px;color:#888;display:block;">Location</strong>' + (data.location || '—') + '</div>' +
+                '<div><strong style="font-size:11px;color:#888;display:block;">Price</strong>' + (data.price || '—') + '</div>' +
+            '</div>' +
+            (data.description ? '<div><strong style="font-size:11px;color:#888;display:block;">Description</strong><p style="margin:4px 0 0;font-size:14px;line-height:1.5;">' + data.description + '</p></div>' : '') +
+            (campaignsHtml ? '<div style="margin-top:16px;"><strong style="font-size:11px;color:#888;display:block;margin-bottom:6px;">Campaigns</strong>' + campaignsHtml + '</div>' : '');
+
+        document.getElementById('listingPreviewContent').innerHTML = html;
+        document.getElementById('listingPreviewModal').style.display = 'flex';
+    }
+
+    function closePreviewModal() {
+        document.getElementById('listingPreviewModal').style.display = 'none';
+    }
+
+    document.getElementById('listingPreviewModal').addEventListener('click', function(e) {
+        if (e.target === this) closePreviewModal();
+    });
+    </script>
+    @endif
+
+    {{-- ============ ADD LISTING FORM (only when add_listing or editing campaign) ============ --}}
+    @if(request('add_listing') || $editCampaign)
+    <div class="card" style="margin-top:26px;">
+        <div class="card-header">
+            <div>
+                @if(request('add_listing'))
+                <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-block;margin-bottom:8px;">← Back</a>
+                @endif
+                <h5><span class="step-circle">{{ $editCampaign ? '5' : '●' }}</span>Add Listing</h5>
+                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">Add real estate listings to enhance your Local SEO pages</p>
+            </div>
+            <span class="output-badge">OUTPUT → Unique source data</span>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('agency.local-seo.listings.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Campaigns</label>
+                        <select name="campaign_ids[]" class="form-select select2-campaigns" multiple required>
+                            @foreach($campaigns as $campaignOption)
+                                <option value="{{ $campaignOption->id }}"
+                                    {{ (string)($editCampaign->id ?? '') === (string)$campaignOption->id ? 'selected' : '' }}>
+                                    {{ $campaignOption->name }}{{ $campaignOption->primary_city ? ' — ' . $campaignOption->primary_city : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted">Select one or more campaigns. The listing will appear on all selected campaign pages.</small>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Listing Title</label>
+                        <input type="text" name="title" class="form-control" placeholder="e.g. Luxury Villa with Sea View" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Property Type</label>
+                        <input type="text" name="property_type" class="form-control" placeholder="e.g. Villa, Apartment, Land">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" placeholder="e.g. Split, Croatia">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Price</label>
+                        <div class="input-group">
+                            <input type="number" name="price" class="form-control" placeholder="0" min="0">
+                            <select name="currency" class="form-select" style="max-width:80px;">
+                                <option value="EUR">EUR</option>
+                                <option value="USD">USD</option>
+                                <option value="GBP">GBP</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="1" placeholder="Describe the property, features, and unique selling points..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Images</label>
+                        <input type="file" name="images[]" class="form-control" multiple accept="image/*">
+                        <small class="text-muted">Upload multiple images. Max 5MB each.</small>
+                    </div>
+                </div>
+                <div class="actions-bar">
+                    <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?show_listings=1" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">View All Listings</a>
+                    <button type="submit" class="btn btn-accent">+ Add Listing</button>
+                </div>
+            </form>
         </div>
     </div>
     @endif
 
-    {{-- Agency Listings Section --}}
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="mb-1 fw-bold"><span class="step-circle me-2">3</span>{{ __('messages.agency_listings') }}</h5>
-                    <small class="text-muted">{{ __('messages.add_real_estate_listings') }}</small>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('agency.local-seo.listings.store') }}" method="POST" enctype="multipart/form-data" class="mb-4">
-                        @csrf
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label text-muted small fw-bold">Campaigns</label>
-                                <select name="campaign_ids[]" class="form-select select2-campaigns" multiple required>
-                                    @foreach($campaigns as $campaignOption)
-                                        <option value="{{ $campaignOption->id }}"
-                                            {{ (string)($editCampaign->id ?? '') === (string)$campaignOption->id ? 'selected' : '' }}>
-                                            {{ $campaignOption->name }}{{ $campaignOption->primary_city ? ' — ' . $campaignOption->primary_city : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <small class="text-muted">Select one or more campaigns. The listing will appear on all selected campaign pages.</small>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label text-muted small fw-bold">{{ __('messages.listing_title') }}</label>
-                                <input type="text" name="title" class="form-control" placeholder="{{ __('messages.listing_title_placeholder') }}" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label text-muted small fw-bold">{{ __('messages.property_type') }}</label>
-                                <input type="text" name="property_type" class="form-control" placeholder="{{ __('messages.property_type_placeholder') }}">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label text-muted small fw-bold">{{ __('messages.location') }}</label>
-                                <input type="text" name="location" class="form-control" placeholder="{{ __('messages.location_placeholder') }}">
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label text-muted small fw-bold">{{ __('messages.price') }}</label>
-                                <div class="input-group">
-                                    <input type="number" name="price" class="form-control" placeholder="0" min="0">
-                                    <select name="currency" class="form-select" style="max-width: 80px;">
-                                        <option value="EUR">EUR</option>
-                                        <option value="USD">USD</option>
-                                        <option value="GBP">GBP</option>
-                                        <option value="HRK">HRK</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label text-muted small fw-bold">{{ __('messages.description') }}</label>
-                                <textarea name="description" class="form-control" rows="3" placeholder="{{ __('messages.listing_description_placeholder') }}"></textarea>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold">{{ __('messages.images') }}</label>
-                                <input type="file" name="images[]" class="form-control" multiple accept="image/*">
-                                <small class="text-muted">{{ __('messages.images_help') }}</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold d-block">&nbsp;</label>
-                                <button type="submit" class="btn btn-dark">
-                                    <i class="fa fa-plus me-1"></i>{{ __('messages.add_listing') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
-                    @if($listings->count() > 0)
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>{{ __('messages.title') }}</th>
-                                        <th>Campaign</th>
-                                        <th>{{ __('messages.location') }}</th>
-                                        <th>{{ __('messages.price') }}</th>
-                                        <th>{{ __('messages.images') }}</th>
-                                        <th>{{ __('messages.status') }}</th>
-                                        <th>{{ __('messages.actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($listings as $listing)
-                                    <tr>
-                                        <td><strong>{{ $listing->title }}</strong></td>
-                                        <td>
-                                            <form action="{{ route('agency.local-seo.listings.assign-campaigns', $listing) }}" method="POST" class="listing-campaigns-form">
-                                                @csrf
-                                                <select name="campaign_ids[]" class="form-select form-select-sm select2-listing-campaigns" style="min-width: 200px;" multiple data-listing-id="{{ $listing->id }}">
-                                                    @foreach($campaigns as $campaignOption)
-                                                        <option value="{{ $campaignOption->id }}"
-                                                            {{ $listing->campaigns->contains($campaignOption->id) ? 'selected' : '' }}>
-                                                            {{ $campaignOption->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                <button type="submit" class="btn btn-sm btn-outline-dark mt-1 d-none save-campaigns-btn">Save</button>
-                                            </form>
-                                        </td>
-                                        <td>{{ $listing->location ?? '—' }}</td>
-                                        <td>{{ $listing->formatted_price ?? '—' }}</td>
-                                        <td>
-                                            @if(count($listing->images) > 0)
-                                                <span class="badge bg-dark">{{ count($listing->images) }} {{ __('messages.images') }}</span>
-                                            @else
-                                                <span class="text-muted">—</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-dark">{{ ucfirst($listing->status) }}</span>
-                                        </td>
-                                        <td>
-                                            <form action="{{ route('agency.local-seo.listings.destroy', $listing) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('messages.confirm_delete_listing') }}')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">{{ __('messages.delete') }}</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
-                        <div class="text-center py-4">
-                            <p class="text-muted mb-0">{{ __('messages.no_listings_yet') }}</p>
-                        </div>
-                    @endif
-                </div>
+    {{-- ============ EXISTING LISTINGS TABLE (only when editing campaign - compact version) ============ --}}
+    @if($editCampaign && $listings->count() > 0)
+    <div class="card" style="margin-top:26px;">
+        <div class="card-header">
+            <div>
+                <h5><span class="step-circle">6</span>Campaign Listings</h5>
+                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">Listings assigned to this campaign</p>
+            </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+            <div class="table-wrap">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">Preview</th>
+                            <th>Title</th>
+                            <th>Location</th>
+                            <th>Price</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($listings->filter(fn($l) => $l->campaigns->contains($editCampaign->id)) as $listing)
+                        <tr>
+                            <td>
+                                @if(count($listing->images) > 0)
+                                    <img src="{{ asset('storage/' . $listing->images[0]) }}" alt="" style="width:50px;height:38px;object-fit:cover;border-radius:4px;">
+                                @else
+                                    <div style="width:50px;height:38px;background:#f5f6f7;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:10px;"><i class="fa fa-image"></i></div>
+                                @endif
+                            </td>
+                            <td><strong>{{ $listing->title }}</strong></td>
+                            <td>{{ $listing->location ?? '—' }}</td>
+                            <td>
+                                @if($listing->price)
+                                    {{ number_format($listing->price, 0, ',', '.') }} {{ $listing->currency ?? 'EUR' }}
+                                @else
+                                    —
+                                @endif
+                            </td>
+                            <td class="text-end">
+                                <form action="{{ route('agency.local-seo.listings.destroy', $listing) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+    @endif
 
     {{-- Hidden per request (legacy sections) --}}
     @if(false)

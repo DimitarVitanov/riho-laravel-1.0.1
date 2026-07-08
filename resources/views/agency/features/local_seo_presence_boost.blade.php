@@ -823,17 +823,23 @@
             (data.description ? '<div><strong style="font-size:11px;color:#888;display:block;">Description</strong><p style="margin:4px 0 0;font-size:14px;line-height:1.5;">' + data.description + '</p></div>' : '') +
             (campaignsHtml ? '<div style="margin-top:16px;"><strong style="font-size:11px;color:#888;display:block;margin-bottom:6px;">Campaigns</strong>' + campaignsHtml + '</div>' : '');
 
-        document.getElementById('listingPreviewContent').innerHTML = html;
-        document.getElementById('listingPreviewModal').style.display = 'flex';
+        var previewContent = document.getElementById('listingPreviewContent');
+        var previewModalEl = document.getElementById('listingPreviewModal');
+        if (previewContent) previewContent.innerHTML = html;
+        if (previewModalEl) previewModalEl.style.display = 'flex';
     }
 
     function closePreviewModal() {
-        document.getElementById('listingPreviewModal').style.display = 'none';
+        var modal = document.getElementById('listingPreviewModal');
+        if (modal) modal.style.display = 'none';
     }
 
-    document.getElementById('listingPreviewModal').addEventListener('click', function(e) {
-        if (e.target === this) closePreviewModal();
-    });
+    var previewModal = document.getElementById('listingPreviewModal');
+    if (previewModal) {
+        previewModal.addEventListener('click', function(e) {
+            if (e.target === this) closePreviewModal();
+        });
+    }
     </script>
     @endif
 
@@ -1257,25 +1263,29 @@
 
     // ============ UNIQUENESS CHECKER ============
     (function() {
-        // Load Copyscape status on page load
-        fetch('{{ route('agency.local-seo.copyscape-status') }}', {
-            headers: { 'Accept': 'application/json' }
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            var el = document.getElementById('copyscapeStatus');
-            if (data.configured) {
-                var balanceText = data.balance !== null ? ' (' + data.balance + ' credits)' : '';
-                el.innerHTML = '<i class="fa fa-check-circle text-success"></i> Copyscape configured' + balanceText;
-                document.getElementById('includeCopyscape').disabled = false;
-            } else {
-                el.innerHTML = '<i class="fa fa-exclamation-circle text-warning"></i> Copyscape not configured';
-                document.getElementById('includeCopyscape').disabled = true;
-            }
-        })
-        .catch(function() {
-            document.getElementById('copyscapeStatus').innerHTML = '<i class="fa fa-times-circle text-danger"></i> Status check failed';
-        });
+        var copyscapeStatusEl = document.getElementById('copyscapeStatus');
+        var includeCopyscapeEl = document.getElementById('includeCopyscape');
+        
+        // Load Copyscape status on page load (only if elements exist)
+        if (copyscapeStatusEl) {
+            fetch('{{ route('agency.local-seo.copyscape-status') }}', {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.configured) {
+                    var balanceText = data.balance !== null ? ' (' + data.balance + ' credits)' : '';
+                    copyscapeStatusEl.innerHTML = '<i class="fa fa-check-circle text-success"></i> Copyscape configured' + balanceText;
+                    if (includeCopyscapeEl) includeCopyscapeEl.disabled = false;
+                } else {
+                    copyscapeStatusEl.innerHTML = '<i class="fa fa-exclamation-circle text-warning"></i> Copyscape not configured';
+                    if (includeCopyscapeEl) includeCopyscapeEl.disabled = true;
+                }
+            })
+            .catch(function() {
+                copyscapeStatusEl.innerHTML = '<i class="fa fa-times-circle text-danger"></i> Status check failed';
+            });
+        }
 
         // Load campaign content for uniqueness check
         var loadBtn = document.getElementById('loadCampaignContent');
@@ -1333,7 +1343,8 @@
         }
 
         // Run uniqueness check
-        document.getElementById('runUniquenessCheck').addEventListener('click', function() {
+        var runUniquenessBtn = document.getElementById('runUniquenessCheck');
+        if (runUniquenessBtn) runUniquenessBtn.addEventListener('click', function() {
             var text = document.getElementById('uniquenessText').value.trim();
             var includeGoogle = document.getElementById('includeGoogle').checked;
             var includeCopyscape = document.getElementById('includeCopyscape').checked;

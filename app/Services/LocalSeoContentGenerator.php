@@ -234,9 +234,9 @@ class LocalSeoContentGenerator
 
         try {
             Log::info('Calling Gemini API...');
-            // Use gemini-2.0-flash or gemini-1.5-flash-latest
+            // Use gemini-2.5-flash (stable, fast)
             $response = Http::timeout(30)->post(
-                "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$this->geminiKey}",
+                "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={$this->geminiKey}",
                 [
                     'contents' => [
                         ['parts' => [['text' => $prompt]]]
@@ -321,7 +321,7 @@ class LocalSeoContentGenerator
                     'content-type' => 'application/json',
                 ])
                 ->post('https://api.anthropic.com/v1/messages', [
-                    'model' => 'claude-3-5-sonnet-20241022',
+                    'model' => 'claude-haiku-4-5-20251001',
                     'max_tokens' => $maxTokens,
                     'messages' => [
                         ['role' => 'user', 'content' => $prompt],

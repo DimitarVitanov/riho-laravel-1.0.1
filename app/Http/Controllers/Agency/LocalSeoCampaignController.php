@@ -164,17 +164,38 @@ class LocalSeoCampaignController extends Controller
         $this->authorizeCampaign($campaign, $profile);
 
         if ($campaign->status === 'published') {
+            // Unpublish - also delete from server
             $campaign->update(['status' => 'unpublished']);
             if ($campaign->generatedPage) {
                 $campaign->generatedPage->update(['status' => 'draft']);
             }
-            $msg = 'Campaign unpublished.';
+
+            // Delete from server via SFTP
+            if ($profile->server_ip && $profile->sftp_username && $profile->sftp_password) {
+                $uploader = new \App\Services\PageSftpUploader();
+                $uploader->deleteCampaignPage($campaign, $profile);
+            }
+
+            $msg = 'Campaign unpublished and removed from server.';
         } else {
+            // Publish - also upload to server
             $campaign->update(['status' => 'published', 'published_at' => now()]);
             if ($campaign->generatedPage) {
                 $campaign->generatedPage->update(['status' => 'published', 'published_at' => now()]);
             }
-            $msg = 'Campaign published.';
+
+            // Upload to server via SFTP
+            if ($profile->server_ip && $profile->sftp_username && $profile->sftp_password) {
+                $uploader = new \App\Services\PageSftpUploader();
+                $uploadResult = $uploader->uploadCampaignPage($campaign, $profile);
+                if ($uploadResult['success']) {
+                    $msg = 'Campaign published and uploaded to server.';
+                } else {
+                    $msg = 'Campaign published but upload failed: ' . $uploadResult['message'];
+                }
+            } else {
+                $msg = 'Campaign published (SFTP not configured).';
+            }
         }
 
         return redirect()->route('agency.features.show', 'local_seo_presence_boost')->with('success', $msg);
@@ -235,8 +256,23 @@ class LocalSeoCampaignController extends Controller
             'generated_page_id' => $page->id,
         ]);
 
-        return redirect()->route('agency.features.show', 'local_seo_presence_boost')
-            ->with('success', 'Campaign published to ' . $targetUrl);
+        // Upload to server via SFTP if credentials are configured
+        $uploadResult = null;
+        if ($profile->server_ip && $profile->sftp_username && $profile->sftp_password) {
+            $uploader = new \App\Services\PageSftpUploader();
+            $uploadResult = $uploader->uploadCampaignPage($campaign, $profile);
+        }
+
+        if ($uploadResult && $uploadResult['success']) {
+            return redirect()->route('agency.features.show', ['feature' => 'local_seo_presence_boost', 'edit_campaign_id' => $campaign->id])
+                ->with('success', 'Campaign published and uploaded to ' . ($uploadResult['url'] ?? $targetUrl));
+        } elseif ($uploadResult) {
+            return redirect()->route('agency.features.show', ['feature' => 'local_seo_presence_boost', 'edit_campaign_id' => $campaign->id])
+                ->with('warning', 'Campaign saved but SFTP upload failed: ' . $uploadResult['message']);
+        }
+
+        return redirect()->route('agency.features.show', ['feature' => 'local_seo_presence_boost', 'edit_campaign_id' => $campaign->id])
+            ->with('success', 'Campaign published to ' . $targetUrl . ' (SFTP not configured - page saved locally only)');
     }
 
     protected function suggestedSlug(LocalSeoCampaign $campaign): string

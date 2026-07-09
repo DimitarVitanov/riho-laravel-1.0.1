@@ -60,8 +60,8 @@
   $col2Title      = $profile->footer_col2_title ?: 'ABOUT US';
   $col2Text       = $profile->footer_col2_text ?: 'Hello we are ' . $profile->agency_name . '. We are here to provide you the best offers through our coupons and tools. We are here to provide you coupons.';
   $copyright      = $profile->footer_copyright_text ?: ('© ' . date('Y') . ' ' . $profile->agency_name . '. All rights reserved.');
-  $termsUrl       = $profile->footer_terms_url ?? '';
-  $privacyUrl     = $profile->footer_privacy_url ?? '';
+  $termsUrl       = $profile->footer_terms_url ?: '#';
+  $privacyUrl     = $profile->footer_privacy_url ?: '#';
 @endphp
 <meta name="description" content="{{ $aiContent['meta_description'] ?? $campaign->positioning_note ?? '' }}">
 <title>{{ $campaign->name }} | {{ $profile->agency_name }}</title>
@@ -447,12 +447,8 @@ img { max-width: 100%; }
     <div style="max-width:1280px;margin:0 auto;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
       <span style="font-size:13px;opacity:0.45;">{{ $copyright }}</span>
       <div style="display:flex;gap:24px;align-items:center;">
-        @if($termsUrl)
-          <a href="{{ $termsUrl }}" style="font-size:13px;color:{{ $footerTextClr }};opacity:0.5;text-decoration:underline;" onmouseover="this.style.textDecoration='none';this.style.opacity='0.85'" onmouseout="this.style.textDecoration='underline';this.style.opacity='0.5'">Terms of Use</a>
-        @endif
-        @if($privacyUrl)
-          <a href="{{ $privacyUrl }}" style="font-size:13px;color:{{ $footerTextClr }};opacity:0.5;text-decoration:underline;" onmouseover="this.style.textDecoration='none';this.style.opacity='0.85'" onmouseout="this.style.textDecoration='underline';this.style.opacity='0.5'">Privacy Policy</a>
-        @endif
+        <a href="{{ $privacyUrl }}" style="font-size:13px;color:{{ $footerTextClr }};opacity:0.5;text-decoration:underline;" onmouseover="this.style.textDecoration='none';this.style.opacity='0.85'" onmouseout="this.style.textDecoration='underline';this.style.opacity='0.5'">Privacy Policy</a>
+        <a href="{{ $termsUrl }}" style="font-size:13px;color:{{ $footerTextClr }};opacity:0.5;text-decoration:underline;" onmouseover="this.style.textDecoration='none';this.style.opacity='0.85'" onmouseout="this.style.textDecoration='underline';this.style.opacity='0.5'">Terms of Use</a>
       </div>
     </div>
   </div>

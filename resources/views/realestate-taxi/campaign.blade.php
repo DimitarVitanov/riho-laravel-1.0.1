@@ -12,10 +12,37 @@
   $listings = $campaign->listings()->where('status', 'active')->latest()->get();
   $targetPlaces = $campaign->target_places ?? [];
   
-  // Get brand colors from agency profile
-  $primaryColor = $profile->website_primary_color ?? $profile->brand_primary_color ?? '#0f0f0f';
+  // Brand colors
+  $primaryColor   = $profile->website_primary_color ?? $profile->brand_primary_color ?? '#0f0f0f';
   $secondaryColor = $profile->website_secondary_color ?? $profile->brand_secondary_color ?? '#374151';
-  $accentColor = $profile->website_accent_color ?? '#3b82f6';
+  $accentColor    = $profile->website_accent_color ?? '#3b82f6';
+
+  // Header settings
+  $headerBg       = $profile->header_bg_color ?? $primaryColor;
+  $headerTextClr  = $profile->header_text_color ?? '#ffffff';
+  $topbarEnabled  = $profile->header_topbar_enabled ?? false;
+  $topbarText     = $profile->header_topbar_text ?? '';
+  $logoPath       = $profile->header_logo_path ? asset('storage/' . $profile->header_logo_path) : null;
+  $logoUrl        = $profile->header_logo_url ?? '#';
+  $ctaEnabled     = $profile->header_cta_enabled ?? true;
+  $ctaText        = $profile->header_cta_text ?? 'Get Free Report';
+  $ctaUrl         = $profile->header_cta_url ?? '#';
+  $ctaBg          = $profile->header_cta_bg_color ?? '#f59e0b';
+  $ctaClr         = $profile->header_cta_text_color ?? '#ffffff';
+  $topbarColor    = $profile->header_topbar_color ?? '#ffffff';
+  $topbarBg       = $profile->header_topbar_bg_color ?? '#0a0a0a';
+  $navItems       = $profile->header_nav_items ?? [];
+
+  // Footer settings
+  $footerBg       = $profile->footer_bg_color ?? '#111827';
+  $footerTextClr  = $profile->footer_text_color ?? '#ffffff';
+  $col1Title      = $profile->footer_col1_title ?? '';
+  $col1Links      = $profile->footer_col1_links ?? [];
+  $col2Title      = $profile->footer_col2_title ?? '';
+  $col2Text       = $profile->footer_col2_text ?? '';
+  $copyright      = $profile->footer_copyright_text ?? ('© ' . date('Y') . ' ' . $profile->agency_name);
+  $termsUrl       = $profile->footer_terms_url ?? '';
+  $privacyUrl     = $profile->footer_privacy_url ?? '';
 @endphp
 <meta name="description" content="{{ $aiContent['meta_description'] ?? $campaign->positioning_note ?? '' }}">
 <title>{{ $campaign->name }} | {{ $profile->agency_name }}</title>
@@ -143,25 +170,51 @@ img { max-width: 100%; }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <!-- Header -->
-  <header class="header">
-    <a href="#" class="logo">
-      @if($profile->agency_logo_path)
-        <img src="{{ asset('storage/' . $profile->agency_logo_path) }}" alt="{{ $profile->agency_name }}" height="48" style="border-radius:12px;">
+{{-- Top Bar --}}
+@if($topbarEnabled && $topbarText)
+<div style="background:{{ $topbarBg }};border-bottom:1px solid rgba(0,0,0,0.08);">
+  <div style="max-width:1280px;margin:0 auto;padding:8px 32px;color:{{ $topbarColor }};font-size:13px;font-weight:500;letter-spacing:0.01em;text-align:left;">{{ $topbarText }}</div>
+</div>
+@endif
+
+{{-- Header - realestate.taxi style --}}
+<header style="background:{{ $headerBg }};border-bottom:1px solid rgba(255,255,255,0.08);">
+  <div style="max-width:1280px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;height:72px;">
+
+    {{-- Logo --}}
+    <a href="{{ $logoUrl }}" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
+      @if($logoPath)
+        <img src="{{ $logoPath }}" alt="{{ $profile->agency_name }}" style="max-height:48px;">
+      @elseif($profile->agency_logo_path)
+        <img src="{{ asset('storage/' . $profile->agency_logo_path) }}" alt="{{ $profile->agency_name }}" style="max-height:48px;">
       @else
-        <span class="logo-icon">{{ strtoupper(substr($profile->agency_name, 0, 1)) }}</span>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:52px;height:48px;background:#f59e0b;border-radius:4px;flex-shrink:0;">
+          <span style="font-size:9px;font-weight:800;color:#fff;letter-spacing:.05em;text-transform:uppercase;line-height:1;">REAL ESTATE</span>
+          <span style="font-size:18px;font-weight:900;color:#fff;line-height:1.1;">{{ strtoupper(substr($profile->agency_name, 0, 3)) }}</span>
+        </div>
+        <span style="font-size:16px;font-weight:700;color:{{ $headerTextClr }};line-height:1.2;">{{ $profile->agency_name }}</span>
       @endif
-      <div>
-        <div class="logo-text">{{ $profile->agency_name }}</div>
-        <div class="logo-sub">{{ $campaign->primary_city }} Real Estate</div>
-      </div>
     </a>
-    @if($profile->contact_email)
-      <a href="mailto:{{ $profile->contact_email }}" class="header-btn">Contact Us</a>
+
+    {{-- Nav --}}
+    @if(count($navItems) > 0)
+    <nav style="display:flex;align-items:center;gap:4px;flex:1;justify-content:center;">
+      @foreach($navItems as $nav)
+        <a href="{{ $nav['url'] ?? '#' }}" style="font-size:14px;font-weight:500;color:{{ $headerTextClr }};text-decoration:none;padding:8px 14px;border-radius:4px;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">{{ $nav['label'] ?? '' }}</a>
+      @endforeach
+    </nav>
     @endif
-  </header>
+
+    {{-- CTA Button --}}
+    @if($ctaEnabled)
+      <a href="{{ $ctaUrl }}" style="background:{{ $ctaBg }};color:{{ $ctaClr }};padding:11px 22px;border-radius:6px;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">{{ $ctaText }}</a>
+    @endif
+
+  </div>
+</header>
+
+<div class="wrap">
 
   <!-- Hero -->
   <section class="hero">
@@ -316,10 +369,73 @@ img { max-width: 100%; }
     </div>
   </section>
 
-  <footer class="footer">
-    © {{ date('Y') }} {{ $profile->agency_name }}. All rights reserved.
-  </footer>
+</div>{{-- end .wrap --}}
 
-</div>
+{{-- Footer - realestate.taxi style --}}
+<footer style="background:{{ $footerBg }};color:{{ $footerTextClr }};">
+
+  {{-- Main footer columns --}}
+  @if($col1Title || $col2Title || count($col1Links) > 0 || $col2Text)
+  <div style="max-width:1280px;margin:0 auto;padding:56px 32px 40px;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:48px;">
+
+    {{-- Col 0: Logo + subscribe box (realestate.taxi style) --}}
+    <div>
+      <div style="margin-bottom:20px;">
+        @if($logoPath)
+          <img src="{{ $logoPath }}" alt="{{ $profile->agency_name }}" style="max-height:44px;">
+        @elseif($profile->agency_logo_path)
+          <img src="{{ asset('storage/' . $profile->agency_logo_path) }}" alt="{{ $profile->agency_name }}" style="max-height:44px;">
+        @else
+          <span style="font-size:20px;font-weight:900;color:{{ $footerTextClr }};">{{ $profile->agency_name }}</span>
+        @endif
+      </div>
+      @if($col2Text)
+        <p style="font-size:13px;opacity:0.6;line-height:1.7;margin:0 0 20px;">{{ $col2Text }}</p>
+      @endif
+    </div>
+
+    {{-- Col 1: Links --}}
+    @if($col1Title || count($col1Links) > 0)
+    <div>
+      @if($col1Title)
+        <div style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:{{ $footerTextClr }};opacity:0.5;margin-bottom:18px;">{{ $col1Title }}</div>
+      @endif
+      @foreach($col1Links as $link)
+        <div style="margin-bottom:10px;">
+          <a href="{{ $link['url'] ?? '#' }}" style="color:{{ $footerTextClr }};font-size:14px;opacity:0.8;text-decoration:underline;" onmouseover="this.style.textDecoration='none';this.style.opacity='1'" onmouseout="this.style.textDecoration='underline';this.style.opacity='0.8'">&rsaquo; {{ $link['label'] ?? '' }}</a>
+        </div>
+      @endforeach
+    </div>
+    @endif
+
+    {{-- Col 2: About text --}}
+    @if($col2Title)
+    <div>
+      <div style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:{{ $footerTextClr }};opacity:0.5;margin-bottom:18px;">{{ $col2Title }}</div>
+      @if($col2Text)
+        <p style="font-size:14px;opacity:0.75;line-height:1.75;margin:0;">{{ $col2Text }}</p>
+      @endif
+    </div>
+    @endif
+
+  </div>
+  @endif
+
+  {{-- Bottom bar --}}
+  <div style="border-top:1px solid rgba(255,255,255,0.1);">
+    <div style="max-width:1280px;margin:0 auto;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <span style="font-size:13px;opacity:0.45;">{{ $copyright }}</span>
+      <div style="display:flex;gap:24px;align-items:center;">
+        @if($termsUrl)
+          <a href="{{ $termsUrl }}" style="font-size:13px;color:{{ $footerTextClr }};opacity:0.5;text-decoration:underline;" onmouseover="this.style.textDecoration='none';this.style.opacity='0.85'" onmouseout="this.style.textDecoration='underline';this.style.opacity='0.5'">Terms of Use</a>
+        @endif
+        @if($privacyUrl)
+          <a href="{{ $privacyUrl }}" style="font-size:13px;color:{{ $footerTextClr }};opacity:0.5;text-decoration:underline;" onmouseover="this.style.textDecoration='none';this.style.opacity='0.85'" onmouseout="this.style.textDecoration='underline';this.style.opacity='0.5'">Privacy Policy</a>
+        @endif
+      </div>
+    </div>
+  </div>
+
+</footer>
 </body>
 </html>

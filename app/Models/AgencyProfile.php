@@ -60,14 +60,41 @@ class AgencyProfile extends Model
         'website_show_contact_in_header',
         'website_show_social_in_footer',
         'website_custom_css',
+        'header_topbar_text',
+        'header_topbar_color',
+        'header_topbar_bg_color',
+        'header_topbar_enabled',
+        'header_logo_path',
+        'header_logo_url',
+        'header_bg_color',
+        'header_text_color',
+        'header_cta_enabled',
+        'header_cta_text',
+        'header_cta_url',
+        'header_cta_bg_color',
+        'header_cta_text_color',
+        'header_nav_items',
+        'footer_bg_color',
+        'footer_text_color',
+        'footer_col1_title',
+        'footer_col1_links',
+        'footer_col2_title',
+        'footer_col2_text',
+        'footer_copyright_text',
+        'footer_terms_url',
+        'footer_privacy_url',
     ];
 
     protected function casts(): array
     {
         return [
-            'dns_verified_at'   => 'datetime',
-            'last_dns_check_at' => 'datetime',
-            'sftp_password'     => 'encrypted',
+            'dns_verified_at'        => 'datetime',
+            'last_dns_check_at'      => 'datetime',
+            'sftp_password'          => 'encrypted',
+            'header_nav_items'       => 'array',
+            'footer_col1_links'      => 'array',
+            'header_topbar_enabled'  => 'boolean',
+            'header_cta_enabled'     => 'boolean',
         ];
     }
 

@@ -265,15 +265,26 @@ class AgencySettingsController extends Controller
     public function updateWebsiteDesign(Request $request)
     {
         $request->validate([
-            'primary_color' => 'nullable|string|max:7',
-            'secondary_color' => 'nullable|string|max:7',
-            'accent_color' => 'nullable|string|max:7',
-            'header_style' => 'nullable|string|in:minimal,standard,full',
-            'footer_style' => 'nullable|string|in:minimal,standard,full',
-            'show_logo_in_header' => 'nullable|boolean',
-            'show_contact_in_header' => 'nullable|boolean',
-            'show_social_in_footer' => 'nullable|boolean',
-            'custom_css' => 'nullable|string|max:10000',
+            'primary_color'         => 'nullable|string|max:7',
+            'secondary_color'       => 'nullable|string|max:7',
+            'accent_color'          => 'nullable|string|max:7',
+            'custom_css'            => 'nullable|string|max:10000',
+            'header_topbar_text'    => 'nullable|string|max:255',
+            'header_logo_url'       => 'nullable|url|max:255',
+            'header_bg_color'       => 'nullable|string|max:7',
+            'header_text_color'     => 'nullable|string|max:7',
+            'header_cta_text'       => 'nullable|string|max:100',
+            'header_cta_url'        => 'nullable|string|max:255',
+            'header_cta_bg_color'   => 'nullable|string|max:7',
+            'header_cta_text_color' => 'nullable|string|max:7',
+            'footer_bg_color'       => 'nullable|string|max:7',
+            'footer_text_color'     => 'nullable|string|max:7',
+            'footer_col1_title'     => 'nullable|string|max:100',
+            'footer_col2_title'     => 'nullable|string|max:100',
+            'footer_col2_text'      => 'nullable|string|max:1000',
+            'footer_copyright_text' => 'nullable|string|max:255',
+            'footer_terms_url'      => 'nullable|string|max:255',
+            'footer_privacy_url'    => 'nullable|string|max:255',
         ]);
 
         /** @var \App\Models\User $user */
@@ -281,16 +292,60 @@ class AgencySettingsController extends Controller
         $profile = $user->getEffectiveAgencyProfile();
 
         if ($profile) {
+            // Build nav items from parallel arrays
+            $navLabels = $request->input('nav_label', []);
+            $navUrls   = $request->input('nav_url', []);
+            $navItems  = [];
+            foreach ($navLabels as $i => $label) {
+                if (!empty(trim($label))) {
+                    $navItems[] = ['label' => trim($label), 'url' => trim($navUrls[$i] ?? '#')];
+                }
+            }
+
+            // Build footer col1 links from parallel arrays
+            $linkLabels = $request->input('footer_link_label', []);
+            $linkUrls   = $request->input('footer_link_url', []);
+            $col1Links  = [];
+            foreach ($linkLabels as $i => $label) {
+                if (!empty(trim($label))) {
+                    $col1Links[] = ['label' => trim($label), 'url' => trim($linkUrls[$i] ?? '#')];
+                }
+            }
+
+            // Handle logo upload
+            $logoPath = $profile->header_logo_path;
+            if ($request->hasFile('header_logo')) {
+                $logoPath = $request->file('header_logo')->store('logos', 'public');
+            }
+
             $profile->update([
-                'website_primary_color' => $request->primary_color,
+                'website_primary_color'   => $request->primary_color,
                 'website_secondary_color' => $request->secondary_color,
-                'website_accent_color' => $request->accent_color,
-                'website_header_style' => $request->header_style,
-                'website_footer_style' => $request->footer_style,
-                'website_show_logo_in_header' => $request->boolean('show_logo_in_header'),
-                'website_show_contact_in_header' => $request->boolean('show_contact_in_header'),
-                'website_show_social_in_footer' => $request->boolean('show_social_in_footer'),
-                'website_custom_css' => $request->custom_css,
+                'website_accent_color'    => $request->accent_color,
+                'website_custom_css'      => $request->custom_css,
+                'header_topbar_text'      => $request->header_topbar_text,
+                'header_topbar_color'     => $request->header_topbar_color,
+                'header_topbar_bg_color'  => $request->header_topbar_bg_color,
+                'header_topbar_enabled'   => $request->boolean('header_topbar_enabled'),
+                'header_logo_path'        => $logoPath,
+                'header_logo_url'         => $request->header_logo_url,
+                'header_bg_color'         => $request->header_bg_color,
+                'header_text_color'       => $request->header_text_color,
+                'header_cta_enabled'      => $request->boolean('header_cta_enabled'),
+                'header_cta_text'         => $request->header_cta_text,
+                'header_cta_url'          => $request->header_cta_url,
+                'header_cta_bg_color'     => $request->header_cta_bg_color,
+                'header_cta_text_color'   => $request->header_cta_text_color,
+                'header_nav_items'        => $navItems,
+                'footer_bg_color'         => $request->footer_bg_color,
+                'footer_text_color'       => $request->footer_text_color,
+                'footer_col1_title'       => $request->footer_col1_title,
+                'footer_col1_links'       => $col1Links,
+                'footer_col2_title'       => $request->footer_col2_title,
+                'footer_col2_text'        => $request->footer_col2_text,
+                'footer_copyright_text'   => $request->footer_copyright_text,
+                'footer_terms_url'        => $request->footer_terms_url,
+                'footer_privacy_url'      => $request->footer_privacy_url,
             ]);
         }
 

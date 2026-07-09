@@ -3,42 +3,14 @@
 
 @section('css')
 <style>
-    .color-preview {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        border: 2px solid #e5e7eb;
-        cursor: pointer;
-    }
-    .color-input-group {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    .style-option {
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 16px;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-align: center;
-    }
-    .style-option:hover {
-        border-color: #9ca3af;
-    }
-    .style-option.selected {
-        border-color: #111827;
-        background: #f9fafb;
-    }
-    .style-option input[type="radio"] {
-        display: none;
-    }
-    .preview-box {
-        background: #f3f4f6;
-        border-radius: 12px;
-        padding: 24px;
-        min-height: 200px;
-    }
+.wd-color-group { display:flex; align-items:center; gap:10px; }
+.wd-color-swatch { width:38px; height:38px; border-radius:8px; border:2px solid #e5e7eb; cursor:pointer; padding:0; }
+.wd-section-title { font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:#6b7280; margin:0 0 16px; }
+.wd-row-item { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+.wd-row-item .form-control { font-size:13px; }
+.wd-add-btn { background:none; border:1px dashed #d1d5db; border-radius:8px; padding:8px 14px; font-size:13px; color:#6b7280; cursor:pointer; width:100%; margin-top:6px; transition: all 0.2s; }
+.wd-add-btn:hover { border-color:#111827; color:#111827; }
+.wd-remove-btn { background:none; border:none; color:#ef4444; font-size:18px; line-height:1; cursor:pointer; padding:0 4px; flex-shrink:0; }
 </style>
 @endsection
 
@@ -70,189 +42,277 @@
             </div>
             @endif
 
-            <form action="{{ route('agency.settings.website-design.update') }}" method="POST">
+            <form action="{{ route('agency.settings.website-design.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
-                {{-- Brand Colors --}}
-                <div class="card">
-                    <div class="card-header pb-0">
-                        <h5><i class="fa fa-palette me-2"></i>Brand Colors</h5>
-                        <p class="text-muted mb-0">Define your brand colors for public-facing pages</p>
-                    </div>
+                {{-- ===== BRAND COLORS ===== --}}
+                <div class="card mb-3">
+                    <div class="card-header"><h5 class="mb-0">🎨 Brand Colors</h5></div>
                     <div class="card-body">
                         <div class="row g-4">
+                            @foreach([
+                                ['name'=>'primary_color','id'=>'primaryColor','label'=>'Primary Color','val'=>$profile->website_primary_color ?? '#111827','hint'=>'Header, hero, CTA background'],
+                                ['name'=>'secondary_color','id'=>'secondaryColor','label'=>'Secondary Color','val'=>$profile->website_secondary_color ?? '#374151','hint'=>'Muted text, descriptions'],
+                                ['name'=>'accent_color','id'=>'accentColor','label'=>'Accent Color','val'=>$profile->website_accent_color ?? '#3b82f6','hint'=>'Links, buttons, highlights'],
+                            ] as $c)
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold">Primary Color</label>
-                                <div class="color-input-group">
-                                    <input type="color" name="primary_color" 
-                                           value="{{ $profile->website_primary_color ?? '#111827' }}" 
-                                           class="color-preview" id="primaryColor">
-                                    <input type="text" class="form-control" 
-                                           value="{{ $profile->website_primary_color ?? '#111827' }}" 
-                                           id="primaryColorText" maxlength="7" style="max-width: 100px;">
+                                <label class="form-label fw-semibold">{{ $c['label'] }}</label>
+                                <div class="wd-color-group">
+                                    <input type="color" name="{{ $c['name'] }}" value="{{ $c['val'] }}" class="wd-color-swatch" id="{{ $c['id'] }}">
+                                    <input type="text" class="form-control" value="{{ $c['val'] }}" id="{{ $c['id'] }}Text" maxlength="7" style="max-width:100px;">
                                 </div>
-                                <small class="text-muted">Main brand color for headers, buttons</small>
+                                <small class="text-muted">{{ $c['hint'] }}</small>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Secondary Color</label>
-                                <div class="color-input-group">
-                                    <input type="color" name="secondary_color" 
-                                           value="{{ $profile->website_secondary_color ?? '#374151' }}" 
-                                           class="color-preview" id="secondaryColor">
-                                    <input type="text" class="form-control" 
-                                           value="{{ $profile->website_secondary_color ?? '#374151' }}" 
-                                           id="secondaryColorText" maxlength="7" style="max-width: 100px;">
-                                </div>
-                                <small class="text-muted">Secondary elements, text</small>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Accent Color</label>
-                                <div class="color-input-group">
-                                    <input type="color" name="accent_color" 
-                                           value="{{ $profile->website_accent_color ?? '#3b82f6' }}" 
-                                           class="color-preview" id="accentColor">
-                                    <input type="text" class="form-control" 
-                                           value="{{ $profile->website_accent_color ?? '#3b82f6' }}" 
-                                           id="accentColorText" maxlength="7" style="max-width: 100px;">
-                                </div>
-                                <small class="text-muted">Links, highlights, CTAs</small>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
 
-                {{-- Header Style --}}
-                <div class="card">
-                    <div class="card-header pb-0">
-                        <h5><i class="fa fa-window-maximize me-2"></i>Header Style</h5>
-                        <p class="text-muted mb-0">Choose how your page header appears</p>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-4">
-                                <label class="style-option {{ ($profile->website_header_style ?? 'standard') == 'minimal' ? 'selected' : '' }}">
-                                    <input type="radio" name="header_style" value="minimal" 
-                                           {{ ($profile->website_header_style ?? 'standard') == 'minimal' ? 'checked' : '' }}>
-                                    <div class="mb-2">
-                                        <i class="fa fa-minus fa-2x text-muted"></i>
-                                    </div>
-                                    <strong>Minimal</strong>
-                                    <p class="text-muted small mb-0">Logo only, clean look</p>
-                                </label>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="style-option {{ ($profile->website_header_style ?? 'standard') == 'standard' ? 'selected' : '' }}">
-                                    <input type="radio" name="header_style" value="standard" 
-                                           {{ ($profile->website_header_style ?? 'standard') == 'standard' ? 'checked' : '' }}>
-                                    <div class="mb-2">
-                                        <i class="fa fa-bars fa-2x text-muted"></i>
-                                    </div>
-                                    <strong>Standard</strong>
-                                    <p class="text-muted small mb-0">Logo + navigation</p>
-                                </label>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="style-option {{ ($profile->website_header_style ?? 'standard') == 'full' ? 'selected' : '' }}">
-                                    <input type="radio" name="header_style" value="full" 
-                                           {{ ($profile->website_header_style ?? 'standard') == 'full' ? 'checked' : '' }}>
-                                    <div class="mb-2">
-                                        <i class="fa fa-th-large fa-2x text-muted"></i>
-                                    </div>
-                                    <strong>Full</strong>
-                                    <p class="text-muted small mb-0">Logo + nav + contact info</p>
-                                </label>
+                {{-- ===== TOP BAR ===== --}}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0">📢 Top Bar</h5>
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" name="header_topbar_enabled" value="1" id="topbarEnabled"
+                                    {{ ($profile->header_topbar_enabled ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="topbarEnabled">Enable</label>
                             </div>
                         </div>
-
+                    </div>
+                    <div class="card-body">
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" name="show_logo_in_header" value="1"
-                                           id="showLogoHeader" {{ ($profile->website_show_logo_in_header ?? true) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="showLogoHeader">Show logo in header</label>
-                                </div>
+                            <div class="col-md-9">
+                                <label class="form-label fw-semibold">Top Bar Message</label>
+                                <input type="text" name="header_topbar_text" class="form-control"
+                                    value="{{ $profile->header_topbar_text ?? '' }}"
+                                    placeholder="e.g. Real Estate Taxi is your FREE rule through the global real estate market!">
+                                <small class="text-muted">Text aligned left, shown above the header</small>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" name="show_contact_in_header" value="1"
-                                           id="showContactHeader" {{ ($profile->website_show_contact_in_header ?? false) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="showContactHeader">Show contact info in header</label>
+                            <div class="col-md-3">
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label class="form-label fw-semibold">BG Color</label>
+                                        <div class="wd-color-group">
+                                            <input type="color" name="header_topbar_bg_color" value="{{ $profile->header_topbar_bg_color ?? '#0a0a0a' }}" class="wd-color-swatch" id="topbarBgColor">
+                                            <input type="text" class="form-control" value="{{ $profile->header_topbar_bg_color ?? '#0a0a0a' }}" id="topbarBgColorText" maxlength="7" style="max-width:80px;">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label fw-semibold">Text Color</label>
+                                        <div class="wd-color-group">
+                                            <input type="color" name="header_topbar_color" value="{{ $profile->header_topbar_color ?? '#ffffff' }}" class="wd-color-swatch" id="topbarColor">
+                                            <input type="text" class="form-control" value="{{ $profile->header_topbar_color ?? '#ffffff' }}" id="topbarColorText" maxlength="7" style="max-width:80px;">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Footer Style --}}
-                <div class="card">
-                    <div class="card-header pb-0">
-                        <h5><i class="fa fa-window-minimize me-2"></i>Footer Style</h5>
-                        <p class="text-muted mb-0">Choose how your page footer appears</p>
-                    </div>
+                {{-- ===== HEADER ===== --}}
+                <div class="card mb-3">
+                    <div class="card-header"><h5 class="mb-0">🔝 Header</h5></div>
                     <div class="card-body">
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-4">
-                                <label class="style-option {{ ($profile->website_footer_style ?? 'standard') == 'minimal' ? 'selected' : '' }}">
-                                    <input type="radio" name="footer_style" value="minimal" 
-                                           {{ ($profile->website_footer_style ?? 'standard') == 'minimal' ? 'checked' : '' }}>
-                                    <div class="mb-2">
-                                        <i class="fa fa-minus fa-2x text-muted"></i>
-                                    </div>
-                                    <strong>Minimal</strong>
-                                    <p class="text-muted small mb-0">Copyright only</p>
-                                </label>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="style-option {{ ($profile->website_footer_style ?? 'standard') == 'standard' ? 'selected' : '' }}">
-                                    <input type="radio" name="footer_style" value="standard" 
-                                           {{ ($profile->website_footer_style ?? 'standard') == 'standard' ? 'checked' : '' }}>
-                                    <div class="mb-2">
-                                        <i class="fa fa-bars fa-2x text-muted"></i>
-                                    </div>
-                                    <strong>Standard</strong>
-                                    <p class="text-muted small mb-0">Logo + links + copyright</p>
-                                </label>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="style-option {{ ($profile->website_footer_style ?? 'standard') == 'full' ? 'selected' : '' }}">
-                                    <input type="radio" name="footer_style" value="full" 
-                                           {{ ($profile->website_footer_style ?? 'standard') == 'full' ? 'checked' : '' }}>
-                                    <div class="mb-2">
-                                        <i class="fa fa-th-large fa-2x text-muted"></i>
-                                    </div>
-                                    <strong>Full</strong>
-                                    <p class="text-muted small mb-0">Multi-column with all info</p>
-                                </label>
-                            </div>
-                        </div>
+                        <div class="row g-4">
 
-                        <div class="row g-3">
+                            {{-- Logo --}}
                             <div class="col-md-6">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" name="show_social_in_footer" value="1"
-                                           id="showSocialFooter" {{ ($profile->website_show_social_in_footer ?? true) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="showSocialFooter">Show social media links in footer</label>
+                                <p class="wd-section-title">Logo</p>
+                                <label class="form-label fw-semibold">Upload Logo</label>
+                                @if($profile->header_logo_path)
+                                    <div class="mb-2">
+                                        <img src="{{ asset('storage/' . $profile->header_logo_path) }}" style="max-height:48px;border-radius:6px;border:1px solid #e5e7eb;">
+                                    </div>
+                                @endif
+                                <input type="file" name="header_logo" class="form-control mb-2" accept="image/*">
+                                <label class="form-label fw-semibold mt-2">Logo Link (URL)</label>
+                                <input type="url" name="header_logo_url" class="form-control"
+                                    value="{{ $profile->header_logo_url ?? '' }}"
+                                    placeholder="https://yourwebsite.com">
+                            </div>
+
+                            {{-- Header Colors --}}
+                            <div class="col-md-6">
+                                <p class="wd-section-title">Header Colors</p>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <label class="form-label fw-semibold">Background</label>
+                                        <div class="wd-color-group">
+                                            <input type="color" name="header_bg_color" value="{{ $profile->header_bg_color ?? '#111827' }}" class="wd-color-swatch" id="headerBgColor">
+                                            <input type="text" class="form-control" value="{{ $profile->header_bg_color ?? '#111827' }}" id="headerBgColorText" maxlength="7" style="max-width:100px;">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label fw-semibold">Text / Links</label>
+                                        <div class="wd-color-group">
+                                            <input type="color" name="header_text_color" value="{{ $profile->header_text_color ?? '#ffffff' }}" class="wd-color-swatch" id="headerTextColor">
+                                            <input type="text" class="form-control" value="{{ $profile->header_text_color ?? '#ffffff' }}" id="headerTextColorText" maxlength="7" style="max-width:100px;">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            {{-- Nav Menu --}}
+                            <div class="col-12">
+                                <p class="wd-section-title">Navigation Menu</p>
+                                <div id="navItemsList">
+                                    @foreach($profile->header_nav_items ?? [] as $i => $item)
+                                    <div class="wd-row-item">
+                                        <input type="text" name="nav_label[]" class="form-control" placeholder="Label (e.g. Explore)" value="{{ $item['label'] ?? '' }}">
+                                        <input type="text" name="nav_url[]" class="form-control" placeholder="URL (e.g. /explore)" value="{{ $item['url'] ?? '' }}">
+                                        <button type="button" class="wd-remove-btn" onclick="this.closest('.wd-row-item').remove()">×</button>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <button type="button" class="wd-add-btn" onclick="addNavItem()">+ Add Menu Item</button>
+                                <small class="text-muted d-block mt-1">Add navigation links shown in the header</small>
+                            </div>
+
+                            {{-- CTA Button --}}
+                            <div class="col-12">
+                                <p class="wd-section-title">CTA Button</p>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" name="header_cta_enabled" value="1" id="ctaEnabled"
+                                        {{ ($profile->header_cta_enabled ?? true) ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-semibold" for="ctaEnabled">Show CTA Button</label>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Button Text</label>
+                                        <input type="text" name="header_cta_text" class="form-control"
+                                            value="{{ $profile->header_cta_text ?? 'Get Free Report' }}"
+                                            placeholder="Get Free Report">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Button URL</label>
+                                        <input type="text" name="header_cta_url" class="form-control"
+                                            value="{{ $profile->header_cta_url ?? '#' }}"
+                                            placeholder="#contact">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Button BG</label>
+                                        <div class="wd-color-group">
+                                            <input type="color" name="header_cta_bg_color" value="{{ $profile->header_cta_bg_color ?? '#f59e0b' }}" class="wd-color-swatch" id="ctaBgColor">
+                                            <input type="text" class="form-control" value="{{ $profile->header_cta_bg_color ?? '#f59e0b' }}" id="ctaBgColorText" maxlength="7" style="max-width:80px;">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Button Text</label>
+                                        <div class="wd-color-group">
+                                            <input type="color" name="header_cta_text_color" value="{{ $profile->header_cta_text_color ?? '#ffffff' }}" class="wd-color-swatch" id="ctaTextColor">
+                                            <input type="text" class="form-control" value="{{ $profile->header_cta_text_color ?? '#ffffff' }}" id="ctaTextColorText" maxlength="7" style="max-width:80px;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
 
-                {{-- Custom CSS --}}
-                <div class="card">
-                    <div class="card-header pb-0">
-                        <h5><i class="fa fa-code me-2"></i>Custom CSS</h5>
-                        <p class="text-muted mb-0">Add custom CSS for advanced styling (optional)</p>
-                    </div>
+                {{-- ===== FOOTER ===== --}}
+                <div class="card mb-3">
+                    <div class="card-header"><h5 class="mb-0">🔻 Footer</h5></div>
                     <div class="card-body">
-                        <textarea name="custom_css" class="form-control font-monospace" rows="8" 
-                                  placeholder="/* Your custom CSS here */&#10;.my-class {&#10;    color: #333;&#10;}">{{ $profile->website_custom_css ?? '' }}</textarea>
-                        <small class="text-muted">This CSS will be applied to all your public-facing pages</small>
+                        <div class="row g-4">
+
+                            {{-- Footer Colors --}}
+                            <div class="col-12">
+                                <p class="wd-section-title">Footer Colors</p>
+                                <div class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold">Background</label>
+                                        <div class="wd-color-group">
+                                            <input type="color" name="footer_bg_color" value="{{ $profile->footer_bg_color ?? '#111827' }}" class="wd-color-swatch" id="footerBgColor">
+                                            <input type="text" class="form-control" value="{{ $profile->footer_bg_color ?? '#111827' }}" id="footerBgColorText" maxlength="7" style="max-width:100px;">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold">Text Color</label>
+                                        <div class="wd-color-group">
+                                            <input type="color" name="footer_text_color" value="{{ $profile->footer_text_color ?? '#ffffff' }}" class="wd-color-swatch" id="footerTextColor">
+                                            <input type="text" class="form-control" value="{{ $profile->footer_text_color ?? '#ffffff' }}" id="footerTextColorText" maxlength="7" style="max-width:100px;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Footer Col 1 - Links --}}
+                            <div class="col-md-6">
+                                <p class="wd-section-title">Column 1 — Links</p>
+                                <label class="form-label fw-semibold">Section Title</label>
+                                <input type="text" name="footer_col1_title" class="form-control mb-3"
+                                    value="{{ $profile->footer_col1_title ?? '' }}"
+                                    placeholder="e.g. WE GLAD TO OFFER">
+                                <label class="form-label fw-semibold">Links</label>
+                                <div id="footerLinksList">
+                                    @foreach($profile->footer_col1_links ?? [] as $link)
+                                    <div class="wd-row-item">
+                                        <input type="text" name="footer_link_label[]" class="form-control" placeholder="Link text" value="{{ $link['label'] ?? '' }}">
+                                        <input type="text" name="footer_link_url[]" class="form-control" placeholder="URL" value="{{ $link['url'] ?? '' }}">
+                                        <button type="button" class="wd-remove-btn" onclick="this.closest('.wd-row-item').remove()">×</button>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <button type="button" class="wd-add-btn" onclick="addFooterLink()">+ Add Link</button>
+                                <small class="text-muted d-block mt-1">Links are underlined, underline removed on hover</small>
+                            </div>
+
+                            {{-- Footer Col 2 - About text --}}
+                            <div class="col-md-6">
+                                <p class="wd-section-title">Column 2 — About Text</p>
+                                <label class="form-label fw-semibold">Section Title</label>
+                                <input type="text" name="footer_col2_title" class="form-control mb-3"
+                                    value="{{ $profile->footer_col2_title ?? '' }}"
+                                    placeholder="e.g. ABOUT US">
+                                <label class="form-label fw-semibold">Text</label>
+                                <textarea name="footer_col2_text" class="form-control" rows="4"
+                                    placeholder="Short description about your agency...">{{ $profile->footer_col2_text ?? '' }}</textarea>
+                            </div>
+
+                            {{-- Footer Bottom --}}
+                            <div class="col-12">
+                                <p class="wd-section-title">Bottom Bar</p>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Copyright Text</label>
+                                        <input type="text" name="footer_copyright_text" class="form-control"
+                                            value="{{ $profile->footer_copyright_text ?? '' }}"
+                                            placeholder="e.g. © 2026 My Agency. All rights reserved.">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Terms of Use URL</label>
+                                        <input type="text" name="footer_terms_url" class="form-control"
+                                            value="{{ $profile->footer_terms_url ?? '' }}"
+                                            placeholder="/terms">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Privacy Policy URL</label>
+                                        <input type="text" name="footer_privacy_url" class="form-control"
+                                            value="{{ $profile->footer_privacy_url ?? '' }}"
+                                            placeholder="/privacy">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
-                {{-- Save Button --}}
-                <div class="card">
+                {{-- ===== CUSTOM CSS ===== --}}
+                <div class="card mb-3">
+                    <div class="card-header"><h5 class="mb-0">💻 Custom CSS</h5></div>
+                    <div class="card-body">
+                        <textarea name="custom_css" class="form-control font-monospace" rows="6"
+                            placeholder="/* Your custom CSS here */">{{ $profile->website_custom_css ?? '' }}</textarea>
+                        <small class="text-muted">Applied to all public-facing pages</small>
+                    </div>
+                </div>
+
+                {{-- Save --}}
+                <div class="card mb-3">
                     <div class="card-body">
                         <button type="submit" class="btn btn-primary">
                             <i class="fa fa-save me-2"></i>Save Design Settings
@@ -268,34 +328,53 @@
 @section('script')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Sync color pickers with text inputs
-    ['primary', 'secondary', 'accent'].forEach(function(type) {
-        var colorInput = document.getElementById(type + 'Color');
-        var textInput = document.getElementById(type + 'ColorText');
-        
-        if (colorInput && textInput) {
-            colorInput.addEventListener('input', function() {
-                textInput.value = this.value;
-            });
-            textInput.addEventListener('input', function() {
-                if (/^#[0-9A-Fa-f]{6}$/.test(this.value)) {
-                    colorInput.value = this.value;
-                }
-            });
-        }
-    });
-
-    // Style option selection
-    document.querySelectorAll('.style-option').forEach(function(option) {
-        option.addEventListener('click', function() {
-            var name = this.querySelector('input[type="radio"]').name;
-            document.querySelectorAll('input[name="' + name + '"]').forEach(function(radio) {
-                radio.closest('.style-option').classList.remove('selected');
-            });
-            this.classList.add('selected');
-            this.querySelector('input[type="radio"]').checked = true;
+    var colorPairs = [
+        ['primaryColor','primaryColorText'],
+        ['secondaryColor','secondaryColorText'],
+        ['accentColor','accentColorText'],
+        ['headerBgColor','headerBgColorText'],
+        ['headerTextColor','headerTextColorText'],
+        ['ctaBgColor','ctaBgColorText'],
+        ['ctaTextColor','ctaTextColorText'],
+        ['footerBgColor','footerBgColorText'],
+        ['footerTextColor','footerTextColorText'],
+        ['topbarColor','topbarColorText'],
+        ['topbarBgColor','topbarBgColorText'],
+    ];
+    colorPairs.forEach(function(pair) {
+        var picker = document.getElementById(pair[0]);
+        var text   = document.getElementById(pair[1]);
+        if (!picker || !text) return;
+        picker.addEventListener('input', function() { text.value = this.value; });
+        text.addEventListener('input', function() {
+            if (/^#[0-9A-Fa-f]{6}$/.test(this.value)) picker.value = this.value;
         });
     });
 });
 </script>
 @endsection
+
+{{-- Inline scripts for dynamic row adding - must be outside @section to ensure availability --}}
+<script>
+function addNavItem() {
+    var list = document.getElementById('navItemsList');
+    if (!list) return;
+    var div = document.createElement('div');
+    div.className = 'wd-row-item';
+    div.innerHTML = '<input type="text" name="nav_label[]" class="form-control" placeholder="Label (e.g. Explore)">'
+        + '<input type="text" name="nav_url[]" class="form-control" placeholder="URL (e.g. /explore)">'
+        + '<button type="button" class="wd-remove-btn" onclick="this.closest(\'.wd-row-item\').remove()">&#215;</button>';
+    list.appendChild(div);
+}
+
+function addFooterLink() {
+    var list = document.getElementById('footerLinksList');
+    if (!list) return;
+    var div = document.createElement('div');
+    div.className = 'wd-row-item';
+    div.innerHTML = '<input type="text" name="footer_link_label[]" class="form-control" placeholder="Link text">'
+        + '<input type="text" name="footer_link_url[]" class="form-control" placeholder="URL">'
+        + '<button type="button" class="wd-remove-btn" onclick="this.closest(\'.wd-row-item\').remove()">&#215;</button>';
+    list.appendChild(div);
+}
+</script>

@@ -60,8 +60,12 @@
     background: #fff;
     border: 1px solid var(--line);
     border-radius: 16px;
-    box-shadow: none;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
     margin-bottom: 0;
+    transition: box-shadow 0.2s ease;
+}
+.local-seo-feature .card:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
 }
 .local-seo-feature .card-header {
     display: flex; justify-content: space-between; gap: 16px; align-items: flex-start;

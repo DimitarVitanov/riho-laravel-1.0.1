@@ -32,7 +32,7 @@
   $ctaBg          = $profile->header_cta_bg_color ?: '#f59e0b';
   $ctaClr         = $profile->header_cta_text_color ?: '#1a1a1a';
   $topbarColor    = $profile->header_topbar_color ?: '#ffffff';
-  $topbarBg       = $profile->header_topbar_bg_color ?: '#111827';
+  $topbarBg       = $profile->header_topbar_bg_color ?: '#0A0B0D';
   $defaultNav = [
     ['label' => 'Explore',        'url' => '#'],
     ['label' => 'Solutions',      'url' => '#'],
@@ -46,7 +46,7 @@
     : $defaultNav;
 
   // Footer settings
-  $footerBg       = $profile->footer_bg_color ?? '#111827';
+  $footerBg       = $profile->footer_bg_color ?? '#0A0B0D';
   $footerTextClr  = $profile->footer_text_color ?? '#ffffff';
   $col1Title      = $profile->footer_col1_title ?: 'WE GLAD TO OFFER';
   $defaultCol1Links = [
@@ -93,7 +93,7 @@ img { max-width: 100%; }
 .header-btn:hover { background: var(--accent); text-decoration: none; }
 
 /* Hero */
-.hero { background: var(--ink); color: #fff; border-radius: 20px; padding: 48px; margin-bottom: 24px; }
+.hero { background: #0A0B0D; color: #fff; border-radius: 20px; padding: 48px; margin-bottom: 24px; }
 .hero-label { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6; margin-bottom: 16px; }
 .hero h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 20px; letter-spacing: -0.02em; }
 .hero-desc { font-size: 18px; opacity: 0.8; max-width: 700px; line-height: 1.7; }
@@ -160,7 +160,7 @@ img { max-width: 100%; }
 .mini-box p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
 
 /* CTA */
-.cta { background: var(--ink); color: #fff; border-radius: 20px; padding: 48px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+.cta { background: #0A0B0D; color: #fff; border-radius: 20px; padding: 48px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
 .cta-content h3 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
 .cta-content p { font-size: 16px; opacity: 0.7; max-width: 500px; }
 .cta-btns { display: flex; gap: 12px; }

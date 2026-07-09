@@ -66,6 +66,8 @@ class AgencyProfile extends Model
         'header_topbar_enabled',
         'header_logo_path',
         'header_logo_url',
+        'header_logo_type',
+        'header_logo_text',
         'header_bg_color',
         'header_text_color',
         'header_cta_enabled',

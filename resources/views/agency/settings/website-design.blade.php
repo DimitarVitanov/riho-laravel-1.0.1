@@ -120,14 +120,39 @@
                             {{-- Logo --}}
                             <div class="col-md-6">
                                 <p class="wd-section-title">Logo</p>
-                                <label class="form-label fw-semibold">Upload Logo</label>
-                                @if($profile->header_logo_path)
-                                    <div class="mb-2">
-                                        <img src="{{ asset('storage/' . $profile->header_logo_path) }}" style="max-height:48px;border-radius:6px;border:1px solid #e5e7eb;">
-                                    </div>
-                                @endif
-                                <input type="file" name="header_logo" class="form-control mb-2" accept="image/*">
-                                <label class="form-label fw-semibold mt-2">Logo Link (URL)</label>
+
+                                {{-- Toggle --}}
+                                <div class="d-flex gap-2 mb-3">
+                                    <button type="button" id="logoTabImage" onclick="switchLogoTab('image')"
+                                        class="btn btn-sm {{ ($profile->header_logo_type ?? 'image') === 'text' ? 'btn-outline-secondary' : 'btn-dark' }}">
+                                        🖼 Image
+                                    </button>
+                                    <button type="button" id="logoTabText" onclick="switchLogoTab('text')"
+                                        class="btn btn-sm {{ ($profile->header_logo_type ?? 'image') === 'text' ? 'btn-dark' : 'btn-outline-secondary' }}">
+                                        🔤 Text
+                                    </button>
+                                </div>
+                                <input type="hidden" name="header_logo_type" id="header_logo_type" value="{{ $profile->header_logo_type ?? 'image' }}">
+
+                                {{-- Image upload panel --}}
+                                <div id="logoPanelImage" style="{{ ($profile->header_logo_type ?? 'image') === 'text' ? 'display:none;' : '' }}">
+                                    @if($profile->header_logo_path)
+                                        <div class="mb-2">
+                                            <img src="{{ asset('storage/' . $profile->header_logo_path) }}" style="max-height:48px;border-radius:6px;border:1px solid #e5e7eb;">
+                                        </div>
+                                    @endif
+                                    <input type="file" name="header_logo" class="form-control" accept="image/*">
+                                </div>
+
+                                {{-- Text logo panel --}}
+                                <div id="logoPanelText" style="{{ ($profile->header_logo_type ?? 'image') !== 'text' ? 'display:none;' : '' }}">
+                                    <input type="text" name="header_logo_text" class="form-control"
+                                        value="{{ $profile->header_logo_text ?? $profile->agency_name }}"
+                                        placeholder="e.g. Real Estate Taxi">
+                                    <small class="text-muted">This text will be shown as the logo in the header</small>
+                                </div>
+
+                                <label class="form-label fw-semibold mt-3">Logo Link (URL)</label>
                                 <input type="url" name="header_logo_url" class="form-control"
                                     value="{{ $profile->header_logo_url ?? '' }}"
                                     placeholder="https://yourwebsite.com">
@@ -356,6 +381,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 {{-- Inline scripts for dynamic row adding - must be outside @section to ensure availability --}}
 <script>
+function switchLogoTab(type) {
+    document.getElementById('header_logo_type').value = type;
+    document.getElementById('logoPanelImage').style.display = (type === 'image') ? '' : 'none';
+    document.getElementById('logoPanelText').style.display  = (type === 'text')  ? '' : 'none';
+    document.getElementById('logoTabImage').className = 'btn btn-sm ' + (type === 'image' ? 'btn-dark' : 'btn-outline-secondary');
+    document.getElementById('logoTabText').className  = 'btn btn-sm ' + (type === 'text'  ? 'btn-dark' : 'btn-outline-secondary');
+}
+
 function addNavItem() {
     var list = document.getElementById('navItemsList');
     if (!list) return;

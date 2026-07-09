@@ -329,6 +329,8 @@ class AgencySettingsController extends Controller
                 'header_topbar_enabled'   => $request->boolean('header_topbar_enabled'),
                 'header_logo_path'        => $logoPath,
                 'header_logo_url'         => $request->header_logo_url,
+                'header_logo_type'        => $request->header_logo_type ?? 'image',
+                'header_logo_text'        => $request->header_logo_text,
                 'header_bg_color'         => $request->header_bg_color,
                 'header_text_color'       => $request->header_text_color,
                 'header_cta_enabled'      => $request->boolean('header_cta_enabled'),

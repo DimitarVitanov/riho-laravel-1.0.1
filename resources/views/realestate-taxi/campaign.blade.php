@@ -20,27 +20,46 @@
   // Header settings
   $headerBg       = $profile->header_bg_color ?? $primaryColor;
   $headerTextClr  = $profile->header_text_color ?? '#ffffff';
-  $topbarEnabled  = $profile->header_topbar_enabled ?? false;
-  $topbarText     = $profile->header_topbar_text ?? '';
+  $topbarEnabled  = $profile->header_topbar_enabled ?? true;
+  $topbarText     = $profile->header_topbar_text ?: 'Real Estate Taxi is your FREE rule through the global real estate market!';
+  $logoType       = $profile->header_logo_type ?? 'image';
+  $logoText       = $profile->header_logo_text ?: $profile->agency_name;
   $logoPath       = $profile->header_logo_path ? asset('storage/' . $profile->header_logo_path) : null;
   $logoUrl        = $profile->header_logo_url ?? '#';
   $ctaEnabled     = $profile->header_cta_enabled ?? true;
-  $ctaText        = $profile->header_cta_text ?? 'Get Free Report';
+  $ctaText        = $profile->header_cta_text ?: 'Get Free Report';
   $ctaUrl         = $profile->header_cta_url ?? '#';
   $ctaBg          = $profile->header_cta_bg_color ?? '#f59e0b';
-  $ctaClr         = $profile->header_cta_text_color ?? '#ffffff';
+  $ctaClr         = $profile->header_cta_text_color ?? '#1a1a1a';
   $topbarColor    = $profile->header_topbar_color ?? '#ffffff';
   $topbarBg       = $profile->header_topbar_bg_color ?? '#0a0a0a';
-  $navItems       = $profile->header_nav_items ?? [];
+  $defaultNav = [
+    ['label' => 'Explore',        'url' => '#'],
+    ['label' => 'Solutions',      'url' => '#'],
+    ['label' => 'Market Routes',  'url' => '#'],
+    ['label' => 'Top Areas',      'url' => '#'],
+    ['label' => 'Expert Topics',  'url' => '#'],
+    ['label' => 'Markets',        'url' => '#'],
+  ];
+  $navItems = (!empty($profile->header_nav_items) && count($profile->header_nav_items) > 0)
+    ? $profile->header_nav_items
+    : $defaultNav;
 
   // Footer settings
   $footerBg       = $profile->footer_bg_color ?? '#111827';
   $footerTextClr  = $profile->footer_text_color ?? '#ffffff';
-  $col1Title      = $profile->footer_col1_title ?? '';
-  $col1Links      = $profile->footer_col1_links ?? [];
-  $col2Title      = $profile->footer_col2_title ?? '';
-  $col2Text       = $profile->footer_col2_text ?? '';
-  $copyright      = $profile->footer_copyright_text ?? ('© ' . date('Y') . ' ' . $profile->agency_name);
+  $col1Title      = $profile->footer_col1_title ?: 'WE GLAD TO OFFER';
+  $defaultCol1Links = [
+    ['label' => '24/7 Taxi Service To Any Where Around The City', 'url' => '#'],
+    ['label' => 'Sending Taxi Booking Alert By SMS',               'url' => '#'],
+    ['label' => 'GPS Tracking System For Location Guessing',       'url' => '#'],
+  ];
+  $col1Links      = (!empty($profile->footer_col1_links) && count($profile->footer_col1_links) > 0)
+    ? $profile->footer_col1_links
+    : $defaultCol1Links;
+  $col2Title      = $profile->footer_col2_title ?: 'ABOUT US';
+  $col2Text       = $profile->footer_col2_text ?: 'Hello we are ' . $profile->agency_name . '. We are here to provide you the best offers through our coupons and tools. We are here to provide you coupons.';
+  $copyright      = $profile->footer_copyright_text ?: ('© ' . date('Y') . ' ' . $profile->agency_name . '. All rights reserved.');
   $termsUrl       = $profile->footer_terms_url ?? '';
   $privacyUrl     = $profile->footer_privacy_url ?? '';
 @endphp
@@ -184,7 +203,9 @@ img { max-width: 100%; }
 
     {{-- Logo --}}
     <a href="{{ $logoUrl }}" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
-      @if($logoPath)
+      @if($logoType === 'text')
+        <span style="font-size:20px;font-weight:800;color:{{ $headerTextClr }};letter-spacing:-0.02em;">{{ $logoText }}</span>
+      @elseif($logoPath)
         <img src="{{ $logoPath }}" alt="{{ $profile->agency_name }}" style="max-height:48px;">
       @elseif($profile->agency_logo_path)
         <img src="{{ asset('storage/' . $profile->agency_logo_path) }}" alt="{{ $profile->agency_name }}" style="max-height:48px;">

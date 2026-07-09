@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('agency_profiles', function (Blueprint $table) {
-            $table->string('header_topbar_bg_color', 7)->nullable()->after('header_topbar_color');
+            $table->string('header_topbar_bg_color', 7)->nullable();
         });
     }
 

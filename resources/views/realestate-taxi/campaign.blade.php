@@ -18,21 +18,21 @@
   $accentColor    = $profile->website_accent_color ?? '#3b82f6';
 
   // Header settings
-  $headerBg       = $profile->header_bg_color ?? $primaryColor;
-  $headerTextClr  = $profile->header_text_color ?? '#ffffff';
-  $topbarEnabled  = $profile->header_topbar_enabled ?? true;
+  $headerBg       = $profile->header_bg_color ?: '#ffffff';
+  $headerTextClr  = $profile->header_text_color ?: '#111827';
+  $topbarEnabled  = $profile->header_topbar_enabled === null ? true : (bool)$profile->header_topbar_enabled;
   $topbarText     = $profile->header_topbar_text ?: 'Real Estate Taxi is your FREE rule through the global real estate market!';
   $logoType       = $profile->header_logo_type ?? 'image';
   $logoText       = $profile->header_logo_text ?: $profile->agency_name;
   $logoPath       = $profile->header_logo_path ? asset('storage/' . $profile->header_logo_path) : null;
   $logoUrl        = $profile->header_logo_url ?? '#';
-  $ctaEnabled     = $profile->header_cta_enabled ?? true;
+  $ctaEnabled     = $profile->header_cta_enabled === null ? true : (bool)$profile->header_cta_enabled;
   $ctaText        = $profile->header_cta_text ?: 'Get Free Report';
   $ctaUrl         = $profile->header_cta_url ?? '#';
-  $ctaBg          = $profile->header_cta_bg_color ?? '#f59e0b';
-  $ctaClr         = $profile->header_cta_text_color ?? '#1a1a1a';
-  $topbarColor    = $profile->header_topbar_color ?? '#ffffff';
-  $topbarBg       = $profile->header_topbar_bg_color ?? '#0a0a0a';
+  $ctaBg          = $profile->header_cta_bg_color ?: '#f59e0b';
+  $ctaClr         = $profile->header_cta_text_color ?: '#1a1a1a';
+  $topbarColor    = $profile->header_topbar_color ?: '#ffffff';
+  $topbarBg       = $profile->header_topbar_bg_color ?: '#111827';
   $defaultNav = [
     ['label' => 'Explore',        'url' => '#'],
     ['label' => 'Solutions',      'url' => '#'],
@@ -198,7 +198,7 @@ img { max-width: 100%; }
 @endif
 
 {{-- Header - realestate.taxi style --}}
-<header style="background:{{ $headerBg }};border-bottom:1px solid rgba(255,255,255,0.08);">
+<header style="background:{{ $headerBg }};border-bottom:1px solid rgba(0,0,0,0.08);box-shadow:0 1px 4px rgba(0,0,0,0.06);">
   <div style="max-width:1280px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;height:72px;">
 
     {{-- Logo --}}

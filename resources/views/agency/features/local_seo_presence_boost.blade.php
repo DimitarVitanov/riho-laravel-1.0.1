@@ -206,12 +206,36 @@
         </div>
     </div>
 
+    {{-- ============ USAGE LIMIT WARNING ============ --}}
+    @if(isset($usageLimitStatus) && !($usageLimitStatus['can_use_today'] ?? true))
+    <div style="background:#fef3cd;border:1px solid #ffc107;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+        <i class="fa fa-exclamation-triangle" style="color:#856404;"></i>
+        <div>
+            <strong style="color:#856404;">AI Usage Limit Reached</strong>
+            <p style="margin:4px 0 0;font-size:13px;color:#856404;">
+                @if(($usageLimitStatus['daily_remaining'] ?? 0) <= 0)
+                    Daily limit reached ({{ $usageLimitStatus['daily_used'] ?? 0 }}/{{ $usageLimitStatus['daily_limit'] ?? 1 }} today). Try again tomorrow.
+                @else
+                    Monthly limit reached ({{ $usageLimitStatus['monthly_used'] ?? 0 }}/{{ $usageLimitStatus['monthly_limit'] ?? 0 }} this month). Upgrade your plan for more.
+                @endif
+            </p>
+        </div>
+    </div>
+    @endif
+
     {{-- ============ ACTION BUTTONS BAR ============ --}}
     @if(!request('create_campaign') && !request('edit_campaign_id') && !request('add_listing') && !request('show_listings'))
+    @php $canUseAiGlobal = ($usageLimitStatus['can_use_today'] ?? true); @endphp
     <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+        @if($canUseAiGlobal)
         <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?create_campaign=1" class="btn btn-accent">
-            <i class="fa fa-plus me-1"></i> Add Campaign
+            <i class="fa fa-magic me-1"></i> Add Campaign
         </a>
+        @else
+        <span class="btn" style="background:#9ca3af;color:#fff;cursor:not-allowed;opacity:0.7;" title="Daily limit reached - try again tomorrow">
+            <i class="fa fa-magic me-1"></i> Add Campaign
+        </span>
+        @endif
         <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?add_listing=1" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">
             <i class="fa fa-plus me-1"></i> Add Listing
         </a>
@@ -276,7 +300,12 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <button type="button" class="btn btn-sm btn-outline-primary regenerate-ai-btn" data-campaign-id="{{ $campaign->id }}" title="Regenerate AI Content">
+                                            @php $canUseAi = ($usageLimitStatus['can_use_today'] ?? true); @endphp
+                                            <button type="button" 
+                                                class="btn btn-sm btn-outline-primary regenerate-ai-btn" 
+                                                data-campaign-id="{{ $campaign->id }}" 
+                                                title="{{ $canUseAi ? 'Regenerate AI Content' : 'Daily limit reached - try again tomorrow' }}"
+                                                {{ $canUseAi ? '' : 'disabled' }}>
                                                 <i class="fa fa-magic"></i>
                                             </button>
                                             <a href="{{ route('agency.local-seo.campaigns.preview', $campaign) }}" target="_blank" class="btn btn-sm btn-outline-secondary">Preview</a>
@@ -294,9 +323,15 @@
                     @else
                         <div class="text-center py-5">
                             <p class="text-muted mb-3">No campaigns yet.</p>
+                            @if($canUseAiGlobal ?? true)
                             <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?create_campaign=1" class="btn btn-accent">
-                                <i class="fa fa-plus me-1"></i> Create Your First Campaign
+                                <i class="fa fa-magic me-1"></i> Create Your First Campaign
                             </a>
+                            @else
+                            <span class="btn" style="background:#9ca3af;color:#fff;cursor:not-allowed;opacity:0.7;" title="Daily limit reached - try again tomorrow">
+                                <i class="fa fa-magic me-1"></i> Create Your First Campaign
+                            </span>
+                            @endif
                         </div>
                     @endif
         </div>

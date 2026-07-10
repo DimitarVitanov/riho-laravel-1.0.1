@@ -8,6 +8,7 @@ use App\Models\AiSuggestion;
 use App\Models\GeneratedPage;
 use App\Models\LocalSeoTarget;
 use App\Services\DnsVerificationGuard;
+use App\Services\UsageLimitService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -87,6 +88,11 @@ class AgencyFeatureController extends Controller
                 $viewData['editCampaign'] = $editId && $profile
                     ? $profile->localSeoCampaigns()->find($editId)
                     : null;
+                
+                // Usage limit status for disabling buttons
+                $usageService = app(UsageLimitService::class);
+                $viewData['usageLimitStatus'] = $profile ? $usageService->getStatus($profile, 'local_seo_pages') : null;
+                $viewData['usageLimit'] = $profile ? $profile->currentUsageLimit : null;
             }
 
             if ($feature === 'ai_search_ranking') {

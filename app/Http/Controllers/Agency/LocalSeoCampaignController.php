@@ -8,6 +8,7 @@ use App\Models\GeneratedPage;
 use App\Services\PlaceSuggestionService;
 use App\Services\UniquenessService;
 use App\Services\LocalSeoContentGenerator;
+use App\Services\UsageLimitService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -521,10 +522,20 @@ class LocalSeoCampaignController extends Controller
      * Generate AI content for a campaign.
      * POST /agency/local-seo-presence-boost/campaigns/{campaign}/generate-content
      */
-    public function generateContent(LocalSeoCampaign $campaign, LocalSeoContentGenerator $generator)
+    public function generateContent(LocalSeoCampaign $campaign, LocalSeoContentGenerator $generator, UsageLimitService $usageService)
     {
         $profile = $this->profileOrFail();
         $this->authorizeCampaign($campaign, $profile);
+
+        // Check usage limits (daily + monthly)
+        $check = $usageService->canUse($profile, 'local_seo_pages');
+        if (!$check['allowed']) {
+            return response()->json([
+                'success' => false,
+                'message' => $check['message'] ?? 'Usage limit reached. Try again tomorrow or upgrade your plan.',
+                'limit_reached' => true,
+            ], 429);
+        }
 
         $result = $generator->generateForCampaign($campaign, $profile);
 
@@ -534,6 +545,9 @@ class LocalSeoCampaignController extends Controller
                 'message' => 'Content generation failed: ' . $result['error'],
             ], 500);
         }
+
+        // Consume usage after successful generation
+        $usageService->consume($profile, 'local_seo_pages');
 
         return response()->json([
             'success' => true,

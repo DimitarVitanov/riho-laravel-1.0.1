@@ -173,6 +173,11 @@ class AgencyProfile extends Model
         return $this->hasMany(CompetitorScanResult::class);
     }
 
+    public function dailyUsageLogs()
+    {
+        return $this->hasMany(DailyUsageLog::class);
+    }
+
     public function getIsDnsVerifiedAttribute(): bool
     {
         return $this->dns_verified_at !== null;

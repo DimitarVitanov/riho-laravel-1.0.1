@@ -82,14 +82,6 @@
                 </div>
                 <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
             </div>
-            <div class="vb-card">
-                <div class="vb-label">{{ __('messages.small_actions') }}</div>
-                <div class="vb-metric">{{ $currentUsage->small_ai_content_actions_used }} / {{ $currentUsage->small_ai_content_actions_limit }}</div>
-                <div class="vb-progress">
-                    <div class="vb-progress-bar {{ ($currentUsage->small_ai_content_actions_limit > 0 && $currentUsage->small_ai_content_actions_used / $currentUsage->small_ai_content_actions_limit >= 0.9) ? 'vb-danger' : '' }}" style="width:{{ $currentUsage->small_ai_content_actions_limit > 0 ? ($currentUsage->small_ai_content_actions_used / $currentUsage->small_ai_content_actions_limit * 100) : 0 }}%"></div>
-                </div>
-                <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
-            </div>
         </div>
         @endif
 

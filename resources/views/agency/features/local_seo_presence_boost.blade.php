@@ -366,10 +366,10 @@
                                 <small class="text-muted">Internal name. Used to find this campaign later.</small>
                             </div>
                             <div class="col-md-6 position-relative">
-                                <label class="form-label text-muted small fw-bold">Primary Market / Main City *</label>
+                                <label class="form-label text-muted small fw-bold">Primary Market / Main City * <span style="color:#6b7280;font-weight:400;">/ City Area / Street</span></label>
                                 <input type="text" id="citySearch" class="form-control" autocomplete="off"
                                        value="{{ $editCampaign ? trim(($editCampaign->primary_city ?? '') . ($editCampaign->country ? ', ' . $editCampaign->country : '')) : '' }}"
-                                       placeholder="Start typing a city…">
+                                       placeholder="Start typing a city, area or street…">
                                 <div id="citySuggestions" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display:none; max-height: 240px; overflow-y:auto;"></div>
                                 <small class="text-muted">Location autocomplete. Saves city + country + coordinates.</small>
                             </div>

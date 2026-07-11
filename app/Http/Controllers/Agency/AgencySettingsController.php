@@ -285,6 +285,8 @@ class AgencySettingsController extends Controller
             'footer_copyright_text' => 'nullable|string|max:255',
             'footer_terms_url'      => 'nullable|string|max:255',
             'footer_privacy_url'    => 'nullable|string|max:255',
+            'sidebar_enabled'       => 'nullable|boolean',
+            'sidebar_title'         => 'nullable|string|max:100',
         ]);
 
         /** @var \App\Models\User $user */
@@ -348,6 +350,8 @@ class AgencySettingsController extends Controller
                 'footer_copyright_text'   => $request->footer_copyright_text,
                 'footer_terms_url'        => $request->footer_terms_url,
                 'footer_privacy_url'      => $request->footer_privacy_url,
+                'sidebar_enabled'         => $request->boolean('sidebar_enabled'),
+                'sidebar_title'           => $request->sidebar_title,
             ]);
         }
 

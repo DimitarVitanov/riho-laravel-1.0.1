@@ -16,13 +16,13 @@
 
     {{-- Hero Card --}}
     <div class="vb-card" style="margin-bottom:24px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%) !important;text-align:center;padding:40px 24px;">
-        <h2 style="font-size:32px;font-weight:800;color:#fff !important;margin-bottom:16px;line-height:1.2;">{{ __('messages.affiliate_hero_title') }}</h2>
-        <p style="margin-bottom:8px;color:#fff !important;font-size:14px;line-height:1.7;max-width:680px;margin-left:auto;margin-right:auto;">{{ __('messages.affiliate_hero_subtitle') }}</p>
+        <h2 style="font-size:32px;font-weight:800;color:black !important;margin-bottom:16px;line-height:1.2;">{{ __('messages.affiliate_hero_title') }}</h2>
+        <p style="margin-bottom:8px;color:black  !important;font-size:14px;line-height:1.7;max-width:680px;margin-left:auto;margin-right:auto;">{{ __('messages.affiliate_hero_subtitle') }}</p>
         <p style="margin-bottom:24px;color:rgba(255,255,255,0.75) !important;font-size:12px;">{{ __('messages.affiliate_hero_terms') }}</p>
         <div style="display:flex;justify-content:center;gap:40px;flex-wrap:wrap;">
-            <div><div style="font-size:26px;font-weight:700;color:#fff !important;">180</div><div style="font-size:12px;color:rgba(255,255,255,0.75) !important;">{{ __('messages.day_cookie') }}</div></div>
-            <div><div style="font-size:26px;font-weight:700;color:#fff !important;">$10</div><div style="font-size:12px;color:rgba(255,255,255,0.75) !important;">{{ __('messages.min_payout') }}</div></div>
-            <div><div style="font-size:26px;font-weight:700;color:#fff !important;">1st</div><div style="font-size:12px;color:rgba(255,255,255,0.75) !important;">{{ __('messages.monthly_payout') }}</div></div>
+            <div><div style="font-size:26px;font-weight:700;color:black !important;">180</div><div style="font-size:12px;color:rgba(255,255,255,0.75) !important;">{{ __('messages.day_cookie') }}</div></div>
+            <div><div style="font-size:26px;font-weight:700;color:black !important;">$10</div><div style="font-size:12px;color:rgba(255,255,255,0.75) !important;">{{ __('messages.min_payout') }}</div></div>
+            <div><div style="font-size:26px;font-weight:700;color:black  !important;">1st</div><div style="font-size:12px;color:rgba(255,255,255,0.75) !important;">{{ __('messages.monthly_payout') }}</div></div>
         </div>
     </div>
 

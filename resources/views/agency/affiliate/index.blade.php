@@ -14,20 +14,20 @@
         <div class="col-12">
             <div class="card border-0" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);">
                 <div class="card-body py-5 px-4 text-center">
-                    <h2 class="fw-bold mb-2" style="color:#fff !important;">{{ __('messages.affiliate_hero_title') }}</h2>
-                    <p class="mb-3 fs-6 lh-lg" style="color:#fff !important;max-width:700px;margin:0 auto 12px;">{{ __('messages.affiliate_hero_subtitle') }}</p>
-                    <p class="mb-4 small" style="color:rgba(255,255,255,0.75) !important;">{{ __('messages.affiliate_hero_terms') }}</p>
+                    <h2 class="fw-bold mb-2" style="color:black  !important;">{{ __('messages.affiliate_hero_title') }}</h2>
+                    <p class="mb-3 fs-6 lh-lg" style="color:black !important;max-width:700px;margin:0 auto 12px;">{{ __('messages.affiliate_hero_subtitle') }}</p>
+                    <p class="mb-4 small" style="color:ccc(255,255,255,0.75) !important;">{{ __('messages.affiliate_hero_terms') }}</p>
                     <div class="d-flex justify-content-center gap-4 flex-wrap">
                         <div class="text-center">
-                            <div class="fw-bold fs-3" style="color:#fff !important;">180</div>
+                            <div class="fw-bold fs-3" style="color:black  !important;">180</div>
                             <div class="small" style="color:rgba(255,255,255,0.75) !important;">{{ __('messages.day_cookie') }}</div>
                         </div>
                         <div class="text-center">
-                            <div class="fw-bold fs-3" style="color:#fff !important;">$10</div>
+                            <div class="fw-bold fs-3" style="color:black !important;">$10</div>
                             <div class="small" style="color:rgba(255,255,255,0.75) !important;">{{ __('messages.min_payout') }}</div>
                         </div>
                         <div class="text-center">
-                            <div class="fw-bold fs-3" style="color:#fff !important;">1st</div>
+                            <div class="fw-bold fs-3" style="color:black  !important;">1st</div>
                             <div class="small" style="color:rgba(255,255,255,0.75) !important;">{{ __('messages.monthly_payout') }}</div>
                         </div>
                     </div>

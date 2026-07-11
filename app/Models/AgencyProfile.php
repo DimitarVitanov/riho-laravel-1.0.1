@@ -85,6 +85,9 @@ class AgencyProfile extends Model
         'footer_copyright_text',
         'footer_terms_url',
         'footer_privacy_url',
+        'sidebar_enabled',
+        'sidebar_title',
+        'sidebar_show_last_updated',
     ];
 
     protected function casts(): array
@@ -97,6 +100,8 @@ class AgencyProfile extends Model
             'footer_col1_links'      => 'array',
             'header_topbar_enabled'  => 'boolean',
             'header_cta_enabled'     => 'boolean',
+            'sidebar_enabled'        => 'boolean',
+            'sidebar_show_last_updated' => 'boolean',
         ];
     }
 

@@ -203,6 +203,27 @@
                     </div>
                 </div>
             </form>
+
+
+    {{-- ============ ACTION BUTTONS BAR ============ --}}
+    @php $canUseAiGlobal = ($usageLimitStatus['can_use_today'] ?? true); @endphp
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
+        @if($canUseAiGlobal)
+        <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?create_campaign=1" class="btn btn-accent">
+            <i class="fa fa-magic me-1"></i> Add Campaign
+        </a>
+        @else
+        <span class="btn" style="background:#9ca3af;color:#fff;cursor:not-allowed;opacity:0.7;" title="Daily limit reached - try again tomorrow">
+            <i class="fa fa-magic me-1"></i> Add Campaign
+        </span>
+        @endif
+        <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?add_listing=1" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">
+            <i class="fa fa-plus me-1"></i> Add Listing
+        </a>
+        <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?show_listings=1" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">
+            <i class="fa fa-list me-1"></i> Show Listings
+        </a>
+    </div>
         </div>
     </div>
 
@@ -223,27 +244,6 @@
     </div>
     @endif
 
-    {{-- ============ ACTION BUTTONS BAR ============ --}}
-    @if(!request('create_campaign') && !request('edit_campaign_id') && !request('add_listing') && !request('show_listings'))
-    @php $canUseAiGlobal = ($usageLimitStatus['can_use_today'] ?? true); @endphp
-    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
-        @if($canUseAiGlobal)
-        <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?create_campaign=1" class="btn btn-accent">
-            <i class="fa fa-magic me-1"></i> Add Campaign
-        </a>
-        @else
-        <span class="btn" style="background:#9ca3af;color:#fff;cursor:not-allowed;opacity:0.7;" title="Daily limit reached - try again tomorrow">
-            <i class="fa fa-magic me-1"></i> Add Campaign
-        </span>
-        @endif
-        <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?add_listing=1" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">
-            <i class="fa fa-plus me-1"></i> Add Listing
-        </a>
-        <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?show_listings=1" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">
-            <i class="fa fa-list me-1"></i> Show Listings
-        </a>
-    </div>
-    @endif
 
     {{-- ============ CAMPAIGNS TABLE (hidden when adding listing or showing listings) ============ --}}
     @if(!request('add_listing') && !request('show_listings'))
@@ -1201,24 +1201,54 @@
             clearTimeout(timer);
             if (q.length < 3) { hideBox(); return; }
             timer = setTimeout(function () {
-                fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&featuretype=city&q=' + encodeURIComponent(q), {
+                // Search without featuretype restriction to find neighborhoods, suburbs, districts, etc.
+                fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=8&q=' + encodeURIComponent(q), {
                     headers: { 'Accept': 'application/json' }
                 })
                 .then(function (r) { return r.json(); })
                 .then(function (results) {
                     box.innerHTML = '';
                     if (!results || !results.length) { hideBox(); return; }
-                    results.forEach(function (item) {
+                    
+                    // Filter to show relevant place types (streets, neighborhoods, suburbs, cities, etc.)
+                    var validTypes = ['street', 'road', 'pedestrian', 'residential', 'suburb', 'neighbourhood', 'quarter', 'city_district', 'city', 'town', 'village', 'municipality', 'administrative'];
+                    var validClasses = ['place', 'boundary', 'highway'];
+                    var filtered = results.filter(function(item) {
+                        return validTypes.some(function(t) { return item.type === t; }) || 
+                               validClasses.some(function(c) { return item.class === c; });
+                    });
+                    
+                    // If no filtered results, use all results
+                    if (!filtered.length) filtered = results;
+                    
+                    filtered.slice(0, 6).forEach(function (item) {
                         var addr = item.address || {};
-                        var city = addr.city || addr.town || addr.village || addr.municipality || addr.county || item.display_name.split(',')[0];
                         var country = addr.country || '';
+                        // Get the most specific place name (street, neighborhood, suburb, quarter, city_district, etc.)
+                        var placeName = addr.road || addr.street || addr.pedestrian ||
+                                        addr.neighbourhood || addr.suburb || addr.quarter || addr.city_district || 
+                                        addr.city || addr.town || addr.village || addr.municipality || 
+                                        item.display_name.split(',')[0];
+                        // Get parent city for context
+                        var parentCity = addr.city || addr.town || addr.municipality || '';
+                        // Get neighborhood for street context
+                        var neighborhood = addr.neighbourhood || addr.suburb || addr.quarter || '';
+                        // Build full location name
+                        var fullName = placeName;
+                        // If it's a street, add neighborhood if available
+                        if ((addr.road || addr.street) && neighborhood && neighborhood !== placeName) {
+                            fullName = placeName + ', ' + neighborhood;
+                        }
+                        if (parentCity && parentCity !== placeName && parentCity !== neighborhood) {
+                            fullName = fullName + ', ' + parentCity;
+                        }
                         var a = document.createElement('button');
                         a.type = 'button';
                         a.className = 'list-group-item list-group-item-action';
                         a.textContent = item.display_name;
                         a.addEventListener('click', function () {
-                            input.value = city + (country ? ', ' + country : '');
-                            document.getElementById('primaryCity').value = city;
+                            input.value = fullName + (country ? ', ' + country : '');
+                            document.getElementById('primaryCity').value = fullName;
                             document.getElementById('primaryCountry').value = country;
                             document.getElementById('primaryLat').value = item.lat || '';
                             document.getElementById('primaryLng').value = item.lon || '';

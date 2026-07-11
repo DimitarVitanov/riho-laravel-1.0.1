@@ -9,13 +9,20 @@
   $areaDescriptions = $aiContent['area_descriptions'] ?? [];
   $faqContent = $aiContent['faq_content'] ?? [];
   $aboutText = $aiContent['about_content'] ?? null;
+  $mainArticle = $aiContent['main_article'] ?? null;
+  $quickAnswers = $aiContent['quick_answers'] ?? [];
+  $marketSnapshot = $aiContent['market_snapshot'] ?? [];
+  $buyerFit = $aiContent['buyer_fit'] ?? [];
+  $areaComparison = $aiContent['area_comparison'] ?? [];
+  $localServices = $aiContent['local_services'] ?? [];
+  $investorSection = $aiContent['investor_section'] ?? [];
   $listings = $campaign->listings()->where('status', 'active')->latest()->get();
   $targetPlaces = $campaign->target_places ?? [];
   
-  // Brand colors
-  $primaryColor   = $profile->website_primary_color ?? $profile->brand_primary_color ?? '#0f0f0f';
-  $secondaryColor = $profile->website_secondary_color ?? $profile->brand_secondary_color ?? '#374151';
-  $accentColor    = $profile->website_accent_color ?? '#3b82f6';
+  // Brand colors - black/white theme
+  $primaryColor   = '#0A0B0D';
+  $secondaryColor = '#6b7280';
+  $accentColor    = $profile->website_accent_color ?? '#0A0B0D';
 
   // Header settings
   $headerBg       = $profile->header_bg_color ?: '#ffffff';
@@ -62,397 +69,1310 @@
   $copyright      = $profile->footer_copyright_text ?: ('© ' . date('Y') . ' ' . $profile->agency_name . '. All rights reserved.');
   $termsUrl       = $profile->footer_terms_url ?: '#';
   $privacyUrl     = $profile->footer_privacy_url ?: '#';
+
+  // Sidebar settings
+  $sidebarEnabled = $profile->sidebar_enabled ?? true;
+  $sidebarTitle   = $profile->sidebar_title ?: 'Page Sections';
+  $showLastUpdated = $profile->sidebar_show_last_updated ?? true;
 @endphp
 <meta name="description" content="{{ $aiContent['meta_description'] ?? $campaign->positioning_note ?? '' }}">
+<meta name="robots" content="index, follow">
 <title>{{ $campaign->name }} | {{ $profile->agency_name }}</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="canonical" href="{{ url()->current() }}">
+
+@php
+$schemaGraph = [
+    [
+        '@type' => 'Article',
+        '@id' => url()->current() . '#article',
+        'headline' => $campaign->name,
+        'description' => $aiContent['meta_description'] ?? '',
+        'author' => ['@type' => 'Organization', 'name' => $profile->agency_name],
+        'publisher' => ['@type' => 'Organization', 'name' => $profile->agency_name],
+        'datePublished' => $campaign->created_at->toDateString(),
+        'dateModified' => $campaign->updated_at->toDateString(),
+        'mainEntityOfPage' => url()->current(),
+    ],
+    [
+        '@type' => 'LocalBusiness',
+        '@id' => url('/') . '#localbusiness',
+        'name' => $profile->agency_name,
+        'url' => url('/'),
+        'areaServed' => [$campaign->primary_city, $campaign->country ?? 'Croatia'],
+    ],
+];
+if (count($faqContent) > 0) {
+    $faqEntities = [];
+    foreach ($faqContent as $faq) {
+        $faqEntities[] = [
+            '@type' => 'Question',
+            'name' => $faq['question'] ?? '',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $faq['answer'] ?? ''],
+        ];
+    }
+    $schemaGraph[] = [
+        '@type' => 'FAQPage',
+        '@id' => url()->current() . '#faq',
+        'mainEntity' => $faqEntities,
+    ];
+}
+$schemaData = ['@context' => 'https://schema.org', '@graph' => $schemaGraph];
+@endphp
+<script type="application/ld+json">{!! json_encode($schemaData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
+
 <style>
 :root {
   --ink: {{ $primaryColor }};
+  --muted: {{ $secondaryColor }};
   --bg: #f4f5f6;
   --card: #ffffff;
+  --soft: #f8f9fa;
   --line: #e4e6e9;
-  --muted: {{ $secondaryColor }};
   --accent: {{ $accentColor }};
+  --radius: 18px;
+  --max: 1320px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; line-height: 1.6; }
-a { color: var(--accent); text-decoration: none; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+}
+a { text-decoration: none; color: inherit; }
 a:hover { text-decoration: underline; }
 img { max-width: 100%; }
 
-.wrap { max-width: 1280px; margin: 0 auto; padding: 32px 24px 80px; }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 32px 24px; }
+
+/* Top Bar */
+.topbar-strip {
+  background: {{ $topbarBg }};
+  color: {{ $topbarColor }};
+  text-align: center;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
 
 /* Header */
-.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
-.logo { display: flex; align-items: center; gap: 14px; }
-.logo-icon { width: 48px; height: 48px; background: var(--ink); color: #fff; border-radius: 12px; display: grid; place-items: center; font-weight: 700; font-size: 20px; }
-.logo-text { font-weight: 700; font-size: 18px; }
-.logo-sub { font-size: 13px; color: var(--muted); font-weight: 400; }
-.header-btn { background: var(--ink); color: #fff; padding: 14px 28px; border-radius: 50px; font-weight: 600; font-size: 14px; transition: all 0.2s; }
-.header-btn:hover { background: var(--accent); text-decoration: none; }
+.site-header {
+  background: {{ $headerBg }};
+  border-bottom: 1px solid var(--line);
+  padding: 16px 24px;
+}
+.header-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: var(--ink);
+  display: grid; place-items: center;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+}
+.brand strong { display: block; font-size: 20px; letter-spacing: -0.02em; color: {{ $headerTextClr }}; }
+.brand small { display: block; color: var(--muted); font-weight: 500; font-size: 13px; }
+.nav { display: flex; gap: 24px; align-items: center; }
+.nav a { font-size: 14px; font-weight: 600; color: {{ $headerTextClr }}; }
+.nav a:hover { color: var(--accent); text-decoration: none; }
+.nav .cta-btn {
+  background: {{ $ctaBg }};
+  color: {{ $ctaClr }};
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+}
 
 /* Hero */
-.hero { background: #0A0B0D; color: #fff; border-radius: 20px; padding: 48px; margin-bottom: 24px; }
-.hero-label { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6; margin-bottom: 16px; }
-.hero h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 20px; letter-spacing: -0.02em; }
-.hero-desc { font-size: 18px; opacity: 0.8; max-width: 700px; line-height: 1.7; }
+.hero {
+  background: var(--ink);
+  color: #fff;
+  border-radius: 20px;
+  padding: 48px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  right: -80px;
+  top: -80px;
+  width: 280px;
+  height: 280px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  right: 120px;
+  bottom: -60px;
+  width: 180px;
+  height: 180px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.eyebrow {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.16);
+  padding: 8px 14px;
+  border-radius: 999px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+h1 {
+  margin: 20px 0 16px;
+  font-size: clamp(36px, 5vw, 64px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+}
+.hero-desc {
+  font-size: 19px;
+  opacity: 0.85;
+  max-width: 1200px;
+  line-height: 1.7;
+}
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  font-weight: 700;
+  font-size: 14px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn:hover { text-decoration: none; border-color: var(--ink); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: #fff; }
+.btn.primary:hover { opacity: 0.9; }
 
-/* Stats Row */
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-.stat-box { background: var(--card); border-radius: 16px; padding: 28px; text-align: center; border: 1px solid var(--line); transition: all 0.2s; }
-.stat-box:hover { border-color: var(--accent); }
-.stat-val { font-size: 32px; font-weight: 800; margin-bottom: 4px; color: var(--ink); }
-.stat-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+/* Quick Facts */
+.quick-facts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.fact {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+}
+.fact b { display: block; font-size: 24px; letter-spacing: -0.02em; color: var(--ink); }
+.fact span { display: block; color: var(--muted); font-weight: 600; font-size: 13px; margin-top: 4px; }
 
-/* Section */
-.section { background: var(--card); border-radius: 20px; padding: 36px; margin-bottom: 24px; border: 1px solid var(--line); }
-.section-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; gap: 20px; }
-.section-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--ink); }
-.section-desc { font-size: 15px; color: var(--muted); max-width: 600px; }
-.section-badge { background: var(--accent); color: #fff; padding: 10px 16px; border-radius: 50px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+/* Layout */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+  align-items: start;
+}
+main { display: grid; gap: 20px; }
+.sidebar { position: sticky; top: 24px; display: grid; gap: 16px; }
 
-/* Areas Grid - 3 per row */
-.areas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.area-box { background: var(--bg); border-radius: 14px; padding: 24px; transition: all 0.2s; border: 2px solid transparent; }
-.area-box:hover { border-color: var(--accent); }
-.area-name { font-size: 17px; font-weight: 700; margin-bottom: 6px; color: var(--ink); }
-.area-meta { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
-.area-desc { font-size: 14px; color: #444; line-height: 1.6; }
-.area-priority { display: inline-block; margin-top: 12px; padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-.area-priority.high { background: #e8f5e9; color: #2e7d32; }
-.area-priority.medium { background: #fff8e1; color: #f57f17; }
-.area-priority.low { background: #f5f5f5; color: #757575; }
+/* Card */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.pad { padding: 24px; }
 
-/* Listings Grid - 3 per row */
-.listings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.listing-card { background: var(--bg); border-radius: 14px; overflow: hidden; transition: all 0.2s; border: 2px solid transparent; }
-.listing-card:hover { border-color: var(--accent); transform: translateY(-4px); }
-.listing-img { aspect-ratio: 16/10; background: #ddd; }
+/* Section Title */
+.title { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+.num { display: none; }
+h2 { margin: 0; font-size: 28px; line-height: 1.15; letter-spacing: -0.03em; font-weight: 800; }
+h3 { margin: 0 0 10px; font-size: 20px; letter-spacing: -0.02em; font-weight: 700; }
+.sub { color: var(--muted); font-weight: 600; margin: 4px 0 0; font-size: 14px; }
+
+/* Article Grid */
+.article-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+.article p { font-size: 16px; color: #374151; margin: 0 0 16px; line-height: 1.75; }
+.highlight-box {
+  border: 1px solid var(--line);
+  background: var(--soft);
+  border-radius: 14px;
+  padding: 18px;
+  margin-top: 20px;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 15px;
+}
+.callout {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+}
+.local-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.local-table th, .local-table td { border: 1px solid var(--line); padding: 12px; text-align: left; vertical-align: top; }
+.local-table th { background: var(--soft); color: var(--ink); text-transform: uppercase; font-size: 11px; letter-spacing: 0.06em; font-weight: 700; }
+.local-table td { color: #374151; font-weight: 500; }
+
+/* Grids */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+/* Mini Card */
+.mini-card {
+  border: 1px solid var(--line);
+  background: var(--soft);
+  border-radius: 14px;
+  padding: 18px;
+}
+.mini-card b { display: block; font-size: 16px; margin-bottom: 6px; color: var(--ink); }
+.mini-card p { margin: 0; color: var(--muted); font-weight: 500; font-size: 14px; }
+
+/* Listings */
+.listing {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--soft);
+}
+.listing-img {
+  height: 120px;
+  border-radius: 12px;
+  background: #ddd;
+  overflow: hidden;
+}
 .listing-img img { width: 100%; height: 100%; object-fit: cover; }
-.listing-body { padding: 20px; }
-.listing-price { font-size: 22px; font-weight: 800; margin-bottom: 6px; color: var(--accent); }
-.listing-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; color: var(--ink); }
-.listing-loc { font-size: 13px; color: var(--muted); }
-
-/* FAQ Accordion - 2 columns */
-.faq-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 32px; }
-.faq-item { border-bottom: 1px solid var(--line); }
-.faq-q { 
-  width: 100%; padding: 20px 0; background: none; border: none; 
-  font: inherit; font-size: 15px; font-weight: 600; text-align: left; color: var(--ink);
-  cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px;
-  transition: color 0.2s;
+.price { font-size: 22px; font-weight: 800; color: var(--ink); }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.chip {
+  display: inline-flex;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--line);
 }
-.faq-q:hover { color: var(--accent); }
-.faq-q::after { content: '+'; font-size: 20px; color: var(--accent); font-weight: 300; flex-shrink: 0; }
-.faq-item.open .faq-q::after { content: '−'; }
-.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-.faq-item.open .faq-a { max-height: 300px; }
-.faq-a-inner { padding-bottom: 20px; font-size: 14px; color: #555; line-height: 1.7; }
-
-/* About - 4 mini cards */
-.about-text { font-size: 16px; color: #444; line-height: 1.8; margin-bottom: 28px; max-width: 800px; }
-.mini-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-.mini-box { background: var(--bg); border-radius: 14px; padding: 20px; transition: all 0.2s; border: 2px solid transparent; }
-.mini-box:hover { border-color: var(--accent); }
-.mini-box strong { display: block; font-size: 15px; margin-bottom: 6px; color: var(--ink); }
-.mini-box p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
-
-/* CTA */
-.cta { background: #0A0B0D; color: #fff; border-radius: 20px; padding: 48px; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
-.cta-content h3 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
-.cta-content p { font-size: 16px; opacity: 0.7; max-width: 500px; }
-.cta-btns { display: flex; gap: 12px; }
-.btn-white { background: #fff; color: var(--ink); padding: 16px 32px; border-radius: 50px; font-weight: 700; font-size: 15px; transition: all 0.2s; }
-.btn-white:hover { background: var(--accent); color: #fff; text-decoration: none; }
-.btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.3); padding: 14px 30px; border-radius: 50px; font-weight: 600; font-size: 15px; transition: all 0.2s; }
-.btn-outline:hover { border-color: var(--accent); background: var(--accent); text-decoration: none; }
-
-/* Footer */
-.footer { text-align: center; padding: 32px 0; color: var(--muted); font-size: 13px; }
-
-@media (max-width: 1024px) {
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .areas-grid, .listings-grid { grid-template-columns: repeat(2, 1fr); }
-  .mini-grid { grid-template-columns: repeat(2, 1fr); }
+.view-listing-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 8px 14px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: opacity 0.2s;
 }
-@media (max-width: 640px) {
-  .wrap { padding: 20px 16px 60px; }
-  .hero { padding: 32px 24px; border-radius: 16px; }
-  .section { padding: 28px 20px; border-radius: 16px; }
-  .stats, .areas-grid, .listings-grid, .mini-grid, .faq-grid { grid-template-columns: 1fr; }
-  .section-head { flex-direction: column; }
-  .cta { flex-direction: column; text-align: center; padding: 36px 24px; }
-  .cta-btns { justify-content: center; }
+.view-listing-btn:hover {
+  opacity: 0.85;
+  text-decoration: none;
+}
+.view-listing-btn span {
+  font-size: 14px;
+}
+
+/* Metrics */
+.metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.metric {
+  border: 1px solid var(--line);
+  background: var(--soft);
+  border-radius: 16px;
+  padding: 20px;
+}
+.metric .value { font-size: 28px; font-weight: 800; color: var(--ink); letter-spacing: -0.03em; }
+.metric small { display: block; color: var(--muted); font-weight: 600; margin-top: 6px; font-size: 13px; }
+
+/* FAQ */
+.qa { display: grid; gap: 10px; }
+details {
+  border: 1px solid var(--line);
+  background: var(--soft);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+summary { cursor: pointer; font-weight: 700; color: var(--ink); font-size: 15px; }
+details p { color: #4b5563; font-weight: 500; margin: 12px 0 0; font-size: 14px; line-height: 1.7; }
+
+/* Map Container */
+.map-section { display: flex; flex-direction: column; height: 100%; }
+.map-section .title { flex-shrink: 0; }
+.map-container {
+  border-radius: 12px;
+  overflow: hidden;
+  flex: 1;
+  min-height: 320px;
+}
+.map-container iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+}
+.map-placeholder {
+  position: relative;
+  height: 100%;
+  min-height: 320px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e8f4e8 0%, #d4e8d4 50%, #c8dcc8 100%);
+}
+.map-placeholder .map-bg {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(200,220,200,0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,220,200,0.3) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.map-placeholder .map-bg::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 30%;
+  height: 60%;
+  background: rgba(180,210,230,0.4);
+  border-radius: 100px 100px 0 0;
+}
+.map-pin-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.map-pin {
+  font-size: 48px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  animation: bounce 2s ease-in-out infinite;
+}
+.map-pin-wrapper span {
+  display: block;
+  margin-top: 8px;
+  background: var(--ink);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Distance Box */
+.distance-section { display: flex; flex-direction: column; height: 100%; }
+.distance-section .title { flex-shrink: 0; }
+.distance-list {
+  flex: 1;
+  max-height: 360px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+.distance-list::-webkit-scrollbar {
+  width: 4px;
+}
+.distance-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.distance-list::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+.distance-list::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+.distance {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 14px;
+}
+.distance:last-child { border-bottom: 0; }
+
+/* Sidebar */
+.sidebar-box .head {
+  background: var(--ink);
+  color: #fff;
+  padding: 18px 20px;
+  font-size: 18px;
+  font-weight: 800;
+}
+.sidebar-list { padding: 14px 18px 18px; }
+.sidebar-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 14px;
+}
+.sidebar-row:last-child { border-bottom: 0; }
+.ico {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: var(--soft);
+  display: grid; place-items: center;
+  color: var(--ink);
+  font-weight: 800;
+  flex: 0 0 auto;
+  font-size: 15px;
+}
+
+/* TOC */
+.toc a {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 14px;
+}
+.toc a:last-child { border-bottom: 0; }
+.toc a:hover { color: var(--accent); text-decoration: none; }
+
+/* Link Grid */
+.link-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.link-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--soft);
+  padding: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 14px;
+}
+.link-card:hover { border-color: var(--ink); text-decoration: none; }
+.link-card small { display: block; color: var(--muted); font-weight: 600; margin-top: 4px; font-size: 12px; }
+
+/* Internal Links Grid */
+.internal-links-grid { 
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 14px; 
+}
+.internal-link-card {
+  background: var(--soft);
+  border-radius: 12px;
+  padding: 18px 16px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.internal-link-card:hover {
+  background: var(--line);
+  text-decoration: none;
+}
+.internal-link-card strong {
+  display: block;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+.internal-link-card small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Service Grid */
+.service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+/* Why List */
+.why-list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+.why-list li {
+  position: relative;
+  padding: 10px 0 10px 24px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.why-list li:last-child { border-bottom: 0; }
+.why-list li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* CTA Box */
+.cta-box {
+  background: var(--soft);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+}
+.cta-box strong {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.cta-box p {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  font-style: italic;
+  margin: 0;
+}
+
+/* Success & Error Messages */
+.success-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #ecfdf5;
+  border: 1px solid #10b981;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.success-icon {
+  width: 28px;
+  height: 28px;
+  background: #10b981;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+.success-message strong {
+  color: #065f46;
+  font-size: 15px;
+}
+.success-message p {
+  color: #047857;
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+.error-message {
+  background: #fef2f2;
+  border: 1px solid #ef4444;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  color: #b91c1c;
+  font-size: 13px;
+}
+.error-message ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+/* Form */
+.form { display: grid; gap: 12px; }
+input, textarea, select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font: inherit;
+  font-size: 14px;
+  background: #fff;
+  color: var(--ink);
+}
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--ink); }
+textarea { min-height: 100px; resize: vertical; }
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  background: var(--soft);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Footer Note */
+.footer-note {
+  margin-top: 24px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 20px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+/* Site Footer */
+.site-footer {
+  background: {{ $footerBg }};
+  color: {{ $footerTextClr }};
+  padding: 48px 24px 24px;
+  margin-top: 48px;
+}
+.footer-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 32px;
+}
+.footer-col h4 {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+.footer-col p, .footer-col a {
+  font-size: 14px;
+  line-height: 1.8;
+  opacity: 0.8;
+}
+.footer-col a:hover { opacity: 1; }
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  opacity: 0.6;
+}
+.footer-links { display: flex; gap: 24px; }
+.footer-links a:hover { opacity: 1; text-decoration: underline; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .article-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px) {
+  .grid2, .grid3, .grid4, .metric-grid, .service-grid, .link-grid { grid-template-columns: 1fr; }
+  .internal-links-grid { grid-template-columns: repeat(2, 1fr); }
+  .quick-facts { grid-template-columns: repeat(2, 1fr); }
+  .nav { display: none; }
+  .listing { grid-template-columns: 1fr; }
+  .listing-img { height: 180px; }
+  h1 { font-size: 36px; }
+  h2 { font-size: 24px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+}
+@media (max-width: 600px) {
+  .internal-links-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .wrap { padding: 16px; }
+  .hero { padding: 28px; }
+  .pad { padding: 18px; }
+  .quick-facts { grid-template-columns: 1fr; }
 }
 </style>
 </head>
+
 <body>
-
-{{-- Top Bar --}}
-@if($topbarEnabled && $topbarText)
-<div style="background:{{ $topbarBg }};border-bottom:1px solid rgba(0,0,0,0.08);">
-  <div style="max-width:1280px;margin:0 auto;padding:8px 32px;color:{{ $topbarColor }};font-size:13px;font-weight:500;letter-spacing:0.01em;text-align:left;">{{ $topbarText }}</div>
-</div>
-@endif
-
-{{-- Header - realestate.taxi style --}}
-<header style="background:{{ $headerBg }};border-bottom:1px solid rgba(0,0,0,0.08);box-shadow:0 1px 4px rgba(0,0,0,0.06);">
-  <div style="max-width:1280px;margin:0 auto;padding:0 32px;display:flex;align-items:center;justify-content:space-between;gap:24px;height:72px;">
-
-    {{-- Logo --}}
-    <a href="{{ $logoUrl }}" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
-      @if($logoType === 'text')
-        <span style="font-size:20px;font-weight:800;color:{{ $headerTextClr }};letter-spacing:-0.02em;">{{ $logoText }}</span>
-      @elseif($logoPath)
-        <img src="{{ $logoPath }}" alt="{{ $profile->agency_name }}" style="max-height:48px;">
-      @elseif($profile->agency_logo_path)
-        <img src="{{ asset('storage/' . $profile->agency_logo_path) }}" alt="{{ $profile->agency_name }}" style="max-height:48px;">
-      @else
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:52px;height:48px;background:#f59e0b;border-radius:4px;flex-shrink:0;">
-          <span style="font-size:9px;font-weight:800;color:#fff;letter-spacing:.05em;text-transform:uppercase;line-height:1;">REAL ESTATE</span>
-          <span style="font-size:18px;font-weight:900;color:#fff;line-height:1.1;">{{ strtoupper(substr($profile->agency_name, 0, 3)) }}</span>
-        </div>
-        <span style="font-size:16px;font-weight:700;color:{{ $headerTextClr }};line-height:1.2;">{{ $profile->agency_name }}</span>
-      @endif
-    </a>
-
-    {{-- Nav --}}
-    @if(count($navItems) > 0)
-    <nav style="display:flex;align-items:center;gap:4px;flex:1;justify-content:center;">
-      @foreach($navItems as $nav)
-        <a href="{{ $nav['url'] ?? '#' }}" style="font-size:14px;font-weight:500;color:{{ $headerTextClr }};text-decoration:none;padding:8px 14px;border-radius:4px;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">{{ $nav['label'] ?? '' }}</a>
-      @endforeach
-    </nav>
-    @endif
-
-    {{-- CTA Button --}}
-    @if($ctaEnabled)
-      <a href="{{ $ctaUrl }}" style="background:{{ $ctaBg }};color:{{ $ctaClr }};padding:11px 22px;border-radius:6px;font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap;flex-shrink:0;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">{{ $ctaText }}</a>
-    @endif
-
-  </div>
-</header>
-
-<div class="wrap">
-
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-label">{{ $campaign->country ?? 'Real Estate' }} · Local Expert</div>
-    <h1>{{ $campaign->name }}</h1>
-    <p class="hero-desc">{{ $heroText ?? ($campaign->positioning_note ?? 'Explore real estate opportunities in ' . $campaign->primary_city . '. Expert local guidance for buyers, sellers, and investors.') }}</p>
-  </section>
-
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat-box">
-      <div class="stat-val">{{ count($targetPlaces) }}</div>
-      <div class="stat-label">Areas Covered</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-val">{{ $listings->count() }}</div>
-      <div class="stat-label">Active Listings</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-val">{{ $campaign->coverage_area ?? '—' }}</div>
-      <div class="stat-label">{{ $campaign->coverage_unit ?? 'km' }} Radius</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-val">{{ $profile->ai_content_language ?? 'EN' }}</div>
-      <div class="stat-label">Language</div>
-    </div>
-  </div>
-
-  <!-- Areas -->
-  @if(count($targetPlaces) > 0)
-  <section class="section">
-    <div class="section-head">
-      <div>
-        <h2 class="section-title">Areas We Cover</h2>
-        <p class="section-desc">Key locations around {{ $campaign->primary_city }} where we help buyers find their perfect property.</p>
-      </div>
-      <span class="section-badge">{{ count($targetPlaces) }} locations</span>
-    </div>
-    <div class="areas-grid">
-      @foreach($targetPlaces as $index => $place)
-      @php $aiDesc = $areaDescriptions[$index]['description'] ?? null; @endphp
-      <div class="area-box">
-        <div class="area-name">{{ $place['name'] ?? '' }}</div>
-        <div class="area-meta">{{ $place['type'] ?? 'Location' }} · {{ $place['distance'] ?? '' }}</div>
-        <div class="area-desc">{{ $aiDesc ?? ($place['reason'] ?? 'Strategic location with excellent real estate opportunities.') }}</div>
-        @php $prio = strtolower($place['priority'] ?? 'medium'); @endphp
-        <span class="area-priority {{ $prio }}">{{ strtoupper($prio) }}</span>
-      </div>
-      @endforeach
-    </div>
-  </section>
+  {{-- Top Bar --}}
+  @if($topbarEnabled)
+  <div class="topbar-strip">{{ $topbarText }}</div>
   @endif
 
-  <!-- Listings -->
-  @if($listings->count() > 0)
-  <section class="section">
-    <div class="section-head">
-      <div>
-        <h2 class="section-title">Featured Properties</h2>
-        <p class="section-desc">Handpicked listings in {{ $campaign->primary_city }} and surrounding areas.</p>
-      </div>
-      <span class="section-badge">{{ $listings->count() }} listings</span>
-    </div>
-    <div class="listings-grid">
-      @foreach($listings->take(6) as $listing)
-      <div class="listing-card">
-        <div class="listing-img">
-          @if($listing->images && count($listing->images) > 0)
-            <img src="{{ asset('storage/' . $listing->images[0]) }}" alt="{{ $listing->title }}">
-          @endif
-        </div>
-        <div class="listing-body">
-          <div class="listing-price">{{ $listing->formatted_price ?? '—' }}</div>
-          <div class="listing-title">{{ $listing->title }}</div>
-          <div class="listing-loc">{{ $listing->location ?? '' }}</div>
-        </div>
-      </div>
-      @endforeach
-    </div>
-  </section>
-  @endif
-
-  <!-- FAQ -->
-  @php
-    $faqs = !empty($faqContent) ? $faqContent : [
-      ['question' => 'What types of properties are available?', 'answer' => 'We offer apartments, villas, houses, and land plots throughout ' . $campaign->primary_city . '.'],
-      ['question' => 'Do you assist international buyers?', 'answer' => 'Yes, we provide full support including legal guidance and documentation.'],
-      ['question' => 'How do I schedule a viewing?', 'answer' => 'Contact us via email or phone and we will arrange a convenient time.'],
-      ['question' => 'What is the buying process?', 'answer' => 'We guide you through every step from property search to final purchase.'],
-    ];
-  @endphp
-  <section class="section">
-    <div class="section-head">
-      <div>
-        <h2 class="section-title">Frequently Asked Questions</h2>
-        <p class="section-desc">Common questions about buying property in {{ $campaign->primary_city }}.</p>
-      </div>
-      <span class="section-badge">{{ count($faqs) }} questions</span>
-    </div>
-    <div class="faq-grid">
-      @foreach($faqs as $faq)
-      <div class="faq-item">
-        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">{{ $faq['question'] ?? '' }}</button>
-        <div class="faq-a"><p class="faq-a-inner">{{ $faq['answer'] ?? '' }}</p></div>
-      </div>
-      @endforeach
-    </div>
-  </section>
-
-  <!-- About -->
-  <section class="section">
-    <div class="section-head">
-      <div>
-        <h2 class="section-title">About {{ $profile->agency_name }}</h2>
-        <p class="section-desc">Your trusted local real estate partner.</p>
-      </div>
-    </div>
-    <p class="about-text">{{ $aboutText ?? ($profile->agency_name . ' is a trusted real estate agency serving ' . $campaign->primary_city . ' and the surrounding area. We combine local market expertise with personalized service to help you find the perfect property.') }}</p>
-    <div class="mini-grid">
-      <div class="mini-box">
-        <strong>Local Expertise</strong>
-        <p>Deep knowledge of {{ $campaign->primary_city }} market.</p>
-      </div>
-      <div class="mini-box">
-        <strong>Trusted Guidance</strong>
-        <p>Professional support at every step.</p>
-      </div>
-      <div class="mini-box">
-        <strong>{{ count($targetPlaces) }}+ Areas</strong>
-        <p>Coverage across key locations.</p>
-      </div>
-      <div class="mini-box">
-        <strong>{{ $listings->count() }} Listings</strong>
-        <p>Active properties ready for viewing.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta">
-    <div class="cta-content">
-      <h3>Ready to Find Your Property?</h3>
-      <p>Contact us today for expert guidance on real estate in {{ $campaign->primary_city }}.</p>
-    </div>
-    <div class="cta-btns">
-      @if($profile->contact_email)
-        <a href="mailto:{{ $profile->contact_email }}" class="btn-white">Get in Touch</a>
-      @endif
-      @if($profile->contact_phone)
-        <a href="tel:{{ $profile->contact_phone }}" class="btn-outline">Call Us</a>
-      @endif
-    </div>
-  </section>
-
-</div>{{-- end .wrap --}}
-
-{{-- Footer - realestate.taxi style --}}
-<footer style="background:{{ $footerBg }};color:{{ $footerTextClr }};">
-
-  {{-- Main footer columns --}}
-  @if($col1Title || $col2Title || count($col1Links) > 0 || $col2Text)
-  <div style="max-width:1280px;margin:0 auto;padding:56px 32px 40px;display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:48px;">
-
-    {{-- Col 0: Logo + subscribe box (realestate.taxi style) --}}
-    <div>
-      <div style="margin-bottom:20px;">
-        @if($logoPath)
-          <img src="{{ $logoPath }}" alt="{{ $profile->agency_name }}" style="max-height:44px;">
-        @elseif($profile->agency_logo_path)
-          <img src="{{ asset('storage/' . $profile->agency_logo_path) }}" alt="{{ $profile->agency_name }}" style="max-height:44px;">
+  {{-- Header --}}
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="{{ $logoUrl }}">
+        @if($logoType === 'image' && $logoPath)
+          <img src="{{ $logoPath }}" alt="{{ $profile->agency_name }}" style="height:44px;">
         @else
-          <span style="font-size:20px;font-weight:900;color:{{ $footerTextClr }};">{{ $profile->agency_name }}</span>
+          <span class="brand-mark">⌂</span>
         @endif
+        <span>
+          <strong>{{ $logoText }}</strong>
+          <small>{{ $campaign->primary_city }} property guide</small>
+        </span>
+      </a>
+      <nav class="nav">
+        @foreach($navItems as $item)
+          <a href="{{ $item['url'] ?? '#' }}">{{ $item['label'] ?? '' }}</a>
+        @endforeach
+        @if($ctaEnabled)
+          <a class="cta-btn" href="{{ $ctaUrl }}">{{ $ctaText }}</a>
+        @endif
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+    {{-- Hero Section --}}
+    <section class="hero">
+      <span class="eyebrow">Local SEO Area Page</span>
+      <h1>{{ $campaign->name }}</h1>
+      <p class="hero-desc">
+        @if($heroText)
+          {{ $heroText }}
+        @else
+          A buyer-focused guide to {{ $campaign->primary_city }}: property types, prices, lifestyle, investment potential, available listings, and local buying advice.
+        @endif
+      </p>
+      <div class="hero-actions" style="display:none;">
+        <a class="btn primary" href="#available">View Available Properties</a>
+        <a class="btn" href="#guide">Read Local Guide</a>
+        <a class="btn" href="#contact">Request Private Shortlist</a>
       </div>
-      @if($col2Text)
-        <p style="font-size:13px;opacity:0.6;line-height:1.7;margin:0 0 20px;">{{ $col2Text }}</p>
-      @endif
+    </section>
+
+    {{-- Quick Facts --}}
+    <div class="quick-facts" style="display:none">
+      <div class="fact"><b>{{ $campaign->country ?? 'Croatia' }}</b><span>Country</span></div>
+      <div class="fact"><b>{{ $campaign->primary_city }}</b><span>City / Area</span></div>
+      <div class="fact"><b>{{ $campaign->coverage_area ?? 50 }} {{ $campaign->coverage_unit ?? 'km' }}</b><span>Coverage</span></div>
+      <div class="fact"><b>{{ count($targetPlaces) }}</b><span>Target Places</span></div>
     </div>
 
-    {{-- Col 1: Links --}}
-    @if($col1Title || count($col1Links) > 0)
-    <div>
-      @if($col1Title)
-        <div style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:{{ $footerTextClr }};opacity:0.5;margin-bottom:18px;">{{ $col1Title }}</div>
-      @endif
-      @foreach($col1Links as $link)
-        <div style="margin-bottom:10px;">
-          <a href="{{ $link['url'] ?? '#' }}" style="color:{{ $footerTextClr }};font-size:14px;opacity:0.8;text-decoration:underline;" onmouseover="this.style.textDecoration='none';this.style.opacity='1'" onmouseout="this.style.textDecoration='underline';this.style.opacity='0.8'">&rsaquo; {{ $link['label'] ?? '' }}</a>
+    <div class="layout">
+      <main>
+        {{-- Section 1: Main Article --}}
+        <section class="card pad" id="guide">
+          <div class="title">
+            <div class="num">1</div>
+            <div>
+              <h2>Why {{ $campaign->primary_city }} Attracts Property Buyers</h2>
+              <p class="sub">Local insights, lifestyle appeal, and what makes this area stand out for real estate.</p>
+            </div>
+          </div>
+
+          <div class="article-grid">
+            <div class="article">
+              @if($mainArticle)
+                {!! nl2br(e($mainArticle)) !!}
+              @else
+                <p>{{ $campaign->primary_city }} is one of the most practical coastal areas for buyers who want sea proximity without depending on the old town. The area is known for its beach zone, newer residential buildings, sea-view apartments, wider roads, and easier parking compared with historic centers.</p>
+                <p>The strongest demand usually comes from buyers looking for modern apartments with terraces, garage parking, elevator access, and open sea views. These details matter because many older neighborhoods offer charm but not always the practical features buyers expect from a second home or rental-ready property.</p>
+                <p>From a rental perspective, the area benefits from beach access, family-friendly positioning, and short travel time to main attractions. Apartments near the beach, properties with parking, and units with a strong terrace or sea-view angle can be easier to market during the high season.</p>
+              @endif
+
+              <div class="highlight-box">
+                Best local SEO rule: do not write only "apartments for sale." Write a useful page about the exact micro-area, buyer intent, prices, lifestyle, streets, buildings, beaches, parking, rental demand, and available properties.
+              </div>
+            </div>
+
+            <div class="callout" style="display: none">
+              <h3>What this page targets</h3>
+              <table class="local-table">
+                <tr><th>Search Intent</th><td>{{ $campaign->primary_city }} real estate, apartments for sale, sea-view apartments, property near beach</td></tr>
+                <tr><th>Buyer Type</th><td>Foreign buyers, local families, second-home owners, rental investors</td></tr>
+                <tr><th>Page Purpose</th><td>Rank for micro-location searches and convert readers into property enquiries</td></tr>
+                <tr><th>AI Purpose</th><td>Give short, factual, structured answers that AI tools can understand and quote</td></tr>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {{-- Section 2 & 3: Quick Answers + Listings --}}
+        <div class="grid2">
+          <section class="card pad" id="answers">
+            <div class="title">
+              <div class="num">2</div>
+              <div>
+                <h2>Your Questions, Answered</h2>
+                <p class="sub">Straight answers to what buyers ask most about this area.</p>
+              </div>
+            </div>
+            <div class="qa">
+              @if(count($quickAnswers) > 0)
+                @foreach($quickAnswers as $qa)
+                  <details {{ $loop->first ? 'open' : '' }}>
+                    <summary>{{ $qa['question'] ?? '' }}</summary>
+                    <p>{{ $qa['answer'] ?? '' }}</p>
+                  </details>
+                @endforeach
+              @else
+                <details open>
+                  <summary>Is {{ $campaign->primary_city }} a good area to buy property?</summary>
+                  <p>Yes, especially for buyers who want sea proximity, newer buildings, parking access, terraces and a more residential coastal setting.</p>
+                </details>
+                <details>
+                  <summary>What kind of property is most attractive?</summary>
+                  <p>Modern apartments with sea views, garage parking, elevator access, good terraces and clean ownership documentation usually attract the strongest demand.</p>
+                </details>
+                <details>
+                  <summary>Is it better for lifestyle or investment?</summary>
+                  <p>It can work for both. Lifestyle buyers value the beach and practical living, while investors value rental demand and limited quality supply near the sea.</p>
+                </details>
+              @endif
+            </div>
+          </section>
+
+          <section class="card pad" id="available">
+            <div class="title">
+              <div class="num">3</div>
+              <div>
+                <h2>Properties You Can Buy Now</h2>
+                <p class="sub">Current listings ready for viewing.</p>
+              </div>
+            </div>
+
+            <div style="display:grid;gap:14px;">
+              @forelse($listings->take(3) as $listing)
+                <article class="listing">
+                  <div class="listing-img">
+                    @if($listing->primary_image)
+                      <img src="{{ asset('storage/' . $listing->primary_image) }}" alt="{{ $listing->title }}">
+                    @endif
+                  </div>
+                  <div>
+                    <h3>{{ $listing->title }}</h3>
+                    <div class="price">€{{ number_format($listing->price ?? 0, 0, ',', '.') }}</div>
+                    <div class="chips">
+                      @if($listing->size)<span class="chip">{{ $listing->size }} m²</span>@endif
+                      @if($listing->bedrooms)<span class="chip">{{ $listing->bedrooms }} bed</span>@endif
+                      @if($listing->property_type)<span class="chip">{{ $listing->property_type }}</span>@endif
+                    </div>
+                    @if($listing->external_url)
+                    <a href="{{ $listing->external_url }}" target="_blank" rel="noopener" class="view-listing-btn">
+                      View Listing <span>→</span>
+                    </a>
+                    @endif
+                  </div>
+                </article>
+              @empty
+                <p class="sub">No listings available yet. Contact us for off-market properties.</p>
+              @endforelse
+            </div>
+          </section>
         </div>
-      @endforeach
-    </div>
-    @endif
 
-    {{-- Col 2: About text --}}
-    @if($col2Title)
-    <div>
-      <div style="font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:{{ $footerTextClr }};opacity:0.5;margin-bottom:18px;">{{ $col2Title }}</div>
-      @if($col2Text)
-        <p style="font-size:14px;opacity:0.75;line-height:1.75;margin:0;">{{ $col2Text }}</p>
-      @endif
-    </div>
-    @endif
+        {{-- Section 4 & 5: Map + Distances --}}
+        <div class="grid2" style="align-items: stretch;">
+          <section class="card pad map-section" id="areas">
+            <div class="title">
+              <div class="num">4</div>
+              <div>
+                <h2>Micro-Area Map + Distances</h2>
+                <p class="sub">Local pages need exact distance logic, not vague descriptions.</p>
+              </div>
+            </div>
+            <div class="map-container">
+              @php
+                $mapQuery = urlencode($campaign->primary_city . ', ' . ($campaign->country ?? 'Croatia'));
+                $mapLat = $campaign->latitude ?? null;
+                $mapLng = $campaign->longitude ?? null;
+                $mapsApiKey = config('services.google.maps_api_key');
+                // Build markers string for places
+                $markers = [];
+                foreach($targetPlaces as $place) {
+                    if (!empty($place['name'])) {
+                        $markers[] = urlencode($place['name'] . ', ' . $campaign->primary_city);
+                    }
+                }
+              @endphp
+              @if($campaign->map_embed_url)
+                <iframe 
+                  src="{{ $campaign->map_embed_url }}" 
+                  width="100%" 
+                  height="280" 
+                  style="border:0; border-radius: 12px;" 
+                  allowfullscreen="" 
+                  loading="lazy" 
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+              @elseif($mapLat && $mapLng)
+                <iframe 
+                  src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d5000!2d{{ $mapLng }}!3d{{ $mapLat }}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2shr!4v1" 
+                  width="100%" 
+                  height="280" 
+                  style="border:0; border-radius: 12px;" 
+                  allowfullscreen="" 
+                  loading="lazy" 
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+              @elseif($mapsApiKey)
+                <iframe 
+                  src="https://www.google.com/maps/embed/v1/place?key={{ $mapsApiKey }}&q={{ $mapQuery }}&zoom=14" 
+                  width="100%" 
+                  height="280" 
+                  style="border:0; border-radius: 12px;" 
+                  allowfullscreen="" 
+                  loading="lazy" 
+                  referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+              @else
+                <div class="map-placeholder">
+                  <div class="map-bg"></div>
+                  <div class="map-pin-wrapper">
+                    <div class="map-pin">📍</div>
+                    <span>{{ $campaign->primary_city }} core</span>
+                  </div>
+                </div>
+              @endif
+            </div>
+          </section>
 
+          <section class="card pad distance-section" id="distances">
+            <div class="title">
+              <div class="num">5</div>
+              <div>
+                <h2>How Far Is Everything?</h2>
+                <p class="sub">Real distances to places that matter.</p>
+              </div>
+            </div>
+            <div class="distance-list">
+              @foreach($targetPlaces as $place)
+                <div class="distance">
+                  <span>{{ $place['name'] ?? '' }}</span>
+                  <span>{{ $place['distance'] ?? '—' }}</span>
+                </div>
+              @endforeach
+            </div>
+          </section>
+        </div>
+
+
+        {{-- Section 8: Area Comparison --}}
+        @if(count($areaComparison) > 0 || count($targetPlaces) > 1)
+        <section class="card pad" id="compare">
+          <div class="title">
+            <div class="num">7</div>
+            <div>
+              <h2>How Does It Compare?</h2>
+              <p class="sub">{{ $campaign->primary_city }} vs. nearby alternatives — strengths and trade-offs.</p>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="local-table">
+              <tr>
+                <th>Area</th>
+                <th>Main Strength</th>
+                <th>Typical Buyer</th>
+                <th>Best Property Type</th>
+              </tr>
+              @foreach($targetPlaces as $index => $place)
+              @php
+                // Get AI-generated comparison data for this place
+                $compData = collect($areaComparison)->firstWhere('name', $place['name'] ?? '');
+              @endphp
+              <tr>
+                <td><strong>{{ $place['name'] ?? '' }}</strong></td>
+                <td>{{ $compData['main_strength'] ?? $place['strength'] ?? 'Local area with unique character' }}</td>
+                <td>{{ $compData['typical_buyer'] ?? $place['buyer_type'] ?? 'Various buyer profiles' }}</td>
+                <td>{{ $compData['property_type'] ?? $place['property_type'] ?? 'Mixed property types' }}</td>
+              </tr>
+              @endforeach
+            </table>
+          </div>
+        </section>
+        @endif
+
+        {{-- Section 8: Local Services --}}
+        <section class="card pad" id="services">
+          <div class="title">
+            <div class="num">8</div>
+            <div>
+              <h2>How We Help Buyers</h2>
+              <p class="sub">From shortlists to due diligence — services for serious buyers.</p>
+            </div>
+          </div>
+          <div class="service-grid">
+            <div class="mini-card">
+              <b>Private property shortlist</b>
+              <p>We filter listings by view, parking, building quality, terrace, documentation and rental potential.</p>
+            </div>
+            <div class="mini-card">
+              <b>Buyer due diligence</b>
+              <p>We help check ownership, permits, building status, utility setup and realistic renovation needs.</p>
+            </div>
+            <div class="mini-card">
+              <b>Rental management option</b>
+              <p>For investment buyers, we can estimate rental positioning and prepare the property for guest-ready use.</p>
+            </div>
+          </div>
+        </section>
+
+        {{-- Section 10: Internal Links --}}
+        <section class="card pad" id="explore">
+          <div class="title">
+            <div class="num">9</div>
+            <div>
+              <h2>Internal Links to Build Local Authority</h2>
+              <p class="sub">Every local page should connect to related areas and property categories.</p>
+            </div>
+          </div>
+          <div class="internal-links-grid">
+            <a class="internal-link-card" href="#">
+              <strong>Apartments for Sale in {{ $campaign->primary_city }}</strong>
+              <small>Main city page</small>
+            </a>
+            <a class="internal-link-card" href="#">
+              <strong>Sea-View Apartments in {{ $campaign->primary_city }}</strong>
+              <small>Property type page</small>
+            </a>
+            @foreach(array_slice($targetPlaces, 0, 2) as $place)
+            <a class="internal-link-card" href="#">
+              <strong>{{ $place['name'] }} Real Estate Guide</strong>
+              <small>Nearby area</small>
+            </a>
+            @endforeach
+            <a class="internal-link-card" href="#">
+              <strong>Luxury Property Guide</strong>
+              <small>Luxury comparison</small>
+            </a>
+            <a class="internal-link-card" href="#">
+              <strong>Buying Property in {{ $campaign->country ?? 'Croatia' }}</strong>
+              <small>Buyer guide</small>
+            </a>
+            <a class="internal-link-card" href="#">
+              <strong>{{ $campaign->country ?? 'Croatia' }} Property Taxes</strong>
+              <small>FAQ support page</small>
+            </a>
+            <a class="internal-link-card" href="#">
+              <strong>Rental Management {{ $campaign->primary_city }}</strong>
+              <small>Investor service</small>
+            </a>
+          </div>
+        </section>
+
+        {{-- Section 11: FAQ --}}
+        <section class="card pad" id="faq">
+          <div class="title">
+            <div class="num">10</div>
+            <div>
+              <h2>FAQ for {{ $campaign->primary_city }} Real Estate Buyers</h2>
+              <p class="sub">Use real answers, not generic sales text.</p>
+            </div>
+          </div>
+          <div class="qa">
+            @forelse($faqContent as $faq)
+              <details {{ $loop->first ? 'open' : '' }}>
+                <summary>{{ $faq['question'] ?? '' }}</summary>
+                <p>{{ $faq['answer'] ?? '' }}</p>
+              </details>
+            @empty
+              <details open>
+                <summary>Can foreigners buy property in {{ $campaign->primary_city }}?</summary>
+                <p>Many foreign buyers can purchase property in {{ $campaign->country ?? 'Croatia' }}, but the exact process depends on citizenship, reciprocity rules and legal checks. Buyers should confirm this with a local lawyer before signing.</p>
+              </details>
+              <details>
+                <summary>What matters most when buying here?</summary>
+                <p>Key points include sea view quality, distance to the beach, parking, elevator access, building age, orientation, documentation, terrace usability and realistic rental potential.</p>
+              </details>
+              <details>
+                <summary>Can an apartment work for holiday rental?</summary>
+                <p>Yes, especially if it has sea views, parking, a strong terrace, modern furniture and professional guest management. However, financial performance should be estimated case by case.</p>
+              </details>
+            @endforelse
+          </div>
+        </section>
+
+        {{-- Section 12: Contact / Investor Lead Magnet --}}
+        <section class="card pad" id="contact">
+          <div class="title">
+            <div class="num">12</div>
+            <div>
+              <h2>Ready to Take the Next Step?</h2>
+              <p class="sub">Whether you're buying directly or exploring investment routes — let's talk.</p>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div class="callout">
+              <h3>Ask which route fits you</h3>
+              <p class="sub">Fill this form if you are interested in {{ $campaign->primary_city }}/{{ $campaign->country ?? 'Croatia' }} property, {{ $campaign->country ?? 'Croatian' }} coastal real estate, rental-managed ownership, or lower-entry investor participation from USD 30,000+.</p>
+              
+              @if(session('success'))
+              <div class="success-message">
+                <span class="success-icon">✓</span>
+                <div>
+                  <strong>Request Sent Successfully!</strong>
+                  <p>{{ session('success') }}</p>
+                </div>
+              </div>
+              @endif
+
+              @if($errors->any())
+              <div class="error-message">
+                <ul>
+                  @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                  @endforeach
+                </ul>
+              </div>
+              @endif
+
+              <form class="form" style="margin-top:14px;" method="POST" action="{{ route('lead-magnet.store', $agencyProfile->id ?? 1) }}">
+                @csrf
+                <input type="hidden" name="source" value="local_seo_campaign">
+                <input type="hidden" name="campaign_id" value="{{ $campaign->id }}">
+                <input type="hidden" name="campaign_city" value="{{ $campaign->primary_city }}">
+                <input type="text" name="full_name" placeholder="Full name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <select name="interest_type">
+                  <option value="">What are you interested in?</option>
+                  <option value="buy_property">I want to buy a property in {{ $campaign->primary_city }}</option>
+                  <option value="rental_managed">I want rental-managed ownership</option>
+                  <option value="investor_participation">I want investor participation from USD 30,000+</option>
+                  <option value="not_sure">I am not sure — show me the best option</option>
+                </select>
+                <select name="capital_range">
+                  <option value="">Approximate available capital</option>
+                  <option value="30k-50k">USD 30,000 – 50,000</option>
+                  <option value="50k-100k">USD 50,000 – 100,000</option>
+                  <option value="100k-250k">USD 100,000 – 250,000</option>
+                  <option value="250k+">USD 250,000+</option>
+                </select>
+                <select name="buyer_profile">
+                  <option value="">Investor / buyer profile</option>
+                  <option value="individual">Individual buyer</option>
+                  <option value="family_office">Family office</option>
+                  <option value="corporate">Corporate investor</option>
+                  <option value="first_time">First-time international buyer</option>
+                </select>
+                <textarea name="message" placeholder="Tell us your goal: buy property, earn from rentals, participate from 30k+, diversify into {{ $campaign->country ?? 'Croatian' }} coastal real estate, or receive similar opportunities."></textarea>
+                <button class="btn primary" type="submit">Request Private Options</button>
+              </form>
+            </div>
+
+            <div>
+              <h3 style="margin-top:14px;">Why people complete this form</h3>
+              <ul class="why-list">
+                <li>They want real-estate exposure but do not want to manage tenants, guests, construction, or maintenance.</li>
+                <li>They want to compare buying a full property versus participating with a smaller amount.</li>
+                <li>They want {{ $campaign->country ?? 'Croatian' }} coastal real estate exposure as a diversification option.</li>
+                <li>They want to understand if they qualify for a U.S. LLC, UK LLP, direct purchase, or rental-management path.</li>
+                <li>They want current available projects before allocations close.</li>
+              </ul>
+
+              <div class="cta-box">
+                <strong>CTA text to test:</strong>
+                <p>"I don't want to buy the whole property. Show me how I can still participate from USD 30,000+."</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {{-- Sidebar --}}
+      <aside class="sidebar">
+        @if($sidebarEnabled)
+        <section class="card sidebar-box">
+          <div class="head">{{ $sidebarTitle }}</div>
+          <div class="sidebar-list">
+            <a href="#guide" class="sidebar-row"><span class="ico">1</span><span>Why {{ $campaign->primary_city }} Attracts Buyers</span></a>
+            <a href="#answers" class="sidebar-row"><span class="ico">2</span><span>Your Questions, Answered</span></a>
+            <a href="#available" class="sidebar-row"><span class="ico">3</span><span>Properties You Can Buy Now</span></a>
+            <a href="#areas" class="sidebar-row"><span class="ico">4</span><span>Map + Distances</span></a>
+            <a href="#market" class="sidebar-row"><span class="ico">5</span><span>What's the Market Like?</span></a>
+            <a href="#fit" class="sidebar-row"><span class="ico">6</span><span>Is This Area Right for You?</span></a>
+            <a href="#compare" class="sidebar-row"><span class="ico">7</span><span>How Does It Compare?</span></a>
+            <a href="#services" class="sidebar-row"><span class="ico">8</span><span>How We Help Buyers</span></a>
+            <a href="#explore" class="sidebar-row"><span class="ico">9</span><span>Internal Links</span></a>
+            <a href="#faq" class="sidebar-row"><span class="ico">10</span><span>Frequently Asked Questions</span></a>
+            <a href="#contact" class="sidebar-row"><span class="ico">11</span><span>Ready to Take the Next Step?</span></a>
+          </div>
+        </section>
+        @endif
+
+        @if($showLastUpdated ?? true)
+        <section class="card pad">
+          <span class="badge">Last updated</span>
+          <h3 style="margin-top:12px;">{{ $campaign->updated_at->format('d M Y') }}</h3>
+          <p class="sub">Update this page whenever listings, price ranges, or buyer demand change.</p>
+        </section>
+        @endif
+      </aside>
+    </div>
   </div>
-  @endif
 
-  {{-- Bottom bar --}}
-  <div style="border-top:1px solid rgba(255,255,255,0.1);">
-    <div style="max-width:1280px;margin:0 auto;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-      <span style="font-size:13px;opacity:0.45;">{{ $copyright }}</span>
-      <div style="display:flex;gap:24px;align-items:center;">
-        <a href="{{ $privacyUrl }}" style="font-size:13px;color:{{ $footerTextClr }};opacity:0.5;text-decoration:underline;" onmouseover="this.style.textDecoration='none';this.style.opacity='0.85'" onmouseout="this.style.textDecoration='underline';this.style.opacity='0.5'">Privacy Policy</a>
-        <a href="{{ $termsUrl }}" style="font-size:13px;color:{{ $footerTextClr }};opacity:0.5;text-decoration:underline;" onmouseover="this.style.textDecoration='none';this.style.opacity='0.85'" onmouseout="this.style.textDecoration='underline';this.style.opacity='0.5'">Terms of Use</a>
+  {{-- Footer --}}
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>{{ $col1Title }}</h4>
+          @foreach($col1Links as $link)
+            <a href="{{ $link['url'] ?? '#' }}" style="display:block;">{{ $link['label'] ?? '' }}</a>
+          @endforeach
+        </div>
+        <div class="footer-col">
+          <h4>{{ $col2Title }}</h4>
+          <p>{{ $col2Text }}</p>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <p>{{ $profile->agency_name }}</p>
+          @if($profile->contact_email)<p>{{ $profile->contact_email }}</p>@endif
+          @if($profile->contact_phone)<p>{{ $profile->contact_phone }}</p>@endif
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>{{ $copyright }}</span>
+        <div class="footer-links">
+          <a href="{{ $privacyUrl }}">Privacy Policy</a>
+          <a href="{{ $termsUrl }}">Terms of Use</a>
+        </div>
       </div>
     </div>
-  </div>
-
-</footer>
+  </footer>
 </body>
 </html>

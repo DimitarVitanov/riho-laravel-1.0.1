@@ -54,16 +54,23 @@ class LeadMagnetController extends Controller
             abort(404, 'Lead magnet not available');
         }
 
-        // Validate form data (similar to register but without account type)
+        // Validate form data - support both original and local SEO campaign forms
         $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'full_name' => 'nullable|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
             'country' => 'nullable|string|max:100',
-            'investor_type' => 'nullable|string|in:cash_buyer,mortgage_buyer,investor,other',
+            'investor_type' => 'nullable|string|max:100',
+            'interest_type' => 'nullable|string|max:100',
+            'capital_range' => 'nullable|string|max:100',
+            'buyer_profile' => 'nullable|string|max:100',
             'interest_amount' => 'nullable|numeric|min:0',
-            'message' => 'nullable|string|max:1000',
+            'message' => 'nullable|string|max:2000',
+            'source' => 'nullable|string|max:100',
+            'campaign_id' => 'nullable|integer',
+            'campaign_city' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -72,19 +79,43 @@ class LeadMagnetController extends Controller
                 ->withInput();
         }
 
+        // Parse full_name into first/last if provided
+        $firstName = $request->first_name;
+        $lastName = $request->last_name;
+        if ($request->full_name && !$firstName) {
+            $nameParts = explode(' ', $request->full_name, 2);
+            $firstName = $nameParts[0] ?? '';
+            $lastName = $nameParts[1] ?? '';
+        }
+
+        // Build message with additional context
+        $message = $request->message ?? '';
+        if ($request->interest_type) {
+            $message = "Interest: {$request->interest_type}\n" . $message;
+        }
+        if ($request->capital_range) {
+            $message = "Capital: {$request->capital_range}\n" . $message;
+        }
+        if ($request->buyer_profile) {
+            $message = "Profile: {$request->buyer_profile}\n" . $message;
+        }
+        if ($request->campaign_city) {
+            $message = "City: {$request->campaign_city}\n" . $message;
+        }
+
         // Create lead
         $lead = Lead::create([
             'agency_profile_id' => $agencyProfile->id,
-            'source' => 'invisible_lead_magnet',
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
+            'source' => $request->source ?? 'invisible_lead_magnet',
+            'first_name' => $firstName,
+            'last_name' => $lastName,
             'email' => $request->email,
             'phone' => $request->phone,
             'country' => $request->country,
-            'investor_type' => $request->investor_type,
+            'investor_type' => $request->investor_type ?? $request->buyer_profile,
             'interest_amount' => $request->interest_amount,
-            'message' => $request->message,
-            'landing_page_url' => $request->fullUrl(),
+            'message' => trim($message),
+            'landing_page_url' => $request->headers->get('referer') ?? $request->fullUrl(),
             'status' => 'new',
         ]);
 

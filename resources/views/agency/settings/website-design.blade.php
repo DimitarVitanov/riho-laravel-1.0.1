@@ -326,6 +326,38 @@
                     </div>
                 </div>
 
+                {{-- ===== SIDEBAR SETTINGS ===== --}}
+                <div class="card mb-3">
+                    <div class="card-header"><h5 class="mb-0">📋 Sidebar Navigation Box</h5></div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-check form-switch mb-3">
+                                    <input type="hidden" name="sidebar_enabled" value="0">
+                                    <input class="form-check-input" type="checkbox" name="sidebar_enabled" value="1" id="sidebarEnabled"
+                                        {{ ($profile->sidebar_enabled ?? true) ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-semibold" for="sidebarEnabled">Show Sidebar Navigation</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check form-switch mb-3">
+                                    <input type="hidden" name="sidebar_show_last_updated" value="0">
+                                    <input class="form-check-input" type="checkbox" name="sidebar_show_last_updated" value="1" id="sidebarShowLastUpdated"
+                                        {{ ($profile->sidebar_show_last_updated ?? true) ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-semibold" for="sidebarShowLastUpdated">Show "Last Updated" Box</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Box Title</label>
+                                <input type="text" name="sidebar_title" class="form-control"
+                                    value="{{ $profile->sidebar_title ?? '' }}"
+                                    placeholder="e.g. Page Sections">
+                                <small class="text-muted">The list items are auto-generated anchor links to page sections</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- ===== CUSTOM CSS ===== --}}
                 <div class="card mb-3">
                     <div class="card-header"><h5 class="mb-0">💻 Custom CSS</h5></div>
@@ -410,4 +442,5 @@ function addFooterLink() {
         + '<button type="button" class="wd-remove-btn" onclick="this.closest(\'.wd-row-item\').remove()">&#215;</button>';
     list.appendChild(div);
 }
+
 </script>

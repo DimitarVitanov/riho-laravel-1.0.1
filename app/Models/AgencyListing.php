@@ -20,6 +20,11 @@ class AgencyListing extends Model
         'currency',
         'images_json',
         'status',
+        'external_url',
+        'size',
+        'bedrooms',
+        'bathrooms',
+        'features',
     ];
 
     protected $casts = [

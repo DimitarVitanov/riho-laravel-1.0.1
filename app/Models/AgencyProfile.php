@@ -158,6 +158,11 @@ class AgencyProfile extends Model
         return $this->hasMany(LocalSeoCampaign::class);
     }
 
+    public function aiAuthorityPages()
+    {
+        return $this->hasMany(AiAuthorityPage::class);
+    }
+
     public function generatedPages()
     {
         return $this->hasMany(GeneratedPage::class);
@@ -181,6 +186,11 @@ class AgencyProfile extends Model
     public function dailyUsageLogs()
     {
         return $this->hasMany(DailyUsageLog::class);
+    }
+
+    public function agents()
+    {
+        return $this->hasMany(AgencyAgent::class);
     }
 
     public function getIsDnsVerifiedAttribute(): bool

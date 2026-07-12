@@ -71,4 +71,8 @@ return [
         'model' => env('GOOGLE_AI_DEFAULT_MODEL', 'gemini-pro'),
     ],
 
+    'ai' => [
+        'default_provider' => env('AI_DEFAULT_PROVIDER', 'openai'),
+    ],
+
 ];

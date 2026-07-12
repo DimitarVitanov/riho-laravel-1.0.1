@@ -22,14 +22,22 @@ class AgencyListing extends Model
         'status',
         'external_url',
         'size',
+        'living_area',
+        'plot_size',
         'bedrooms',
         'bathrooms',
         'features',
+        'is_turnkey',
+        'property_condition',
+        'year_built',
     ];
 
     protected $casts = [
         'images_json' => 'array',
         'price' => 'decimal:2',
+        'living_area' => 'decimal:2',
+        'plot_size' => 'decimal:2',
+        'is_turnkey' => 'boolean',
     ];
 
     public function agencyProfile()

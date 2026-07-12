@@ -96,13 +96,16 @@ class AgencyFeatureController extends Controller
             }
 
             if ($feature === 'ai_search_ranking') {
-                $viewData['pages'] = $profile ? $profile->generatedPages()
-                    ->where('feature_key', 'ai_search_ranking')
-                    ->latest()
-                    ->paginate(10) : collect();
-                $viewData['dataBlocks'] = collect();
-                $viewData['notifications'] = $profile ? $this->getAiSearchNotifications($profile) : collect();
-                $viewData['usageLimit'] = $profile ? $profile->currentUsageLimit : null;
+                $viewData['pages'] = $profile 
+                    ? \App\Models\AiAuthorityPage::where('agency_profile_id', $profile->id)->latest()->get() 
+                    : collect();
+                $viewData['createMode'] = request()->has('create_page');
+                $viewData['editPage'] = request()->has('edit_page_id') 
+                    ? \App\Models\AiAuthorityPage::where('agency_profile_id', $profile->id)->find(request('edit_page_id'))
+                    : null;
+                $viewData['listings'] = $profile 
+                    ? \App\Models\AgencyListing::where('agency_profile_id', $profile->id)->orderBy('title')->get() 
+                    : collect();
             }
 
             if ($feature === 'ai_authority_builder') {
@@ -910,16 +913,24 @@ class AgencyFeatureController extends Controller
             'description' => 'nullable|string',
             'price' => 'nullable|numeric|min:0',
             'currency' => 'nullable|string|max:10',
+            'living_area' => 'nullable|numeric|min:0',
+            'plot_size' => 'nullable|numeric|min:0',
+            'bedrooms' => 'nullable|integer|min:0',
+            'bathrooms' => 'nullable|integer|min:0',
+            'year_built' => 'nullable|integer|min:1800',
+            'is_turnkey' => 'nullable|boolean',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'status' => 'nullable|string|in:active,inactive',
+            'campaign_ids' => 'nullable|array',
         ]);
 
         $images = $listing->images_json ?? [];
         if ($request->hasFile('images')) {
+            $images = []; // Replace images
             foreach ($request->file('images') as $image) {
                 $path = $image->store('agency-listings/' . $profile->id, 'public');
-                $images[] = asset('storage/' . $path);
+                $images[] = $path;
             }
         }
 
@@ -930,11 +941,23 @@ class AgencyFeatureController extends Controller
             'description' => $validated['description'] ?? null,
             'price' => $validated['price'] ?? null,
             'currency' => $validated['currency'] ?? 'EUR',
+            'living_area' => $validated['living_area'] ?? null,
+            'plot_size' => $validated['plot_size'] ?? null,
+            'bedrooms' => $validated['bedrooms'] ?? null,
+            'bathrooms' => $validated['bathrooms'] ?? null,
+            'year_built' => $validated['year_built'] ?? null,
+            'is_turnkey' => $request->has('is_turnkey'),
             'images_json' => $images,
             'status' => $validated['status'] ?? 'active',
         ]);
 
-        return redirect()->back()->with('success', 'Listing updated successfully.');
+        // Update campaign associations
+        if (isset($validated['campaign_ids'])) {
+            $listing->campaigns()->sync($validated['campaign_ids']);
+        }
+
+        return redirect()->route('agency.features.show', ['feature' => 'local_seo_presence_boost', 'show_listings' => 1])
+            ->with('success', 'Listing updated successfully.');
     }
 
     public function destroyListing(\App\Models\AgencyListing $listing)
@@ -950,6 +973,126 @@ class AgencyFeatureController extends Controller
         $listing->delete();
 
         return redirect()->back()->with('success', 'Listing deleted successfully.');
+    }
+
+    // Agency Agents
+
+    public function storeAgent(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
+
+        if (!$profile) {
+            return redirect()->back()->with('error', 'Agency profile not found.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'agency_name' => 'nullable|string|max:255',
+            'agency_listing_id' => 'nullable|exists:agency_listings,id',
+            'tagline' => 'nullable|string|max:255',
+            'license' => 'nullable|string|max:100',
+            'rating' => 'nullable|numeric|min:1|max:5',
+            'reviews_count' => 'nullable|integer|min:0',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'is_primary' => 'nullable|boolean',
+        ]);
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('agency-agents/' . $profile->id, 'public');
+        }
+
+        // If setting as primary, unset other primary agents
+        if ($request->has('is_primary')) {
+            $profile->agents()->update(['is_primary' => false]);
+        }
+
+        $profile->agents()->create([
+            'name' => $validated['name'],
+            'email' => $validated['email'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'agency_name' => $validated['agency_name'] ?? $profile->agency_name,
+            'agency_listing_id' => $validated['agency_listing_id'] ?? null,
+            'tagline' => $validated['tagline'] ?? null,
+            'license' => $validated['license'] ?? null,
+            'rating' => $validated['rating'] ?? 5.0,
+            'reviews_count' => $validated['reviews_count'] ?? 0,
+            'photo' => $photoPath,
+            'is_primary' => $request->has('is_primary'),
+        ]);
+
+        return redirect()->route('agency.features.show', ['feature' => 'ai_search_ranking', 'add_agent' => 1])
+            ->with('success', 'Agent added successfully.');
+    }
+
+    public function updateAgent(Request $request, \App\Models\AgencyAgent $agent)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
+
+        if (!$profile || $agent->agency_profile_id !== $profile->id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'agency_name' => 'nullable|string|max:255',
+            'agency_listing_id' => 'nullable|exists:agency_listings,id',
+            'tagline' => 'nullable|string|max:255',
+            'license' => 'nullable|string|max:100',
+            'rating' => 'nullable|numeric|min:1|max:5',
+            'reviews_count' => 'nullable|integer|min:0',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'is_primary' => 'nullable|boolean',
+        ]);
+
+        if ($request->hasFile('photo')) {
+            $agent->photo = $request->file('photo')->store('agency-agents/' . $profile->id, 'public');
+        }
+
+        // If setting as primary, unset other primary agents
+        if ($request->has('is_primary')) {
+            $profile->agents()->where('id', '!=', $agent->id)->update(['is_primary' => false]);
+        }
+
+        $agent->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'agency_name' => $validated['agency_name'] ?? $profile->agency_name,
+            'agency_listing_id' => $validated['agency_listing_id'] ?? null,
+            'tagline' => $validated['tagline'] ?? null,
+            'license' => $validated['license'] ?? null,
+            'rating' => $validated['rating'] ?? 5.0,
+            'reviews_count' => $validated['reviews_count'] ?? 0,
+            'photo' => $agent->photo,
+            'is_primary' => $request->has('is_primary'),
+        ]);
+
+        return redirect()->route('agency.features.show', ['feature' => 'ai_search_ranking', 'add_agent' => 1])
+            ->with('success', 'Agent updated successfully.');
+    }
+
+    public function destroyAgent(\App\Models\AgencyAgent $agent)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
+
+        if (!$profile || $agent->agency_profile_id !== $profile->id) {
+            abort(403);
+        }
+
+        $agent->delete();
+
+        return redirect()->back()->with('success', 'Agent deleted successfully.');
     }
 
     // AI Search Ranking

@@ -789,6 +789,7 @@
                                 </td>
                                 <td class="text-end" style="white-space:nowrap;">
                                     <button type="button" class="btn btn-sm btn-outline-dark" onclick="previewListing({{ $listing->id }})">Preview</button>
+                                    <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?edit_listing={{ $listing->id }}" class="btn btn-sm btn-dark">Edit</a>
                                     <form action="{{ route('agency.local-seo.listings.destroy', $listing) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this listing?')">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
@@ -880,6 +881,111 @@
         });
     }
     </script>
+    @endif
+
+    {{-- ============ EDIT LISTING FORM ============ --}}
+    @if(request('edit_listing'))
+    @php $editListing = \App\Models\AgencyListing::find(request('edit_listing')); @endphp
+    @if($editListing)
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?show_listings=1" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-block;margin-bottom:8px;">← Back to Listings</a>
+                <h5><span class="step-circle">●</span>Edit Listing</h5>
+                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">Update listing details</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('agency.local-seo.listings.update', $editListing) }}" method="POST" enctype="multipart/form-data">
+                @csrf @method('PUT')
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Campaigns</label>
+                        <select name="campaign_ids[]" class="form-select select2-campaigns" multiple required>
+                            @foreach($campaigns as $campaignOption)
+                                <option value="{{ $campaignOption->id }}"
+                                    {{ $editListing->campaigns->contains($campaignOption->id) ? 'selected' : '' }}>
+                                    {{ $campaignOption->name }}{{ $campaignOption->primary_city ? ' — ' . $campaignOption->primary_city : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Listing Title</label>
+                        <input type="text" name="title" class="form-control" value="{{ $editListing->title }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Property Type</label>
+                        <input type="text" name="property_type" class="form-control" value="{{ $editListing->property_type }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" value="{{ $editListing->location }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Price</label>
+                        <div class="input-group">
+                            <input type="number" name="price" class="form-control" value="{{ $editListing->price }}" min="0">
+                            <select name="currency" class="form-select" style="max-width:80px;">
+                                <option value="EUR" {{ $editListing->currency === 'EUR' ? 'selected' : '' }}>EUR</option>
+                                <option value="USD" {{ $editListing->currency === 'USD' ? 'selected' : '' }}>USD</option>
+                                <option value="GBP" {{ $editListing->currency === 'GBP' ? 'selected' : '' }}>GBP</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Living Area (m²)</label>
+                        <input type="number" name="living_area" class="form-control" value="{{ $editListing->living_area }}" min="0" step="0.01">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Plot Size (m²)</label>
+                        <input type="number" name="plot_size" class="form-control" value="{{ $editListing->plot_size }}" min="0" step="0.01">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Bedrooms / Bathrooms</label>
+                        <div class="input-group">
+                            <input type="number" name="bedrooms" class="form-control" value="{{ $editListing->bedrooms }}" min="0" placeholder="Beds">
+                            <input type="number" name="bathrooms" class="form-control" value="{{ $editListing->bathrooms }}" min="0" placeholder="Baths">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="2">{{ $editListing->description }}</textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Year Built</label>
+                        <input type="number" name="year_built" class="form-control" value="{{ $editListing->year_built }}" min="1800" max="{{ date('Y') + 5 }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label d-block">Turnkey Ready</label>
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" name="is_turnkey" value="1" {{ $editListing->is_turnkey ? 'checked' : '' }}>
+                            <label class="form-check-label">Yes, ready to move in</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Images</label>
+                        @if($editListing->images && count($editListing->images) > 0)
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+                            @foreach($editListing->images as $img)
+                            <div style="position:relative;">
+                                <img src="{{ asset('storage/' . $img) }}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #ddd;">
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
+                        <input type="file" name="images[]" class="form-control" multiple accept="image/*">
+                        <small class="text-muted">Upload new images to replace existing ones.</small>
+                    </div>
+                </div>
+                <div class="actions-bar">
+                    <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?show_listings=1" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">Cancel</a>
+                    <button type="submit" class="btn btn-accent">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
     @endif
 
     {{-- ============ ADD LISTING FORM (only when add_listing or editing campaign) ============ --}}

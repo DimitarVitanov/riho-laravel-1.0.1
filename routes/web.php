@@ -314,7 +314,7 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::put('local-seo-presence-boost/listings/{listing}', [AgencyFeatureController::class, 'updateListing'])->name('local-seo.listings.update');
     Route::delete('local-seo-presence-boost/listings/{listing}', [AgencyFeatureController::class, 'destroyListing'])->name('local-seo.listings.destroy');
 
-    // AI Search Ranking
+    // AI Search Ranking (Legacy)
     Route::post('ai-search-ranking/settings', [AgencyFeatureController::class, 'saveSettings'])->name('ai-search.save-settings');
     Route::post('ai-search-ranking/generate-authority-pages', [AgencyFeatureController::class, 'generateAuthorityPages'])->name('ai-search.generate-authority-pages');
     Route::post('ai-search-ranking/generate-data-blocks', [AgencyFeatureController::class, 'generateDataBlocks'])->name('ai-search.generate-data-blocks');
@@ -324,6 +324,21 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::post('ai-search-ranking/pages/{page}/publish', [AgencyFeatureController::class, 'publishAiSearchPage'])->name('ai-search.pages.publish');
     Route::post('ai-search-ranking/pages/{page}/refresh', [AgencyFeatureController::class, 'refreshAiSearchPage'])->name('ai-search.pages.refresh');
     Route::delete('ai-search-ranking/pages/{page}', [AgencyFeatureController::class, 'destroyAiSearchPage'])->name('ai-search.pages.destroy');
+
+    // AI Search Ranking - Authority Pages (New)
+    Route::post('ai-search-ranking/authority-pages', [App\Http\Controllers\Agency\AiSearchRankingController::class, 'store'])->name('ai-search-ranking.store');
+    Route::get('ai-search-ranking/authority-pages/{page}/generate', [App\Http\Controllers\Agency\AiSearchRankingController::class, 'generate'])->name('ai-search-ranking.generate');
+    Route::get('ai-search-ranking/authority-pages/{page}/preview', [App\Http\Controllers\Agency\AiSearchRankingController::class, 'preview'])->name('ai-search-ranking.preview');
+    Route::get('ai-search-ranking/authority-pages/{page}/edit', [App\Http\Controllers\Agency\AiSearchRankingController::class, 'edit'])->name('ai-search-ranking.edit');
+    Route::put('ai-search-ranking/authority-pages/{page}/content', [App\Http\Controllers\Agency\AiSearchRankingController::class, 'updateContent'])->name('ai-search-ranking.update-content');
+    Route::put('ai-search-ranking/authority-pages/{page}/listing', [App\Http\Controllers\Agency\AiSearchRankingController::class, 'updateListing'])->name('ai-search-ranking.update-listing');
+    Route::post('ai-search-ranking/authority-pages/{page}/toggle', [App\Http\Controllers\Agency\AiSearchRankingController::class, 'toggleStatus'])->name('ai-search-ranking.toggle');
+    Route::delete('ai-search-ranking/authority-pages/{page}', [App\Http\Controllers\Agency\AiSearchRankingController::class, 'destroy'])->name('ai-search-ranking.destroy');
+
+    // Agency Agents
+    Route::post('agents', [AgencyFeatureController::class, 'storeAgent'])->name('agents.store');
+    Route::put('agents/{agent}', [AgencyFeatureController::class, 'updateAgent'])->name('agents.update');
+    Route::delete('agents/{agent}', [AgencyFeatureController::class, 'destroyAgent'])->name('agents.destroy');
 
     // Daily Competitor Scan
     Route::post('daily-competitor-scan/competitors', [AgencyCompetitorController::class, 'storeCompetitor'])->name('competitor.store');

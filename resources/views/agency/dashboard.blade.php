@@ -125,6 +125,19 @@
 
         <!-- AI Features Status Table -->
         @if($aiFeatures->count())
+        @php
+            $featureOrder = [
+                'ai_authority_builder' => 1,
+                'ai_search_ranking' => 2,
+                'daily_competitor_scan' => 3,
+                'invisible_lead_magnet' => 4,
+                'local_seo_presence_boost' => 5,
+                'small_ai_actions' => 6,
+            ];
+            $sortedFeatures = $aiFeatures->sortBy(function($f) use ($featureOrder) {
+                return $featureOrder[$f->feature_key] ?? 99;
+            });
+        @endphp
         <div class="vb-card" style="margin-bottom: 28px;">
             <h2 class="vb-section-title">{{ __('messages.ai_features') }}</h2>
             <table class="vb-table">
@@ -138,15 +151,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($aiFeatures as $feature)
+                    @foreach($sortedFeatures as $feature)
                     <tr>
                         <td><strong>{{ ucfirst(str_replace('_', ' ', $feature->feature_key)) }}</strong></td>
                         <td>
-                            @if($feature->is_enabled)
-                                <span class="vb-badge vb-badge-success">{{ __('messages.on') }}</span>
-                            @else
-                                <span class="vb-badge vb-badge-muted">{{ __('messages.off') }}</span>
-                            @endif
+                            <form action="{{ route('agency.settings.features.toggle') }}" method="POST" class="d-inline" style="display:flex;align-items:center;gap:10px;">
+                                @csrf
+                                <input type="hidden" name="feature_id" value="{{ $feature->id }}">
+                                <input type="hidden" name="is_enabled" value="{{ $feature->is_enabled ? '0' : '1' }}">
+                                <label class="vb-switch">
+                                    <input type="checkbox" {{ $feature->is_enabled ? 'checked' : '' }} onchange="this.form.submit()">
+                                    <span class="vb-slider"></span>
+                                </label>
+                                <span class="vb-badge {{ $feature->is_enabled ? 'vb-badge-success' : 'vb-badge-muted' }}">{{ $feature->is_enabled ? 'ON' : 'OFF' }}</span>
+                            </form>
                         </td>
                         <td>{{ ucfirst($feature->frequency) }}</td>
                         <td>{{ $feature->last_run_at ? $feature->last_run_at->diffForHumans() : '—' }}</td>

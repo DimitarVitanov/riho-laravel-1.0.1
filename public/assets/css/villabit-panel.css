@@ -503,6 +503,48 @@ body .page-body-wrapper a.vb-domain-support-link:not(.sidebar-link):not(.menu-li
 .vb-badge-info { background: #dbeafe; color: #1e40af; }
 .vb-badge-muted { background: #f3f4f6; color: #111827; }
 
+/* Toggle Switch */
+.vb-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    cursor: pointer;
+}
+.vb-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.vb-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e5e7eb;
+    border-radius: 24px;
+    transition: 0.3s;
+}
+.vb-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.vb-switch input:checked + .vb-slider {
+    background-color: #10b981;
+}
+.vb-switch input:checked + .vb-slider:before {
+    transform: translateX(20px);
+}
+
 /* Progress Bar */
 .vb-progress {
     height: 8px;

@@ -291,14 +291,6 @@
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'invisible_lead_magnet') }}">
-                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/02_invisible_lead_magnet.svg') }}" alt="">
-                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/02_invisible_lead_magnet.svg') }}" alt="">
-                        <span>{{ __('messages.invisible_lead_magnet') }}</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'local_seo_presence_boost') }}">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/03_local_seo_pin_search.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/03_local_seo_pin_search.svg') }}" alt="">
@@ -315,14 +307,6 @@
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'daily_competitor_scan') }}">
-                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
-                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
-                        <span>{{ __('messages.competitor_scan') }}</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'ai_authority_builder') }}">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/06_authority_builder_shield_check.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/06_authority_builder_shield_check.svg') }}" alt="">
@@ -331,10 +315,18 @@
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'small_ai_actions') }}">
-                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/07_small_ai_actions_magic_wand.svg') }}" alt="">
-                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/07_small_ai_actions_magic_wand.svg') }}" alt="">
-                        <span>{{ __('messages.small_ai_actions') }}</span>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'invisible_lead_magnet') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/02_invisible_lead_magnet.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/02_invisible_lead_magnet.svg') }}" alt="">
+                        <span>{{ __('messages.invisible_lead_magnet') }}</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'daily_competitor_scan') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
+                        <span>{{ __('messages.competitor_scan') }}</span>
                     </a>
                 </li>
 
@@ -379,14 +371,6 @@
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/11_language_settings_globe_translation.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/11_language_settings_globe_translation.svg') }}" alt="">
                         <span>{{ __('messages.language_settings') }}</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.settings.features') }}">
-                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/12_feature_toggles_sliders.svg') }}" alt="">
-                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/12_feature_toggles_sliders.svg') }}" alt="">
-                        <span>{{ __('messages.feature_toggles') }}</span>
                     </a>
                 </li>
 

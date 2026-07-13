@@ -152,8 +152,9 @@
 
         .brand {
             display: flex;
-            align-items: center;
-            gap: 12px
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px
         }
 
         .brand-mark {
@@ -170,8 +171,8 @@
 
         .brand strong {
             display: block;
-            font-size: 20px;
-            letter-spacing: -0.02em;
+            font-size: 13px;
+            letter-spacing: -0.01em;
             color: {{ $headerTextClr }}
         }
 
@@ -199,7 +200,12 @@
             color: {{ $ctaClr }};
             padding: 12px 20px;
             border-radius: 10px;
-            font-weight: 700
+            font-weight: 700;
+            transition: filter 0.2s ease
+        }
+
+        .nav .cta-btn:hover {
+            filter: brightness(0.85)
         }
 
         .page-header {
@@ -1132,7 +1138,6 @@
                 @endif
                 <span>
                     <strong>{{ $logoText }}</strong>
-                    <small>{{ $location ?? '' }} property guide</small>
                 </span>
             </a>
             <nav class="nav">

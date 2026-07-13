@@ -172,7 +172,7 @@ img { max-width: 100%; }
   justify-content: space-between;
   gap: 24px;
 }
-.brand { display: flex; align-items: center; gap: 12px; }
+.brand { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .brand-mark {
   width: 44px; height: 44px;
   border-radius: 12px;
@@ -182,8 +182,8 @@ img { max-width: 100%; }
   font-size: 20px;
   font-weight: 800;
 }
-.brand strong { display: block; font-size: 20px; letter-spacing: -0.02em; color: {{ $headerTextClr }}; }
-.brand small { display: block; color: var(--muted); font-weight: 500; font-size: 13px; }
+.brand strong { display: block; font-size: 13px; letter-spacing: -0.01em; color: {{ $headerTextClr }}; }
+.brand small { display: block; color: var(--muted); font-weight: 500; font-size: 12px; }
 .nav { display: flex; gap: 24px; align-items: center; }
 .nav a { font-size: 14px; font-weight: 600; color: {{ $headerTextClr }}; }
 .nav a:hover { color: var(--accent); text-decoration: none; }
@@ -193,6 +193,10 @@ img { max-width: 100%; }
   padding: 12px 20px;
   border-radius: 10px;
   font-weight: 700;
+  transition: filter 0.2s ease;
+}
+.nav .cta-btn:hover {
+  filter: brightness(0.85);
 }
 
 /* Hero */
@@ -251,7 +255,7 @@ h1 {
 .hero-desc {
   font-size: 19px;
   opacity: 0.85;
-  max-width: 1200px;
+  max-width: 100%;
   line-height: 1.7;
 }
 .hero-actions {
@@ -851,7 +855,6 @@ textarea { min-height: 100px; resize: vertical; }
         @endif
         <span>
           <strong>{{ $logoText }}</strong>
-          <small>{{ $campaign->primary_city }} property guide</small>
         </span>
       </a>
       <nav class="nav">

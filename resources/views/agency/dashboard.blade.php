@@ -75,14 +75,6 @@
                 <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
             </div>
             <div class="vb-card">
-                <div class="vb-label">{{ __('messages.ai_freshness_updates') }}</div>
-                <div class="vb-metric">{{ $currentUsage->ai_search_freshness_updates_used }} / {{ $currentUsage->ai_search_freshness_updates_limit }}</div>
-                <div class="vb-progress">
-                    <div class="vb-progress-bar {{ ($currentUsage->ai_search_freshness_updates_limit > 0 && $currentUsage->ai_search_freshness_updates_used / $currentUsage->ai_search_freshness_updates_limit >= 0.9) ? 'vb-danger' : '' }}" style="width:{{ $currentUsage->ai_search_freshness_updates_limit > 0 ? ($currentUsage->ai_search_freshness_updates_used / $currentUsage->ai_search_freshness_updates_limit * 100) : 0 }}%"></div>
-                </div>
-                <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
-            </div>
-            <div class="vb-card">
                 <div class="vb-label">{{ __('messages.authority_reviews') }}</div>
                 <div class="vb-metric">{{ $currentUsage->authority_review_updates_used }} / {{ $currentUsage->authority_review_updates_limit }}</div>
                 <div class="vb-progress">

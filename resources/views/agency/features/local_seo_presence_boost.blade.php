@@ -472,7 +472,7 @@
         <div class="card-header">
             <div>
                 <h5><span class="step-circle">2</span>Content Uniqueness Checker</h5>
-                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">Check AI-generated content for duplicates before publishing.</p>
+                <p style="margin:7px 0 0;color:var  (--muted);font-size:14px;">Check AI-generated content for duplicates before publishing.</p>
             </div>
             <div id="copyscapeStatus" class="text-muted small">
                 <i class="fa fa-spinner fa-spin"></i> Loading Copyscape status...
@@ -1050,18 +1050,6 @@
             <form action="{{ route('agency.local-seo.listings.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="row g-3">
-                    <div class="col-12">
-                        <label class="form-label">Campaigns</label>
-                        <select name="campaign_ids[]" class="form-select select2-campaigns" multiple>
-                            @foreach($campaigns as $campaignOption)
-                                <option value="{{ $campaignOption->id }}"
-                                    {{ (string)($editCampaign->id ?? '') === (string)$campaignOption->id ? 'selected' : '' }}>
-                                    {{ $campaignOption->name }}{{ $campaignOption->primary_city ? ' — ' . $campaignOption->primary_city : '' }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <small class="text-muted">Optional. Campaign pages will auto-show listings within their coverage radius.</small>
-                    </div>
                     <div class="col-md-4">
                         <label class="form-label">Listing Title</label>
                         <input type="text" name="title" class="form-control" placeholder="e.g. Luxury Villa with Sea View" required>

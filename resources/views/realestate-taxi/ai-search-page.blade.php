@@ -205,7 +205,7 @@
         }
 
         .nav .cta-btn:hover {
-            filter: brightness(0.85)
+            filter: brightness(1.15)
         }
 
         .page-header {

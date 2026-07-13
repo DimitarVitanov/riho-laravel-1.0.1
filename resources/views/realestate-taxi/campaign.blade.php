@@ -196,7 +196,7 @@ img { max-width: 100%; }
   transition: filter 0.2s ease;
 }
 .nav .cta-btn:hover {
-  filter: brightness(0.85);
+  filter: brightness(1.15);
 }
 
 /* Hero */
@@ -322,8 +322,8 @@ main { display: grid; gap: 20px; }
 /* Section Title */
 .title { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
 .num { display: none; }
-h2 { margin: 0; font-size: 28px; line-height: 1.15; letter-spacing: -0.03em; font-weight: 800; }
-h3 { margin: 0 0 10px; font-size: 20px; letter-spacing: -0.02em; font-weight: 700; }
+h2 { margin: 0; font-size: 36px; line-height: 1.15; letter-spacing: -0.03em; font-weight: 800; }
+h3 { margin: 0 0 10px; font-size: 24px; letter-spacing: -0.02em; font-weight: 700; }
 .sub { color: var(--muted); font-weight: 600; margin: 4px 0 0; font-size: 14px; }
 
 /* Article Grid */

@@ -50,11 +50,48 @@
 .ai-search-feature .badge-high { display: inline-block; border-radius: 999px; padding: 3px 7px; font-size: 10px; font-weight: 800; background: #e7f6ef; color: #176347; }
 .ai-search-feature .badge-medium { display: inline-block; border-radius: 999px; padding: 3px 7px; font-size: 10px; font-weight: 800; background: #fff5d8; color: #765303; }
 .ai-search-feature .badge-low { display: inline-block; border-radius: 999px; padding: 3px 7px; font-size: 10px; font-weight: 800; background: #eef1f4; color: #5c656d; }
+
+/* Loader overlay for long-running AI actions */
+.vb-loader-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+}
+.vb-loader-overlay.active { display: flex; }
+.vb-loader-overlay .spinner {
+    width: 56px; height: 56px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #1d8d64;
+    border-radius: 50%;
+    animation: vb-spin 1s linear infinite;
+}
+@keyframes vb-spin { to { transform: rotate(360deg); } }
+.vb-loader-overlay .message {
+    font-size: 15px; font-weight: 700; color: #0a0b0c;
+    text-align: center; max-width: 320px; line-height: 1.5;
+}
+.vb-loader-overlay .sub-message {
+    font-size: 13px; color: #69717a;
+}
 </style>
 @endsection
 
 @section('content')
 <div class="container-fluid ai-search-feature">
+
+    {{-- LOADER OVERLAY --}}
+    <div id="vbLoader" class="vb-loader-overlay">
+        <div class="spinner"></div>
+        <div class="message">AI is working on your page…</div>
+        <div class="sub-message">This may take a few seconds. Please do not close the page.</div>
+    </div>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -445,6 +482,30 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!box.contains(e.target) && e.target !== input) hideBox();
         });
     }
+
+    // ---- Loader overlay for AI/long actions ----
+    function showLoader(message) {
+        var loader = document.getElementById('vbLoader');
+        if (!loader) return;
+        var msgEl = loader.querySelector('.message');
+        if (message && msgEl) msgEl.textContent = message;
+        loader.classList.add('active');
+    }
+
+    // Create / edit AI page form (triggers AI generation)
+    var pageForm = document.getElementById('pageForm');
+    if (pageForm) {
+        pageForm.addEventListener('submit', function () {
+            showLoader('AI is generating your page…');
+        });
+    }
+
+    // Regenerate AI content links in pages table
+    document.querySelectorAll('a[href*="ai-search-ranking/generate"]').forEach(function (link) {
+        link.addEventListener('click', function () {
+            showLoader('AI is regenerating content…');
+        });
+    });
 });
 </script>
 

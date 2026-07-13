@@ -329,7 +329,7 @@ class LocalSeoCampaignController extends Controller
             $html .= "</ul>\n";
         }
 
-        $listings = $campaign->listings()->latest()->get();
+        $listings = $campaign->nearbyListings()->latest()->get();
         if ($listings->isNotEmpty()) {
             $html .= "<h2>Featured Listings</h2>\n";
             foreach ($listings as $listing) {
@@ -463,7 +463,7 @@ class LocalSeoCampaignController extends Controller
         }
 
         // 3. Featured listings
-        $listings = $campaign->listings()->get();
+        $listings = $campaign->nearbyListings()->get();
         if ($listings->isNotEmpty()) {
             $listingsSection = "Featured properties in {$city}:\n";
             foreach ($listings as $listing) {

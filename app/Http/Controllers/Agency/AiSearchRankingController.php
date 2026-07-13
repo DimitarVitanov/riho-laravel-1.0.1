@@ -133,6 +133,14 @@ class AiSearchRankingController extends Controller
             abort(403);
         }
 
+        $usageLimit = $profile->currentUsageLimit;
+        if ($usageLimit) {
+            if (!$usageLimit->consume('local_seo_pages')) {
+                return redirect()->route('agency.features.show', 'ai_search_ranking')
+                    ->with('error', 'You have reached your monthly limit of ' . $usageLimit->local_seo_pages_limit . ' published AI/Local SEO pages.');
+            }
+        }
+
         try {
             $generator = new AiAuthorityContentGenerator();
             $content = $generator->generateForPage($page, $profile);
@@ -146,6 +154,11 @@ class AiSearchRankingController extends Controller
             return redirect()->route('agency.features.show', 'ai_search_ranking')
                 ->with('success', 'AI content generated successfully.');
         } catch (\Exception $e) {
+            // Refund the consumed unit on failure
+            if ($usageLimit) {
+                $usageLimit->decrement('local_seo_pages_used');
+            }
+
             return redirect()->route('agency.features.show', 'ai_search_ranking')
                 ->with('error', 'Failed to generate AI content: ' . $e->getMessage());
         }
@@ -175,7 +188,9 @@ class AiSearchRankingController extends Controller
             abort(403);
         }
 
-        $listings = \App\Models\AgencyListing::where('agency_profile_id', $profile->id)->get();
+        $listings = \App\Models\AgencyListing::where('agency_profile_id', $profile->id)
+            ->orderBy('title', 'asc')
+            ->get();
 
         return view('agency.features.ai-search-ranking-edit', [
             'page' => $page,

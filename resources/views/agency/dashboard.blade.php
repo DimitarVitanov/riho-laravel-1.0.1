@@ -59,6 +59,14 @@
                 <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
             </div>
             <div class="vb-card">
+                <div class="vb-label">AI Search Ranking</div>
+                <div class="vb-metric">{{ $currentUsage->ai_search_ranking_used }} / {{ $currentUsage->ai_search_ranking_limit }}</div>
+                <div class="vb-progress">
+                    <div class="vb-progress-bar {{ ($currentUsage->ai_search_ranking_limit > 0 && $currentUsage->ai_search_ranking_used / $currentUsage->ai_search_ranking_limit >= 0.9) ? 'vb-danger' : '' }}" style="width:{{ $currentUsage->ai_search_ranking_limit > 0 ? ($currentUsage->ai_search_ranking_used / $currentUsage->ai_search_ranking_limit * 100) : 0 }}%"></div>
+                </div>
+                <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
+            </div>
+            <div class="vb-card">
                 <div class="vb-label">{{ __('messages.competitor_scans') }}</div>
                 <div class="vb-metric">{{ $currentUsage->competitor_scans_used }} / {{ $currentUsage->competitor_scans_limit }}</div>
                 <div class="vb-progress">

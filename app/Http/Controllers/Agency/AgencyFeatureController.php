@@ -81,7 +81,6 @@ class AgencyFeatureController extends Controller
                     ->latest()
                     ->get() : collect();
                 $viewData['campaigns'] = $profile ? $profile->localSeoCampaigns()
-                    ->withCount('listings')
                     ->latest()
                     ->get() : collect();
                 $editId = session('edit_campaign_id', request('edit_campaign_id'));
@@ -797,25 +796,25 @@ class AgencyFeatureController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'property_type' => 'nullable|string|max:100',
-            'location' => 'nullable|string|max:255',
+            'location' => 'required|string|max:255',
+            'primary_city' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:100',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
             'description' => 'nullable|string',
             'price' => 'nullable|numeric|min:0',
             'currency' => 'nullable|string|max:10',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'status' => 'nullable|string|in:active,inactive',
-            'campaign_ids' => 'required|array|min:1',
+            'campaign_ids' => 'nullable|array',
             'campaign_ids.*' => 'exists:local_seo_campaigns,id',
         ]);
 
         // Verify all campaigns belong to this agency
-        $campaignIds = collect($validated['campaign_ids'])->filter(function ($id) use ($profile) {
+        $campaignIds = collect($validated['campaign_ids'] ?? [])->filter(function ($id) use ($profile) {
             return $profile->localSeoCampaigns()->where('id', $id)->exists();
         })->values()->all();
-
-        if (empty($campaignIds)) {
-            return redirect()->back()->with('error', 'Please select at least one valid campaign.');
-        }
 
         $images = [];
         if ($request->hasFile('images')) {
@@ -829,6 +828,10 @@ class AgencyFeatureController extends Controller
             'title' => $validated['title'],
             'property_type' => $validated['property_type'] ?? null,
             'location' => $validated['location'] ?? null,
+            'primary_city' => $validated['primary_city'] ?? $validated['location'] ?? null,
+            'country' => $validated['country'] ?? null,
+            'latitude' => $validated['latitude'] ?? null,
+            'longitude' => $validated['longitude'] ?? null,
             'description' => $validated['description'] ?? null,
             'price' => $validated['price'] ?? null,
             'currency' => $validated['currency'] ?? 'EUR',
@@ -836,8 +839,10 @@ class AgencyFeatureController extends Controller
             'status' => $validated['status'] ?? 'active',
         ]);
 
-        // Attach campaigns via pivot table
-        $listing->campaigns()->attach($campaignIds);
+        // Attach campaigns via pivot table (optional)
+        if (!empty($campaignIds)) {
+            $listing->campaigns()->attach($campaignIds);
+        }
 
         return redirect()->back()->with('success', 'Listing added successfully.');
     }
@@ -909,7 +914,11 @@ class AgencyFeatureController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'property_type' => 'nullable|string|max:100',
-            'location' => 'nullable|string|max:255',
+            'location' => 'required|string|max:255',
+            'primary_city' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:100',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
             'description' => 'nullable|string',
             'price' => 'nullable|numeric|min:0',
             'currency' => 'nullable|string|max:10',
@@ -938,6 +947,10 @@ class AgencyFeatureController extends Controller
             'title' => $validated['title'],
             'property_type' => $validated['property_type'] ?? null,
             'location' => $validated['location'] ?? null,
+            'primary_city' => $validated['primary_city'] ?? $validated['location'] ?? null,
+            'country' => $validated['country'] ?? null,
+            'latitude' => $validated['latitude'] ?? null,
+            'longitude' => $validated['longitude'] ?? null,
             'description' => $validated['description'] ?? null,
             'price' => $validated['price'] ?? null,
             'currency' => $validated['currency'] ?? 'EUR',

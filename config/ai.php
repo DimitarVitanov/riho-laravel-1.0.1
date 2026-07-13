@@ -79,7 +79,7 @@ return [
         'local_seo_pages' => env('USAGE_LIMIT_LOCAL_SEO_PAGES', 30),
         'competitor_scans' => env('USAGE_LIMIT_COMPETITOR_SCANS', 10),
         'ai_search_freshness_updates' => env('USAGE_LIMIT_AI_SEARCH_UPDATES', 30),
-        'authority_review_updates' => env('USAGE_LIMIT_AUTHORITY_UPDATES', 10),
+        'authority_review_updates' => env('USAGE_LIMIT_AUTHORITY_UPDATES', 30),
         'small_ai_content_actions' => env('USAGE_LIMIT_SMALL_AI_ACTIONS', 50),
     ],
 
@@ -106,7 +106,7 @@ return [
             'local_seo_pages_limit'          => 30,
             'competitor_scans_limit'         => 10,
             'ai_search_freshness_updates_limit' => 30,
-            'authority_review_updates_limit' => 10,
+            'authority_review_updates_limit' => 30,
             'small_ai_content_actions_limit' => 50,
         ],
         'pro' => [

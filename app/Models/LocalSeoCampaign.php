@@ -65,4 +65,23 @@ class LocalSeoCampaign extends Model
     {
         return $this->status === 'published';
     }
+
+    /**
+     * Get active listings that fall within this campaign's coverage radius.
+     * Falls back to manually attached campaigns when coordinates are missing.
+     */
+    public function nearbyListings()
+    {
+        if (!is_numeric($this->latitude) || !is_numeric($this->longitude) || !$this->coverage_area) {
+            return $this->listings()->where('status', 'active');
+        }
+
+        $radiusKm = $this->coverage_unit === 'mi' ? $this->coverage_area * 1.60934 : $this->coverage_area;
+
+        return AgencyListing::where('agency_profile_id', $this->agency_profile_id)
+            ->where('status', 'active')
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->withinDistance((float) $this->latitude, (float) $this->longitude, (float) $radiusKm);
+    }
 }

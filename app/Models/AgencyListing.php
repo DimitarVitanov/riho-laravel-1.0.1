@@ -15,6 +15,10 @@ class AgencyListing extends Model
         'title',
         'property_type',
         'location',
+        'primary_city',
+        'country',
+        'latitude',
+        'longitude',
         'description',
         'price',
         'currency',
@@ -37,6 +41,8 @@ class AgencyListing extends Model
         'price' => 'decimal:2',
         'living_area' => 'decimal:2',
         'plot_size' => 'decimal:2',
+        'latitude' => 'decimal:7',
+        'longitude' => 'decimal:7',
         'is_turnkey' => 'boolean',
     ];
 
@@ -73,5 +79,25 @@ class AgencyListing extends Model
             return null;
         }
         return number_format($this->price, 0) . ' ' . $this->currency;
+    }
+
+    /**
+     * Filter listings within a given radius (km) from a center point.
+     */
+    public function scopeWithinDistance($query, float $lat, float $lng, float $radiusKm)
+    {
+        $earthRadius = 6371; // km
+
+        return $query->selectRaw("*, (
+            {$earthRadius} * acos(
+                cos(radians(?)) *
+                cos(radians(latitude)) *
+                cos(radians(longitude) - radians(?)) +
+                sin(radians(?)) *
+                sin(radians(latitude))
+            )
+        ) AS distance", [$lat, $lng, $lat])
+            ->having('distance', '<=', $radiusKm)
+            ->orderBy('distance');
     }
 }

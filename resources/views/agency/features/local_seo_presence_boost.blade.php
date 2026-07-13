@@ -121,6 +121,36 @@
     flex-wrap: wrap;
 }
 
+/* Loader overlay for long-running AI actions */
+.vb-loader-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+}
+.vb-loader-overlay.active { display: flex; }
+.vb-loader-overlay .spinner {
+    width: 56px; height: 56px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #1d8d64;
+    border-radius: 50%;
+    animation: vb-spin 1s linear infinite;
+}
+@keyframes vb-spin { to { transform: rotate(360deg); } }
+.vb-loader-overlay .message {
+    font-size: 15px; font-weight: 700; color: #0a0b0c;
+    text-align: center; max-width: 320px; line-height: 1.5;
+}
+.vb-loader-overlay .sub-message {
+    font-size: 13px; color: #69717a;
+}
+
 /* Table wrap */
 .local-seo-feature .table-wrap {
     overflow: auto;
@@ -142,6 +172,13 @@
 
 @section('content')
 <div class="container-fluid local-seo-feature">
+
+    {{-- LOADER OVERLAY --}}
+    <div id="vbLoader" class="vb-loader-overlay">
+        <div class="spinner"></div>
+        <div class="message">AI is working on your request…</div>
+        <div class="sub-message">This may take a few seconds. Please do not close the page.</div>
+    </div>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -289,7 +326,7 @@
                                         <td><strong>{{ $campaign->name }}</strong></td>
                                         <td>{{ $campaign->primary_city ?? '—' }}</td>
                                         <td>{{ $campaign->coverage_area ? $campaign->coverage_area . ' ' . $campaign->coverage_unit : '—' }}</td>
-                                        <td><span class="badge bg-secondary">{{ $campaign->listings_count }}</span></td>
+                                        <td><span class="badge bg-secondary">{{ $campaign->nearbyListings()->count() }}</span></td>
                                         <td>
                                             @if($campaign->status === 'published')
                                                 <span class="badge badge-high">Active</span>
@@ -901,7 +938,7 @@
                 <div class="row g-3">
                     <div class="col-12">
                         <label class="form-label">Campaigns</label>
-                        <select name="campaign_ids[]" class="form-select select2-campaigns" multiple required>
+                        <select name="campaign_ids[]" class="form-select select2-campaigns" multiple>
                             @foreach($campaigns as $campaignOption)
                                 <option value="{{ $campaignOption->id }}"
                                     {{ $editListing->campaigns->contains($campaignOption->id) ? 'selected' : '' }}>
@@ -909,6 +946,7 @@
                                 </option>
                             @endforeach
                         </select>
+                        <small class="text-muted">Optional. Campaign pages will auto-show listings within their coverage radius.</small>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Listing Title</label>
@@ -918,9 +956,18 @@
                         <label class="form-label">Property Type</label>
                         <input type="text" name="property_type" class="form-control" value="{{ $editListing->property_type }}">
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Location</label>
-                        <input type="text" name="location" class="form-control" value="{{ $editListing->location }}">
+                    <div class="col-md-4 position-relative">
+                        <label class="form-label">Location *</label>
+                        <input type="hidden" name="location" id="editListingLocation" value="{{ $editListing->location }}">
+                        <input type="hidden" name="primary_city" id="editListingCity" value="{{ $editListing->primary_city }}">
+                        <input type="hidden" name="country" id="editListingCountry" value="{{ $editListing->country }}">
+                        <input type="hidden" name="latitude" id="editListingLat" value="{{ $editListing->latitude }}">
+                        <input type="hidden" name="longitude" id="editListingLng" value="{{ $editListing->longitude }}">
+                        <input type="text" id="editListingSearch" class="form-control" autocomplete="off"
+                               value="{{ trim(($editListing->location ?? '') . ($editListing->country ? ', ' . $editListing->country : ''), ', ') }}"
+                               placeholder="Start typing a city or area…">
+                        <div id="editListingSuggestions" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display:none; max-height: 240px; overflow-y:auto;"></div>
+                        <small class="text-muted">Autocomplete saves city + coordinates for radius filtering.</small>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Price</label>
@@ -1007,7 +1054,7 @@
                 <div class="row g-3">
                     <div class="col-12">
                         <label class="form-label">Campaigns</label>
-                        <select name="campaign_ids[]" class="form-select select2-campaigns" multiple required>
+                        <select name="campaign_ids[]" class="form-select select2-campaigns" multiple>
                             @foreach($campaigns as $campaignOption)
                                 <option value="{{ $campaignOption->id }}"
                                     {{ (string)($editCampaign->id ?? '') === (string)$campaignOption->id ? 'selected' : '' }}>
@@ -1015,7 +1062,7 @@
                                 </option>
                             @endforeach
                         </select>
-                        <small class="text-muted">Select one or more campaigns. The listing will appear on all selected campaign pages.</small>
+                        <small class="text-muted">Optional. Campaign pages will auto-show listings within their coverage radius.</small>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Listing Title</label>
@@ -1025,9 +1072,17 @@
                         <label class="form-label">Property Type</label>
                         <input type="text" name="property_type" class="form-control" placeholder="e.g. Villa, Apartment, Land">
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Location</label>
-                        <input type="text" name="location" class="form-control" placeholder="e.g. Split, Croatia">
+                    <div class="col-md-4 position-relative">
+                        <label class="form-label">Location *</label>
+                        <input type="hidden" name="location" id="addListingLocation">
+                        <input type="hidden" name="primary_city" id="addListingCity">
+                        <input type="hidden" name="country" id="addListingCountry">
+                        <input type="hidden" name="latitude" id="addListingLat">
+                        <input type="hidden" name="longitude" id="addListingLng">
+                        <input type="text" id="addListingSearch" class="form-control" autocomplete="off"
+                               placeholder="Start typing a city or area…">
+                        <div id="addListingSuggestions" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display:none; max-height: 240px; overflow-y:auto;"></div>
+                        <small class="text-muted">Autocomplete saves city + coordinates for radius filtering.</small>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Price</label>
@@ -1060,12 +1115,15 @@
     @endif
 
     {{-- ============ EXISTING LISTINGS TABLE (only when editing campaign - compact version) ============ --}}
-    @if($editCampaign && $listings->count() > 0)
+    @php
+        $campaignListings = $editCampaign ? $editCampaign->nearbyListings()->get() : collect();
+    @endphp
+    @if($editCampaign && $campaignListings->count() > 0)
     <div class="card" style="margin-top:26px;">
         <div class="card-header">
             <div>
                 <h5><span class="step-circle">6</span>Campaign Listings</h5>
-                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">Listings assigned to this campaign</p>
+                <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">Listings within {{ $editCampaign->coverage_area }} {{ $editCampaign->coverage_unit }} of {{ $editCampaign->primary_city ?? 'this location' }}</p>
             </div>
         </div>
         <div class="card-body" style="padding:0;">
@@ -1081,7 +1139,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($listings->filter(fn($l) => $l->campaigns->contains($editCampaign->id)) as $listing)
+                        @foreach($campaignListings as $listing)
                         <tr>
                             <td>
                                 @if(count($listing->images) > 0)
@@ -1838,6 +1896,116 @@
             });
         });
     });
+
+    // ---- Listing Location autocomplete (used by add/edit forms) ----
+    function initListingLocationAutocomplete(inputId, boxId, locationId, cityId, countryId, latId, lngId) {
+        var input = document.getElementById(inputId);
+        var box = document.getElementById(boxId);
+        if (!input || !box) return;
+
+        var timer = null;
+        function hideBox() { box.style.display = 'none'; box.innerHTML = ''; }
+
+        input.addEventListener('input', function () {
+            var q = input.value.trim();
+            clearTimeout(timer);
+            if (q.length < 3) { hideBox(); return; }
+            timer = setTimeout(function () {
+                fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=8&q=' + encodeURIComponent(q), {
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (results) {
+                    box.innerHTML = '';
+                    if (!results || !results.length) { hideBox(); return; }
+
+                    var validTypes = ['street', 'road', 'pedestrian', 'residential', 'suburb', 'neighbourhood', 'quarter', 'city_district', 'city', 'town', 'village', 'municipality', 'administrative'];
+                    var validClasses = ['place', 'boundary', 'highway'];
+                    var filtered = results.filter(function(item) {
+                        return validTypes.some(function(t) { return item.type === t; }) ||
+                               validClasses.some(function(c) { return item.class === c; });
+                    });
+                    if (!filtered.length) filtered = results;
+
+                    filtered.slice(0, 6).forEach(function (item) {
+                        var addr = item.address || {};
+                        var country = addr.country || '';
+                        var placeName = addr.road || addr.street || addr.pedestrian ||
+                                        addr.neighbourhood || addr.suburb || addr.quarter || addr.city_district ||
+                                        addr.city || addr.town || addr.village || addr.municipality ||
+                                        item.display_name.split(',')[0];
+                        var parentCity = addr.city || addr.town || addr.municipality || '';
+                        var neighborhood = addr.neighbourhood || addr.suburb || addr.quarter || '';
+                        var fullName = placeName;
+                        if ((addr.road || addr.street) && neighborhood && neighborhood !== placeName) {
+                            fullName = placeName + ', ' + neighborhood;
+                        }
+                        if (parentCity && parentCity !== placeName && parentCity !== neighborhood) {
+                            fullName = fullName + ', ' + parentCity;
+                        }
+
+                        var a = document.createElement('button');
+                        a.type = 'button';
+                        a.className = 'list-group-item list-group-item-action';
+                        a.textContent = item.display_name;
+                        a.addEventListener('click', function () {
+                            input.value = fullName + (country ? ', ' + country : '');
+                            document.getElementById(locationId).value = fullName;
+                            document.getElementById(cityId).value = fullName;
+                            document.getElementById(countryId).value = country;
+                            document.getElementById(latId).value = item.lat || '';
+                            document.getElementById(lngId).value = item.lon || '';
+                            hideBox();
+                        });
+                        box.appendChild(a);
+                    });
+                    box.style.display = 'block';
+                })
+                .catch(hideBox);
+            }, 350);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!box.contains(e.target) && e.target !== input) hideBox();
+        });
+    }
+
+    initListingLocationAutocomplete(
+        'addListingSearch', 'addListingSuggestions',
+        'addListingLocation', 'addListingCity', 'addListingCountry', 'addListingLat', 'addListingLng'
+    );
+    initListingLocationAutocomplete(
+        'editListingSearch', 'editListingSuggestions',
+        'editListingLocation', 'editListingCity', 'editListingCountry', 'editListingLat', 'editListingLng'
+    );
+
+    // ---- Loader overlay for AI/long actions ----
+    function showLoader(message) {
+        var loader = document.getElementById('vbLoader');
+        if (!loader) return;
+        var msgEl = loader.querySelector('.message');
+        if (message && msgEl) msgEl.textContent = message;
+        loader.classList.add('active');
+    }
+
+    // Campaign create/edit form (triggers AI content generation)
+    var campaignForm = document.getElementById('campaignForm');
+    if (campaignForm) {
+        campaignForm.addEventListener('submit', function (e) {
+            showLoader('AI is building your campaign…');
+        });
+    }
+
+    // Add / edit listing forms (save location + optional campaign sync)
+    var addListingForm = document.querySelector('form[action="{{ route('agency.local-seo.listings.store') }}"]');
+    if (addListingForm) {
+        addListingForm.addEventListener('submit', function () { showLoader('Saving listing…'); });
+    }
+    var editListingForm = document.querySelector('form[action^="{{ url('local-seo-presence-boost/listings') }}"]');
+    if (editListingForm && editListingForm.method.toUpperCase() !== 'DELETE') {
+        editListingForm.addEventListener('submit', function () { showLoader('Updating listing…'); });
+    }
+
 </script>
 @endsection
 

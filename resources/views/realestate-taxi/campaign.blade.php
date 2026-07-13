@@ -16,7 +16,7 @@
   $areaComparison = $aiContent['area_comparison'] ?? [];
   $localServices = $aiContent['local_services'] ?? [];
   $investorSection = $aiContent['investor_section'] ?? [];
-  $listings = $campaign->listings()->where('status', 'active')->latest()->get();
+  $listings = $campaign->nearbyListings()->latest()->get();
   $targetPlaces = $campaign->target_places ?? [];
   
   // Brand colors - black/white theme

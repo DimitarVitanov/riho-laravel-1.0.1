@@ -15,10 +15,18 @@ class PlaceSuggestionService
      */
     public function suggest(string $primaryCity, ?string $country, int $coverage, string $unit = 'km', int $limit = 12): array
     {
+        // Always include the primary location as the FIRST suggestion
+        $primaryPlace = [
+            'name' => $primaryCity,
+            'type' => 'Primary Area',
+            'distance' => '0 km',
+            'reason' => 'Your selected primary market location',
+            'priority' => 'HIGH',
+        ];
         $apiKey = config('ai.google.api_key');
 
         if (empty($apiKey)) {
-            return [];
+            return [$primaryPlace];
         }
 
         $model = config('ai.google.default_model') ?: 'gemini-2.5-flash';
@@ -30,11 +38,18 @@ class PlaceSuggestionService
 
         $location = trim($primaryCity . ($country ? ', ' . $country : ''));
 
-        $prompt = "You are a local real-estate market expert. List up to {$limit} real, existing places "
-            . "(cities, towns, villages, islands, coastal areas, or neighborhoods) within {$coverage} {$unit} of {$location}. "
-            . "For each place return: name, type (e.g. City, Town, Island, Coastal Area, Neighborhood), "
-            . "approximate distance from {$primaryCity} (e.g. '27 km'), a short reason why it is relevant for a real estate agency there, "
-            . "and priority (HIGH, MEDIUM, or LOW). "
+        $prompt = "You are a local real-estate market expert for {$location}. "
+            . "The user selected '{$primaryCity}' as their primary market. "
+            . "Your task: suggest up to {$limit} SMALLER areas, neighborhoods, districts, or sub-localities WITHIN or very close to '{$primaryCity}'. "
+            . "Rules: "
+            . "- If '{$primaryCity}' is a CITY or large town: suggest its neighborhoods, districts, quarters, and nearby small villages/suburbs within {$coverage} {$unit}. "
+            . "- If '{$primaryCity}' is a NEIGHBORHOOD or district: suggest streets, micro-areas, or adjacent neighborhoods within {$coverage} {$unit}. "
+            . "- If '{$primaryCity}' is a STREET: suggest nearby streets and intersections within {$coverage} {$unit}. "
+            . "- Do NOT suggest larger cities that contain '{$primaryCity}'. Only suggest places at the same level or smaller. "
+            . "- Focus on real, existing place names that locals would recognize. "
+            . "For each place return: name, type (e.g. Neighborhood, District, Quarter, Village, Suburb, Street, Area), "
+            . "approximate distance from {$primaryCity} center (e.g. '2 km' or '500 m'), a short reason why it is relevant for real estate, "
+            . "and priority (HIGH, MEDIUM, or LOW based on real estate activity). "
             . "Return ONLY valid JSON: an array of objects with keys name, type, distance, reason, priority. No markdown, no commentary.";
 
         $payload = [
@@ -58,9 +73,11 @@ class PlaceSuggestionService
 
                     if ($response->successful()) {
                         $text = data_get($response->json(), 'candidates.0.content.parts.0.text', '');
-                        $places = $this->parsePlaces($text, $limit);
+                        $places = $this->parsePlaces($text, $limit - 1); // -1 to leave room for primary
                         if (!empty($places)) {
-                            return $places;
+                            // Prepend primary place, filter out duplicates
+                            $places = array_filter($places, fn($p) => strtolower($p['name']) !== strtolower($primaryCity));
+                            return array_merge([$primaryPlace], array_values($places));
                         }
                         // Empty parse — try again / next model.
                         Log::warning('PlaceSuggestionService empty parse', ['model' => $candidate, 'text' => mb_substr($text, 0, 300)]);
@@ -83,7 +100,8 @@ class PlaceSuggestionService
             }
         }
 
-        return [];
+        // Even if AI fails, return the primary place
+        return [$primaryPlace];
     }
 
     protected function parsePlaces(string $text, int $limit): array

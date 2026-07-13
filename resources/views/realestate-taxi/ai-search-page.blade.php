@@ -117,9 +117,11 @@
         }
 
         .wrap {
-            max-width: var(--max);
+            max-width: calc(var(--max) + 48px);
             margin: 0 auto;
-            padding: 32px 24px
+            padding: 32px 24px;
+            width: 100%;
+            box-sizing: border-box
         }
 
         .topbar-strip {

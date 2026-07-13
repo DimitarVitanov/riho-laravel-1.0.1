@@ -337,14 +337,12 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            @php $canUseAi = ($usageLimitStatus['can_use_today'] ?? true); @endphp
-                                            <button type="button" 
-                                                class="btn btn-sm btn-outline-primary regenerate-ai-btn" 
-                                                data-campaign-id="{{ $campaign->id }}" 
-                                                title="{{ $canUseAi ? 'Regenerate AI Content' : 'Daily limit reached - try again tomorrow' }}"
-                                                {{ $canUseAi ? '' : 'disabled' }}>
-                                                <i class="fa fa-magic"></i>
-                                            </button>
+                                            <form action="{{ route('agency.local-seo.campaigns.toggle', $campaign) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm {{ $campaign->status === 'published' ? 'btn-outline-warning' : 'btn-outline-success' }}" title="{{ $campaign->status === 'published' ? 'Pause campaign' : 'Activate campaign' }}">
+                                                    <i class="fa {{ $campaign->status === 'published' ? 'fa-pause' : 'fa-play' }}"></i>
+                                                </button>
+                                            </form>
                                             <a href="{{ route('agency.local-seo.campaigns.preview', $campaign) }}" target="_blank" class="btn btn-sm btn-outline-secondary">Preview</a>
                                             <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?edit_campaign_id={{ $campaign->id }}" class="btn btn-sm btn-dark">Edit</a>
                                             <form action="{{ route('agency.local-seo.campaigns.destroy', $campaign) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this campaign?')">
@@ -408,7 +406,7 @@
                                        value="{{ $editCampaign ? trim(($editCampaign->primary_city ?? '') . ($editCampaign->country ? ', ' . $editCampaign->country : '')) : '' }}"
                                        placeholder="Start typing a city, area or street…">
                                 <div id="citySuggestions" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display:none; max-height: 240px; overflow-y:auto;"></div>
-                                <small class="text-muted">Location autocomplete. Saves city + country + coordinates.</small>
+                                <small class="text-muted">Location autocomplete. Saves city or country or coordinates.</small>
                             </div>
 
                             <div class="col-md-4">

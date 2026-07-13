@@ -169,6 +169,9 @@
                 <a href="{{ route('agency.features.show', 'ai_search_ranking') }}?add_agent=1" class="btn btn-outline-secondary">
                     <i class="fa fa-user-plus me-1"></i> Add Agent
                 </a>
+                <a href="{{ route('agency.features.show', 'ai_search_ranking') }}?show_agents=1" class="btn btn-outline-secondary">
+                    <i class="fa fa-users me-1"></i> Show Agents
+                </a>
                 <a href="{{ route('agency.features.show', 'ai_search_ranking') }}" class="btn btn-outline-secondary">
                     <i class="fa fa-list me-1"></i> View All Pages
                 </a>
@@ -594,12 +597,20 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 {{-- Existing Agents List --}}
-@if($profile->agents->count() > 0)
+@if(request('show_agents') || request('add_agent') || request('edit_agent'))
 <div class="card">
     <div class="card-header">
-        <h5><span class="step-circle">●</span>Your Agents</h5>
+        <div>
+            <a href="{{ route('agency.features.show', 'ai_search_ranking') }}" style="font-size:13px;color:var(--muted);text-decoration:none;display:inline-block;margin-bottom:8px;">← Back to Pages</a>
+            <h5><span class="step-circle">●</span>Your Agents</h5>
+            <p style="margin:7px 0 0;color:var(--muted);font-size:14px;">Agents appear in the Trust + Expertise section of AI pages</p>
+        </div>
+        <a href="{{ route('agency.features.show', 'ai_search_ranking') }}?add_agent=1" class="btn btn-accent">
+            <i class="fa fa-user-plus me-1"></i> Add Agent
+        </a>
     </div>
     <div class="card-body" style="padding:0;">
+        @if($profile->agents->count() > 0)
         <table class="table mb-0">
             <thead>
                 <tr>
@@ -642,6 +653,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 @endforeach
             </tbody>
         </table>
+        @else
+        <div class="text-center py-5">
+            <p class="text-muted mb-3">No agents yet. Add your first agent to display in AI pages.</p>
+            <a href="{{ route('agency.features.show', 'ai_search_ranking') }}?add_agent=1" class="btn btn-accent">
+                <i class="fa fa-user-plus me-1"></i> Add Your First Agent
+            </a>
+        </div>
+        @endif
     </div>
 </div>
 @endif

@@ -145,7 +145,7 @@ a { text-decoration: none; color: inherit; }
 a:hover { text-decoration: underline; }
 img { max-width: 100%; }
 
-.wrap { max-width: var(--max); margin: 0 auto; padding: 32px 24px; }
+.wrap { max-width: calc(var(--max) + 48px); margin: 0 auto; padding: 32px 24px; width: 100%; box-sizing: border-box; }
 
 /* Top Bar */
 .topbar-strip {

@@ -282,6 +282,13 @@
 
                 <li class="sidebar-main-title"><div><h6>DAILY AI EMPLOYEE</h6></div></li>
 
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.leads.index') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/09_leads_people.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/09_leads_people.svg') }}" alt="">
+                        <span>{{ __('messages.leads') }}</span>
+                    </a>
+                </li>
                   <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.generated-pages.index') }}">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/08_generated_pages_document.svg') }}" alt="">
@@ -290,13 +297,6 @@
                     </a>
                 </li>
 
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.leads.index') }}">
-                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/09_leads_people.svg') }}" alt="">
-                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/09_leads_people.svg') }}" alt="">
-                        <span>{{ __('messages.leads') }}</span>
-                    </a>
-                </li>
 
 
                 <li class="sidebar-list" style="display: none"><i class="fa fa-thumb-tack"></i>

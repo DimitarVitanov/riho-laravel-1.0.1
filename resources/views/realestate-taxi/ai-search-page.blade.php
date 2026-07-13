@@ -88,7 +88,7 @@
             --line: #e4e6e9;
             --accent: {{ $accentColor }};
             --radius: 18px;
-            --max: 1320px
+            --max: 90%
         }
 
         * {
@@ -117,7 +117,7 @@
         }
 
         .wrap {
-            max-width: calc(var(--max) + 48px);
+            max-width: var(--max);
             margin: 0 auto;
             padding: 32px 24px;
             width: 100%;

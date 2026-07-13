@@ -140,11 +140,10 @@
                 'daily_competitor_scan' => 3,
                 'invisible_lead_magnet' => 4,
                 'local_seo_presence_boost' => 5,
-                'small_ai_actions' => 6,
             ];
-            $sortedFeatures = $aiFeatures->sortBy(function($f) use ($featureOrder) {
-                return $featureOrder[$f->feature_key] ?? 99;
-            });
+            $sortedFeatures = $aiFeatures
+                ->reject(fn($f) => $f->feature_key === 'small_ai_actions')
+                ->sortBy(fn($f) => $featureOrder[$f->feature_key] ?? 99);
         @endphp
         <div class="vb-card" style="margin-bottom: 28px;">
             <h2 class="vb-section-title">{{ __('messages.ai_features') }}</h2>

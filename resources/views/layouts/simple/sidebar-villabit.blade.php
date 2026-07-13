@@ -282,7 +282,24 @@
 
                 <li class="sidebar-main-title"><div><h6>DAILY AI EMPLOYEE</h6></div></li>
 
+                  <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.generated-pages.index') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/08_generated_pages_document.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/08_generated_pages_document.svg') }}" alt="">
+                        <span>{{ __('messages.generated_pages') }}</span>
+                    </a>
+                </li>
+
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.leads.index') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/09_leads_people.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/09_leads_people.svg') }}" alt="">
+                        <span>{{ __('messages.leads') }}</span>
+                    </a>
+                </li>
+
+
+                <li class="sidebar-list" style="display: none"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.daily-ai-employee.index') }}">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/01_daily_ai_employee_robot.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/01_daily_ai_employee_robot.svg') }}" alt="">
@@ -290,21 +307,6 @@
                     </a>
                 </li>
 
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'daily_competitor_scan') }}">
-                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
-                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
-                        <span>{{ __('messages.competitor_scan') }}</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'ai_authority_builder') }}">
-                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/06_authority_builder_shield_check.svg') }}" alt="">
-                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/06_authority_builder_shield_check.svg') }}" alt="">
-                        <span>{{ __('messages.authority_builder') }}</span>
-                    </a>
-                </li>
 
                 <li class="sidebar-main-title"><div><h6>{{ __('messages.ai_features') }}</h6></div></li>
 
@@ -332,31 +334,23 @@
                     </a>
                 </li>
 
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'small_ai_actions') }}">
-                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/07_small_ai_actions_magic_wand.svg') }}" alt="">
-                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/07_small_ai_actions_magic_wand.svg') }}" alt="">
-                        <span>{{ __('messages.small_ai_actions') }}</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-main-title"><div><h6>{{ __('messages.content') }}</h6></div></li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.generated-pages.index') }}">
-                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/08_generated_pages_document.svg') }}" alt="">
-                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/08_generated_pages_document.svg') }}" alt="">
-                        <span>{{ __('messages.generated_pages') }}</span>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'daily_competitor_scan') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
+                        <span>{{ __('messages.competitor_scan') }}</span>
                     </a>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.leads.index') }}">
-                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/09_leads_people.svg') }}" alt="">
-                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/09_leads_people.svg') }}" alt="">
-                        <span>{{ __('messages.leads') }}</span>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'ai_authority_builder') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/06_authority_builder_shield_check.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/06_authority_builder_shield_check.svg') }}" alt="">
+                        <span>{{ __('messages.authority_builder') }}</span>
                     </a>
                 </li>
+
 
                 <li class="sidebar-main-title"><div><h6>{{ __('messages.settings') }}</h6></div></li>
 

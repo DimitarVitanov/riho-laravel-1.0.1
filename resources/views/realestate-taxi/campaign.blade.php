@@ -151,10 +151,11 @@ img { max-width: 100%; }
 .topbar-strip {
   background: {{ $topbarBg }};
   color: {{ $topbarColor }};
-  text-align: center;
+  text-align: left;
   padding: 10px 16px;
   font-size: 13px;
   font-weight: 500;
+  padding-left:6.5%;
 }
 
 /* Header */

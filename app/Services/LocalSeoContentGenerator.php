@@ -28,6 +28,7 @@ class LocalSeoContentGenerator
         $results = [
             'hero_content' => null,
             'main_article' => null,
+            'highlight_box' => null,
             'quick_answers' => [],
             'area_descriptions' => [],
             'area_comparison' => [],
@@ -53,6 +54,10 @@ class LocalSeoContentGenerator
 
             // 2. Generate main article
             $results['main_article'] = $this->generateMainArticle($city, $agencyName, $subPrompt, $language);
+            usleep(500000);
+
+            // 2b. Generate highlight box (key takeaway)
+            $results['highlight_box'] = $this->generateHighlightBox($city, $subPrompt, $language);
             usleep(500000);
 
             // 3. Generate quick answers (for "Your Questions, Answered" section)
@@ -127,17 +132,41 @@ class LocalSeoContentGenerator
      */
     protected function generateHero(string $city, string $agencyName, string $subPrompt, string $language): string
     {
-        $prompt = "Write a compelling 2-3 sentence introduction for a real estate page about {$city}. Agency: {$agencyName}. Focus on: local expertise, property opportunities, trusted guidance.";
+        $prompt = "Write a short subtitle (2-3 sentences, max 50 words) for a property guide page about {$city}. 
+This is for buyers looking at real estate. Focus on: what makes this area attractive, property types available, lifestyle benefits.
+DO NOT mention SEO, marketing, or agency services. Write as if describing the area to a potential buyer.
+Example tone: 'A buyer-focused guide to [area]: property types, prices, lifestyle, investment potential, available listings, and local buying advice.'";
         
         if ($subPrompt) {
-            $prompt .= " Additional focus: {$subPrompt}";
+            $prompt .= " Additional context: {$subPrompt}";
         }
         
-        $prompt .= " Language: {$language}. Be professional and engaging.";
+        $prompt .= " Language: {$language}. Be concise and informative.";
 
-        $result = $this->callAnthropic($prompt, 150) ?? $this->callGemini($prompt, 100) ?? $this->callOpenAI($prompt, 100);
+        $result = $this->callAnthropic($prompt, 100) ?? $this->callGemini($prompt, 80) ?? $this->callOpenAI($prompt, 80);
         
-        return $result ?? "Explore real estate opportunities in {$city} with {$agencyName}. We offer local expertise and trusted guidance for buyers, sellers, and investors.";
+        return $result ?? "A buyer-focused guide to {$city}: property types, prices, lifestyle, investment potential, available listings, and local buying advice.";
+    }
+
+    /**
+     * Generate highlight box content (key takeaway, max 2 sentences).
+     */
+    protected function generateHighlightBox(string $city, string $subPrompt, string $language): string
+    {
+        $prompt = "Write a key takeaway (1-2 sentences, max 30 words) summarizing why {$city} is worth considering for property buyers.
+Focus on: unique selling points, lifestyle benefits, or investment potential.
+DO NOT mention SEO, marketing, or content guidelines. Write only the takeaway text.
+Example: 'With beach access, modern infrastructure, and strong rental demand, this area offers both lifestyle appeal and solid investment returns.'";
+        
+        if ($subPrompt) {
+            $prompt .= " Context: {$subPrompt}";
+        }
+        
+        $prompt .= " Language: {$language}.";
+
+        $result = $this->callAnthropic($prompt, 80) ?? $this->callGemini($prompt, 60) ?? $this->callOpenAI($prompt, 60);
+        
+        return $result ?? "With its prime location, modern amenities, and growing demand, {$city} offers excellent opportunities for both lifestyle buyers and investors.";
     }
 
     /**
@@ -166,36 +195,36 @@ class LocalSeoContentGenerator
      */
     protected function generateFaqs(string $city, string $agencyName, string $subPrompt, string $language): array
     {
-        // Default FAQs with specific numbers as fallback
+        // Default FAQs with 3-sentence structure
         $defaultFaqs = [
-            ['question' => "What types of properties are available in {$city}?", 'answer' => "In {$city}, you'll find modern apartments (50-150m²), traditional stone houses, villas with pools, and building plots. About 60% of sales are apartments, with 2-bedroom units (65-85m²) being most popular."],
-            ['question' => "What is the average price per m² in {$city}?", 'answer' => "Prices in {$city} range from €2,500-€4,000/m² for standard apartments, €4,000-€6,500/m² for sea-view properties, and €6,000-€10,000/m² for premium waterfront locations."],
-            ['question' => "What rental yield can I expect in {$city}?", 'answer' => "Well-located properties in {$city} can achieve 5-8% gross rental yield. A 70m² sea-view apartment renting at €120-180/night during peak season (June-September) can generate €15,000-25,000 annually."],
-            ['question' => "What are the buying costs for foreign buyers?", 'answer' => "Total buying costs are typically 6-8% of purchase price: 3% property transfer tax, 1-2% notary fees, 1-2% legal fees, and 2-3% agency commission. EU citizens have the same rights as locals."],
-            ['question' => "How long does a property transaction take?", 'answer' => "A standard transaction takes 30-60 days: 1-2 weeks for due diligence, 2-3 weeks for contract preparation, and 2-4 weeks for land registry transfer. Cash purchases can close in 3-4 weeks."],
-            ['question' => "What property management services are available?", 'answer' => "{$agencyName} offers full rental management at 15-25% of rental income, including guest communication, cleaning (€50-80 per turnover), maintenance, and 24/7 emergency support."],
+            ['question' => "Can foreigners buy property in {$city}?", 'answer' => "Yes, foreigners can buy property in Croatia. EU citizens have the same rights as locals, while non-EU buyers need government approval (typically 2-6 months). Total buying costs are 6-8% of purchase price including 3% transfer tax."],
+            ['question' => "What types of properties are available?", 'answer' => "Modern apartments (50-150m²), traditional stone houses, and villas with pools are most common. About 60% of sales are apartments, with 2-bedroom units (65-85m²) being most popular. Prices range €2,500-6,000/m² depending on location and sea view."],
+            ['question' => "What matters most when buying here?", 'answer' => "Key factors are sea view quality, distance to beach (ideally under 10 min walk), parking availability, and building age. Newer buildings (post-2010) with elevators and terraces command 20-30% premium. Documentation and rental potential also matter for investors."],
+            ['question' => "Can an apartment work for holiday rental?", 'answer' => "Yes, especially if it has sea views, parking, and a strong terrace. Well-located 2-bedroom apartments can achieve €100-180/night in peak season (June-September). Gross rental yields of 5-8% are realistic with professional management."],
+            ['question' => "How long does a purchase take?", 'answer' => "A standard transaction takes 30-60 days from offer to completion. This includes 1-2 weeks for due diligence, 2-3 weeks for contract preparation, and 2-4 weeks for land registry transfer. Cash purchases can close in 3-4 weeks."],
+            ['question' => "What are the ongoing ownership costs?", 'answer' => "Annual costs include property tax (€0.5-2/m²), utilities (€100-200/month), and building maintenance fees (€1-3/m²/month). If renting, management fees are typically 15-25% of rental income plus €50-80 per guest turnover for cleaning."],
         ];
 
         $prompt = "Generate 6 FAQ pairs for real estate buyers in {$city}. Agency: {$agencyName}.
 
-IMPORTANT: Each answer MUST include SPECIFIC NUMBERS and STATISTICS:
-- Price ranges in € per m²
-- Percentages (rental yields, costs, etc.)
-- Timeframes (days, weeks, months)
-- Size ranges in m²
-- Rental income estimates
-- Transaction costs breakdown
+ANSWER STRUCTURE (MUST follow exactly):
+- Sentence 1: Direct answer (Yes/No + brief reason)
+- Sentence 2: Key details and explanation
+- Sentence 3: SPECIFIC NUMBERS (prices €, sizes m², percentages %, timeframes)
 
-Topics to cover:
-1. Property types and sizes available (include m² ranges)
-2. Price per m² for different property types
-3. Rental yields and income potential (include % and € estimates)
-4. Total buying costs for foreigners (include % breakdown)
-5. Transaction timeline (include specific timeframes)
-6. Property management services and costs
+Questions to answer:
+1. Can foreigners buy property in {$city}?
+2. What types of properties are available?
+3. What matters most when buying here?
+4. Can an apartment work for holiday rental?
+5. How long does a purchase take?
+6. What are the ongoing ownership costs?
 
-Return JSON array: [{\"question\": \"...\", \"answer\": \"...\"}]
-Each answer should be 2-3 sentences with real numbers.";
+EXAMPLE FORMAT:
+Q: Can foreigners buy here?
+A: Yes, foreigners can purchase property in Croatia. EU citizens have equal rights as locals, while non-EU buyers need government approval. Total buying costs are 6-8% including 3% transfer tax, 1-2% notary, and 1-2% legal fees.
+
+Return JSON array: [{\"question\": \"...\", \"answer\": \"...\"}]";
 
         if ($subPrompt) {
             $prompt .= " Context: {$subPrompt}";
@@ -380,7 +409,18 @@ Each answer should be 2-3 sentences with real numbers.";
      */
     protected function generateMainArticle(string $city, string $agencyName, string $subPrompt, string $language): string
     {
-        $prompt = "Write 3 informative paragraphs about buying property in {$city}. Cover: 1) Why the area attracts buyers (location, lifestyle, beaches, infrastructure), 2) What property types are most in demand (apartments, villas, features like parking, terraces, sea views), 3) Rental and investment potential. Be specific and factual, not generic marketing.";
+        $prompt = "Write 3 informative paragraphs about buying property in {$city}. 
+Structure:
+1) Why the area attracts buyers (location, lifestyle, beaches, infrastructure)
+2) What property types are most in demand (apartments, villas, features like parking, terraces, sea views)
+3) Rental and investment potential - END with a brief conclusion about why this area is worth considering
+
+IMPORTANT RULES:
+- Be specific and factual, not generic marketing
+- DO NOT mention SEO, marketing rules, or content guidelines
+- DO NOT include any meta-instructions or writing tips
+- Write ONLY the article content that a buyer would read
+- End with a natural conclusion paragraph, not advice for writers";
         
         if ($subPrompt) {
             $prompt .= " Additional context: {$subPrompt}";
@@ -388,7 +428,7 @@ Each answer should be 2-3 sentences with real numbers.";
         
         $prompt .= " Language: {$language}. Write naturally, avoid bullet points.";
 
-        $result = $this->callAnthropic($prompt, 400) ?? $this->callGemini($prompt, 300) ?? $this->callOpenAI($prompt, 300);
+        $result = $this->callAnthropic($prompt, 500) ?? $this->callGemini($prompt, 400) ?? $this->callOpenAI($prompt, 400);
         
         return $result ?? "{$city} is one of the most practical coastal areas for buyers who want sea proximity without depending on the old town. The area is known for its beach zone, newer residential buildings, sea-view apartments, wider roads, and easier parking compared with historic centers.\n\nThe strongest demand usually comes from buyers looking for modern apartments with terraces, garage parking, elevator access, and open sea views. These details matter because many older neighborhoods offer charm but not always the practical features buyers expect from a second home or rental-ready property.\n\nFrom a rental perspective, the area benefits from beach access, family-friendly positioning, and short travel time to main attractions. Apartments near the beach, properties with parking, and units with a strong terrace or sea-view angle can be easier to market during the high season.";
     }
@@ -401,21 +441,28 @@ Each answer should be 2-3 sentences with real numbers.";
     protected function generateQuickAnswers(string $city, string $agencyName, string $subPrompt, string $language): array
     {
         $defaultAnswers = [
-            ['question' => "What is the average apartment size in {$city}?", 'answer' => "Most sought-after apartments range from 50m² to 120m². Two-bedroom units (60-80m²) with terraces are the most popular for both living and rental."],
-            ['question' => "What are typical property prices per m² in {$city}?", 'answer' => "Quality apartments with sea views typically range from €3,000 to €6,000 per m². Premium locations near the beach can reach €7,000-€8,000 per m²."],
-            ['question' => "How far is {$city} from the airport and city center?", 'answer' => "The area is approximately 5-15 minutes from the city center and 20-30 minutes from the airport, depending on traffic."],
-            ['question' => "What rental yield can I expect?", 'answer' => "Well-positioned apartments with sea views and parking can achieve 5-8% gross rental yield during high season (June-September)."],
+            ['question' => "Is {$city} a good area to buy property?", 'answer' => "Yes, especially for buyers seeking sea proximity and modern amenities. The area offers newer buildings with parking, terraces, and beach access. Average prices range from €3,000-5,000/m² for quality apartments."],
+            ['question' => "What kind of property is most attractive?", 'answer' => "Modern apartments with sea views are most in demand. Units with 60-90m², garage parking, elevator access, and good terraces typically sell fastest. Prices for such properties range €250,000-450,000."],
+            ['question' => "Is it better for lifestyle or investment?", 'answer' => "Both work well here. Lifestyle buyers value the beach (5-10 min walk) and modern infrastructure. Investors see 5-8% gross rental yields, with peak season rates of €100-180/night for quality apartments."],
+            ['question' => "What are the buying costs?", 'answer' => "Total costs are 6-8% of purchase price. This includes 3% property transfer tax, 1-2% notary fees, 1-2% legal fees. EU citizens have equal buying rights as locals."],
         ];
 
-        $prompt = "Generate 4 quick Q&A pairs about buying property in {$city}. 
-IMPORTANT: Include SPECIFIC DATA in every answer - square meters (m²), price ranges (€), distances (km/minutes), percentages (%), rental yields, etc.
-Questions should cover:
-1) Average apartment sizes in m²
-2) Price per m² for different property types
-3) Distances to key locations (airport, center, beach)
-4) Rental yields or investment returns
+        $prompt = "Generate 4 Q&A pairs about buying property in {$city}.
 
-Answers must be factual with numbers, not generic marketing text.";
+ANSWER STRUCTURE (MUST follow this format):
+- Sentence 1: Direct answer (Yes/No/It depends + brief reason)
+- Sentence 2: Explanation with context
+- Sentence 3: SPECIFIC NUMBERS (prices in €, sizes in m², percentages %, distances in km/minutes)
+
+Questions to answer:
+1) Is {$city} a good area to buy property?
+2) What kind of property is most attractive here?
+3) Is it better for lifestyle or investment?
+4) What are the total buying costs?
+
+EXAMPLE FORMAT:
+Q: Is this a good area?
+A: Yes, especially for buyers who want sea proximity and newer buildings. The area offers modern apartments with parking, terraces, and beach access within 10 minutes. Prices range €3,000-5,000/m², with 2-bedroom units (70-90m²) most popular.";
         
         if ($subPrompt) {
             $prompt .= " Context: {$subPrompt}";
@@ -477,18 +524,24 @@ Answers must be factual with numbers, not generic marketing text.";
         
         $prompt = "For these locations near {$city}: {$placeList}
 
-Generate UNIQUE comparison data for EACH location. Each location must have DIFFERENT values.
-Return JSON array with one object per location:
+Generate UNIQUE comparison data for EACH location with 6 data points.
+Return JSON array:
 [
   {
     \"name\": \"Location Name\",
-    \"main_strength\": \"Unique 3-5 word strength (e.g. 'Historic center, walkable', 'Beach access, modern builds', 'Quiet hills, panoramic views')\",
-    \"typical_buyer\": \"Who buys here (e.g. 'Young professionals', 'Retirees seeking peace', 'Families with children')\",
-    \"property_type\": \"Best property type (e.g. 'Stone houses', 'New apartments', 'Villas with land')\"
+    \"main_strength\": \"2-4 words (e.g. 'Beach proximity', 'Historic charm', 'Modern builds')\",
+    \"typical_buyer\": \"1-2 words (e.g. 'Families', 'Investors', 'Retirees')\",
+    \"property_type\": \"1-2 words (e.g. 'Apartments', 'Villas', 'Stone houses')\",
+    \"price_range\": \"Price per m² (e.g. '€3,000-4,500')\",
+    \"beach_distance\": \"Walking time (e.g. '5-10 min', '15 min')\"
   }
 ]
 
-IMPORTANT: Each location MUST have different values. Do not repeat the same text.";
+RULES:
+- Each location MUST have DIFFERENT values
+- Keep text SHORT (2-4 words max per field)
+- Include realistic price ranges for the area
+- Beach distance in walking minutes";
 
         if ($subPrompt) {
             $prompt .= " Context: {$subPrompt}";
@@ -496,7 +549,7 @@ IMPORTANT: Each location MUST have different values. Do not repeat the same text
         
         $prompt .= " Language: {$language}.";
 
-        $response = $this->callAnthropic($prompt, 800) ?? $this->callGemini($prompt, 600) ?? $this->callOpenAI($prompt, 600);
+        $response = $this->callAnthropic($prompt, 1000) ?? $this->callGemini($prompt, 800) ?? $this->callOpenAI($prompt, 800);
         
         if ($response) {
             $json = $this->extractJsonArray($response);
@@ -507,9 +560,11 @@ IMPORTANT: Each location MUST have different values. Do not repeat the same text
         
         // Generate varied defaults if AI fails
         $defaults = [];
-        $strengths = ['Beach proximity, newer builds', 'Historic charm, stone houses', 'Quiet residential, family-friendly', 'Sea views, modern apartments', 'Central location, walkable', 'Hillside setting, panoramic views', 'Marina access, waterfront', 'Green surroundings, peaceful', 'Tourist hub, rental potential', 'Local village feel, authentic'];
-        $buyers = ['Second-home buyers, families', 'Investors seeking rentals', 'Retirees, lifestyle buyers', 'Young professionals', 'Foreign buyers, expats', 'Local families upgrading', 'Vacation home seekers', 'Digital nomads', 'Luxury buyers', 'First-time buyers'];
-        $types = ['Modern apartments', 'Stone houses', 'Villas with gardens', 'Seafront properties', 'Renovated historic', 'New construction', 'Penthouses', 'Family homes', 'Investment units', 'Mixed-use properties'];
+        $strengths = ['Beach proximity', 'Historic charm', 'Modern builds', 'Sea views', 'Quiet setting', 'Central location', 'Marina access', 'Green area', 'Tourist hub', 'Local village'];
+        $buyers = ['Families', 'Investors', 'Retirees', 'Professionals', 'Expats', 'Local buyers', 'Vacation buyers', 'Digital nomads', 'Luxury buyers', 'First-timers'];
+        $types = ['Apartments', 'Villas', 'Stone houses', 'New builds', 'Penthouses', 'Family homes', 'Studios', 'Townhouses', 'Duplexes', 'Mixed'];
+        $prices = ['€2,500-3,500', '€3,000-4,500', '€3,500-5,000', '€4,000-6,000', '€2,000-3,000', '€3,000-4,000', '€4,500-6,500', '€2,800-4,000', '€3,200-4,800', '€2,500-4,000'];
+        $beaches = ['2-5 min', '5-10 min', '10-15 min', '15-20 min', '1-3 min', '5-8 min', '8-12 min', '3-6 min', '12-18 min', '6-10 min'];
         
         foreach ($placeNames as $i => $name) {
             $defaults[] = [
@@ -517,6 +572,8 @@ IMPORTANT: Each location MUST have different values. Do not repeat the same text
                 'main_strength' => $strengths[$i % count($strengths)],
                 'typical_buyer' => $buyers[$i % count($buyers)],
                 'property_type' => $types[$i % count($types)],
+                'price_range' => $prices[$i % count($prices)],
+                'beach_distance' => $beaches[$i % count($beaches)],
             ];
         }
         

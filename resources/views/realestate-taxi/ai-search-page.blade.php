@@ -1563,27 +1563,38 @@
 
             <aside class="sidebar">
                 <section class="card sidebar-box">
-                    <div class="head">Page Sections</div>
+                    <div class="head">What helps local SEO + AI search?</div>
                     <div class="sidebar-list">
-                        <a href="#article" class="sidebar-row"><span
-                                class="ico">1</span><span>{{ $propertyType }} in {{ $location }}</span></a>
-                        <a href="#answers" class="sidebar-row"><span class="ico">2</span><span>Quick
-                                Answers</span></a>
-                        <a href="#faq" class="sidebar-row"><span class="ico">3</span><span>Frequently Asked
-                                Questions</span></a>
-                        <a href="#location" class="sidebar-row"><span class="ico">4</span><span>Location &
-                                Distances</span></a>
-                        <a href="#market" class="sidebar-row"><span class="ico">5</span><span>Market
-                                Data</span></a>
-                        <a href="#compare" class="sidebar-row"><span class="ico">6</span><span>How Does It
-                                Compare?</span></a>
-                        <a href="#trust" class="sidebar-row"><span class="ico">7</span><span>Trust &
-                                Expertise</span></a>
-                        <a href="#investor" class="sidebar-row"><span class="ico">8</span><span>Investor
-                                Options</span></a>
-                        <a href="#contact" class="sidebar-row"><span class="ico">9</span><span>Contact
-                                Us</span></a>
+                        <a href="#article" class="sidebar-row"><span class="ico">1</span><span>Strong local article first</span></a>
+                        <a href="#answers" class="sidebar-row"><span class="ico">2</span><span>Micro-location keywords</span></a>
+                        <a href="#faq" class="sidebar-row"><span class="ico">3</span><span>Available property connections</span></a>
+                        <a href="#location" class="sidebar-row"><span class="ico">4</span><span>Map and distance data</span></a>
+                        <a href="#market" class="sidebar-row"><span class="ico">5</span><span>Market snapshot with date</span></a>
+                        <a href="#compare" class="sidebar-row"><span class="ico">6</span><span>Area comparison table</span></a>
+                        <a href="#trust" class="sidebar-row"><span class="ico">7</span><span>Visible FAQ + schema</span></a>
+                        <a href="#investor" class="sidebar-row"><span class="ico">8</span><span>Internal links to related pages</span></a>
+                        <a href="#contact" class="sidebar-row"><span class="ico">9</span><span>Real author, agency and update date</span></a>
                     </div>
+                </section>
+
+
+                {{-- Agency Commission Info Box --}}
+                <section class="card pad" style="background:var(--soft);">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+                        <span style="background:var(--accent);color:#fff;font-weight:700;padding:6px 12px;border-radius:8px;font-size:18px;">6%</span>
+                        <strong style="font-size:15px;">Buyer commission</strong>
+                    </div>
+                    <p class="sub" style="margin:0;line-height:1.5;">
+                        We charge a transparent 6% buyer commission on successful purchases. No hidden fees. You only pay when you buy.
+                    </p>
+                    <a href="#contact" class="btn primary" style="margin-top:14px;width:100%;text-align:center;">Get Property Options</a>
+                </section>
+
+                {{-- Last Updated --}}
+                <section class="card pad">
+                    <span class="badge">Local update note</span>
+                    <h3 style="margin-top:12px;">Last updated: {{ $page->updated_at->format('d M Y') }}</h3>
+                    <p class="sub">This guide is regularly updated with current market data and available properties.</p>
                 </section>
             </aside>
         </div>

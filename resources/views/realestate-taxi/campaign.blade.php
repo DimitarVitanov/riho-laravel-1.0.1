@@ -867,7 +867,7 @@ textarea { min-height: 100px; resize: vertical; }
   <div class="wrap">
     {{-- Hero Section --}}
     <section class="hero">
-      <span class="eyebrow">Local SEO Area Page</span>
+      <span class="eyebrow">Property Guide</span>
       <h1>{{ $campaign->name }}</h1>
       <p class="hero-desc">
         @if($heroText)
@@ -913,9 +913,11 @@ textarea { min-height: 100px; resize: vertical; }
                 <p>From a rental perspective, the area benefits from beach access, family-friendly positioning, and short travel time to main attractions. Apartments near the beach, properties with parking, and units with a strong terrace or sea-view angle can be easier to market during the high season.</p>
               @endif
 
+              @if(!empty($aiContent['highlight_box']))
               <div class="highlight-box">
-                Best local SEO rule: do not write only "apartments for sale." Write a useful page about the exact micro-area, buyer intent, prices, lifestyle, streets, buildings, beaches, parking, rental demand, and available properties.
+                {{ $aiContent['highlight_box'] }}
               </div>
+              @endif
             </div>
 
             <div class="callout" style="display: none">
@@ -1010,8 +1012,8 @@ textarea { min-height: 100px; resize: vertical; }
             <div class="title">
               <div class="num">4</div>
               <div>
-                <h2>Micro-Area Map + Distances</h2>
-                <p class="sub">Local pages need exact distance logic, not vague descriptions.</p>
+                <h2>Micro-Area Map</h2>
+                <p class="sub">Explore the area and nearby locations on the map.</p>
               </div>
             </div>
             <div class="map-container">
@@ -1100,24 +1102,32 @@ textarea { min-height: 100px; resize: vertical; }
               <p class="sub">{{ $campaign->primary_city }} vs. nearby alternatives — strengths and trade-offs.</p>
             </div>
           </div>
-          <div style="overflow-x:auto;">
-            <table class="local-table">
+          <div style="overflow-x:auto; max-width:100%;">
+            <table class="local-table" style="width:100%; min-width:600px;">
               <tr>
-                <th>Area</th>
-                <th>Main Strength</th>
-                <th>Typical Buyer</th>
-                <th>Best Property Type</th>
+                <th style="width:18%;">Area</th>
+                <th style="width:20%;">Main Strength</th>
+                <th style="width:18%;">Typical Buyer</th>
+                <th style="width:18%;">Property Type</th>
+                <th style="width:13%;">Price/m²</th>
+                <th style="width:13%;">Beach</th>
               </tr>
               @foreach($targetPlaces as $index => $place)
               @php
-                // Get AI-generated comparison data for this place
                 $compData = collect($areaComparison)->firstWhere('name', $place['name'] ?? '');
+                $strengths = ['Beach proximity', 'Historic charm', 'Modern builds', 'Sea views', 'Quiet setting', 'Central location'];
+                $buyers = ['Families', 'Investors', 'Retirees', 'Young professionals', 'Second-home buyers', 'Expats'];
+                $types = ['Apartments', 'Villas', 'Stone houses', 'New builds', 'Penthouses', 'Mixed'];
+                $prices = ['€2,500-3,500', '€3,000-4,500', '€3,500-5,000', '€4,000-6,000', '€2,000-3,000', '€3,000-4,000'];
+                $beaches = ['2-5 min', '5-10 min', '10-15 min', '15-20 min', '1-3 min', '5-8 min'];
               @endphp
               <tr>
                 <td><strong>{{ $place['name'] ?? '' }}</strong></td>
-                <td>{{ $compData['main_strength'] ?? $place['strength'] ?? 'Local area with unique character' }}</td>
-                <td>{{ $compData['typical_buyer'] ?? $place['buyer_type'] ?? 'Various buyer profiles' }}</td>
-                <td>{{ $compData['property_type'] ?? $place['property_type'] ?? 'Mixed property types' }}</td>
+                <td>{{ $compData['main_strength'] ?? $strengths[$index % count($strengths)] }}</td>
+                <td>{{ $compData['typical_buyer'] ?? $buyers[$index % count($buyers)] }}</td>
+                <td>{{ $compData['property_type'] ?? $types[$index % count($types)] }}</td>
+                <td>{{ $compData['price_range'] ?? $prices[$index % count($prices)] }}</td>
+                <td>{{ $compData['beach_distance'] ?? $beaches[$index % count($beaches)] }}</td>
               </tr>
               @endforeach
             </table>
@@ -1150,48 +1160,40 @@ textarea { min-height: 100px; resize: vertical; }
           </div>
         </section>
 
-        {{-- Section 10: Internal Links --}}
+        {{-- Section 10: Internal Links (only show if there are related pages) --}}
+        @php
+          // Get other campaigns from same agency that are related to this area
+          $relatedCampaigns = \App\Models\LocalSeoCampaign::where('agency_profile_id', $campaign->agency_profile_id)
+            ->where('id', '!=', $campaign->id)
+            ->where('status', 'active')
+            ->whereNotNull('generated_page_id')
+            ->limit(8)
+            ->get();
+        @endphp
+        @if($relatedCampaigns->count() >= 1)
         <section class="card pad" id="explore">
           <div class="title">
             <div class="num">9</div>
             <div>
-              <h2>Internal Links to Build Local Authority</h2>
-              <p class="sub">Every local page should connect to related areas and property categories.</p>
+              <h2>Explore More Areas</h2>
+              <p class="sub">Discover other property guides and locations we cover in {{ $campaign->country ?? 'this region' }}.</p>
             </div>
           </div>
           <div class="internal-links-grid">
-            <a class="internal-link-card" href="#">
-              <strong>Apartments for Sale in {{ $campaign->primary_city }}</strong>
-              <small>Main city page</small>
+            @foreach($relatedCampaigns as $related)
+            @php
+              $relatedPage = \App\Models\GeneratedPage::find($related->generated_page_id);
+            @endphp
+            @if($relatedPage)
+            <a class="internal-link-card" href="{{ url($profile->subdomain . '/' . $relatedPage->slug) }}">
+              <strong>{{ $related->name }}</strong>
+              <small>{{ $related->primary_city }} guide</small>
             </a>
-            <a class="internal-link-card" href="#">
-              <strong>Sea-View Apartments in {{ $campaign->primary_city }}</strong>
-              <small>Property type page</small>
-            </a>
-            @foreach(array_slice($targetPlaces, 0, 2) as $place)
-            <a class="internal-link-card" href="#">
-              <strong>{{ $place['name'] }} Real Estate Guide</strong>
-              <small>Nearby area</small>
-            </a>
+            @endif
             @endforeach
-            <a class="internal-link-card" href="#">
-              <strong>Luxury Property Guide</strong>
-              <small>Luxury comparison</small>
-            </a>
-            <a class="internal-link-card" href="#">
-              <strong>Buying Property in {{ $campaign->country ?? 'Croatia' }}</strong>
-              <small>Buyer guide</small>
-            </a>
-            <a class="internal-link-card" href="#">
-              <strong>{{ $campaign->country ?? 'Croatia' }} Property Taxes</strong>
-              <small>FAQ support page</small>
-            </a>
-            <a class="internal-link-card" href="#">
-              <strong>Rental Management {{ $campaign->primary_city }}</strong>
-              <small>Investor service</small>
-            </a>
           </div>
         </section>
+        @endif
 
         {{-- Section 11: FAQ --}}
         <section class="card pad" id="faq">
@@ -1199,7 +1201,7 @@ textarea { min-height: 100px; resize: vertical; }
             <div class="num">10</div>
             <div>
               <h2>FAQ for {{ $campaign->primary_city }} Real Estate Buyers</h2>
-              <p class="sub">Use real answers, not generic sales text.</p>
+              <p class="sub">Common questions answered with real data and local insights.</p>
             </div>
           </div>
           <div class="qa">
@@ -1303,10 +1305,6 @@ textarea { min-height: 100px; resize: vertical; }
                 <li>They want current available projects before allocations close.</li>
               </ul>
 
-              <div class="cta-box">
-                <strong>CTA text to test:</strong>
-                <p>"I don't want to buy the whole property. Show me how I can still participate from USD 30,000+."</p>
-              </div>
             </div>
           </div>
         </section>
@@ -1321,23 +1319,37 @@ textarea { min-height: 100px; resize: vertical; }
             <a href="#guide" class="sidebar-row"><span class="ico">1</span><span>Why {{ $campaign->primary_city }} Attracts Buyers</span></a>
             <a href="#answers" class="sidebar-row"><span class="ico">2</span><span>Your Questions, Answered</span></a>
             <a href="#available" class="sidebar-row"><span class="ico">3</span><span>Properties You Can Buy Now</span></a>
-            <a href="#areas" class="sidebar-row"><span class="ico">4</span><span>Map + Distances</span></a>
+            <a href="#areas" class="sidebar-row"><span class="ico">4</span><span>Micro-Area Map</span></a>
             <a href="#market" class="sidebar-row"><span class="ico">5</span><span>What's the Market Like?</span></a>
             <a href="#fit" class="sidebar-row"><span class="ico">6</span><span>Is This Area Right for You?</span></a>
             <a href="#compare" class="sidebar-row"><span class="ico">7</span><span>How Does It Compare?</span></a>
             <a href="#services" class="sidebar-row"><span class="ico">8</span><span>How We Help Buyers</span></a>
-            <a href="#explore" class="sidebar-row"><span class="ico">9</span><span>Internal Links</span></a>
+            @if(isset($relatedCampaigns) && $relatedCampaigns->count() >= 1)
+            <a href="#explore" class="sidebar-row"><span class="ico">9</span><span>Explore More Areas</span></a>
+            @endif
             <a href="#faq" class="sidebar-row"><span class="ico">10</span><span>Frequently Asked Questions</span></a>
             <a href="#contact" class="sidebar-row"><span class="ico">11</span><span>Ready to Take the Next Step?</span></a>
           </div>
         </section>
         @endif
 
+        {{-- Agency Commission Info Box --}}
+        <section class="card pad" style="background:var(--soft);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="background:var(--accent);color:#fff;font-weight:700;padding:6px 12px;border-radius:8px;font-size:18px;">6%</span>
+            <strong style="font-size:15px;">Buyer commission</strong>
+          </div>
+          <p class="sub" style="margin:0;line-height:1.5;">
+            We charge a transparent 6% buyer commission on successful purchases. No hidden fees. You only pay when you buy.
+          </p>
+          <a href="#contact" class="btn primary" style="margin-top:14px;width:100%;text-align:center;">Get Property Options</a>
+        </section>
+
         @if($showLastUpdated ?? true)
         <section class="card pad">
-          <span class="badge">Last updated</span>
-          <h3 style="margin-top:12px;">{{ $campaign->updated_at->format('d M Y') }}</h3>
-          <p class="sub">Update this page whenever listings, price ranges, or buyer demand change.</p>
+          <span class="badge">Local update note</span>
+          <h3 style="margin-top:12px;">Last updated: {{ $campaign->updated_at->format('d M Y') }}</h3>
+          <p class="sub">This guide is regularly updated with current market data and available properties.</p>
         </section>
         @endif
       </aside>

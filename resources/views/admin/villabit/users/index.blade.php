@@ -76,7 +76,12 @@
                                     @forelse($users as $u)
                                         <tr>
                                             <td>{{ $u->id }}</td>
-                                            <td>{{ $u->first_name }} {{ $u->last_name }}</td>
+                                            <td>
+                                                <a href="#" class="text-primary fw-semibold" style="text-decoration:none; color:black !important;" 
+                                                   data-bs-toggle="modal" data-bs-target="#userModal{{ $u->id }}">
+                                                    {{ $u->first_name }} {{ $u->last_name }}
+                                                </a>
+                                            </td>
                                             <td>{{ $u->email }}</td>
                                             <td>
                                                 @php
@@ -189,6 +194,101 @@
                         {{ $users->links() }}
                     </div>
                 </div>
+
+                {{-- User Details Modals (outside table) --}}
+                @foreach($users as $u)
+                @php
+                    $roleColors = [
+                        'super_admin'       => 'bg-danger',
+                        'admin'             => 'bg-warning text-dark',
+                        'manager'           => 'bg-primary text-white',
+                        'real_estate_agency'=> 'bg-primary text-white',
+                        'investor'          => 'bg-success',
+                    ];
+                    $roleLabels = [
+                        'super_admin'       => 'Super Admin',
+                        'admin'             => 'Admin',
+                        'manager'           => 'Manager',
+                        'real_estate_agency'=> 'Real Estate Agency',
+                        'investor'          => 'Investor',
+                    ];
+                @endphp
+                <div class="modal fade" id="userModal{{ $u->id }}" tabindex="-1" aria-labelledby="userModalLabel{{ $u->id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="userModalLabel{{ $u->id }}">
+                                    User Details: {{ $u->first_name }} {{ $u->last_name }}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted mb-3">Basic Information</h6>
+                                        <table class="table table-sm">
+                                            <tr><th style="width:40%">ID</th><td>{{ $u->id }}</td></tr>
+                                            <tr><th>First Name</th><td>{{ $u->first_name ?? '—' }}</td></tr>
+                                            <tr><th>Last Name</th><td>{{ $u->last_name ?? '—' }}</td></tr>
+                                            <tr><th>Email</th><td><a style="color:black !important;" href="mailto:{{ $u->email }}">{{ $u->email }}</a></td></tr>
+                                            <tr><th>Phone</th><td>{{ $u->phone ?? '—' }}</td></tr>
+                                            <tr><th>Role</th><td><span class="badge {{ $roleColors[$u->role] ?? 'bg-secondary' }}">{{ $roleLabels[$u->role] ?? ucfirst($u->role) }}</span></td></tr>
+                                            <tr><th>Status</th><td>
+                                                @if($u->status === 'active')<span class="badge bg-success">Active</span>
+                                                @elseif($u->status === 'waitlist')<span class="badge bg-warning">Waitlist</span>
+                                                @else<span class="badge bg-secondary">{{ ucfirst($u->status) }}</span>@endif
+                                            </td></tr>
+                                            <tr><th>Joined</th><td>{{ $u->created_at->format('M j, Y H:i') }}</td></tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-muted mb-3">Additional Information</h6>
+                                        <table class="table table-sm">
+                                            <tr><th style="width:40%">Company</th><td>{{ $u->company_name ?? '—' }}</td></tr>
+                                            <tr><th>Country</th><td>{{ $u->country ?? '—' }}</td></tr>
+                                            <tr><th>Timezone</th><td>{{ $u->timezone ?? '—' }}</td></tr>
+                                            <tr><th>Language</th><td>{{ $u->preferred_language ?? 'en' }}</td></tr>
+                                            <tr><th>Referral Code</th><td>{{ $u->referral_code ?? '—' }}</td></tr>
+                                            <tr><th>Reseller</th><td>{{ $u->is_reseller_enabled ? 'Yes' : 'No' }}</td></tr>
+                                            <tr><th>Last Login</th><td>{{ $u->last_login_at ? $u->last_login_at->format('M j, Y H:i') : '—' }}</td></tr>
+                                            <tr><th>Internal Notes</th><td>{{ Str::limit($u->notes_internal, 50) ?? '—' }}</td></tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                @if($u->role === 'real_estate_agency' && $u->agencyProfile)
+                                <hr>
+                                <h6 class="text-muted mb-3">Agency Profile</h6>
+                                <table class="table table-sm">
+                                    <tr><th style="width:20%">Agency Name</th><td>{{ $u->agencyProfile->agency_name ?? '—' }}</td></tr>
+                                    <tr><th>Subdomain</th><td>{{ $u->agencyProfile->subdomain ?? '—' }}</td></tr>
+                                    <tr><th>Contact Email</th><td>{{ $u->agencyProfile->contact_email ?? '—' }}</td></tr>
+                                    <tr><th>Contact Phone</th><td>{{ $u->agencyProfile->contact_phone ?? '—' }}</td></tr>
+                                    <tr><th>Website</th><td>{{ $u->agencyProfile->website ?? '—' }}</td></tr>
+                                </table>
+                                @endif
+                                @if($u->role === 'investor' && $u->investorProfile)
+                                <hr>
+                                <h6 class="text-muted mb-3">Investor Profile</h6>
+                                <table class="table table-sm">
+                                    <tr><th style="width:20%">Investor Type</th><td>{{ $u->investorProfile->investor_type ?? '—' }}</td></tr>
+                                    <tr><th>Accreditation</th><td>{{ $u->investorProfile->accreditation_status ?? '—' }}</td></tr>
+                                    <tr><th>Investment Range</th><td>{{ $u->investorProfile->investment_range ?? '—' }}</td></tr>
+                                </table>
+                                @endif
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                @if(!$u->isAdmin())
+                                <form action="{{ route('admin.villabit.impersonate.start', $u) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-info">Login As User</button>
+                                </form>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
             </div>
         </div>
     </div>

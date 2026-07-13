@@ -201,7 +201,7 @@ class UserManagementController extends Controller
 
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::with(['agencyProfile', 'investorProfile']);
 
         if ($request->filled('role')) {
             $query->where('role', $request->role);

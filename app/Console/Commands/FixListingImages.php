@@ -22,8 +22,8 @@ class FixListingImages extends Command
         $fixedCount = 0;
 
         foreach ($listings as $listing) {
-            $images = $listing->images;
-            if (empty($images)) continue;
+            $images = is_array($listing->images) ? $listing->images : (is_string($listing->images_json) ? json_decode($listing->images_json, true) : []);
+            if (empty($images) || !is_array($images)) continue;
 
             $needsFix = false;
             $fixedImages = [];

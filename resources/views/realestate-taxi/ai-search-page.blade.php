@@ -1237,9 +1237,15 @@
                         </div>
                         <div class="summary-grid">
                             <div class="summary-photo">
-                                @if (!empty($listing) && !empty($listing->images))
-                                    <img src="{{ asset('storage/' . $listing->images[0]) }}"
-                                        alt="{{ $page->name ?? 'Property' }}">
+                                @php
+                                    $listingImgs = [];
+                                    if (!empty($listing)) {
+                                        $listingImgs = is_array($listing->images) ? $listing->images : (is_string($listing->images_json) ? json_decode($listing->images_json, true) : []);
+                                    }
+                                @endphp
+                                @if (!empty($listingImgs) && is_array($listingImgs) && count($listingImgs) > 0)
+                                    @php $listingImgSrc = Str::startsWith($listingImgs[0], 'http') ? $listingImgs[0] : asset('storage/' . $listingImgs[0]); @endphp
+                                    <img src="{{ $listingImgSrc }}" alt="{{ $page->name ?? 'Property' }}" onerror="this.parentElement.innerHTML='<div class=\'placeholder-img\'>🏠</div>'">
                                 @else
                                     <div class="placeholder-img">🏠</div>
                                 @endif
@@ -1364,8 +1370,32 @@
                         </div>
                         <div class="location-layout">
                             <div class="location-map">
-                                <div id="locationMap"
-                                    style="width:100%;height:220px;border-radius:12px;background:#e5e7eb;"></div>
+                                @php
+                                    $mapLat = $page->latitude ?? null;
+                                    $mapLng = $page->longitude ?? null;
+                                    $mapQuery = urlencode(($page->target_neighborhood ? $page->target_neighborhood . ', ' : '') . $page->target_city . ', ' . ($page->country ?? 'Croatia'));
+                                @endphp
+                                @if($mapLat && $mapLng)
+                                    <iframe 
+                                        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d5000!2d{{ $mapLng }}!3d{{ $mapLat }}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2shr!4v1" 
+                                        width="100%" 
+                                        height="220" 
+                                        style="border:0; border-radius: 12px;" 
+                                        allowfullscreen="" 
+                                        loading="lazy" 
+                                        referrerpolicy="no-referrer-when-downgrade">
+                                    </iframe>
+                                @else
+                                    <iframe 
+                                        src="https://www.google.com/maps?q={{ $mapQuery }}&output=embed" 
+                                        width="100%" 
+                                        height="220" 
+                                        style="border:0; border-radius: 12px;" 
+                                        allowfullscreen="" 
+                                        loading="lazy" 
+                                        referrerpolicy="no-referrer-when-downgrade">
+                                    </iframe>
+                                @endif
                             </div>
                             <div class="location-info">
                                 <ul class="location-features">
@@ -1484,12 +1514,6 @@
                             <h2>Comparison / Why This Property</h2>
                         </div>
                         <div class="compare-layout">
-                            <ul class="compare-features">
-                                <li>Compare with 2–3 alternatives</li>
-                                <li>Honest, transparent comparison</li>
-                                <li>Who this option suits best</li>
-                                <li>Clear reason to choose</li>
-                            </ul>
                             <div class="compare-table-wrap">
                                 @php
                                     $defaultComparison = [
@@ -1694,113 +1718,6 @@
         document.querySelectorAll('.faq-question').forEach(btn => {
             btn.addEventListener('click', () => btn.closest('.faq-item').classList.toggle('open'));
         });
-
-        // Initialize Google Map
-        function initLocationMap() {
-            const mapEl = document.getElementById('locationMap');
-            if (!mapEl) return;
-
-            // Property coordinates (from page data or default)
-            const propertyLat = {{ $page->latitude ?? ($listing->latitude ?? 43.5147) }};
-            const propertyLng = {{ $page->longitude ?? ($listing->longitude ?? 16.4435) }};
-
-            const map = new google.maps.Map(mapEl, {
-                center: {
-                    lat: propertyLat,
-                    lng: propertyLng
-                },
-                zoom: 14,
-                styles: [{
-                        featureType: "poi",
-                        stylers: [{
-                            visibility: "off"
-                        }]
-                    },
-                    {
-                        featureType: "transit",
-                        stylers: [{
-                            visibility: "off"
-                        }]
-                    }
-                ],
-                mapTypeControl: false,
-                streetViewControl: false,
-                fullscreenControl: false
-            });
-
-            // Property marker (main)
-            new google.maps.Marker({
-                position: {
-                    lat: propertyLat,
-                    lng: propertyLng
-                },
-                map: map,
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 12,
-                    fillColor: '#166534',
-                    fillOpacity: 1,
-                    strokeColor: '#fff',
-                    strokeWeight: 3
-                },
-                title: '{{ $page->name ?? 'Property' }}'
-            });
-
-            // POI markers from distances
-            const pois = [
-                @foreach ($distances as $d)
-                    {
-                        name: '{{ $d['place'] ?? '' }}',
-                        distance: '{{ $d['distance'] ?? '' }}'
-                    },
-                @endforeach
-            ];
-
-            // Use Places API to find nearby POIs and add markers
-            const service = new google.maps.places.PlacesService(map);
-            const poiTypes = {
-                'Beach': 'natural_feature',
-                'Old Town': 'tourist_attraction',
-                'Marina': 'marina',
-                'School': 'school',
-                'Airport': 'airport',
-                'Restaurant': 'restaurant',
-                'Supermarket': 'supermarket',
-                'Hospital': 'hospital'
-            };
-
-            pois.forEach((poi, index) => {
-                const type = poiTypes[poi.name] || 'point_of_interest';
-                service.nearbySearch({
-                    location: {
-                        lat: propertyLat,
-                        lng: propertyLng
-                    },
-                    radius: 15000,
-                    type: type,
-                    keyword: poi.name
-                }, (results, status) => {
-                    if (status === google.maps.places.PlacesServiceStatus.OK && results[0]) {
-                        new google.maps.Marker({
-                            position: results[0].geometry.location,
-                            map: map,
-                            icon: {
-                                path: google.maps.SymbolPath.CIRCLE,
-                                scale: 8,
-                                fillColor: '#6b7280',
-                                fillOpacity: 0.8,
-                                strokeColor: '#fff',
-                                strokeWeight: 2
-                            },
-                            title: poi.name + ' (' + poi.distance + ')'
-                        });
-                    }
-                });
-            });
-        }
-    </script>
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_api_key', '') }}&libraries=places&callback=initLocationMap">
     </script>
 
 </body>

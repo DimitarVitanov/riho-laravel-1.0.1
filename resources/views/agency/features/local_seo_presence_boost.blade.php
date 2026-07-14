@@ -852,7 +852,7 @@
 
     {{-- Listing Preview Modal --}}
     <div id="listingPreviewModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
-        <div style="background:#fff;border-radius:16px;max-width:1000px;width:95%;max-height:90vh;overflow:auto;position:relative;">
+        <div style="background:#fff;border-radius:16px;max-width:1200px;width:calc(100% - 48px);max-height:90vh;overflow:auto;position:relative;">
             <button onclick="closePreviewModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;color:#666;">×</button>
             <div id="listingPreviewContent" style="padding:24px;"></div>
         </div>

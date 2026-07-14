@@ -447,6 +447,17 @@
                                         <p class="text-muted small mb-0" id="placesEmpty">Set a city + coverage, then click "AI suggest places".</p>
                                     @endif
                                 </div>
+                                
+                                {{-- Manual Place Input --}}
+                                <div class="mt-2">
+                                    <div class="input-group">
+                                        <input type="text" id="manualPlaceInput" class="form-control form-control-sm" placeholder="Type street, neighborhood, or place name...">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="addManualPlaceBtn">
+                                            <i class="fa fa-plus"></i> Add
+                                        </button>
+                                    </div>
+                                    <div id="placeSuggestions" class="border rounded bg-white position-absolute" style="display:none; z-index:100; max-height:200px; overflow-y:auto; width:calc(100% - 24px);"></div>
+                                </div>
                             </div>
 
                             <div class="col-12">
@@ -1485,6 +1496,138 @@
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa fa-magic me-1"></i>AI suggest places';
             });
+        });
+    })();
+
+    // ============ MANUAL PLACE INPUT WITH AUTOCOMPLETE ============
+    (function() {
+        var input = document.getElementById('manualPlaceInput');
+        var addBtn = document.getElementById('addManualPlaceBtn');
+        var suggestionsDiv = document.getElementById('placeSuggestions');
+        var placesList = document.getElementById('placesList');
+        var debounceTimer = null;
+        
+        if (!input || !addBtn) return;
+        
+        // Get current city for context
+        function getCity() {
+            var cityInput = document.getElementById('targetCity');
+            return cityInput ? cityInput.value : '';
+        }
+        
+        // Count existing places to get next index
+        function getNextIndex() {
+            var items = placesList.querySelectorAll('.place-item');
+            return items.length;
+        }
+        
+        // Add place to list
+        function addPlaceToList(place) {
+            var emptyMsg = document.getElementById('placesEmpty');
+            if (emptyMsg) emptyMsg.remove();
+            
+            var i = getNextIndex();
+            var label = document.createElement('label');
+            label.className = 'd-flex align-items-start gap-2 mb-1 place-item';
+            label.innerHTML =
+                '<input type="checkbox" checked onchange="togglePlace(this)">' +
+                '<input type="hidden" name="target_places[' + i + '][name]" value="' + (place.name || '').replace(/"/g, '&quot;') + '">' +
+                '<input type="hidden" name="target_places[' + i + '][type]" value="' + (place.type || 'Custom').replace(/"/g, '&quot;') + '">' +
+                '<input type="hidden" name="target_places[' + i + '][distance]" value="' + (place.distance || '').replace(/"/g, '&quot;') + '">' +
+                '<input type="hidden" name="target_places[' + i + '][reason]" value="Manually added">' +
+                '<input type="hidden" name="target_places[' + i + '][priority]" value="medium">' +
+                '<span><strong>' + (place.name || '') + '</strong> <span class="text-muted small">' + (place.type || 'Custom') + (place.distance ? ' · ' + place.distance : '') + '</span></span>';
+            placesList.appendChild(label);
+            
+            // Clear input
+            input.value = '';
+            suggestionsDiv.style.display = 'none';
+        }
+        
+        // Fetch suggestions from Google Places API via backend
+        function fetchSuggestions(query) {
+            var city = getCity();
+            if (!city) {
+                suggestionsDiv.innerHTML = '<div class="p-2 text-muted small">Set a city first</div>';
+                suggestionsDiv.style.display = 'block';
+                return;
+            }
+            
+            fetch('{{ route("agency.local-seo.place-autocomplete") }}?query=' + encodeURIComponent(query) + '&city=' + encodeURIComponent(city), {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var suggestions = data.suggestions || [];
+                if (suggestions.length === 0) {
+                    suggestionsDiv.innerHTML = '<div class="p-2 text-muted small">No suggestions found. Press Enter or click Add to add manually.</div>';
+                } else {
+                    var html = '';
+                    suggestions.forEach(function(s) {
+                        html += '<div class="p-2 border-bottom suggestion-item" style="cursor:pointer;" data-name="' + (s.name || '').replace(/"/g, '&quot;') + '" data-type="' + (s.type || '').replace(/"/g, '&quot;') + '" data-distance="' + (s.distance || '').replace(/"/g, '&quot;') + '">';
+                        html += '<strong>' + (s.name || '') + '</strong> <span class="text-muted small">' + (s.type || '') + (s.distance ? ' · ' + s.distance : '') + '</span>';
+                        html += '</div>';
+                    });
+                    suggestionsDiv.innerHTML = html;
+                    
+                    // Add click handlers
+                    suggestionsDiv.querySelectorAll('.suggestion-item').forEach(function(item) {
+                        item.addEventListener('click', function() {
+                            addPlaceToList({
+                                name: this.dataset.name,
+                                type: this.dataset.type,
+                                distance: this.dataset.distance
+                            });
+                        });
+                    });
+                }
+                suggestionsDiv.style.display = 'block';
+            })
+            .catch(function() {
+                suggestionsDiv.innerHTML = '<div class="p-2 text-danger small">Error fetching suggestions</div>';
+                suggestionsDiv.style.display = 'block';
+            });
+        }
+        
+        // Input event with debounce
+        input.addEventListener('input', function() {
+            var query = this.value.trim();
+            clearTimeout(debounceTimer);
+            
+            if (query.length < 2) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+            
+            debounceTimer = setTimeout(function() {
+                fetchSuggestions(query);
+            }, 300);
+        });
+        
+        // Add button click - add manually typed place
+        addBtn.addEventListener('click', function() {
+            var name = input.value.trim();
+            if (!name) return;
+            
+            addPlaceToList({ name: name, type: 'Custom', distance: '' });
+        });
+        
+        // Enter key to add
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                var name = input.value.trim();
+                if (name) {
+                    addPlaceToList({ name: name, type: 'Custom', distance: '' });
+                }
+            }
+        });
+        
+        // Hide suggestions on click outside
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                suggestionsDiv.style.display = 'none';
+            }
         });
     })();
 

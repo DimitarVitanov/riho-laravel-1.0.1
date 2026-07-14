@@ -648,4 +648,46 @@ class LocalSeoCampaignController extends Controller
 
         return implode("\n\n", $parts);
     }
+
+    /**
+     * Place autocomplete for manual place input.
+     * Returns the query as a suggestion - user can add any place manually.
+     * GET /agency/local-seo-presence-boost/place-autocomplete
+     */
+    public function placeAutocomplete(Request $request)
+    {
+        $profile = $this->profileOrFail();
+        if (!$profile) {
+            return response()->json(['suggestions' => []], 403);
+        }
+
+        $query = $request->input('query', '');
+        $city = $request->input('city', '');
+
+        if (strlen($query) < 2) {
+            return response()->json(['suggestions' => []]);
+        }
+
+        // Return the query as suggestions with different types
+        // User can click to add or just press Enter to add as custom
+        $suggestions = [
+            [
+                'name' => $query,
+                'type' => 'Street',
+                'distance' => '',
+            ],
+            [
+                'name' => $query,
+                'type' => 'Neighborhood',
+                'distance' => '',
+            ],
+            [
+                'name' => $query,
+                'type' => 'Landmark',
+                'distance' => '',
+            ],
+        ];
+
+        return response()->json(['suggestions' => $suggestions]);
+    }
 }

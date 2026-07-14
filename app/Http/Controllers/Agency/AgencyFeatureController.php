@@ -820,7 +820,7 @@ class AgencyFeatureController extends Controller
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $path = $image->store('agency-listings/' . $profile->id, 'public');
-                $images[] = asset('storage/' . $path);
+                $images[] = $path;
             }
         }
 

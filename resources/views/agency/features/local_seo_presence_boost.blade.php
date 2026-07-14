@@ -798,7 +798,8 @@
                             <tr>
                                 <td>
                                     @if(count($listing->images) > 0)
-                                        <img src="{{ asset('storage/' . $listing->images[0]) }}" alt="" style="width:60px;height:45px;object-fit:cover;border-radius:6px;">
+                                        @php $imgSrc = Str::startsWith($listing->images[0], 'http') ? $listing->images[0] : asset('storage/' . $listing->images[0]); @endphp
+                                        <img src="{{ $imgSrc }}" alt="" style="width:60px;height:45px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'">
                                     @else
                                         <div style="width:60px;height:45px;background:#f5f6f7;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#ccc;"><i class="fa fa-image"></i></div>
                                     @endif
@@ -848,7 +849,7 @@
 
     {{-- Listing Preview Modal --}}
     <div id="listingPreviewModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
-        <div style="background:#fff;border-radius:16px;max-width:800px;width:90%;max-height:90vh;overflow:auto;position:relative;">
+        <div style="background:#fff;border-radius:16px;max-width:1000px;width:95%;max-height:90vh;overflow:auto;position:relative;">
             <button onclick="closePreviewModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;color:#666;">×</button>
             <div id="listingPreviewContent" style="padding:24px;"></div>
         </div>
@@ -935,18 +936,6 @@
             <form action="{{ route('agency.local-seo.listings.update', $editListing) }}" method="POST" enctype="multipart/form-data">
                 @csrf @method('PUT')
                 <div class="row g-3">
-                    <div class="col-12">
-                        <label class="form-label">Campaigns</label>
-                        <select name="campaign_ids[]" class="form-select select2-campaigns" multiple>
-                            @foreach($campaigns as $campaignOption)
-                                <option value="{{ $campaignOption->id }}"
-                                    {{ $editListing->campaigns->contains($campaignOption->id) ? 'selected' : '' }}>
-                                    {{ $campaignOption->name }}{{ $campaignOption->primary_city ? ' — ' . $campaignOption->primary_city : '' }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <small class="text-muted">Optional. Campaign pages will auto-show listings within their coverage radius.</small>
-                    </div>
                     <div class="col-md-4">
                         <label class="form-label">Listing Title</label>
                         <input type="text" name="title" class="form-control" value="{{ $editListing->title }}" required>
@@ -1014,8 +1003,9 @@
                         @if($editListing->images && count($editListing->images) > 0)
                         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
                             @foreach($editListing->images as $img)
+                            @php $editImgSrc = Str::startsWith($img, 'http') ? $img : asset('storage/' . $img); @endphp
                             <div style="position:relative;">
-                                <img src="{{ asset('storage/' . $img) }}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #ddd;">
+                                <img src="{{ $editImgSrc }}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #ddd;" onerror="this.style.display='none'">
                             </div>
                             @endforeach
                         </div>
@@ -1135,7 +1125,8 @@
                         <tr>
                             <td>
                                 @if(count($listing->images) > 0)
-                                    <img src="{{ asset('storage/' . $listing->images[0]) }}" alt="" style="width:50px;height:38px;object-fit:cover;border-radius:4px;">
+                                    @php $imgSrc2 = Str::startsWith($listing->images[0], 'http') ? $listing->images[0] : asset('storage/' . $listing->images[0]); @endphp
+                                    <img src="{{ $imgSrc2 }}" alt="" style="width:50px;height:38px;object-fit:cover;border-radius:4px;" onerror="this.style.display='none'">
                                 @else
                                     <div style="width:50px;height:38px;background:#f5f6f7;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:10px;"><i class="fa fa-image"></i></div>
                                 @endif

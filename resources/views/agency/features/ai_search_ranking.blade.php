@@ -247,13 +247,15 @@
                                 <a href="{{ route('agency.ai-search-ranking.generate', $page) }}" class="btn btn-sm btn-accent" title="Regenerate AI Content" onclick="return confirm('Regenerate AI content for this page?')">
                                     <i class="fa fa-magic"></i>
                                 </a>
-                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="previewPage({{ $page->id }})" title="Local Preview">
-                                    Preview
-                                </button>
+                                <a href="{{ route('agency.ai-search-ranking.preview', $page) }}" target="_blank" class="btn btn-sm btn-outline-secondary">Preview</a>
                                 @if($page->status === 'published' && $page->slug)
-                                <a href="{{ url('/agency/' . ($profile->slug ?? $profile->id) . '/ai-search/' . $page->slug) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="View Live URL">
-                                    <i class="fa fa-external-link"></i> URL
-                                </a>
+                                    <a href="{{ url('/agency/' . ($profile->slug ?? $profile->id) . '/ai-search/' . $page->slug) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="View Live URL">
+                                        <i class="fa fa-external-link"></i> URL
+                                    </a>
+                                @else
+                                    <span class="btn btn-sm btn-outline-secondary disabled" style="opacity:0.5;cursor:not-allowed;" title="Publish to enable live URL">
+                                        <i class="fa fa-external-link"></i> URL
+                                    </span>
                                 @endif
                                 <a href="{{ route('agency.ai-search-ranking.edit', $page) }}" class="btn btn-sm btn-dark">Edit</a>
                                 <form action="{{ route('agency.ai-search-ranking.destroy', $page) }}" method="POST" class="d-inline" onsubmit="return confirm('Remove this page?')">
@@ -679,49 +681,4 @@ document.addEventListener('DOMContentLoaded', function() {
 @endif
 @endif
 
-{{-- Preview Modal --}}
-<div id="pagePreviewModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#fff;border-radius:16px;max-width:900px;width:95%;max-height:90vh;overflow:auto;position:relative;">
-        <button onclick="closePreviewModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;color:#666;">×</button>
-        <div id="pagePreviewContent" style="padding:24px;">
-            <div style="text-align:center;padding:40px;">
-                <i class="fa fa-spinner fa-spin" style="font-size:24px;color:#ccc;"></i>
-                <p style="margin-top:12px;color:#666;">Loading preview...</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-function previewPage(pageId) {
-    var modal = document.getElementById('pagePreviewModal');
-    var content = document.getElementById('pagePreviewContent');
-    modal.style.display = 'flex';
-    
-    // Load preview via AJAX - use correct route
-    var previewUrl = '{{ url("/agency/ai-search-ranking/authority-pages") }}/' + pageId + '/preview';
-    fetch(previewUrl)
-        .then(function(response) { 
-            if (!response.ok) throw new Error('Not found');
-            return response.text(); 
-        })
-        .then(function(html) {
-            content.innerHTML = '<iframe srcdoc="' + html.replace(/"/g, '&quot;') + '" style="width:100%;height:70vh;border:none;border-radius:8px;"></iframe>';
-        })
-        .catch(function() {
-            // Fallback: open in new tab
-            content.innerHTML = '<div style="text-align:center;padding:40px;"><a href="' + previewUrl + '" target="_blank" class="btn btn-dark">Open Preview in New Tab</a></div>';
-        });
-}
-
-function closePreviewModal() {
-    document.getElementById('pagePreviewModal').style.display = 'none';
-    document.getElementById('pagePreviewContent').innerHTML = '<div style="text-align:center;padding:40px;"><i class="fa fa-spinner fa-spin" style="font-size:24px;color:#ccc;"></i><p style="margin-top:12px;color:#666;">Loading preview...</p></div>';
-}
-
-// Close modal on backdrop click
-document.getElementById('pagePreviewModal').addEventListener('click', function(e) {
-    if (e.target === this) closePreviewModal();
-});
-</script>
 @endsection

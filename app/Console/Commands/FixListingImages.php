@@ -14,7 +14,7 @@ class FixListingImages extends Command
     {
         $dryRun = $this->option('dry-run');
         
-        $listings = LocalSeoListing::whereNotNull('images_json')->get();
+        $listings = AgencyListing::whereNotNull('images_json')->get();
         
         $this->info("Found {$listings->count()} listings with images");
         $this->newLine();

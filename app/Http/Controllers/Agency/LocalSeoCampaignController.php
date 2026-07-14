@@ -67,11 +67,25 @@ class LocalSeoCampaignController extends Controller
         if (!empty($validated['campaign_id'])) {
             $campaign = LocalSeoCampaign::findOrFail($validated['campaign_id']);
             $this->authorizeCampaign($campaign, $profile);
+            $oldPlaces = $campaign->target_places ?? [];
             $campaign->update($data);
             $message = 'Campaign updated.';
+            
+            // Create articles for new places only
+            $newPlaces = $this->getNewPlaces($oldPlaces, $data['target_places'] ?? []);
+            $articlesCreated = $this->createArticlesForPlaces($campaign, $profile, $newPlaces);
+            if ($articlesCreated > 0) {
+                $message .= " {$articlesCreated} new location article(s) created.";
+            }
         } else {
             $campaign = $profile->localSeoCampaigns()->create($data + ['status' => 'draft']);
             $message = 'Campaign draft saved.';
+            
+            // Create articles for all places
+            $articlesCreated = $this->createArticlesForPlaces($campaign, $profile, $data['target_places'] ?? []);
+            if ($articlesCreated > 0) {
+                $message .= " {$articlesCreated} location article(s) created.";
+            }
         }
 
         // Auto-generate AI content in background
@@ -80,6 +94,61 @@ class LocalSeoCampaignController extends Controller
         return redirect()->route('agency.features.show', ['feature' => 'local_seo_presence_boost'])
             ->with('success', $message)
             ->with('edit_campaign_id', $campaign->id);
+    }
+    
+    /**
+     * Get places that are new (not in old list).
+     */
+    protected function getNewPlaces(array $oldPlaces, array $newPlaces): array
+    {
+        $oldNames = array_map(fn($p) => $p['name'] ?? '', $oldPlaces);
+        return array_filter($newPlaces, fn($p) => !in_array($p['name'] ?? '', $oldNames));
+    }
+    
+    /**
+     * Create SEO article pages for each place in the campaign.
+     */
+    protected function createArticlesForPlaces(LocalSeoCampaign $campaign, $profile, array $places): int
+    {
+        $created = 0;
+        
+        foreach ($places as $place) {
+            $placeName = $place['name'] ?? '';
+            if (empty($placeName)) continue;
+            
+            // Check if article already exists for this place
+            $exists = GeneratedPage::where('agency_profile_id', $profile->id)
+                ->where('local_seo_campaign_id', $campaign->id)
+                ->where('target_neighborhood', $placeName)
+                ->exists();
+                
+            if ($exists) continue;
+            
+            // Create the article page
+            $pageName = "Real Estate in {$placeName}";
+            if ($campaign->primary_city && $placeName !== $campaign->primary_city) {
+                $pageName = "Real Estate in {$placeName}, {$campaign->primary_city}";
+            }
+            
+            GeneratedPage::create([
+                'agency_profile_id' => $profile->id,
+                'local_seo_campaign_id' => $campaign->id,
+                'name' => $pageName,
+                'slug' => Str::slug($pageName . '-' . uniqid()),
+                'target_city' => $campaign->primary_city,
+                'target_neighborhood' => $placeName,
+                'country' => $campaign->country,
+                'latitude' => $campaign->latitude,
+                'longitude' => $campaign->longitude,
+                'property_type' => 'apartment', // default
+                'status' => 'draft',
+                'page_type' => 'location_seo',
+            ]);
+            
+            $created++;
+        }
+        
+        return $created;
     }
 
     /**

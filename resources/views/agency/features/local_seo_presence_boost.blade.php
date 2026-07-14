@@ -797,8 +797,11 @@
                             @foreach($listings as $listing)
                             <tr>
                                 <td>
-                                    @if(count($listing->images) > 0)
-                                        @php $imgSrc = Str::startsWith($listing->images[0], 'http') ? $listing->images[0] : asset('storage/' . $listing->images[0]); @endphp
+                                    @php
+                                        $imgs = is_array($listing->images) ? $listing->images : (is_string($listing->images_json) ? json_decode($listing->images_json, true) : []);
+                                    @endphp
+                                    @if(is_array($imgs) && count($imgs) > 0)
+                                        @php $imgSrc = Str::startsWith($imgs[0], 'http') ? $imgs[0] : asset('storage/' . $imgs[0]); @endphp
                                         <img src="{{ $imgSrc }}" alt="" style="width:60px;height:45px;object-fit:cover;border-radius:6px;" onerror="this.style.display='none'">
                                     @else
                                         <div style="width:60px;height:45px;background:#f5f6f7;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#ccc;"><i class="fa fa-image"></i></div>
@@ -1000,9 +1003,12 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label">Images</label>
-                        @if($editListing->images && count($editListing->images) > 0)
+                        @php
+                            $editImgs = is_array($editListing->images) ? $editListing->images : (is_string($editListing->images_json) ? json_decode($editListing->images_json, true) : []);
+                        @endphp
+                        @if(is_array($editImgs) && count($editImgs) > 0)
                         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-                            @foreach($editListing->images as $img)
+                            @foreach($editImgs as $img)
                             @php $editImgSrc = Str::startsWith($img, 'http') ? $img : asset('storage/' . $img); @endphp
                             <div style="position:relative;">
                                 <img src="{{ $editImgSrc }}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #ddd;" onerror="this.style.display='none'">
@@ -1124,8 +1130,11 @@
                         @foreach($campaignListings as $listing)
                         <tr>
                             <td>
-                                @if(count($listing->images) > 0)
-                                    @php $imgSrc2 = Str::startsWith($listing->images[0], 'http') ? $listing->images[0] : asset('storage/' . $listing->images[0]); @endphp
+                                @php
+                                    $imgs2 = is_array($listing->images) ? $listing->images : (is_string($listing->images_json) ? json_decode($listing->images_json, true) : []);
+                                @endphp
+                                @if(is_array($imgs2) && count($imgs2) > 0)
+                                    @php $imgSrc2 = Str::startsWith($imgs2[0], 'http') ? $imgs2[0] : asset('storage/' . $imgs2[0]); @endphp
                                     <img src="{{ $imgSrc2 }}" alt="" style="width:50px;height:38px;object-fit:cover;border-radius:4px;" onerror="this.style.display='none'">
                                 @else
                                     <div style="width:50px;height:38px;background:#f5f6f7;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#ccc;font-size:10px;"><i class="fa fa-image"></i></div>

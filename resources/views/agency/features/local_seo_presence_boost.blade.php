@@ -861,13 +861,14 @@
     @php
         $listingsJson = [];
         foreach($listings as $listing) {
+            $listingImages = is_array($listing->images) ? $listing->images : (is_string($listing->images_json) ? json_decode($listing->images_json, true) : []);
             $listingsJson[$listing->id] = [
                 'title' => $listing->title,
                 'property_type' => $listing->property_type ?? '',
                 'location' => $listing->location ?? '',
                 'price' => $listing->price ? number_format($listing->price, 0, ',', '.') . ' ' . ($listing->currency ?? 'EUR') : '',
                 'description' => $listing->description ?? '',
-                'images' => $listing->images ?? [],
+                'images' => is_array($listingImages) ? $listingImages : [],
                 'campaigns' => $listing->campaigns->pluck('name')->toArray()
             ];
         }
@@ -880,9 +881,10 @@
         if (!data) return;
         
         var imagesHtml = '';
-        if (data.images && data.images.length > 0) {
+        var images = Array.isArray(data.images) ? data.images : (typeof data.images === 'string' ? JSON.parse(data.images || '[]') : []);
+        if (images && images.length > 0) {
             imagesHtml = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">';
-            data.images.forEach(function(img) {
+            images.forEach(function(img) {
                 var imgSrc = img.startsWith('http') ? img : '/storage/' + img;
                 imagesHtml += '<img src="' + imgSrc + '" style="width:150px;height:110px;object-fit:cover;border-radius:8px;" onerror="this.style.display=\'none\'">';
             });

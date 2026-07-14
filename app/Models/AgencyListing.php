@@ -70,7 +70,22 @@ class AgencyListing extends Model
 
     public function getImagesAttribute()
     {
-        return $this->images_json ?? [];
+        $images = $this->images_json;
+        
+        // If it's already an array, return it
+        if (is_array($images)) {
+            return $images;
+        }
+        
+        // If it's a string, try to decode it
+        if (is_string($images)) {
+            $decoded = json_decode($images, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+        }
+        
+        return [];
     }
 
     public function getFormattedPriceAttribute()

@@ -1361,8 +1361,7 @@
                             @endphp
                             @foreach (array_slice($faqs, 0, 6) as $i => $f)
                                 <div class="faq-item">
-                                    <button class="faq-question" type="button"
-                                        onclick="this.parentElement.classList.toggle('open')">
+                                    <button class="faq-question" type="button">
                                         <span class="faq-icon">?</span>
                                         <span>{{ $f['question'] ?? '' }}</span>
                                         <span class="faq-arrow">▼</span>
@@ -1725,9 +1724,19 @@
     </footer>
 
     <script>
-        // FAQ accordion
-        document.querySelectorAll('.faq-question').forEach(btn => {
-            btn.addEventListener('click', () => btn.closest('.faq-item').classList.toggle('open'));
+        // FAQ accordion - ensure it works
+        document.addEventListener('DOMContentLoaded', function() {
+            var faqButtons = document.querySelectorAll('.faq-question');
+            faqButtons.forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var item = this.closest('.faq-item');
+                    if (item) {
+                        item.classList.toggle('open');
+                    }
+                });
+            });
         });
     </script>
 

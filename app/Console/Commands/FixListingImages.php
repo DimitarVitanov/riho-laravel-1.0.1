@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\LocalSeoListing;
+use App\Models\AgencyListing;
 use Illuminate\Console\Command;
 
 class FixListingImages extends Command

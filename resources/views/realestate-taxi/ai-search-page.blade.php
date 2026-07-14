@@ -542,7 +542,8 @@
         }
 
         .faq-item.open .faq-answer {
-            max-height: 300px
+            max-height: 500px;
+            padding-bottom: 16px
         }
 
         .location-layout {
@@ -1346,21 +1347,30 @@
                             <h2>FAQ</h2>
                         </div>
                         <div class="faq-accordion">
-                            @if (!empty($faqContent))
-                                @foreach (array_slice($faqContent, 0, 6) as $i => $f)
-                                    <div class="faq-item">
-                                        <button class="faq-question"
-                                            onclick="this.parentElement.classList.toggle('open')">
-                                            <span class="faq-icon">?</span>
-                                            <span>{{ $f['question'] ?? '' }}</span>
-                                            <span class="faq-arrow">▼</span>
-                                        </button>
-                                        <div class="faq-answer">
-                                            <p>{{ $f['answer'] ?? 'Answer coming soon.' }}</p>
-                                        </div>
+                            @php
+                                $defaultFaqs = [
+                                    ['question' => "Can foreigners buy property in {$page->country ?? 'Croatia'}?", 'answer' => "Yes, EU citizens can buy freely. Non-EU buyers need approval which takes 3-6 months and has a 95% approval rate. The process is straightforward for most nationalities."],
+                                    ['question' => "What are the purchase costs?", 'answer' => "Expect approximately 7-10% on top of the purchase price: 3% transfer tax, 1% notary fees, 2-3% agency fee, and 1-2% legal costs."],
+                                    ['question' => "What is the rental income potential?", 'answer' => "Rental yields range from 5-8% gross. Peak season (June-September) generates 60% of annual income. Average occupancy is 65-75% annually."],
+                                    ['question' => "How long does the purchase process take?", 'answer' => "Typically 2-4 months from offer acceptance to completion, depending on due diligence and financing arrangements."],
+                                    ['question' => "Can I view properties remotely?", 'answer' => "Yes, we offer virtual viewings via video call, detailed photo/video packages, and 3D tours for most properties."],
+                                    ['question' => "Do you help with property management?", 'answer' => "Yes, we can connect you with trusted local property management companies. Management fees typically range from 15-25% of rental income."],
+                                ];
+                                $faqs = !empty($faqContent) ? $faqContent : $defaultFaqs;
+                            @endphp
+                            @foreach (array_slice($faqs, 0, 6) as $i => $f)
+                                <div class="faq-item">
+                                    <button class="faq-question" type="button"
+                                        onclick="this.parentElement.classList.toggle('open')">
+                                        <span class="faq-icon">?</span>
+                                        <span>{{ $f['question'] ?? '' }}</span>
+                                        <span class="faq-arrow">▼</span>
+                                    </button>
+                                    <div class="faq-answer">
+                                        <p>{{ $f['answer'] ?? 'Answer coming soon.' }}</p>
                                     </div>
-                                @endforeach
-                            @endif
+                                </div>
+                            @endforeach
                         </div>
                     </section>
 

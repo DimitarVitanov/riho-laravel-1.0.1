@@ -130,11 +130,18 @@ Return as JSON:
     {
         $prompt = "Generate 4 quick Q&A pairs for AI search about {$propertyType} in {$location}, {$country}.
 
+IMPORTANT: Every answer MUST include specific numbers and statistics. Examples:
+- Distances in meters/km (e.g., 'Beach is 450m away, Old Town 2.1km')
+- Percentages (e.g., '78% of buyers are from Germany/Austria')
+- Price ranges (e.g., 'Average price €3,800-4,500/m²')
+- Time frames (e.g., 'Purchase process takes 2-3 months')
+- Yields (e.g., 'Gross rental yield 5.2-6.8%')
+
 Focus on:
-1. Who is this ideal for?
-2. Main advantages?
-3. Distance to key amenities?
-4. Why is it a good investment?
+1. Who is this ideal for? (include % of buyer demographics)
+2. Main advantages? (include specific distances, numbers)
+3. Distance to key amenities? (exact distances in m/km)
+4. Why is it a good investment? (include yield %, price trends)
 
 Return as JSON array:
 [
@@ -148,19 +155,25 @@ Return as JSON array:
 
     protected function generateFaqs(string $location, string $country, ?string $propertyType): array
     {
-        $prompt = "Generate 6 FAQ questions for buyers interested in {$propertyType} in {$location}, {$country}.
+        $prompt = "Generate 6 FAQ questions with detailed answers for buyers interested in {$propertyType} in {$location}, {$country}.
+
+IMPORTANT: Every answer MUST include specific numbers, percentages, and statistics. Examples:
+- 'Purchase costs are typically 7-10% of property value (3% transfer tax, 1% notary, 2-3% agency fee)'
+- 'EU citizens can buy freely. Non-EU buyers need approval which takes 3-6 months and has 95% approval rate'
+- 'Rental yields range from 5-8% gross, with peak season (June-September) generating 60% of annual income'
+- 'Average purchase timeline is 2-4 months from offer to completion'
 
 Include questions about:
-- Foreign ownership rules
-- Documentation
-- Purchase costs and taxes
-- Virtual viewings
-- Rental income potential
-- Timeline to purchase
+- Foreign ownership rules (include approval rates, timelines)
+- Documentation required (list specific documents)
+- Purchase costs and taxes (include exact percentages)
+- Virtual viewings availability
+- Rental income potential (include yield percentages, occupancy rates)
+- Timeline to purchase (include specific timeframes)
 
 Return as JSON array:
 [
-  {\"question\": \"...\", \"answer\": \"...\"},
+  {\"question\": \"...\", \"answer\": \"detailed answer with numbers and statistics...\"},
   ...
 ]";
 

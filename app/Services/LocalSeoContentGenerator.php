@@ -84,8 +84,8 @@ class LocalSeoContentGenerator
             $results['buyer_fit'] = $this->generateBuyerFit($city, $subPrompt, $language);
             usleep(500000);
 
-            // 7. Generate area comparison data (unique for each place)
-            $results['area_comparison'] = $this->generateAreaComparison($places, $city, $subPrompt, $language);
+            // 7. Generate area comparison data (main city first, then nearby places)
+            $results['area_comparison'] = $this->generateAreaComparison($places, $city, $subPrompt, $language, $campaign->name);
             usleep(500000);
 
             // 8. Generate FAQ content
@@ -510,21 +510,32 @@ A: Yes, especially for buyers who want sea proximity and newer buildings. The ar
 
     /**
      * Generate area comparison data for each place with unique characteristics.
+     * Main area is listed first, then nearby alternatives.
      */
-    protected function generateAreaComparison(array $places, string $city, string $subPrompt, string $language): array
+    protected function generateAreaComparison(array $places, string $city, string $subPrompt, string $language, string $mainAreaName = null): array
     {
         $placeNames = array_map(fn($p) => $p['name'] ?? '', $places);
         $placeNames = array_filter($placeNames);
+        
+        // Add main area as first item if provided
+        if ($mainAreaName) {
+            // Extract just the area name (e.g., "Žnjan" from "Gradski kotar Žnjan, Split")
+            $mainArea = trim(explode(',', $mainAreaName)[0]);
+            // Remove it from places if it exists there, then prepend
+            $placeNames = array_filter($placeNames, fn($n) => stripos($n, $mainArea) === false);
+            array_unshift($placeNames, $mainArea);
+        }
         
         if (empty($placeNames)) {
             return [];
         }
 
         $placeList = implode(', ', $placeNames);
+        $firstArea = $placeNames[0] ?? $city;
         
-        $prompt = "For these locations near {$city}: {$placeList}
+        $prompt = "For these locations: {$placeList} (near {$city})
 
-Generate UNIQUE comparison data for EACH location with 6 data points.
+Generate UNIQUE comparison data for EACH location. The FIRST location ({$firstArea}) is the MAIN area being featured - give it the best characteristics.
 Return JSON array:
 [
   {
@@ -538,6 +549,7 @@ Return JSON array:
 ]
 
 RULES:
+- FIRST location ({$firstArea}) should have the BEST/most attractive values
 - Each location MUST have DIFFERENT values
 - Keep text SHORT (2-4 words max per field)
 - Include realistic price ranges for the area

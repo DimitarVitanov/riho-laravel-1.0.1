@@ -737,14 +737,14 @@ details p { color: #4b5563; font-weight: 500; margin: 12px 0 0; font-size: 14px;
 input, textarea, select {
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--accent);
   border-radius: 12px;
   font: inherit;
   font-size: 14px;
   background: #fff;
   color: var(--ink);
 }
-input:focus, textarea:focus, select:focus { outline: none; border-color: var(--ink); }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
 textarea { min-height: 100px; resize: vertical; }
 
 /* Badge */

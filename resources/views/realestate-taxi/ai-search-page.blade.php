@@ -917,9 +917,17 @@
         .investor-form textarea {
             width: 100%;
             padding: 14px;
-            border: 1px solid var(--line);
+            border: 2px solid var(--accent);
             border-radius: 12px;
             font: inherit
+        }
+
+        .investor-form input:focus,
+        .investor-form select:focus,
+        .investor-form textarea:focus {
+            outline: none;
+            border-color: var(--ink);
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.05)
         }
 
         .investor-reasons {

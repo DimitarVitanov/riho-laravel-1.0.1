@@ -22,3 +22,9 @@ Schedule::command('app:refresh-agency-sitemaps')
     ->daily()
     ->withoutOverlapping()
     ->runInBackground();
+
+Schedule::command('ai:refresh-content --days=30')
+    ->daily()
+    ->at('03:00')
+    ->withoutOverlapping()
+    ->runInBackground();

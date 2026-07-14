@@ -74,11 +74,11 @@
 }
 @keyframes vb-spin { to { transform: rotate(360deg); } }
 .vb-loader-overlay .message {
-    font-size: 15px; font-weight: 700; color: #0a0b0c;
+    font-size: 16px; font-weight: 700; color: #0a0b0c;
     text-align: center; max-width: 320px; line-height: 1.5;
 }
 .vb-loader-overlay .sub-message {
-    font-size: 13px; color: #69717a;
+    font-size: 14px; color: #374151; font-weight: 500;
 }
 </style>
 @endsection
@@ -89,8 +89,8 @@
     {{-- LOADER OVERLAY --}}
     <div id="vbLoader" class="vb-loader-overlay">
         <div class="spinner"></div>
-        <div class="message">AI is working on your page…</div>
-        <div class="sub-message">This may take a few seconds. Please do not close the page.</div>
+        <div class="message"><strong>Villa Bit AI</strong> is building your page…</div>
+        <div class="sub-message">This requires up to one minute of processing time. Please do not close the page.</div>
     </div>
 
     @if(session('success'))
@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var loader = document.getElementById('vbLoader');
         if (!loader) return;
         var msgEl = loader.querySelector('.message');
-        if (message && msgEl) msgEl.textContent = message;
+        if (message && msgEl) msgEl.innerHTML = message;
         loader.classList.add('active');
     }
 
@@ -499,14 +499,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var pageForm = document.getElementById('pageForm');
     if (pageForm) {
         pageForm.addEventListener('submit', function () {
-            showLoader('AI is generating your page…');
+            showLoader('<strong>Villa Bit AI</strong> is building your page…');
         });
     }
 
     // Regenerate AI content links in pages table
     document.querySelectorAll('a[href*="ai-search-ranking/generate"]').forEach(function (link) {
         link.addEventListener('click', function () {
-            showLoader('AI is regenerating content…');
+            showLoader('<strong>Villa Bit AI</strong> is regenerating content…');
         });
     });
 });

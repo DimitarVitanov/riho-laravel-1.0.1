@@ -144,11 +144,11 @@
 }
 @keyframes vb-spin { to { transform: rotate(360deg); } }
 .vb-loader-overlay .message {
-    font-size: 15px; font-weight: 700; color: #0a0b0c;
+    font-size: 16px; font-weight: 700; color: #0a0b0c;
     text-align: center; max-width: 320px; line-height: 1.5;
 }
 .vb-loader-overlay .sub-message {
-    font-size: 13px; color: #69717a;
+    font-size: 14px; color: #374151; font-weight: 500;
 }
 
 /* Table wrap */
@@ -176,8 +176,8 @@
     {{-- LOADER OVERLAY --}}
     <div id="vbLoader" class="vb-loader-overlay">
         <div class="spinner"></div>
-        <div class="message">AI is working on your request…</div>
-        <div class="sub-message">This may take a few seconds. Please do not close the page.</div>
+        <div class="message"><strong>Villa Bit AI</strong> is building your campaign…</div>
+        <div class="sub-message">This requires up to one minute of processing time. Please do not close the page.</div>
     </div>
 
     @if(session('success'))
@@ -848,7 +848,7 @@
 
     {{-- Listing Preview Modal --}}
     <div id="listingPreviewModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
-        <div style="background:#fff;border-radius:16px;max-width:600px;width:90%;max-height:90vh;overflow:auto;position:relative;">
+        <div style="background:#fff;border-radius:16px;max-width:800px;width:90%;max-height:90vh;overflow:auto;position:relative;">
             <button onclick="closePreviewModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:24px;cursor:pointer;color:#666;">×</button>
             <div id="listingPreviewContent" style="padding:24px;"></div>
         </div>
@@ -879,7 +879,8 @@
         if (data.images && data.images.length > 0) {
             imagesHtml = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">';
             data.images.forEach(function(img) {
-                imagesHtml += '<img src="/storage/' + img + '" style="width:120px;height:90px;object-fit:cover;border-radius:8px;">';
+                var imgSrc = img.startsWith('http') ? img : '/storage/' + img;
+                imagesHtml += '<img src="' + imgSrc + '" style="width:150px;height:110px;object-fit:cover;border-radius:8px;" onerror="this.style.display=\'none\'">';
             });
             imagesHtml += '</div>';
         }
@@ -995,7 +996,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Description</label>
-                        <textarea name="description" class="form-control" rows="2">{{ $editListing->description }}</textarea>
+                        <textarea name="description" class="form-control" rows="4">{{ $editListing->description }}</textarea>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Year Built</label>
@@ -1083,12 +1084,17 @@
                     </div>
                     <div class="col-md-9">
                         <label class="form-label">Description</label>
-                        <textarea name="description" class="form-control" rows="1" placeholder="Describe the property, features, and unique selling points..."></textarea>
+                        <textarea name="description" class="form-control" rows="4" placeholder="Describe the property, features, and unique selling points..."></textarea>
                     </div>
                     <div class="col-12">
                         <label class="form-label">Images</label>
-                        <input type="file" name="images[]" class="form-control" multiple accept="image/*">
-                        <small class="text-muted">Upload multiple images. Max 5MB each.</small>
+                        <div id="imageUploadContainer">
+                            <div class="image-upload-row mb-2">
+                                <input type="file" name="images[]" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="addImageField()">+ Add Image</button>
+                        <small class="text-muted d-block mt-1">Max 5MB per image.</small>
                     </div>
                 </div>
                 <div class="actions-bar">
@@ -1970,7 +1976,7 @@
         var loader = document.getElementById('vbLoader');
         if (!loader) return;
         var msgEl = loader.querySelector('.message');
-        if (message && msgEl) msgEl.textContent = message;
+        if (message && msgEl) msgEl.innerHTML = message;
         loader.classList.add('active');
     }
 
@@ -1978,7 +1984,7 @@
     var campaignForm = document.getElementById('campaignForm');
     if (campaignForm) {
         campaignForm.addEventListener('submit', function (e) {
-            showLoader('AI is building your campaign…');
+            showLoader('<strong>Villa Bit AI</strong> is building your campaign…');
         });
     }
 
@@ -1991,6 +1997,17 @@
     if (editListingForm && editListingForm.method.toUpperCase() !== 'DELETE') {
         editListingForm.addEventListener('submit', function () { showLoader('Updating listing…'); });
     }
+
+    // Add Image field function
+    function addImageField() {
+        var container = document.getElementById('imageUploadContainer');
+        var row = document.createElement('div');
+        row.className = 'image-upload-row mb-2 d-flex gap-2';
+        row.innerHTML = '<input type="file" name="images[]" class="form-control" accept="image/*">' +
+                        '<button type="button" class="btn btn-sm btn-outline-danger" onclick="this.parentElement.remove()">✕</button>';
+        container.appendChild(row);
+    }
+    window.addImageField = addImageField;
 
 </script>
 @endsection

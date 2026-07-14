@@ -698,14 +698,19 @@ function previewPage(pageId) {
     var content = document.getElementById('pagePreviewContent');
     modal.style.display = 'flex';
     
-    // Load preview via AJAX
-    fetch('{{ url("/agency/ai-search-ranking") }}/' + pageId + '/preview?embed=1')
-        .then(function(response) { return response.text(); })
+    // Load preview via AJAX - use correct route
+    var previewUrl = '{{ url("/agency/ai-search-ranking/authority-pages") }}/' + pageId + '/preview';
+    fetch(previewUrl)
+        .then(function(response) { 
+            if (!response.ok) throw new Error('Not found');
+            return response.text(); 
+        })
         .then(function(html) {
             content.innerHTML = '<iframe srcdoc="' + html.replace(/"/g, '&quot;') + '" style="width:100%;height:70vh;border:none;border-radius:8px;"></iframe>';
         })
         .catch(function() {
-            content.innerHTML = '<div style="text-align:center;padding:40px;color:#dc2626;">Failed to load preview. <a href="{{ url("/agency/ai-search-ranking") }}/' + pageId + '/preview" target="_blank">Open in new tab</a></div>';
+            // Fallback: open in new tab
+            content.innerHTML = '<div style="text-align:center;padding:40px;"><a href="' + previewUrl + '" target="_blank" class="btn btn-dark">Open Preview in New Tab</a></div>';
         });
 }
 

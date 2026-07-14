@@ -135,9 +135,9 @@ class AiSearchRankingController extends Controller
 
         $usageLimit = $profile->currentUsageLimit;
         if ($usageLimit) {
-            if (!$usageLimit->consume('local_seo_pages')) {
+            if (!$usageLimit->consume('ai_search_ranking')) {
                 return redirect()->route('agency.features.show', 'ai_search_ranking')
-                    ->with('error', 'You have reached your monthly limit of ' . $usageLimit->local_seo_pages_limit . ' published AI/Local SEO pages.');
+                    ->with('error', 'You have reached your monthly limit of ' . $usageLimit->ai_search_ranking_limit . ' AI Search Ranking pages.');
             }
         }
 
@@ -156,7 +156,7 @@ class AiSearchRankingController extends Controller
         } catch (\Exception $e) {
             // Refund the consumed unit on failure
             if ($usageLimit) {
-                $usageLimit->decrement('local_seo_pages_used');
+                $usageLimit->decrement('ai_search_ranking_used');
             }
 
             return redirect()->route('agency.features.show', 'ai_search_ranking')

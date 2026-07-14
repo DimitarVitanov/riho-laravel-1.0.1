@@ -74,6 +74,14 @@
         $copyright = $profile->footer_copyright_text ?? '© ' . date('Y') . ' ' . ($profile->agency_name ?? 'Agency');
         $privacyUrl = $profile->footer_privacy_url ?? '#';
         $termsUrl = $profile->footer_terms_url ?? '#';
+
+        // Sidebar property promo settings
+        $sidebarPromoEnabled = $profile->sidebar_promo_enabled ?? true;
+        $sidebarPromoImage = $profile->sidebar_promo_image ? asset('storage/' . $profile->sidebar_promo_image) : null;
+        $sidebarPromoTitle = $profile->sidebar_promo_title ?? 'View All Properties';
+        $sidebarPromoText = $profile->sidebar_promo_text ?? 'Browse our complete collection of premium properties for sale.';
+        $sidebarPromoUrl = $profile->sidebar_promo_url ?? '#';
+        $sidebarPromoButtonText = $profile->sidebar_promo_button_text ?? 'Get Property Options';
     @endphp
     <title>{{ $page->meta_title ?? ($page->name ?? 'Property') }} | {{ $profile->agency_name ?? 'Agency' }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
@@ -205,7 +213,8 @@
         }
 
         .nav .cta-btn:hover {
-            filter: brightness(1.15)
+              filter: brightness(1.15);
+            color:white;
         }
 
         .page-header {
@@ -1021,12 +1030,12 @@
         .footer-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 40px;
+            gap: 32px;
             margin-bottom: 32px
         }
 
         .footer-col h4 {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 700;
             margin-bottom: 16px;
             opacity: 0.7
@@ -1034,18 +1043,34 @@
 
         .footer-col p,
         .footer-col a {
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.8;
-            opacity: 0.8
+            opacity: 0.8;
+            font-weight: 600
+        }
+
+        .footer-col a:hover {
+            opacity: 1;
+            text-decoration: none
         }
 
         .footer-bottom {
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 20px;
+            padding: 20px 0 0;
+            margin: 0 auto;
+            max-width: var(--max);
             display: flex;
             justify-content: space-between;
-            font-size: 13px;
-            opacity: 0.6
+            font-size: 14px;
+            opacity: 1
+        }
+
+        .footer-bottom a {
+            font-weight: 600
+        }
+
+        .footer-bottom a:hover {
+            text-decoration: none
         }
 
         @media(max-width:1100px) {
@@ -1089,7 +1114,13 @@
             }
 
             .footer-grid {
-                grid-template-columns: 1fr
+                grid-template-columns: 1fr 1fr
+            }
+
+            @media (max-width: 600px) {
+                .footer-grid {
+                    grid-template-columns: 1fr
+                }
             }
 
             .answer-tags {
@@ -1136,9 +1167,6 @@
                 @else
                     <span class="brand-mark">⌂</span>
                 @endif
-                <span>
-                    <strong>{{ $logoText }}</strong>
-                </span>
             </a>
             <nav class="nav">
                 @foreach ($navItems as $item)
@@ -1585,6 +1613,22 @@
                 </section>
 
 
+                {{-- Property Promo Box --}}
+                @if($sidebarPromoEnabled)
+                <section class="card" style="overflow:hidden;">
+                    @if($sidebarPromoImage)
+                    <a href="{{ $sidebarPromoUrl }}" style="display:block;">
+                        <img src="{{ $sidebarPromoImage }}" alt="{{ $sidebarPromoTitle }}" style="width:100%;height:180px;object-fit:cover;">
+                    </a>
+                    @endif
+                    <div class="pad">
+                        <strong style="font-size:15px;display:block;margin-bottom:8px;">{{ $sidebarPromoTitle }}</strong>
+                        <p class="sub" style="margin:0;line-height:1.5;">{{ $sidebarPromoText }}</p>
+                        <a href="{{ $sidebarPromoUrl }}" class="btn primary" style="margin-top:14px;width:100%;text-align:center;">{{ $sidebarPromoButtonText }}</a>
+                    </div>
+                </section>
+                @endif
+
                 {{-- Agency Commission Info Box --}}
                 <section class="card pad" style="background:var(--soft);">
                     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
@@ -1617,18 +1661,23 @@
                     @endforeach
                 </div>
                 <div class="footer-col">
+                    <h4>Related Pages</h4>
+                    <a href="#article" style="display:block">{{ $propertyType }} in {{ $location }}</a>
+                    <a href="#answers" style="display:block">Quick Answers</a>
+                    <a href="#faq" style="display:block">FAQ</a>
+                    <a href="#location" style="display:block">Location + Area</a>
+                    <a href="#market" style="display:block">Market + Investment Data</a>
+                    <a href="#contact" style="display:block">Contact + Investor Options</a>
+                </div>
+                <div class="footer-col">
                     <h4>{{ $col2Title }}</h4>
                     <p>{{ $col2Text }}</p>
                 </div>
-                <div class="footer-col">
-                    <h4>Contact</h4>
-                    <p>{{ $profile->agency_name ?? 'Agency' }}</p>
-                </div>
             </div>
-            <div class="footer-bottom">
-                <span>{{ $copyright }}</span>
-                <div><a href="{{ $privacyUrl }}">Privacy</a> | <a href="{{ $termsUrl }}">Terms</a></div>
-            </div>
+        </div>
+        <div class="footer-bottom text-white">
+            <span style="color:white !important">{{ $copyright }}</span>
+            <div class="footer-links"><a href="{{ $privacyUrl }}">Privacy</a> | <a href="{{ $termsUrl }}">Terms</a></div>
         </div>
     </footer>
 

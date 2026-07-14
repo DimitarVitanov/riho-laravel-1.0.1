@@ -82,6 +82,14 @@
                 </div>
                 <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
             </div>
+            <div class="vb-card">
+                <div class="vb-label">{{ __('messages.ai_freshness_updates') }}</div>
+                <div class="vb-metric">{{ $currentUsage->ai_search_freshness_updates_used }} / {{ $currentUsage->ai_search_freshness_updates_limit }}</div>
+                <div class="vb-progress">
+                    <div class="vb-progress-bar {{ ($currentUsage->ai_search_freshness_updates_limit > 0 && $currentUsage->ai_search_freshness_updates_used / $currentUsage->ai_search_freshness_updates_limit >= 0.9) ? 'vb-danger' : '' }}" style="width:{{ $currentUsage->ai_search_freshness_updates_limit > 0 ? ($currentUsage->ai_search_freshness_updates_used / $currentUsage->ai_search_freshness_updates_limit * 100) : 0 }}%"></div>
+                </div>
+                <div class="vb-period">{{ __('messages.usage_month') }}: {{ $currentUsage->usagePeriodMonth() }} {{ $currentUsage->usagePeriodYear() }} · {{ __('messages.status') }}: {{ $currentUsage->usagePeriodStatus() }}</div>
+            </div>
         </div>
         @endif
 
@@ -127,11 +135,11 @@
         @if($aiFeatures->count())
         @php
             $featureOrder = [
-                'ai_authority_builder' => 1,
+                'local_seo_presence_boost' => 1,
                 'ai_search_ranking' => 2,
                 'daily_competitor_scan' => 3,
-                'invisible_lead_magnet' => 4,
-                'local_seo_presence_boost' => 5,
+                'ai_authority_builder' => 4,
+                'invisible_lead_magnet' => 5,
             ];
             $sortedFeatures = $aiFeatures
                 ->reject(fn($f) => $f->feature_key === 'small_ai_actions')

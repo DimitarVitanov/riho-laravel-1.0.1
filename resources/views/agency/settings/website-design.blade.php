@@ -358,6 +358,54 @@
                     </div>
                 </div>
 
+                {{-- ===== SIDEBAR PROMO BOX ===== --}}
+                <div class="card mb-3">
+                    <div class="card-header"><h5 class="mb-0">🏠 Sidebar Property Promo Box</h5></div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-check form-switch mb-3">
+                                    <input type="hidden" name="sidebar_promo_enabled" value="0">
+                                    <input class="form-check-input" type="checkbox" name="sidebar_promo_enabled" value="1" id="sidebarPromoEnabled"
+                                        {{ ($profile->sidebar_promo_enabled ?? true) ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-semibold" for="sidebarPromoEnabled">Enable Property Promo Box</label>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold">Promo Image</label>
+                                <input type="file" name="sidebar_promo_image" class="form-control" accept="image/*">
+                                @if($profile->sidebar_promo_image)
+                                    <small class="text-muted">Current: {{ basename($profile->sidebar_promo_image) }}</small>
+                                @endif
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Promo Title</label>
+                                <input type="text" name="sidebar_promo_title" class="form-control"
+                                    value="{{ $profile->sidebar_promo_title ?? '' }}"
+                                    placeholder="e.g. View All Properties">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Button Text</label>
+                                <input type="text" name="sidebar_promo_button_text" class="form-control"
+                                    value="{{ $profile->sidebar_promo_button_text ?? '' }}"
+                                    placeholder="e.g. Get Property Options">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Promo Description</label>
+                                <textarea name="sidebar_promo_text" class="form-control" rows="2"
+                                    placeholder="e.g. Browse our complete collection of premium properties for sale.">{{ $profile->sidebar_promo_text ?? '' }}</textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Link URL</label>
+                                <input type="url" name="sidebar_promo_url" class="form-control"
+                                    value="{{ $profile->sidebar_promo_url ?? '' }}"
+                                    placeholder="e.g. https://villareadycroatia.com/villas-for-sale.php">
+                                <small class="text-muted">Where the image and button should link to</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- ===== CUSTOM CSS ===== --}}
                 <div class="card mb-3">
                     <div class="card-header"><h5 class="mb-0">💻 Custom CSS</h5></div>

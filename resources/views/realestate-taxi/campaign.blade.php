@@ -74,6 +74,14 @@
   $sidebarEnabled = $profile->sidebar_enabled ?? true;
   $sidebarTitle   = $profile->sidebar_title ?: 'Page Sections';
   $showLastUpdated = $profile->sidebar_show_last_updated ?? true;
+
+  // Sidebar property promo settings
+  $sidebarPromoEnabled = $profile->sidebar_promo_enabled ?? true;
+  $sidebarPromoImage = $profile->sidebar_promo_image ? asset('storage/' . $profile->sidebar_promo_image) : null;
+  $sidebarPromoTitle = $profile->sidebar_promo_title ?? 'View All Properties';
+  $sidebarPromoText = $profile->sidebar_promo_text ?? 'Browse our complete collection of premium properties for sale.';
+  $sidebarPromoUrl = $profile->sidebar_promo_url ?? '#';
+  $sidebarPromoButtonText = $profile->sidebar_promo_button_text ?? 'Get Property Options';
 @endphp
 <meta name="description" content="{{ $aiContent['meta_description'] ?? $campaign->positioning_note ?? '' }}">
 <meta name="robots" content="index, follow">
@@ -193,17 +201,18 @@ img { max-width: 100%; }
   padding: 12px 20px;
   border-radius: 10px;
   font-weight: 700;
-  transition: filter 0.2s ease;
+  transition: filter 0.5s ease;
 }
 .nav .cta-btn:hover {
   filter: brightness(1.15);
+  color:white;
 }
 
 /* Hero */
 .hero {
   background: var(--ink);
   color: #fff;
-  border-radius: 20px;
+  border-radius: 5px;
   padding: 48px;
   margin-bottom: 24px;
   position: relative;
@@ -779,11 +788,11 @@ textarea { min-height: 100px; resize: vertical; }
 .footer-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 40px;
+  gap: 32px;
   margin-bottom: 32px;
 }
 .footer-col h4 {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -791,22 +800,26 @@ textarea { min-height: 100px; resize: vertical; }
   opacity: 0.7;
 }
 .footer-col p, .footer-col a {
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.8;
   opacity: 0.8;
+  font-weight: 600;
 }
-.footer-col a:hover { opacity: 1; }
+.footer-col a:hover { opacity: 1; text-decoration: none; }
 .footer-bottom {
   border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 20px;
+  padding: 20px 0 0;
+  margin: 0 auto;
+  max-width: var(--max);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 13px;
-  opacity: 0.6;
+  font-size: 14px;
+  opacity: 1;
 }
 .footer-links { display: flex; gap: 24px; }
-.footer-links a:hover { opacity: 1; text-decoration: underline; }
+.footer-links a { font-weight: 600; }
+.footer-links a:hover { opacity: 1; text-decoration: none; }
 
 /* Responsive */
 @media (max-width: 1100px) {
@@ -823,7 +836,10 @@ textarea { min-height: 100px; resize: vertical; }
   .listing-img { height: 180px; }
   h1 { font-size: 36px; }
   h2 { font-size: 24px; }
-  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 600px) {
+    .footer-grid { grid-template-columns: 1fr; }
+  }
   .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
 }
 @media (max-width: 600px) {
@@ -853,9 +869,6 @@ textarea { min-height: 100px; resize: vertical; }
         @else
           <span class="brand-mark">⌂</span>
         @endif
-        <span>
-          <strong>{{ $logoText }}</strong>
-        </span>
       </a>
       <nav class="nav">
         @foreach($navItems as $item)
@@ -1337,6 +1350,22 @@ textarea { min-height: 100px; resize: vertical; }
         </section>
         @endif
 
+        {{-- Property Promo Box --}}
+        @if($sidebarPromoEnabled)
+        <section class="card" style="overflow:hidden;">
+          @if($sidebarPromoImage)
+          <a href="{{ $sidebarPromoUrl }}" style="display:block;">
+            <img src="{{ $sidebarPromoImage }}" alt="{{ $sidebarPromoTitle }}" style="width:100%;height:180px;object-fit:cover;">
+          </a>
+          @endif
+          <div class="pad">
+            <strong style="font-size:15px;display:block;margin-bottom:8px;">{{ $sidebarPromoTitle }}</strong>
+            <p class="sub" style="margin:0;line-height:1.5;">{{ $sidebarPromoText }}</p>
+            <a href="{{ $sidebarPromoUrl }}" class="btn primary" style="margin-top:14px;width:100%;text-align:center;">{{ $sidebarPromoButtonText }}</a>
+          </div>
+        </section>
+        @endif
+
         {{-- Agency Commission Info Box --}}
         <section class="card pad" style="background:var(--soft);">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
@@ -1371,22 +1400,25 @@ textarea { min-height: 100px; resize: vertical; }
           @endforeach
         </div>
         <div class="footer-col">
+          <h4>Related Pages</h4>
+          <a href="#guide" style="display:block;">Why {{ $campaign->primary_city }} Attracts Buyers</a>
+          <a href="#answers" style="display:block;">Your Questions, Answered</a>
+          <a href="#available" style="display:block;">Properties You Can Buy Now</a>
+          <a href="#areas" style="display:block;">Micro-Area Map</a>
+          <a href="#market" style="display:block;">What's the Market Like?</a>
+          <a href="#contact" style="display:block;">Contact & Investor Options</a>
+        </div>
+        <div class="footer-col">
           <h4>{{ $col2Title }}</h4>
           <p>{{ $col2Text }}</p>
         </div>
-        <div class="footer-col">
-          <h4>Contact</h4>
-          <p>{{ $profile->agency_name }}</p>
-          @if($profile->contact_email)<p>{{ $profile->contact_email }}</p>@endif
-          @if($profile->contact_phone)<p>{{ $profile->contact_phone }}</p>@endif
-        </div>
       </div>
-      <div class="footer-bottom">
-        <span>{{ $copyright }}</span>
-        <div class="footer-links">
-          <a href="{{ $privacyUrl }}">Privacy Policy</a>
-          <a href="{{ $termsUrl }}">Terms of Use</a>
-        </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="text-white" style="color:white !important;">{{ $copyright }}</span>
+      <div class="footer-links">
+        <a href="{{ $privacyUrl }}">Privacy Policy</a>
+        <a href="{{ $termsUrl }}">Terms of Use</a>
       </div>
     </div>
   </footer>

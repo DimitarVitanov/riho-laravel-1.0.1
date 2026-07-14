@@ -320,6 +320,12 @@ class AgencySettingsController extends Controller
                 $logoPath = $request->file('header_logo')->store('logos', 'public');
             }
 
+            // Handle sidebar promo image upload
+            $promoImagePath = $profile->sidebar_promo_image;
+            if ($request->hasFile('sidebar_promo_image')) {
+                $promoImagePath = $request->file('sidebar_promo_image')->store('promo-images', 'public');
+            }
+
             $profile->update([
                 'website_primary_color'   => $request->primary_color,
                 'website_secondary_color' => $request->secondary_color,
@@ -352,6 +358,13 @@ class AgencySettingsController extends Controller
                 'footer_privacy_url'      => $request->footer_privacy_url,
                 'sidebar_enabled'         => $request->boolean('sidebar_enabled'),
                 'sidebar_title'           => $request->sidebar_title,
+                'sidebar_show_last_updated' => $request->boolean('sidebar_show_last_updated'),
+                'sidebar_promo_enabled'   => $request->boolean('sidebar_promo_enabled'),
+                'sidebar_promo_image'     => $promoImagePath,
+                'sidebar_promo_title'     => $request->sidebar_promo_title,
+                'sidebar_promo_text'      => $request->sidebar_promo_text,
+                'sidebar_promo_url'       => $request->sidebar_promo_url,
+                'sidebar_promo_button_text' => $request->sidebar_promo_button_text,
             ]);
         }
 

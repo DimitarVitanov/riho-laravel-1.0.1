@@ -88,6 +88,12 @@ class AgencyProfile extends Model
         'sidebar_enabled',
         'sidebar_title',
         'sidebar_show_last_updated',
+        'sidebar_promo_enabled',
+        'sidebar_promo_image',
+        'sidebar_promo_title',
+        'sidebar_promo_text',
+        'sidebar_promo_url',
+        'sidebar_promo_button_text',
     ];
 
     protected function casts(): array
@@ -102,6 +108,7 @@ class AgencyProfile extends Model
             'header_cta_enabled'     => 'boolean',
             'sidebar_enabled'        => 'boolean',
             'sidebar_show_last_updated' => 'boolean',
+            'sidebar_promo_enabled'  => 'boolean',
         ];
     }
 

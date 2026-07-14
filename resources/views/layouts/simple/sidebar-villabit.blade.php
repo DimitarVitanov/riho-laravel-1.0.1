@@ -311,14 +311,6 @@
                 <li class="sidebar-main-title"><div><h6>{{ __('messages.ai_features') }}</h6></div></li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'invisible_lead_magnet') }}">
-                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/02_invisible_lead_magnet.svg') }}" alt="">
-                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/02_invisible_lead_magnet.svg') }}" alt="">
-                        <span>{{ __('messages.invisible_lead_magnet') }}</span>
-                    </a>
-                </li>
-
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'local_seo_presence_boost') }}">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/03_local_seo_pin_search.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/03_local_seo_pin_search.svg') }}" alt="">
@@ -334,7 +326,6 @@
                     </a>
                 </li>
 
-
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'daily_competitor_scan') }}">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
@@ -348,6 +339,14 @@
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/06_authority_builder_shield_check.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/06_authority_builder_shield_check.svg') }}" alt="">
                         <span>{{ __('messages.authority_builder') }}</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'invisible_lead_magnet') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/02_invisible_lead_magnet.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/02_invisible_lead_magnet.svg') }}" alt="">
+                        <span>{{ __('messages.invisible_lead_magnet') }}</span>
                     </a>
                 </li>
 

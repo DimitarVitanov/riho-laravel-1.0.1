@@ -28,3 +28,9 @@ Schedule::command('ai:refresh-content --days=30')
     ->at('03:00')
     ->withoutOverlapping()
     ->runInBackground();
+
+Schedule::command('pages:process-scheduled')
+    ->daily()
+    ->at('06:00')
+    ->withoutOverlapping()
+    ->runInBackground();

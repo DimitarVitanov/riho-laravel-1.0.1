@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Agency;
 use App\Http\Controllers\Controller;
 use App\Models\LocalSeoCampaign;
 use App\Models\GeneratedPage;
+use App\Models\ScheduledPageGeneration;
 use App\Services\PlaceSuggestionService;
 use App\Services\UniquenessService;
 use App\Services\LocalSeoContentGenerator;
@@ -71,20 +72,20 @@ class LocalSeoCampaignController extends Controller
             $campaign->update($data);
             $message = 'Campaign updated.';
             
-            // Create articles for new places only
+            // Schedule articles for new places only
             $newPlaces = $this->getNewPlaces($oldPlaces, $data['target_places'] ?? []);
-            $articlesCreated = $this->createArticlesForPlaces($campaign, $profile, $newPlaces);
-            if ($articlesCreated > 0) {
-                $message .= " {$articlesCreated} new location article(s) created.";
+            $scheduled = $this->createArticlesForPlaces($campaign, $profile, $newPlaces);
+            if ($scheduled > 0) {
+                $message .= $this->getScheduleMessage($campaign, $profile, $scheduled);
             }
         } else {
             $campaign = $profile->localSeoCampaigns()->create($data + ['status' => 'draft']);
             $message = 'Campaign draft saved.';
             
-            // Create articles for all places
-            $articlesCreated = $this->createArticlesForPlaces($campaign, $profile, $data['target_places'] ?? []);
-            if ($articlesCreated > 0) {
-                $message .= " {$articlesCreated} location article(s) created.";
+            // Schedule articles for all places
+            $scheduled = $this->createArticlesForPlaces($campaign, $profile, $data['target_places'] ?? []);
+            if ($scheduled > 0) {
+                $message .= $this->getScheduleMessage($campaign, $profile, $scheduled);
             }
         }
 
@@ -106,51 +107,141 @@ class LocalSeoCampaignController extends Controller
     }
     
     /**
-     * Create SEO article pages for each place in the campaign.
+     * Schedule SEO article pages for each place in the campaign.
+     * Creates first one immediately (if quota available), schedules rest for future days.
      */
     protected function createArticlesForPlaces(LocalSeoCampaign $campaign, $profile, array $places): int
     {
-        $created = 0;
+        $scheduled = 0;
+        $createdToday = 0;
+        
+        // Check today's usage - how many pages created today for this profile
+        $todayUsage = GeneratedPage::where('agency_profile_id', $profile->id)
+            ->where('feature_key', 'local_seo_presence_boost')
+            ->whereDate('created_at', now()->toDateString())
+            ->count();
+        
+        // Daily limit (from plan, default 1)
+        $dailyLimit = $profile->plan_limits['local_seo_pages_per_day'] ?? 1;
+        $canCreateToday = $dailyLimit - $todayUsage;
+        
+        // Get next available date for scheduling
+        $nextScheduleDate = now()->addDay();
+        
+        // Check existing scheduled items to find the last scheduled date
+        $lastScheduled = ScheduledPageGeneration::where('agency_profile_id', $profile->id)
+            ->where('local_seo_campaign_id', $campaign->id)
+            ->where('status', 'pending')
+            ->orderBy('scheduled_for', 'desc')
+            ->first();
+        
+        if ($lastScheduled) {
+            $nextScheduleDate = $lastScheduled->scheduled_for->addDay();
+        }
         
         foreach ($places as $place) {
             $placeName = $place['name'] ?? '';
             if (empty($placeName)) continue;
             
-            // Check if article already exists for this place
-            $exists = GeneratedPage::where('agency_profile_id', $profile->id)
+            // Check if article or schedule already exists for this place
+            $pageExists = GeneratedPage::where('agency_profile_id', $profile->id)
                 ->where('local_seo_campaign_id', $campaign->id)
                 ->where('target_neighborhood', $placeName)
                 ->exists();
                 
-            if ($exists) continue;
+            $scheduleExists = ScheduledPageGeneration::where('agency_profile_id', $profile->id)
+                ->where('local_seo_campaign_id', $campaign->id)
+                ->where('place_name', $placeName)
+                ->whereIn('status', ['pending', 'processing'])
+                ->exists();
+                
+            if ($pageExists || $scheduleExists) continue;
             
-            // Create the article page
-            $pageName = "Real Estate in {$placeName}";
-            if ($campaign->primary_city && $placeName !== $campaign->primary_city) {
-                $pageName = "Real Estate in {$placeName}, {$campaign->primary_city}";
+            // Can we create today?
+            if ($canCreateToday > 0 && $createdToday < $canCreateToday) {
+                // Create immediately
+                $this->createPageForPlace($campaign, $profile, $place);
+                $createdToday++;
+                $scheduled++;
+            } else {
+                // Schedule for future
+                ScheduledPageGeneration::create([
+                    'agency_profile_id' => $profile->id,
+                    'local_seo_campaign_id' => $campaign->id,
+                    'place_name' => $placeName,
+                    'place_type' => $place['type'] ?? null,
+                    'place_distance' => $place['distance'] ?? null,
+                    'scheduled_for' => $nextScheduleDate,
+                    'status' => 'pending',
+                ]);
+                $nextScheduleDate = $nextScheduleDate->copy()->addDay();
+                $scheduled++;
             }
-            
-            GeneratedPage::create([
-                'agency_profile_id' => $profile->id,
-                'local_seo_campaign_id' => $campaign->id,
-                'name' => $pageName,
-                'slug' => Str::slug($pageName . '-' . uniqid()),
-                'target_city' => $campaign->primary_city,
-                'target_neighborhood' => $placeName,
-                'country' => $campaign->country,
-                'latitude' => $campaign->latitude,
-                'longitude' => $campaign->longitude,
-                'property_type' => 'apartment', // default
-                'status' => 'draft',
-                'page_type' => 'location_seo',
-            ]);
-            
-            $created++;
         }
         
-        return $created;
+        return $scheduled;
+    }
+    
+    /**
+     * Create a single page for a place.
+     */
+    protected function createPageForPlace(LocalSeoCampaign $campaign, $profile, array $place): GeneratedPage
+    {
+        $placeName = $place['name'] ?? '';
+        $pageName = "Real Estate in {$placeName}";
+        if ($campaign->primary_city && $placeName !== $campaign->primary_city) {
+            $pageName = "Real Estate in {$placeName}, {$campaign->primary_city}";
+        }
+        
+        return GeneratedPage::create([
+            'agency_profile_id' => $profile->id,
+            'local_seo_campaign_id' => $campaign->id,
+            'feature_key' => 'local_seo_presence_boost',
+            'name' => $pageName,
+            'title' => $pageName,
+            'slug' => Str::slug($pageName . '-' . uniqid()),
+            'target_city' => $campaign->primary_city,
+            'target_neighborhood' => $placeName,
+            'country' => $campaign->country,
+            'latitude' => $campaign->latitude,
+            'longitude' => $campaign->longitude,
+            'property_type' => 'apartment',
+            'status' => 'draft',
+            'page_type' => 'location_seo',
+        ]);
     }
 
+    /**
+     * Get a message describing what was scheduled.
+     */
+    protected function getScheduleMessage(LocalSeoCampaign $campaign, $profile, int $total): string
+    {
+        // Count how many were created today vs scheduled
+        $createdToday = GeneratedPage::where('agency_profile_id', $profile->id)
+            ->where('local_seo_campaign_id', $campaign->id)
+            ->whereDate('created_at', now()->toDateString())
+            ->count();
+        
+        $pendingScheduled = ScheduledPageGeneration::where('agency_profile_id', $profile->id)
+            ->where('local_seo_campaign_id', $campaign->id)
+            ->where('status', 'pending')
+            ->count();
+        
+        if ($pendingScheduled > 0) {
+            $lastScheduled = ScheduledPageGeneration::where('agency_profile_id', $profile->id)
+                ->where('local_seo_campaign_id', $campaign->id)
+                ->where('status', 'pending')
+                ->orderBy('scheduled_for', 'desc')
+                ->first();
+            
+            $lastDate = $lastScheduled ? $lastScheduled->scheduled_for->format('M j, Y') : '';
+            
+            return " {$createdToday} page(s) created now, {$pendingScheduled} scheduled (completing {$lastDate}).";
+        }
+        
+        return " {$createdToday} page(s) created.";
+    }
+    
     /**
      * Generate AI content asynchronously (non-blocking).
      */

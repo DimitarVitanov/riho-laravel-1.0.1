@@ -429,19 +429,29 @@
                                         <i class="fa fa-magic me-1"></i>AI suggest places
                                     </button>
                                 </label>
-                                <div id="placesList" class="border rounded p-2 bg-light" style="min-height: 60px; max-height: 220px; overflow-y:auto;">
-                                    @php $existingPlaces = $editCampaign->target_places ?? []; @endphp
+                                <div id="placesList" class="border rounded p-2 bg-light" style="min-height: 60px; max-height: 280px; overflow-y:auto;">
+                                    @php 
+                                        $existingPlaces = $editCampaign->target_places ?? [];
+                                        $scheduleDate = now();
+                                    @endphp
                                     @if(!empty($existingPlaces))
                                         @foreach($existingPlaces as $i => $place)
-                                            <label class="d-flex align-items-start gap-2 mb-1 place-item">
-                                                <input type="checkbox" checked onchange="togglePlace(this)">
+                                            <label class="d-flex align-items-start gap-2 mb-1 place-item" data-index="{{ $i }}">
+                                                <input type="checkbox" checked onchange="updateScheduleDates()">
                                                 <input type="hidden" name="target_places[{{ $i }}][name]" value="{{ $place['name'] ?? '' }}">
                                                 <input type="hidden" name="target_places[{{ $i }}][type]" value="{{ $place['type'] ?? '' }}">
                                                 <input type="hidden" name="target_places[{{ $i }}][distance]" value="{{ $place['distance'] ?? '' }}">
                                                 <input type="hidden" name="target_places[{{ $i }}][reason]" value="{{ $place['reason'] ?? '' }}">
                                                 <input type="hidden" name="target_places[{{ $i }}][priority]" value="{{ $place['priority'] ?? '' }}">
-                                                <span><strong>{{ $place['name'] ?? '' }}</strong> <span class="text-muted small">{{ $place['type'] ?? '' }} · {{ $place['distance'] ?? '' }}</span></span>
+                                                <span class="flex-grow-1">
+                                                    <strong>{{ $place['name'] ?? '' }}</strong> 
+                                                    <span class="text-muted small">{{ $place['type'] ?? '' }} · {{ $place['distance'] ?? '' }}</span>
+                                                </span>
+                                                <span class="schedule-date badge bg-light text-dark small" style="font-size:11px;">
+                                                    {{ $scheduleDate->format('M j') }}
+                                                </span>
                                             </label>
+                                            @php $scheduleDate = $scheduleDate->copy()->addDay(); @endphp
                                         @endforeach
                                     @else
                                         <p class="text-muted small mb-0" id="placesEmpty">Set a city + coverage, then click "AI suggest places".</p>
@@ -1354,6 +1364,50 @@
         // Persist immediately since the Save button is hidden.
         document.getElementById('settingsForm').submit();
     }
+    
+    // Update schedule dates when checkboxes change
+    function updateScheduleDates() {
+        var placesList = document.getElementById('placesList');
+        if (!placesList) return;
+        
+        var items = placesList.querySelectorAll('.place-item');
+        var today = new Date();
+        var dayIndex = 0;
+        
+        items.forEach(function(item) {
+            var checkbox = item.querySelector('input[type="checkbox"]');
+            var dateSpan = item.querySelector('.schedule-date');
+            
+            if (checkbox && checkbox.checked && dateSpan) {
+                // Calculate date for this item
+                var scheduleDate = new Date(today);
+                scheduleDate.setDate(today.getDate() + dayIndex);
+                
+                // Format as "Jul 15"
+                var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                dateSpan.textContent = months[scheduleDate.getMonth()] + ' ' + scheduleDate.getDate();
+                dateSpan.style.display = '';
+                
+                dayIndex++;
+            } else if (dateSpan) {
+                // Hide date for unchecked items
+                dateSpan.style.display = 'none';
+            }
+            
+            // Toggle hidden inputs based on checkbox
+            if (checkbox) {
+                var hiddenInputs = item.querySelectorAll('input[type="hidden"]');
+                hiddenInputs.forEach(function(input) {
+                    input.disabled = !checkbox.checked;
+                });
+            }
+        });
+    }
+    
+    // Run on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateScheduleDates();
+    });
 
     // ---- Primary Market / Main City autocomplete (OpenStreetMap Nominatim) ----
     (function () {
@@ -1478,16 +1532,20 @@
                 places.forEach(function (p, i) {
                     var label = document.createElement('label');
                     label.className = 'd-flex align-items-start gap-2 mb-1 place-item';
+                    label.dataset.index = i;
                     label.innerHTML =
-                        '<input type="checkbox" checked onchange="togglePlace(this)">' +
+                        '<input type="checkbox" checked onchange="updateScheduleDates()">' +
                         '<input type="hidden" name="target_places[' + i + '][name]" value="' + (p.name || '').replace(/"/g, '&quot;') + '">' +
                         '<input type="hidden" name="target_places[' + i + '][type]" value="' + (p.type || '').replace(/"/g, '&quot;') + '">' +
                         '<input type="hidden" name="target_places[' + i + '][distance]" value="' + (p.distance || '').replace(/"/g, '&quot;') + '">' +
                         '<input type="hidden" name="target_places[' + i + '][reason]" value="' + (p.reason || '').replace(/"/g, '&quot;') + '">' +
                         '<input type="hidden" name="target_places[' + i + '][priority]" value="' + (p.priority || '').replace(/"/g, '&quot;') + '">' +
-                        '<span><strong>' + (p.name || '') + '</strong> <span class="text-muted small">' + (p.type || '') + ' · ' + (p.distance || '') + ' · ' + (p.priority || '') + '</span></span>';
+                        '<span class="flex-grow-1"><strong>' + (p.name || '') + '</strong> <span class="text-muted small">' + (p.type || '') + ' · ' + (p.distance || '') + '</span></span>' +
+                        '<span class="schedule-date badge bg-light text-dark small" style="font-size:11px;"></span>';
                     list.appendChild(label);
                 });
+                // Update schedule dates after adding all places
+                updateScheduleDates();
             })
             .catch(function () {
                 list.innerHTML = '<p class="text-danger small mb-0">Could not fetch suggestions. Please try again.</p>';
@@ -1499,7 +1557,7 @@
         });
     })();
 
-    // ============ MANUAL PLACE INPUT WITH AUTOCOMPLETE ============
+    // ============ MANUAL PLACE INPUT WITH AUTOCOMPLETE (OpenStreetMap Nominatim) ============
     (function() {
         var input = document.getElementById('manualPlaceInput');
         var addBtn = document.getElementById('addManualPlaceBtn');
@@ -1508,12 +1566,6 @@
         var debounceTimer = null;
         
         if (!input || !addBtn) return;
-        
-        // Get current city for context
-        function getCity() {
-            var cityInput = document.getElementById('targetCity');
-            return cityInput ? cityInput.value : '';
-        }
         
         // Count existing places to get next index
         function getNextIndex() {
@@ -1529,58 +1581,75 @@
             var i = getNextIndex();
             var label = document.createElement('label');
             label.className = 'd-flex align-items-start gap-2 mb-1 place-item';
+            label.dataset.index = i;
             label.innerHTML =
-                '<input type="checkbox" checked onchange="togglePlace(this)">' +
+                '<input type="checkbox" checked onchange="updateScheduleDates()">' +
                 '<input type="hidden" name="target_places[' + i + '][name]" value="' + (place.name || '').replace(/"/g, '&quot;') + '">' +
                 '<input type="hidden" name="target_places[' + i + '][type]" value="' + (place.type || 'Custom').replace(/"/g, '&quot;') + '">' +
                 '<input type="hidden" name="target_places[' + i + '][distance]" value="' + (place.distance || '').replace(/"/g, '&quot;') + '">' +
                 '<input type="hidden" name="target_places[' + i + '][reason]" value="Manually added">' +
                 '<input type="hidden" name="target_places[' + i + '][priority]" value="medium">' +
-                '<span><strong>' + (place.name || '') + '</strong> <span class="text-muted small">' + (place.type || 'Custom') + (place.distance ? ' · ' + place.distance : '') + '</span></span>';
+                '<span class="flex-grow-1"><strong>' + (place.name || '') + '</strong> <span class="text-muted small">' + (place.type || '') + (place.distance ? ' · ' + place.distance : '') + '</span></span>' +
+                '<span class="schedule-date badge bg-light text-dark small" style="font-size:11px;"></span>';
             placesList.appendChild(label);
             
-            // Clear input
+            // Clear input and update dates
             input.value = '';
             suggestionsDiv.style.display = 'none';
+            updateScheduleDates();
         }
         
-        // Fetch suggestions from Google Places API via backend
+        // Fetch suggestions from OpenStreetMap Nominatim (same as Primary Market field)
         function fetchSuggestions(query) {
-            var city = getCity();
-            if (!city) {
-                suggestionsDiv.innerHTML = '<div class="p-2 text-muted small">Set a city first</div>';
-                suggestionsDiv.style.display = 'block';
-                return;
-            }
-            
-            fetch('{{ route("agency.local-seo.place-autocomplete") }}?query=' + encodeURIComponent(query) + '&city=' + encodeURIComponent(city), {
+            fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=8&q=' + encodeURIComponent(query), {
                 headers: { 'Accept': 'application/json' }
             })
             .then(function(r) { return r.json(); })
-            .then(function(data) {
-                var suggestions = data.suggestions || [];
-                if (suggestions.length === 0) {
-                    suggestionsDiv.innerHTML = '<div class="p-2 text-muted small">No suggestions found. Press Enter or click Add to add manually.</div>';
-                } else {
-                    var html = '';
-                    suggestions.forEach(function(s) {
-                        html += '<div class="p-2 border-bottom suggestion-item" style="cursor:pointer;" data-name="' + (s.name || '').replace(/"/g, '&quot;') + '" data-type="' + (s.type || '').replace(/"/g, '&quot;') + '" data-distance="' + (s.distance || '').replace(/"/g, '&quot;') + '">';
-                        html += '<strong>' + (s.name || '') + '</strong> <span class="text-muted small">' + (s.type || '') + (s.distance ? ' · ' + s.distance : '') + '</span>';
-                        html += '</div>';
-                    });
-                    suggestionsDiv.innerHTML = html;
-                    
-                    // Add click handlers
-                    suggestionsDiv.querySelectorAll('.suggestion-item').forEach(function(item) {
-                        item.addEventListener('click', function() {
-                            addPlaceToList({
-                                name: this.dataset.name,
-                                type: this.dataset.type,
-                                distance: this.dataset.distance
-                            });
-                        });
-                    });
+            .then(function(results) {
+                suggestionsDiv.innerHTML = '';
+                if (!results || !results.length) {
+                    suggestionsDiv.innerHTML = '<div class="p-2 text-muted small">No results found. Click +Add to add manually.</div>';
+                    suggestionsDiv.style.display = 'block';
+                    return;
                 }
+                
+                // Filter to show relevant place types
+                var validTypes = ['street', 'road', 'pedestrian', 'residential', 'suburb', 'neighbourhood', 'quarter', 'city_district', 'city', 'town', 'village', 'municipality', 'administrative'];
+                var validClasses = ['place', 'boundary', 'highway'];
+                var filtered = results.filter(function(item) {
+                    return validTypes.some(function(t) { return item.type === t; }) || 
+                           validClasses.some(function(c) { return item.class === c; });
+                });
+                
+                if (!filtered.length) filtered = results;
+                
+                filtered.slice(0, 6).forEach(function(item) {
+                    var addr = item.address || {};
+                    // Get place type
+                    var placeType = item.type || 'Place';
+                    placeType = placeType.charAt(0).toUpperCase() + placeType.slice(1).replace(/_/g, ' ');
+                    
+                    // Get full display name (first 2-3 parts)
+                    var displayParts = item.display_name.split(',').slice(0, 3);
+                    var placeName = displayParts.join(', ').trim();
+                    
+                    var div = document.createElement('div');
+                    div.className = 'p-2 border-bottom suggestion-item';
+                    div.style.cursor = 'pointer';
+                    div.innerHTML = '<strong>' + displayParts.slice(0, 2).join(', ') + '</strong><br><span class="text-muted small">' + placeType + '</span>';
+                    div.dataset.name = placeName;
+                    div.dataset.type = placeType;
+                    
+                    // Click to select - fill input, don't add yet
+                    div.addEventListener('click', function() {
+                        input.value = this.dataset.name;
+                        input.dataset.selectedType = this.dataset.type;
+                        suggestionsDiv.style.display = 'none';
+                    });
+                    
+                    suggestionsDiv.appendChild(div);
+                });
+                
                 suggestionsDiv.style.display = 'block';
             })
             .catch(function() {
@@ -1594,7 +1663,7 @@
             var query = this.value.trim();
             clearTimeout(debounceTimer);
             
-            if (query.length < 2) {
+            if (query.length < 3) {
                 suggestionsDiv.style.display = 'none';
                 return;
             }
@@ -1604,12 +1673,14 @@
             }, 300);
         });
         
-        // Add button click - add manually typed place
+        // Add button click - add the place from input
         addBtn.addEventListener('click', function() {
             var name = input.value.trim();
             if (!name) return;
             
-            addPlaceToList({ name: name, type: 'Custom', distance: '' });
+            var type = input.dataset.selectedType || 'Custom';
+            addPlaceToList({ name: name, type: type, distance: '' });
+            input.dataset.selectedType = ''; // Reset
         });
         
         // Enter key to add
@@ -1618,7 +1689,9 @@
                 e.preventDefault();
                 var name = input.value.trim();
                 if (name) {
-                    addPlaceToList({ name: name, type: 'Custom', distance: '' });
+                    var type = input.dataset.selectedType || 'Custom';
+                    addPlaceToList({ name: name, type: type, distance: '' });
+                    input.dataset.selectedType = ''; // Reset
                 }
             }
         });

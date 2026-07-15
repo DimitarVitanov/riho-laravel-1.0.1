@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Agency;
 
 use App\Http\Controllers\Controller;
 use App\Models\GeneratedPage;
+use App\Models\LocalSeoCampaign;
+use App\Models\AiAuthorityPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -15,15 +17,30 @@ class AgencyGeneratedPageController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $profile = $user->getEffectiveAgencyProfile();
-        $pages = collect();
+        
+        $localSeoPages = collect();
+        $aiSearchPages = collect();
+        $liveUrlPages = collect();
 
         if ($profile) {
-            $pages = GeneratedPage::where('agency_profile_id', $profile->id)
+            // Local SEO campaigns (uses campaign.blade.php design)
+            $localSeoPages = LocalSeoCampaign::where('agency_profile_id', $profile->id)
                 ->latest()
-                ->paginate(20);
+                ->get();
+            
+            // AI Search Ranking pages (uses ai-search-page.blade.php design)
+            $aiSearchPages = AiAuthorityPage::where('agency_profile_id', $profile->id)
+                ->latest()
+                ->get();
+            
+            // Live URL pages (from generated_pages with feature_key = live_url_optimizer)
+            $liveUrlPages = GeneratedPage::where('agency_profile_id', $profile->id)
+                ->where('feature_key', 'live_url_optimizer')
+                ->latest()
+                ->get();
         }
 
-        return view('agency.generated-pages.index', compact('pages'));
+        return view('agency.generated-pages.index', compact('localSeoPages', 'aiSearchPages', 'liveUrlPages'));
     }
 
     public function create()

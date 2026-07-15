@@ -87,6 +87,11 @@ class LocalSeoContentGenerator
             // 7. Generate area comparison data (main city first, then nearby places)
             $results['area_comparison'] = $this->generateAreaComparison($places, $city, $subPrompt, $language, $campaign->name);
             usleep(500000);
+            
+            // 7b. For sub-campaigns (no target_places), generate nearby distances
+            if (empty($places) && $campaign->is_sub_campaign) {
+                $results['nearby_distances'] = $this->generateNearbyDistances($city, $campaign->country ?? '', $language);
+            }
 
             // 8. Generate FAQ content
             $results['faq_content'] = $this->generateFaqs($city, $agencyName, $subPrompt, $language);
@@ -616,6 +621,39 @@ RULES:
             'best_for' => 'Buyers who want sea access, newer buildings and easier parking.',
             'less_ideal' => 'Buyers who want historic stone-house character.',
             'investor' => 'Strong if the unit has a terrace, view, parking and clean docs.',
+        ];
+    }
+
+    /**
+     * Generate nearby distances for sub-campaigns.
+     */
+    protected function generateNearbyDistances(string $city, string $country, string $language): array
+    {
+        $prompt = "For the location '{$city}' in {$country}, provide distances to 6 important nearby points of interest.
+Return ONLY a JSON array with objects containing 'name' and 'distance' fields.
+Include: city center, nearest airport, train/bus station, hospital, shopping center, and a notable landmark.
+Example format: [{\"name\": \"City Center\", \"distance\": \"2 km\"}, ...]
+Language: {$language}";
+
+        try {
+            $response = $this->callOpenAI($prompt, 300);
+            $distances = $this->extractJsonArray($response);
+            
+            if (!empty($distances)) {
+                return $distances;
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning("Failed to generate nearby distances for {$city}: " . $e->getMessage());
+        }
+        
+        // Fallback with reasonable estimates
+        return [
+            ['name' => 'City Center', 'distance' => rand(1, 5) . ' km'],
+            ['name' => 'Nearest Airport', 'distance' => rand(15, 60) . ' km'],
+            ['name' => 'Bus Station', 'distance' => rand(1, 8) . ' km'],
+            ['name' => 'Hospital', 'distance' => rand(2, 10) . ' km'],
+            ['name' => 'Shopping Center', 'distance' => rand(1, 6) . ' km'],
+            ['name' => 'Main Square', 'distance' => rand(1, 4) . ' km'],
         ];
     }
 

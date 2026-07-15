@@ -183,31 +183,28 @@ class LocalSeoCampaignController extends Controller
     }
     
     /**
-     * Create a single page for a place.
+     * Create a Local SEO campaign for a place (uses campaign.blade.php design).
      */
-    protected function createPageForPlace(LocalSeoCampaign $campaign, $profile, array $place): GeneratedPage
+    protected function createPageForPlace(LocalSeoCampaign $parentCampaign, $profile, array $place): LocalSeoCampaign
     {
         $placeName = $place['name'] ?? '';
-        $pageName = "Real Estate in {$placeName}";
-        if ($campaign->primary_city && $placeName !== $campaign->primary_city) {
-            $pageName = "Real Estate in {$placeName}, {$campaign->primary_city}";
+        $campaignName = "Real Estate in {$placeName}";
+        if ($parentCampaign->primary_city && $placeName !== $parentCampaign->primary_city) {
+            $campaignName = "Real Estate in {$placeName}, {$parentCampaign->primary_city}";
         }
         
-        return GeneratedPage::create([
+        return LocalSeoCampaign::create([
             'agency_profile_id' => $profile->id,
-            'local_seo_campaign_id' => $campaign->id,
-            'feature_key' => 'local_seo_presence_boost',
-            'name' => $pageName,
-            'title' => $pageName,
-            'slug' => Str::slug($pageName . '-' . uniqid()),
-            'target_city' => $campaign->primary_city,
-            'target_neighborhood' => $placeName,
-            'country' => $campaign->country,
-            'latitude' => $campaign->latitude,
-            'longitude' => $campaign->longitude,
-            'property_type' => 'apartment',
+            'parent_campaign_id' => $parentCampaign->id,
+            'name' => $campaignName,
+            'primary_city' => $placeName,
+            'country' => $parentCampaign->country,
+            'latitude' => $parentCampaign->latitude,
+            'longitude' => $parentCampaign->longitude,
+            'coverage_area' => 5, // default 5km for sub-locations
+            'coverage_unit' => $parentCampaign->coverage_unit ?? 'km',
             'status' => 'draft',
-            'page_type' => 'location_seo',
+            'is_sub_campaign' => true,
         ]);
     }
 
@@ -216,9 +213,9 @@ class LocalSeoCampaignController extends Controller
      */
     protected function getScheduleMessage(LocalSeoCampaign $campaign, $profile, int $total): string
     {
-        // Count how many were created today vs scheduled
-        $createdToday = GeneratedPage::where('agency_profile_id', $profile->id)
-            ->where('local_seo_campaign_id', $campaign->id)
+        // Count how many sub-campaigns were created today
+        $createdToday = LocalSeoCampaign::where('agency_profile_id', $profile->id)
+            ->where('parent_campaign_id', $campaign->id)
             ->whereDate('created_at', now()->toDateString())
             ->count();
         

@@ -5,65 +5,217 @@
 <div class="container-fluid">
     <div class="vb-page-header">
         <div>
-            <h1>Authority Builder</h1>
-            <p>All AI-generated content pages for your agency. Create, edit, publish, and preview your public articles.</p>
+            <h1>Generated Pages</h1>
+            <p>All AI-generated content pages for your agency across all features.</p>
         </div>
-        <a href="{{ route('agency.generated-pages.create') }}" class="vb-btn vb-btn-primary">+ Create Article</a>
     </div>
 
     @include('components.villabit.usage-banner')
 
-    <div class="vb-card">
-        <table class="vb-table">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Feature</th>
-                    <th>Uniqueness</th>
-                    <th>Status</th>
-                    <th>Published</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($pages as $page)
-                <tr>
-                    <td><strong>{{ Str::limit($page->title, 40) }}</strong></td>
-                    <td>{{ ucfirst(str_replace('_', ' ', $page->feature_key)) }}</td>
-                    <td>
-                        @php
-                            $uClass = match($page->content_uniqueness_status) {
-                                'passed' => 'vb-badge-success',
-                                'failed' => 'vb-badge-danger',
-                                'checking' => 'vb-badge-warning',
-                                default => 'vb-badge-info'
-                            };
-                        @endphp
-                        <span class="vb-badge {{ $uClass }}">{{ strtoupper($page->content_uniqueness_status) }}</span>
-                    </td>
-                    <td>
-                        <span class="vb-badge {{ $page->status === 'published' ? 'vb-badge-success' : 'vb-badge-muted' }}">{{ ucfirst($page->status) }}</span>
-                    </td>
-                    <td>{{ $page->published_at ? $page->published_at->format('M d, Y') : '—' }}</td>
-                    <td>
-                        <a href="{{ route('agency.generated-pages.show', $page) }}" class="vb-btn vb-btn-sm">View</a>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6">
-                        <div class="vb-empty">
-                            <h3>No generated pages yet</h3>
-                            <p>AI will create pages as your features run.</p>
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-        @if($pages instanceof \Illuminate\Pagination\LengthAwarePaginator)
-            <div style="margin-top: 20px;">{{ $pages->links() }}</div>
-        @endif
+    {{-- Tabs --}}
+    <ul class="nav nav-tabs mb-4" id="generatedPagesTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="local-seo-tab" data-bs-toggle="tab" data-bs-target="#local-seo" type="button" role="tab">
+                <i class="fa fa-map-marker me-1"></i> Local SEO
+                <span class="badge bg-secondary ms-1">{{ $localSeoPages->count() }}</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="ai-search-tab" data-bs-toggle="tab" data-bs-target="#ai-search" type="button" role="tab">
+                <i class="fa fa-search me-1"></i> AI Search Ranking
+                <span class="badge bg-secondary ms-1">{{ $aiSearchPages->count() }}</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="live-urls-tab" data-bs-toggle="tab" data-bs-target="#live-urls" type="button" role="tab">
+                <i class="fa fa-link me-1"></i> Live URLs
+                <span class="badge bg-secondary ms-1">{{ $liveUrlPages->count() }}</span>
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="generatedPagesTabContent">
+        {{-- Local SEO Tab --}}
+        <div class="tab-pane fade show active" id="local-seo" role="tabpanel">
+            <div class="vb-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Local SEO Pages</h5>
+                    <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}" class="vb-btn vb-btn-sm vb-btn-primary">+ Create Campaign</a>
+                </div>
+                <table class="vb-table">
+                    <thead>
+                        <tr>
+                            <th>USE</th>
+                            <th>Campaign</th>
+                            <th>Market</th>
+                            <th>Coverage</th>
+                            <th>Uniqueness</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($localSeoPages as $campaign)
+                        <tr>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" {{ $campaign->status === 'published' ? 'checked' : '' }} disabled>
+                                </div>
+                            </td>
+                            <td><strong>{{ Str::limit($campaign->name, 35) }}</strong></td>
+                            <td>{{ $campaign->primary_city }}</td>
+                            <td>{{ $campaign->coverage_area }} {{ $campaign->coverage_unit }}</td>
+                            <td>
+                                @php
+                                    $uClass = match($campaign->content_uniqueness_status) {
+                                        'passed' => 'vb-badge-success',
+                                        'failed' => 'vb-badge-danger',
+                                        'checking' => 'vb-badge-warning',
+                                        default => 'vb-badge-info'
+                                    };
+                                @endphp
+                                <span class="vb-badge {{ $uClass }}">{{ strtoupper($campaign->content_uniqueness_status ?? 'draft') }}</span>
+                            </td>
+                            <td>
+                                <span class="vb-badge {{ $campaign->status === 'published' ? 'vb-badge-success' : 'vb-badge-muted' }}">{{ ucfirst($campaign->status) }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ route('agency.local-seo.campaigns.preview', $campaign) }}" class="vb-btn vb-btn-sm" target="_blank">Preview</a>
+                                <a href="{{ route('agency.features.show', ['feature' => 'local_seo_presence_boost', 'edit' => $campaign->id]) }}" class="vb-btn vb-btn-sm vb-btn-dark">Edit</a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7">
+                                <div class="vb-empty">
+                                    <h3>No Local SEO pages yet</h3>
+                                    <p>Create a Local SEO campaign to generate pages.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- AI Search Ranking Tab --}}
+        <div class="tab-pane fade" id="ai-search" role="tabpanel">
+            <div class="vb-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">AI Search Ranking Pages</h5>
+                    <a href="{{ route('agency.features.show', 'ai_search_ranking') }}" class="vb-btn vb-btn-sm vb-btn-primary">+ Create Page</a>
+                </div>
+                <table class="vb-table">
+                    <thead>
+                        <tr>
+                            <th>USE</th>
+                            <th>Page Name</th>
+                            <th>Property/Listing</th>
+                            <th>Location</th>
+                            <th>Uniqueness</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($aiSearchPages as $page)
+                        <tr>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" {{ $page->status === 'published' ? 'checked' : '' }} disabled>
+                                </div>
+                            </td>
+                            <td><strong>{{ Str::limit($page->name, 35) }}</strong></td>
+                            <td>{{ $page->listing->title ?? '—' }}</td>
+                            <td>{{ $page->target_city ?? $page->target_neighborhood ?? '—' }}</td>
+                            <td>
+                                <span class="vb-badge vb-badge-info">{{ strtoupper($page->status ?? 'draft') }}</span>
+                            </td>
+                            <td>
+                                <span class="vb-badge {{ $page->status === 'published' ? 'vb-badge-success' : 'vb-badge-muted' }}">{{ ucfirst($page->status) }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ route('agency.ai-search-ranking.preview', $page) }}" class="vb-btn vb-btn-sm" target="_blank">Preview</a>
+                                <a href="{{ route('agency.features.show', ['feature' => 'ai_search_ranking', 'edit_page_id' => $page->id]) }}" class="vb-btn vb-btn-sm vb-btn-dark">Edit</a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7">
+                                <div class="vb-empty">
+                                    <h3>No AI Search Ranking pages yet</h3>
+                                    <p>Create an AI Search Ranking page to optimize for AI search engines.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- Live URLs Tab --}}
+        <div class="tab-pane fade" id="live-urls" role="tabpanel">
+            <div class="vb-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Live URL Pages</h5>
+                    <a href="{{ route('agency.features.show', 'live_url_optimizer') }}" class="vb-btn vb-btn-sm vb-btn-primary">+ Add Live URL</a>
+                </div>
+                <table class="vb-table">
+                    <thead>
+                        <tr>
+                            <th>USE</th>
+                            <th>Page Title</th>
+                            <th>URL</th>
+                            <th>Uniqueness</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($liveUrlPages as $page)
+                        <tr>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" {{ $page->status === 'published' ? 'checked' : '' }} disabled>
+                                </div>
+                            </td>
+                            <td><strong>{{ Str::limit($page->title ?? $page->name, 35) }}</strong></td>
+                            <td><a href="{{ $page->url }}" target="_blank" class="text-muted small">{{ Str::limit($page->url, 40) }}</a></td>
+                            <td>
+                                @php
+                                    $uClass = match($page->content_uniqueness_status ?? 'draft') {
+                                        'passed' => 'vb-badge-success',
+                                        'failed' => 'vb-badge-danger',
+                                        'checking' => 'vb-badge-warning',
+                                        default => 'vb-badge-info'
+                                    };
+                                @endphp
+                                <span class="vb-badge {{ $uClass }}">{{ strtoupper($page->content_uniqueness_status ?? 'draft') }}</span>
+                            </td>
+                            <td>
+                                <span class="vb-badge {{ $page->status === 'published' ? 'vb-badge-success' : 'vb-badge-muted' }}">{{ ucfirst($page->status) }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ route('agency.live-urls.preview', $page) }}" class="vb-btn vb-btn-sm" target="_blank">Preview</a>
+                                <a href="{{ route('agency.features.show', ['feature' => 'live_url_optimizer', 'edit' => $page->id]) }}" class="vb-btn vb-btn-sm vb-btn-dark">Edit</a>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6">
+                                <div class="vb-empty">
+                                    <h3>No Live URL pages yet</h3>
+                                    <p>Add a live URL to optimize existing pages.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

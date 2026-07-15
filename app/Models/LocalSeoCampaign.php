@@ -11,6 +11,7 @@ class LocalSeoCampaign extends Model
 
     protected $fillable = [
         'agency_profile_id',
+        'parent_campaign_id',
         'name',
         'primary_city',
         'country',
@@ -27,6 +28,7 @@ class LocalSeoCampaign extends Model
         'content_uniqueness_status',
         'uniqueness_result',
         'status',
+        'is_sub_campaign',
         'generated_page_id',
         'published_at',
     ];
@@ -45,6 +47,16 @@ class LocalSeoCampaign extends Model
     public function agencyProfile()
     {
         return $this->belongsTo(AgencyProfile::class);
+    }
+    
+    public function parentCampaign()
+    {
+        return $this->belongsTo(LocalSeoCampaign::class, 'parent_campaign_id');
+    }
+    
+    public function subCampaigns()
+    {
+        return $this->hasMany(LocalSeoCampaign::class, 'parent_campaign_id');
     }
 
     /**

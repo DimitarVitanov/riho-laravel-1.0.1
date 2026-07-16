@@ -46,31 +46,7 @@
 
     {{-- Summary Cards --}}
     <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card text-center border-0 shadow-sm">
-                <div class="card-body py-4">
-                    <div class="fs-3 fw-bold text-dark">{{ $reviewPages->total() }}</div>
-                    <div class="text-muted small">{{ __('messages.authority_reviews_generated') }}</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-center border-0 shadow-sm">
-                <div class="card-body py-4">
-                    <div class="fs-3 fw-bold text-success">{{ $reviewPages->getCollection()->where('status', 'published')->count() }}</div>
-                    <div class="text-muted small">{{ __('messages.published') }}</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card text-center border-0 shadow-sm">
-                <div class="card-body py-4">
-                    <div class="fs-3 fw-bold text-warning">{{ $reviewPages->getCollection()->where('status', 'pending_review')->count() }}</div>
-                    <div class="text-muted small">{{ __('messages.pending_review') }}</div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
+         <div class="col-md-3 mb-3">
             <div class="card text-center border-0 shadow-sm">
                 <div class="card-body py-4">
                     <div class="fs-3 fw-bold text-primary">
@@ -80,90 +56,22 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center border-0 shadow-sm">
+                <div class="card-body py-4">
+                    <div class="fs-3 fw-bold text-dark">{{ $reviewPages->total() }}</div>
+                    <div class="text-muted small">{{ __('messages.authority_reviews_generated') }}</div>
+                </div>
+            </div>
+        </div>
+       
     </div>
 
     <div class="row">
 
-        {{-- LEFT: Generate + 10 Layers --}}
-        <div class="col-lg-4 mb-4">
-
-            <div class="card">
-                <div class="card-header bg-dark text-white border-bottom py-3">
-                    <h6 class="fw-bold mb-0"><i class="fa fa-star me-2"></i>{{ __('messages.generate_authority_review') }}</h6>
-                </div>
-                <div class="card-body">
-                    <p class="small text-muted mb-3">{{ __('messages.generate_authority_review_help') }}</p>
-
-                    <form action="{{ route('agency.authority.generate') }}" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold">{{ __('messages.select_layers') }}</label>
-                            <div class="d-flex flex-column gap-2">
-                                @foreach([
-                                    'entity'             => ['icon' => 'fa-building',     'label' => __('messages.layer_entity')],
-                                    'service'            => ['icon' => 'fa-briefcase',    'label' => __('messages.layer_service')],
-                                    'local_market'       => ['icon' => 'fa-map-marker',   'label' => __('messages.layer_local_market')],
-                                    'buyer_questions'    => ['icon' => 'fa-question-circle','label'=> __('messages.layer_buyer_questions')],
-                                    'property_data'      => ['icon' => 'fa-home',         'label' => __('messages.layer_property_data')],
-                                    'trust_signals'      => ['icon' => 'fa-shield',       'label' => __('messages.layer_trust_signals')],
-                                    'competitor_context' => ['icon' => 'fa-bar-chart',    'label' => __('messages.layer_competitor_context')],
-                                    'ai_readability'     => ['icon' => 'fa-robot',        'label' => __('messages.layer_ai_readability')],
-                                    'freshness'          => ['icon' => 'fa-refresh',      'label' => __('messages.layer_freshness')],
-                                    'structured_data'    => ['icon' => 'fa-code',         'label' => __('messages.layer_structured_data')],
-                                ] as $key => $info)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="layers[]" value="{{ $key }}" id="layer_{{ $key }}" checked>
-                                    <label class="form-check-label small" for="layer_{{ $key }}">
-                                        <i class="fa {{ $info['icon'] }} me-1 text-muted"></i>{{ $info['label'] }}
-                                    </label>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-dark btn-sm w-100 mt-2">
-                            <i class="fa fa-magic me-1"></i>{{ __('messages.generate_authority_review') }}
-                        </button>
-
-                        @if($usageLimit)
-                        <div class="mt-2 text-center">
-                            <small class="text-muted">{{ __('messages.reviews_remaining') }}: {{ $usageLimit->remaining('authority_review_updates') }} / {{ $usageLimit->authority_review_updates_limit }}</small>
-                        </div>
-                        @endif
-                    </form>
-                </div>
-            </div>
-
-            {{-- What is Villa Bit Review --}}
-            <div class="card mt-4 border-0 bg-light">
-                <div class="card-body p-3">
-                    <h6 class="fw-bold mb-2">{{ __('messages.what_is_villa_bit_review') }}</h6>
-                    <p class="small text-muted mb-2">{{ __('messages.villa_bit_review_explain') }}</p>
-                    <div class="row text-center">
-                        <div class="col-6 mb-2">
-                            <div class="fw-bold text-dark">1</div>
-                            <div class="small text-muted">{{ __('messages.vbr_stat_layer') }}</div>
-                        </div>
-                        <div class="col-6 mb-2">
-                            <div class="fw-bold text-dark">24/7</div>
-                            <div class="small text-muted">{{ __('messages.vbr_stat_presence') }}</div>
-                        </div>
-                        <div class="col-6 mb-2">
-                            <div class="fw-bold text-dark">0</div>
-                            <div class="small text-muted">{{ __('messages.vbr_stat_self_praise') }}</div>
-                        </div>
-                        <div class="col-6 mb-2">
-                            <div class="fw-bold text-dark">10</div>
-                            <div class="small text-muted">{{ __('messages.vbr_stat_layers') }}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
 
         {{-- RIGHT: Suggestions & Review Pages --}}
-        <div class="col-lg-8">
+        <div class="col-lg-12">
             
             {{-- Pending Suggestions --}}
             <div class="card mb-4">

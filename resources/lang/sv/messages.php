@@ -111,7 +111,7 @@ return [
     'uniqueness_status' => 'Unikhetsstatus',
     'ai_summary' => 'AI-sammanfattning',
     'ai_conclusion' => 'AI-slutsats',
-    'no_pending_suggestions' => 'Inga väntande förslag väntar på din granskning',
+    'no_pending_urls' => 'Inga väntande förslag väntar på din granskning',
     'recent_activity' => 'Senaste aktivitet',
     'waiting_for_uniqueness' => 'Väntar på unikhetskontroll...',
     'feature_status' => 'Funktionsstatus',

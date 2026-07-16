@@ -1195,7 +1195,7 @@
             <div class="card">
                 <div class="card-header bg-warning bg-opacity-10 border-bottom py-3 d-flex justify-content-between align-items-center">
                     <div>
-                        <h5 class="mb-1 fw-bold"><i class="fa fa-lightbulb-o me-2"></i>{{ __('messages.pending_suggestions') }}</h5>
+                        <h5 class="mb-1 fw-bold"><i class="fa fa-lightbulb-o me-2"></i>{{ __('messages.pending_urls') }}</h5>
                         <small class="text-muted">{{ __('messages.local_seo_suggestions_ready') }}</small>
                     </div>
                     <a href="{{ route('agency.daily-ai-employee.index') }}" class="btn btn-outline-secondary btn-sm">
@@ -1213,7 +1213,7 @@
                     @if($pendingSuggestions->isEmpty())
                     <div class="p-4 text-center text-muted">
                         <i class="fa fa-lightbulb-o fa-2x mb-2 d-block text-muted opacity-50"></i>
-                        <p class="mb-0 small">{{ __('messages.no_pending_suggestions') }}</p>
+                        <p class="mb-0 small">{{ __('messages.no_pending_urls') }}</p>
                     </div>
                     @else
                     <div class="p-3">

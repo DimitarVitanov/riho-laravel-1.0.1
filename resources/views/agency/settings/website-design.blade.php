@@ -406,6 +406,50 @@
                     </div>
                 </div>
 
+                {{-- ===== AI SEARCH PROMO SECTION ===== --}}
+                <div class="card mb-3">
+                    <div class="card-header"><h5 class="mb-0">🔍 AI Search Ranking - Custom Promo Section</h5></div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-3">This custom text will appear on your AI Search Ranking pages in the "Why this captures more serious leads" section. Use it to promote your listings page or services.</p>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-check form-switch mb-3">
+                                    <input type="hidden" name="ai_search_promo_enabled" value="0">
+                                    <input class="form-check-input" type="checkbox" name="ai_search_promo_enabled" value="1" id="aiSearchPromoEnabled"
+                                        {{ ($profile->ai_search_promo_enabled ?? false) ? 'checked' : '' }}>
+                                    <label class="form-check-label fw-semibold" for="aiSearchPromoEnabled">Enable Custom Promo Section</label>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold">Promo Image (optional)</label>
+                                <input type="file" name="ai_search_promo_image" class="form-control" accept="image/*">
+                                @if($profile->ai_search_promo_image)
+                                    <small class="text-muted">Current: {{ basename($profile->ai_search_promo_image) }}</small>
+                                @endif
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Section Title</label>
+                                <input type="text" name="ai_search_promo_title" class="form-control"
+                                    value="{{ $profile->ai_search_promo_title ?? '' }}"
+                                    placeholder="e.g. Why this captures more serious leads">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Promo Text</label>
+                                <textarea name="ai_search_promo_text" class="form-control" rows="5"
+                                    placeholder="Enter your custom promotional text here. This will appear on all AI Search Ranking pages.">{{ $profile->ai_search_promo_text ?? '' }}</textarea>
+                                <small class="text-muted">Example: "u admin panelu sekcija Villa Bit AI nekretnine unesi SVE ISTI TEXT u bazu..."</small>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Link URL (optional)</label>
+                                <input type="url" name="ai_search_promo_url" class="form-control"
+                                    value="{{ $profile->ai_search_promo_url ?? '' }}"
+                                    placeholder="e.g. https://villareadycroatia.com/villas-for-sale.php">
+                                <small class="text-muted">If provided, a "Learn More" button will appear</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- ===== CUSTOM CSS ===== --}}
                 <div class="card mb-3">
                     <div class="card-header"><h5 class="mb-0">💻 Custom CSS</h5></div>

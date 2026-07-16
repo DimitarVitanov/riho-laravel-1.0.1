@@ -111,7 +111,7 @@ return [
     'uniqueness_status' => 'Status edinstvenosti',
     'ai_summary' => 'Povzetek AI',
     'ai_conclusion' => 'Zaključek AI',
-    'no_pending_suggestions' => 'Ni predlogov v čakanju na pregled',
+    'no_pending_urls' => 'Ni predlogov v čakanju na pregled',
     'recent_activity' => 'Nedavna aktivnost',
     'waiting_for_uniqueness' => 'Čakanje na preverjanje edinstvenosti...',
     'feature_status' => 'Status funkcije',

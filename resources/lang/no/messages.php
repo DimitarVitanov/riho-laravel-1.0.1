@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'AI-sammendrag',
     'ai_conclusion' => 'AI-konklusjon',
     'all_caught_up' => 'Alt er oppdatert!',
-    'no_pending_suggestions' => 'Ingen ventende forslag til gjennomgang',
+    'no_pending_urls' => 'Ingen ventende forslag til gjennomgang',
     'recent_activity' => 'Nylig aktivitet',
     'publish_now' => 'Publiser nå',
     'waiting_for_uniqueness' => 'Venter på unikthetskontroll...',
@@ -394,8 +394,8 @@ return [
     'website' => 'Nettsted',
 
     // Suggestion Management
-    'pending_suggestions' => 'Ventende forslag',
-    'no_pending_suggestions' => 'Ingen ventende forslag',
+    'pending_urls' => 'Ventende forslag',
+    'no_pending_urls' => 'Ingen ventende forslag',
     'review_in_ai_employee' => 'Gjennomgå i Daglig AI-ansatt',
     'local_seo_suggestions_ready' => 'Lokale SEO-forslag klare for gjennomgang',
     'authority_review_suggestion_created' => 'Autoritetsanmeldelsesforslag opprettet. Gjennomgå i Daglig AI-ansatt eller godkjenn nedenfor.',

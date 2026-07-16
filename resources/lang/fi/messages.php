@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'Tekoälyn yhteenveto',
     'ai_conclusion' => 'Tekoälyn johtopäätös',
     'all_caught_up' => 'Kaikki on ajan tasalla!',
-    'no_pending_suggestions' => 'Ei odottavia ehdotuksia tarkistettavaksi',
+    'no_pending_urls' => 'Ei odottavia ehdotuksia tarkistettavaksi',
     'recent_activity' => 'Viimeinen toiminta',
     'publish_now' => 'Julkaise nyt',
     'waiting_for_uniqueness' => 'Odotetaan ainutlaatuisuustarkistusta...',
@@ -394,8 +394,8 @@ return [
     'website' => 'Verkkosivusto',
 
     // Suggestion Management
-    'pending_suggestions' => 'Odottavat ehdotukset',
-    'no_pending_suggestions' => 'Ei odottavia ehdotuksia',
+    'pending_urls' => 'Odottavat URL-osoitteet',
+    'no_pending_urls' => 'Ei odottavia URL-osoitteita',
     'review_in_ai_employee' => 'Tarkista päivittäisessä tekoälytyöntekijässä',
     'local_seo_suggestions_ready' => 'Paikalliset SEO-ehdotukset valmiina tarkistettavaksi',
     'authority_review_suggestion_created' => 'Auktoriteettiarvosteluehdotus luotu. Tarkista päivittäisessä tekoälytyöntekijässä tai hyväksy alla.',

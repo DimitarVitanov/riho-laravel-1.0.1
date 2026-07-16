@@ -111,7 +111,7 @@ return [
     'uniqueness_status' => 'Statusi i unikalitetit',
     'ai_summary' => 'Përmbledhje AI',
     'ai_conclusion' => 'Konkluzion AI',
-    'no_pending_suggestions' => 'Nuk ka sugjerime në pritje për rishikimin tuaj',
+    'no_pending_urls' => 'Nuk ka sugjerime në pritje për rishikimin tuaj',
     'recent_activity' => 'Aktiviteti i fundit',
     'waiting_for_uniqueness' => 'Duke pritur kontrollin e unikalitetit...',
     'feature_status' => 'Statusi i funksionit',

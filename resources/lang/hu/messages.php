@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'AI összefoglaló',
     'ai_conclusion' => 'AI következtetés',
     'all_caught_up' => 'Minden naprakész!',
-    'no_pending_suggestions' => 'Nincsenek függő javaslatok felülvizsgálatra',
+    'no_pending_urls' => 'Nincsenek függő javaslatok felülvizsgálatra',
     'recent_activity' => 'Közelmúltbeli tevékenység',
     'publish_now' => 'Közzététel most',
     'waiting_for_uniqueness' => 'Egyediségellenőrzésre vár...',
@@ -393,8 +393,8 @@ return [
     'website' => 'Weboldal',
 
     // Suggestion Management
-    'pending_suggestions' => 'Függő javaslatok',
-    'no_pending_suggestions' => 'Nincsenek függő javaslatok',
+    'pending_urls' => 'Függő URL-ek',
+    'no_pending_urls' => 'Nincsenek függő URL-ek',
     'review_in_ai_employee' => 'Áttekintés a Napi AI alkalmazottban',
     'local_seo_suggestions_ready' => 'Helyi SEO javaslatok készen állnak felülvizsgálatra',
     'authority_review_suggestion_created' => 'Tekintélyértékelési javaslat létrehozva. Nézze át a Napi AI alkalmazottban vagy hagyja jóvá alább.',

@@ -111,7 +111,7 @@ return [
     'uniqueness_status' => '唯一性状态',
     'ai_summary' => 'AI摘要',
     'ai_conclusion' => 'AI结论',
-    'no_pending_suggestions' => '没有待审核的建议',
+    'no_pending_urls' => '没有待审核的URL',
     'recent_activity' => '最近活动',
     'waiting_for_uniqueness' => '等待唯一性检查...',
     'feature_status' => '功能状态',

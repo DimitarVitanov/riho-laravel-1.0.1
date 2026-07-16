@@ -111,7 +111,7 @@ return [
     'uniqueness_status' => 'Статус јединствености',
     'ai_summary' => 'AI резиме',
     'ai_conclusion' => 'AI закључак',
-    'no_pending_suggestions' => 'Нема предлога на чекању прегледа',
+    'no_pending_urls' => 'Нема предлога на чекању прегледа',
     'recent_activity' => 'Недавна активност',
     'waiting_for_uniqueness' => 'Чека проверу јединствености...',
     'feature_status' => 'Статус функције',

@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'Резюме на ИИ',
     'ai_conclusion' => 'Заключение на ИИ',
     'all_caught_up' => 'Всичко е актуално!',
-    'no_pending_suggestions' => 'Няма изчакващи предложения за преглед',
+    'no_pending_urls' => 'Няма изчакващи предложения за преглед',
     'recent_activity' => 'Скорошна дейност',
     'publish_now' => 'Публикувайте сега',
     'waiting_for_uniqueness' => 'Изчаква проверка за уникалност...',
@@ -393,8 +393,8 @@ return [
     'website' => 'Уебсайт',
 
     // Suggestion Management
-    'pending_suggestions' => 'Изчакващи предложения',
-    'no_pending_suggestions' => 'Няма изчакващи предложения',
+    'pending_urls' => 'Изчакващи URL адреси',
+    'no_pending_urls' => 'Няма изчакващи URL адреси',
     'review_in_ai_employee' => 'Преглед в Ежедневния ИИ служител',
     'local_seo_suggestions_ready' => 'Локални SEO предложения, готови за преглед',
     'authority_review_suggestion_created' => 'Предложение за авторитетна рецензия е създадено. Прегледайте в Ежедневния ИИ служител или одобрете по-долу.',

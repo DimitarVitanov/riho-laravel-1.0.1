@@ -855,6 +855,25 @@ textarea { min-height: 100px; resize: vertical; }
 </head>
 
 <body>
+  {{-- Uniqueness Warning Banner (Preview Mode Only) --}}
+  @if(isset($preview) && $preview && ($campaign->content_uniqueness_status ?? 'pending') !== 'passed')
+  <div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#dc2626;color:#fff;padding:12px 20px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+    <i class="fa fa-exclamation-triangle" style="font-size:18px;"></i>
+    <div>
+      <strong>Uniqueness check required before publishing.</strong>
+      @if(($campaign->content_uniqueness_status ?? 'pending') === 'pending')
+        Content has not been checked yet.
+      @elseif($campaign->content_uniqueness_status === 'checking')
+        Uniqueness check in progress...
+      @elseif($campaign->content_uniqueness_status === 'failed')
+        Content failed uniqueness check. Please rewrite before publishing.
+      @endif
+      <a href="{{ route('agency.features.show', ['feature' => 'local_seo_presence_boost', 'edit' => $campaign->id]) }}" style="color:#fff;text-decoration:underline;margin-left:8px;">Check Uniqueness →</a>
+    </div>
+  </div>
+  <div style="height:50px;"></div>
+  @endif
+
   {{-- Top Bar --}}
   @if($topbarEnabled)
   <div class="topbar-strip">{{ $topbarText }}</div>

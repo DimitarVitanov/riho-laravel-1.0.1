@@ -94,6 +94,11 @@ class AgencyProfile extends Model
         'sidebar_promo_text',
         'sidebar_promo_url',
         'sidebar_promo_button_text',
+        'ai_search_promo_enabled',
+        'ai_search_promo_title',
+        'ai_search_promo_text',
+        'ai_search_promo_url',
+        'ai_search_promo_image',
     ];
 
     protected function casts(): array
@@ -109,6 +114,7 @@ class AgencyProfile extends Model
             'sidebar_enabled'        => 'boolean',
             'sidebar_show_last_updated' => 'boolean',
             'sidebar_promo_enabled'  => 'boolean',
+            'ai_search_promo_enabled' => 'boolean',
         ];
     }
 

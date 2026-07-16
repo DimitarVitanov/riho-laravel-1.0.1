@@ -111,7 +111,7 @@ return [
     'uniqueness_status' => 'Status unikalności',
     'ai_summary' => 'Podsumowanie AI',
     'ai_conclusion' => 'Wniosek AI',
-    'no_pending_suggestions' => 'Brak oczekujących sugestii do przeglądu',
+    'no_pending_urls' => 'Brak oczekujących sugestii do przeglądu',
     'recent_activity' => 'Ostatnia aktywność',
     'waiting_for_uniqueness' => 'Oczekiwanie na sprawdzenie unikalności...',
     'feature_status' => 'Status funkcji',

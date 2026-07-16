@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'Σύνοψη ΤΝ',
     'ai_conclusion' => 'Συμπέρασμα ΤΝ',
     'all_caught_up' => 'Όλα είναι ενημερωμένα!',
-    'no_pending_suggestions' => 'Δεν υπάρχουν εκκρεμείς προτάσεις για αναθεώρηση',
+    'no_pending_urls' => 'Δεν υπάρχουν εκκρεμείς προτάσεις για αναθεώρηση',
     'recent_activity' => 'Πρόσφατη δραστηριότητα',
     'publish_now' => 'Δημοσίευση τώρα',
     'waiting_for_uniqueness' => 'Αναμονή ελέγχου μοναδικότητας...',
@@ -393,8 +393,8 @@ return [
     'website' => 'Ιστότοπος',
 
     // Suggestion Management
-    'pending_suggestions' => 'Εκκρεμείς προτάσεις',
-    'no_pending_suggestions' => 'Δεν υπάρχουν εκκρεμείς προτάσεις',
+    'pending_urls' => 'Εκκρεμείς προτάσεις',
+    'no_pending_urls' => 'Δεν υπάρχουν εκκρεμείς προτάσεις',
     'review_in_ai_employee' => 'Αναθεώρηση στον Καθημερινό υπάλληλο ΤΝ',
     'local_seo_suggestions_ready' => 'Τοπικές προτάσεις SEO έτοιμες για αναθεώρηση',
     'authority_review_suggestion_created' => 'Πρόταση αξιολόγησης αρχής δημιουργήθηκε. Αναθεωρήστε στον Καθημερινό υπάλληλο ΤΝ ή εγκρίνετε παρακάτω.',

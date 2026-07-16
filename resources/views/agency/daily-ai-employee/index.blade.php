@@ -341,7 +341,7 @@
                     @else
                         <div class="text-center py-5">
                             <h5 class="text-muted">🎉 {{ __('messages.all_caught_up') }}</h5>
-                            <p class="text-muted">{{ __('messages.no_pending_suggestions') }}</p>
+                            <p class="text-muted">{{ __('messages.no_pending_urls') }}</p>
                         </div>
                     @endif
                     

@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'AI 요약',
     'ai_conclusion' => 'AI 결론',
     'all_caught_up' => '모두 최신 상태입니다!',
-    'no_pending_suggestions' => '검토할 대기 중인 제안이 없습니다',
+    'no_pending_urls' => '검토할 대기 중인 제안이 없습니다',
     'recent_activity' => '최근 활동',
     'publish_now' => '지금 게시',
     'waiting_for_uniqueness' => '고유성 검사 대기 중...',
@@ -393,8 +393,8 @@ return [
     'website' => '웹사이트',
 
     // Suggestion Management
-    'pending_suggestions' => '대기 중인 제안',
-    'no_pending_suggestions' => '대기 중인 제안이 없습니다',
+    'pending_urls' => '대기 중인 URL',
+    'no_pending_urls' => '대기 중인 URL이 없습니다',
     'review_in_ai_employee' => '일일 AI 직원에서 검토',
     'local_seo_suggestions_ready' => '로컬 SEO 제안이 검토 준비됨',
     'authority_review_suggestion_created' => '권위 리뷰 제안이 생성되었습니다. 일일 AI 직원에서 검토하거나 아래에서 승인하세요.',

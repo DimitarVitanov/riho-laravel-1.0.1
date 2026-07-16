@@ -40,7 +40,7 @@ class AgencyGeneratedPageController extends Controller
                 ->get();
         }
 
-        return view('agency.generated-pages.index', compact('localSeoPages', 'aiSearchPages', 'liveUrlPages'));
+        return view('agency.generated-pages.index', compact('profile', 'localSeoPages', 'aiSearchPages', 'liveUrlPages'));
     }
 
     public function create()

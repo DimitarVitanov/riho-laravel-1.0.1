@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'Souhrn AI',
     'ai_conclusion' => 'Závěr AI',
     'all_caught_up' => 'Vše je vyřízeno!',
-    'no_pending_suggestions' => 'Žádné čekající návrhy k přezkumu',
+    'no_pending_urls' => 'Žádné čekající návrhy k přezkumu',
     'recent_activity' => 'Nedávná aktivita',
     'publish_now' => 'Publikovat nyní',
     'waiting_for_uniqueness' => 'Čekání na kontrolu jedinečnosti...',
@@ -394,8 +394,8 @@ return [
     'website' => 'Web',
 
     // Suggestion Management
-    'pending_suggestions' => 'Čekající návrhy',
-    'no_pending_suggestions' => 'Žádné čekající návrhy',
+    'pending_urls' => 'Čekající návrhy',
+    'no_pending_urls' => 'Žádné čekající návrhy',
     'review_in_ai_employee' => 'Přezkoumat v denním AI zaměstnanci',
     'local_seo_suggestions_ready' => 'Místní SEO návrhy připravené k přezkumu',
     'authority_review_suggestion_created' => 'Návrh autoritní recenze vytvořen. Přezkoumat v denním AI zaměstnanci nebo schválit níže.',

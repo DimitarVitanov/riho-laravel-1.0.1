@@ -111,7 +111,7 @@ return [
     'uniqueness_status' => 'Uniciteitsstatus',
     'ai_summary' => 'AI-samenvatting',
     'ai_conclusion' => 'AI-conclusie',
-    'no_pending_suggestions' => 'Geen suggesties in afwachting van uw beoordeling',
+    'no_pending_urls' => 'Geen URLs in afwachting van uw beoordeling',
     'recent_activity' => 'Recente activiteit',
     'waiting_for_uniqueness' => 'Wachten op uniciteitscontrole...',
     'feature_status' => 'Functiestatus',

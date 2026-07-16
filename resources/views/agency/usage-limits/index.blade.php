@@ -36,12 +36,11 @@
             ['Local SEO Pages', $currentUsage->local_seo_pages_used, $currentUsage->local_seo_pages_limit],
             ['Competitor Scans', $currentUsage->competitor_scans_used, $currentUsage->competitor_scans_limit],
             ['Authority Reviews', $currentUsage->authority_review_updates_used, $currentUsage->authority_review_updates_limit],
-            ['Small AI Actions', $currentUsage->small_ai_content_actions_used, $currentUsage->small_ai_content_actions_limit],
         ];
         @endphp
         @foreach($limits as [$label, $used, $limit])
         <div class="col-md-4 col-lg-2-4 mb-3">
-            <div class="card h-100">
+            <div class="card h-100" style="box-shadow:none;">
                 <div class="card-body text-center">
                     <h6>{{ $label }}</h6>
                     <h3 class="{{ $used >= $limit ? 'text-danger' : 'text-success' }}">{{ $used }} / {{ $limit }}</h3>

@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'AIサマリー',
     'ai_conclusion' => 'AI結論',
     'all_caught_up' => 'すべて最新です！',
-    'no_pending_suggestions' => 'レビュー待ちの提案はありません',
+    'no_pending_urls' => 'レビュー待ちの提案はありません',
     'recent_activity' => '最近のアクティビティ',
     'publish_now' => '今すぐ公開',
     'waiting_for_uniqueness' => 'ユニーク性チェック待ち...',
@@ -393,8 +393,8 @@ return [
     'website' => 'ウェブサイト',
 
     // Suggestion Management
-    'pending_suggestions' => '保留中の提案',
-    'no_pending_suggestions' => '保留中の提案はありません',
+    'pending_urls' => '保留中の提案',
+    'no_pending_urls' => '保留中の提案はありません',
     'review_in_ai_employee' => 'デイリーAI従業員でレビュー',
     'local_seo_suggestions_ready' => 'ローカルSEO提案がレビュー準備完了',
     'authority_review_suggestion_created' => '権威レビュー提案が作成されました。デイリーAI従業員でレビューするか、以下で承認してください。',

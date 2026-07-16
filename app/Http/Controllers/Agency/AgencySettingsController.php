@@ -365,7 +365,17 @@ class AgencySettingsController extends Controller
                 'sidebar_promo_text'      => $request->sidebar_promo_text,
                 'sidebar_promo_url'       => $request->sidebar_promo_url,
                 'sidebar_promo_button_text' => $request->sidebar_promo_button_text,
+                'ai_search_promo_enabled' => $request->boolean('ai_search_promo_enabled'),
+                'ai_search_promo_title'   => $request->ai_search_promo_title,
+                'ai_search_promo_text'    => $request->ai_search_promo_text,
+                'ai_search_promo_url'     => $request->ai_search_promo_url,
             ]);
+            
+            // Handle AI search promo image upload
+            if ($request->hasFile('ai_search_promo_image')) {
+                $aiPromoImagePath = $request->file('ai_search_promo_image')->store('agency-promo/' . $profile->id, 'public');
+                $profile->update(['ai_search_promo_image' => $aiPromoImagePath]);
+            }
         }
 
         return back()->with('success', 'Website design settings updated.');

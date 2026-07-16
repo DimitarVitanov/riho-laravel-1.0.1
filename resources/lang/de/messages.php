@@ -86,7 +86,7 @@ return [
     'ai_summary' => 'KI-Zusammenfassung',
     'ai_conclusion' => 'KI-Schlussfolgerung',
     'all_caught_up' => 'Alles erledigt!',
-    'no_pending_suggestions' => 'Keine ausstehenden Vorschläge',
+    'no_pending_urls' => 'Keine ausstehenden URLs',
     'recent_activity' => 'Letzte Aktivitäten',
     'publish_now' => 'Jetzt veröffentlichen',
     'waiting_for_uniqueness' => 'Warte auf Einzigartigkeitsprüfung...',

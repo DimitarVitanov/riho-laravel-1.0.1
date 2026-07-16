@@ -42,6 +42,15 @@
                     <h5 class="mb-0">Local SEO Pages</h5>
                     <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}" class="vb-btn vb-btn-sm vb-btn-primary">+ Create Campaign</a>
                 </div>
+                @if(!$profile || !$profile->server_ip || !$profile->sftp_username || !$profile->sftp_password)
+                <div class="alert alert-warning d-flex align-items-center mb-3" style="color:black; background:#fff8e6;border:1px solid #ffc107;border-radius:8px;padding:12px 16px;">
+                    <i class="fa fa-exclamation-triangle me-2" style="color:#ffc107;"></i>
+                    <div>
+                        <strong>SFTP not configured.</strong> Pages will be marked as published but won't be uploaded to your domain. 
+                        <a href="{{ route('agency.settings.domain') }}" class="fw-bold smtp-link" style=" color:blue !important;">Configure SFTP settings →</a>
+                    </div>
+                </div>
+                @endif
                 <table class="vb-table">
                     <thead>
                         <tr>
@@ -58,9 +67,12 @@
                         @forelse($localSeoPages as $campaign)
                         <tr>
                             <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" {{ $campaign->status === 'published' ? 'checked' : '' }} disabled>
-                                </div>
+                                <form action="{{ route('agency.local-seo.campaigns.toggle', $campaign) }}" method="POST">
+                                    @csrf
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" {{ $campaign->status === 'published' ? 'checked' : '' }} onchange="this.form.submit()">
+                                    </div>
+                                </form>
                             </td>
                             <td><strong>{{ Str::limit($campaign->name, 35) }}</strong></td>
                             <td>{{ $campaign->primary_city }}</td>
@@ -82,6 +94,12 @@
                             <td>
                                 <a href="{{ route('agency.local-seo.campaigns.preview', $campaign) }}" class="vb-btn vb-btn-sm" target="_blank">Preview</a>
                                 <a href="{{ route('agency.features.show', ['feature' => 'local_seo_presence_boost', 'edit' => $campaign->id]) }}" class="vb-btn vb-btn-sm vb-btn-dark">Edit</a>
+                                <form action="{{ route('agency.local-seo.campaigns.toggle', $campaign) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="vb-btn vb-btn-sm {{ $campaign->status === 'published' ? 'vb-btn-warning' : 'vb-btn-success' }}">
+                                        {{ $campaign->status === 'published' ? 'Unpublish' : 'Publish' }}
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         @empty
@@ -219,3 +237,12 @@
     </div>
 </div>
 @endsection
+
+<style>
+    .smtp-link{
+        text-decoration:underline;
+    }
+    .smtp-link:hover{
+        text-decoration:none;
+    }
+</style>

@@ -82,6 +82,13 @@
         $sidebarPromoText = $profile->sidebar_promo_text ?? 'Browse our complete collection of premium properties for sale.';
         $sidebarPromoUrl = $profile->sidebar_promo_url ?? '#';
         $sidebarPromoButtonText = $profile->sidebar_promo_button_text ?? 'Get Property Options';
+        
+        // AI Search promo settings (custom text section)
+        $aiSearchPromoEnabled = $profile->ai_search_promo_enabled ?? false;
+        $aiSearchPromoTitle = $profile->ai_search_promo_title ?? null;
+        $aiSearchPromoText = $profile->ai_search_promo_text ?? null;
+        $aiSearchPromoUrl = $profile->ai_search_promo_url ?? null;
+        $aiSearchPromoImage = $profile->ai_search_promo_image ?? null;
     @endphp
     <title>{{ $page->meta_title ?? ($page->name ?? 'Property') }} | {{ $profile->agency_name ?? 'Agency' }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
@@ -624,9 +631,8 @@
         }
 
         .compare-layout {
-            display: grid;
-            grid-template-columns: 180px 1fr;
-            gap: 24px
+            display: block;
+            width: 100%
         }
 
         .compare-features {
@@ -1164,6 +1170,25 @@
 
 <body>
 
+    {{-- Uniqueness Warning Banner (Preview Mode Only) --}}
+    @if(isset($preview) && $preview && ($page->content_uniqueness_status ?? 'pending') !== 'passed')
+    <div style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#dc2626;color:#fff;padding:12px 20px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+        <i class="fa fa-exclamation-triangle" style="font-size:18px;"></i>
+        <div>
+            <strong>Uniqueness check required before publishing.</strong>
+            @if(($page->content_uniqueness_status ?? 'pending') === 'pending')
+                Content has not been checked yet.
+            @elseif($page->content_uniqueness_status === 'checking')
+                Uniqueness check in progress...
+            @elseif($page->content_uniqueness_status === 'failed')
+                Content failed uniqueness check. Please rewrite before publishing.
+            @endif
+            <a href="{{ route('agency.ai-search-ranking.edit', $page) }}" style="color:#fff;text-decoration:underline;margin-left:8px;">Check Uniqueness →</a>
+        </div>
+    </div>
+    <div style="height:50px;"></div>
+    @endif
+
     @if ($topbarEnabled)
         <div class="topbar-strip">{{ $topbarText }}</div>
     @endif
@@ -1408,7 +1433,7 @@
                                 @endif
                             </div>
                             <div class="location-info">
-                                <ul class="location-features">
+                                <ul class="location-features" style="display: none">
                                     <li>Micro-location map</li>
                                     <li>Key distances</li>
                                     <li>Neighborhood and lifestyle</li>
@@ -1623,14 +1648,25 @@
                                 </form>
                             </div>
                             <div class="investor-reasons">
-                                <h3>Why this captures more serious leads</h3>
-                                <ul>
-                                    <li>It captures people who love this villa but cannot buy the whole property today.</li>
-                                    <li>It gives buyers a direct path to similar {{ $location }} villas instead of leaving the page.</li>
-                                    <li>It connects the property page with rental-managed ownership and investor participation logic.</li>
-                                    <li>It lets eligible investors ask about lower-entry real-estate participation from USD 30,000+.</li>
-                                    <li>It helps AI systems understand that this page is not only a listing, but a structured property opportunity page.</li>
-                                </ul>
+                                @if($aiSearchPromoEnabled && $aiSearchPromoText)
+                                    <h3>{{ $aiSearchPromoTitle ?? 'Why this captures more serious leads' }}</h3>
+                                    @if($aiSearchPromoImage)
+                                        <img src="{{ asset('storage/' . $aiSearchPromoImage) }}" alt="{{ $aiSearchPromoTitle }}" style="width:100%;max-width:400px;border-radius:8px;margin-bottom:16px;">
+                                    @endif
+                                    <div style="line-height:1.8;color:#374151;">{!! nl2br(e($aiSearchPromoText)) !!}</div>
+                                    @if($aiSearchPromoUrl)
+                                        <a href="{{ $aiSearchPromoUrl }}" class="btn primary" style="margin-top:16px;" target="_blank">Learn More</a>
+                                    @endif
+                                @else
+                                    <h3>Why this captures more serious leads</h3>
+                                    <ul>
+                                        <li>It captures people who love this villa but cannot buy the whole property today.</li>
+                                        <li>It gives buyers a direct path to similar {{ $location }} villas instead of leaving the page.</li>
+                                        <li>It connects the property page with rental-managed ownership and investor participation logic.</li>
+                                        <li>It lets eligible investors ask about lower-entry real-estate participation from USD 30,000+.</li>
+                                        <li>It helps AI systems understand that this page is not only a listing, but a structured property opportunity page.</li>
+                                    </ul>
+                                @endif
                             </div>
                         </div>
                     </div>

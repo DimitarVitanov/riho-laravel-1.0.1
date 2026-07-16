@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'Rezumat AI',
     'ai_conclusion' => 'Concluzie AI',
     'all_caught_up' => 'Totul este la zi!',
-    'no_pending_suggestions' => 'Nu există sugestii în așteptare pentru revizuire',
+    'no_pending_urls' => 'Nu există sugestii în așteptare pentru revizuire',
     'recent_activity' => 'Activitate recentă',
     'publish_now' => 'Publicați acum',
     'waiting_for_uniqueness' => 'Se așteaptă verificarea unicității...',
@@ -393,8 +393,8 @@ return [
     'website' => 'Site web',
 
     // Suggestion Management
-    'pending_suggestions' => 'Sugestii în așteptare',
-    'no_pending_suggestions' => 'Nu există sugestii în așteptare',
+    'pending_urls' => 'Sugestii în așteptare',
+    'no_pending_urls' => 'Nu există sugestii în așteptare',
     'review_in_ai_employee' => 'Revizuire în Angajatul AI zilnic',
     'local_seo_suggestions_ready' => 'Sugestii SEO locale pregătite pentru revizuire',
     'authority_review_suggestion_created' => 'Sugestie de recenzie de autoritate creată. Revizuiți în Angajatul AI zilnic sau aprobați mai jos.',

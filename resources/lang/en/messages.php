@@ -130,7 +130,7 @@ return [
     'ai_summary' => 'AI Summary',
     'ai_conclusion' => 'AI Conclusion',
     'all_caught_up' => 'All Caught Up!',
-    'no_pending_suggestions' => 'No pending suggestions awaiting your review',
+    'no_pending_urls' => 'No pending suggestions awaiting your review',
     'recent_activity' => 'Recent Activity',
     'publish_now' => 'Publish Now',
     'waiting_for_uniqueness' => 'Waiting for uniqueness check...',
@@ -413,8 +413,8 @@ return [
     'type' => 'Type',
     
     // Suggestion Management
-    'pending_suggestions' => 'Pending Suggestions',
-    'no_pending_suggestions' => 'No pending suggestions',
+    'pending_urls' => 'Pending URLs',
+    'no_pending_urls' => 'No pending URLs',
     'accept' => 'Accept',
     'skip' => 'Skip',
     'review_in_ai_employee' => 'Review in Daily AI Employee',

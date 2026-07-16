@@ -132,7 +132,7 @@ return [
     'ai_summary' => 'AI sažetak',
     'ai_conclusion' => 'AI zaključak',
     'all_caught_up' => 'Sve je obrađeno!',
-    'no_pending_suggestions' => 'Nema prijedloga na čekanju',
+    'no_pending_urls' => 'Nema URL-ova na čekanju',
     'recent_activity' => 'Nedavna aktivnost',
     'publish_now' => 'Objavi sada',
     'waiting_for_uniqueness' => 'Čeka provjeru jedinstvenosti...',

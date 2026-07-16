@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'AI-sammenfatning',
     'ai_conclusion' => 'AI-konklusion',
     'all_caught_up' => 'Alt er opdateret!',
-    'no_pending_suggestions' => 'Ingen ventende forslag til din gennemgang',
+    'no_pending_urls' => 'Ingen ventende forslag til din gennemgang',
     'recent_activity' => 'Seneste aktivitet',
     'publish_now' => 'Publicer nu',
     'waiting_for_uniqueness' => 'Venter på unikhedstjek...',
@@ -393,8 +393,8 @@ return [
     'website' => 'Websted',
 
     // Suggestion Management
-    'pending_suggestions' => 'Ventende forslag',
-    'no_pending_suggestions' => 'Ingen ventende forslag',
+    'pending_urls' => 'Ventende forslag',
+    'no_pending_urls' => 'Ingen ventende forslag',
     'review_in_ai_employee' => 'Gennemgå i Daglig AI-medarbejder',
     'local_seo_suggestions_ready' => 'Lokale SEO-forslag klar til gennemgang',
     'authority_review_suggestion_created' => 'Autoritetsanmeldelsesforslag oprettet. Gennemgå i Daglig AI-medarbejder eller godkend nedenfor.',

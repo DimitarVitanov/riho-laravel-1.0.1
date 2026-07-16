@@ -111,7 +111,7 @@ return [
     'uniqueness_status' => 'Статус уникальности',
     'ai_summary' => 'Сводка AI',
     'ai_conclusion' => 'Вывод AI',
-    'no_pending_suggestions' => 'Нет ожидающих предложений для проверки',
+    'no_pending_urls' => 'Нет ожидающих предложений для проверки',
     'recent_activity' => 'Последняя активность',
     'waiting_for_uniqueness' => 'Ожидание проверки уникальности...',
     'feature_status' => 'Статус функции',

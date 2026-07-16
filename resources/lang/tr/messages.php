@@ -111,7 +111,7 @@ return [
     'uniqueness_status' => 'Benzersizlik Durumu',
     'ai_summary' => 'AI Özeti',
     'ai_conclusion' => 'AI Sonucu',
-    'no_pending_suggestions' => 'İncelemenizi bekleyen öneri yok',
+    'no_pending_urls' => 'İncelemenizi bekleyen URL yok',
     'recent_activity' => 'Son Etkinlik',
     'waiting_for_uniqueness' => 'Benzersizlik kontrolü bekleniyor...',
     'feature_status' => 'Özellik Durumu',

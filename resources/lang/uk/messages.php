@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'Зведення ШІ',
     'ai_conclusion' => 'Висновок ШІ',
     'all_caught_up' => 'Все актуально!',
-    'no_pending_suggestions' => 'Немає пропозицій, що очікують на перегляд',
+    'no_pending_urls' => 'Немає пропозицій, що очікують на перегляд',
     'recent_activity' => 'Остання активність',
     'publish_now' => 'Опублікувати зараз',
     'waiting_for_uniqueness' => 'Очікування перевірки унікальності...',
@@ -393,8 +393,8 @@ return [
     'website' => 'Веб-сайт',
 
     // Suggestion Management
-    'pending_suggestions' => 'Очікувані пропозиції',
-    'no_pending_suggestions' => 'Немає очікуваних пропозицій',
+    'pending_urls' => 'Очікувані пропозиції',
+    'no_pending_urls' => 'Немає очікуваних пропозицій',
     'review_in_ai_employee' => 'Переглянути в Щоденному ШІ-співробітнику',
     'local_seo_suggestions_ready' => 'Локальні SEO-пропозиції готові до перегляду',
     'authority_review_suggestion_created' => 'Пропозицію авторитетного відгуку створено. Перегляньте в Щоденному ШІ-співробітнику або схваліть нижче.',

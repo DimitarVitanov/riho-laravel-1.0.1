@@ -129,7 +129,7 @@ return [
     'ai_summary' => 'ملخص الذكاء الاصطناعي',
     'ai_conclusion' => 'استنتاج الذكاء الاصطناعي',
     'all_caught_up' => 'كل شيء محدَّث!',
-    'no_pending_suggestions' => 'لا توجد اقتراحات معلقة للمراجعة',
+    'no_pending_urls' => 'لا توجد اقتراحات معلقة للمراجعة',
     'recent_activity' => 'النشاط الأخير',
     'publish_now' => 'نشر الآن',
     'waiting_for_uniqueness' => 'في انتظار فحص التفرد...',
@@ -393,8 +393,8 @@ return [
     'website' => 'الموقع الإلكتروني',
 
     // Suggestion Management
-    'pending_suggestions' => 'الاقتراحات المعلقة',
-    'no_pending_suggestions' => 'لا توجد اقتراحات معلقة',
+    'pending_urls' => 'الاقتراحات المعلقة',
+    'no_pending_urls' => 'لا توجد اقتراحات معلقة',
     'review_in_ai_employee' => 'مراجعة في موظف الذكاء الاصطناعي اليومي',
     'local_seo_suggestions_ready' => 'اقتراحات SEO المحلية جاهزة للمراجعة',
     'authority_review_suggestion_created' => 'تم إنشاء اقتراح مراجعة السلطة. راجع في موظف الذكاء الاصطناعي اليومي أو اعتمد أدناه.',

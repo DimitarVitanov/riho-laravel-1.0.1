@@ -85,7 +85,7 @@ return [
     'uniqueness_status' => 'Stato unicità',
     'ai_summary' => 'Riepilogo IA',
     'ai_conclusion' => 'Conclusione IA',
-    'no_pending_suggestions' => 'Nessun suggerimento in attesa',
+    'no_pending_urls' => 'Nessun suggerimento in attesa',
     'recent_activity' => 'Attività recente',
     'waiting_for_uniqueness' => 'In attesa della verifica unicità...',
     'item_marked_reviewed' => 'Elemento contrassegnato come revisionato',

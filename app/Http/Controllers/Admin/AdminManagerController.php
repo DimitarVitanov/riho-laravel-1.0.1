@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\ManagerAgencyUrl;
 use Illuminate\Http\Request;
 
 class AdminManagerController extends Controller
@@ -57,5 +58,100 @@ class AdminManagerController extends Controller
 
         return redirect()->route('admin.villabit.managers.show', $user)
             ->with('success', 'Manager updated successfully.');
+    }
+
+    /**
+     * Show manager URLs page.
+     */
+    public function urls(User $user)
+    {
+        $manager = $user;
+        $urls = ManagerAgencyUrl::where('manager_id', $manager->id)
+            ->with('agencyProfile')
+            ->latest()
+            ->get();
+
+        return view('admin.villabit.managers.urls', compact('manager', 'urls'));
+    }
+
+    /**
+     * Store new manager URLs.
+     */
+    public function storeUrls(Request $request, User $user)
+    {
+        $request->validate([
+            'urls' => 'required|string',
+        ]);
+
+        $lines = array_filter(array_map('trim', explode("\n", $request->urls)));
+        $added = 0;
+        $skipped = 0;
+
+        foreach ($lines as $line) {
+            // Clean the URL - remove http(s):// and trailing slashes
+            $url = preg_replace('#^https?://#', '', trim($line));
+            $url = rtrim($url, '/');
+            
+            if (empty($url)) continue;
+
+            // Check if already exists for this manager
+            $exists = ManagerAgencyUrl::where('manager_id', $user->id)
+                ->where('url', $url)
+                ->exists();
+
+            if ($exists) {
+                $skipped++;
+                continue;
+            }
+
+            ManagerAgencyUrl::create([
+                'manager_id' => $user->id,
+                'url' => $url,
+                'status' => 'pending',
+            ]);
+            $added++;
+        }
+
+        $message = "Added {$added} URL(s).";
+        if ($skipped > 0) {
+            $message .= " Skipped {$skipped} duplicate(s).";
+        }
+
+        return redirect()->route('admin.villabit.managers.urls.show', $user)
+            ->with('success', $message);
+    }
+
+    /**
+     * Update a manager URL status.
+     */
+    public function updateUrl(Request $request, User $user, ManagerAgencyUrl $url)
+    {
+        if ($url->manager_id !== $user->id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'status' => 'required|in:pending,matched,inactive',
+        ]);
+
+        $url->update(['status' => $request->status]);
+
+        return redirect()->route('admin.villabit.managers.urls.show', $user)
+            ->with('success', 'Status updated.');
+    }
+
+    /**
+     * Delete a manager URL.
+     */
+    public function destroyUrl(User $user, ManagerAgencyUrl $url)
+    {
+        if ($url->manager_id !== $user->id) {
+            abort(403);
+        }
+
+        $url->delete();
+
+        return redirect()->route('admin.villabit.managers.urls.show', $user)
+            ->with('success', 'URL removed.');
     }
 }

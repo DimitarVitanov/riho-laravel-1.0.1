@@ -12,7 +12,9 @@
             <div class="card">
                 <div class="card-header pb-0 d-flex justify-content-between align-items-center">
                     <h5>All Managers</h5>
-                    <a href="{{ route('admin.villabit.users.create-manager') }}" class="btn btn-primary btn-sm">+ Add Manager</a>
+                    <div>
+                        <a href="{{ route('admin.villabit.users.create-manager') }}" class="btn btn-primary btn-sm">+ Add Manager</a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -31,6 +33,7 @@
                                     <td>{{ $m->managerProfile->department ?? '—' }}</td>
                                     <td><span class="badge bg-{{ $m->status === 'active' ? 'success' : 'warning' }}">{{ ucfirst($m->status) }}</span></td>
                                     <td>
+                                        <a href="{{ route('admin.villabit.managers.urls.show', $m) }}" class="btn btn-outline-secondary btn-sm">URLs</a>
                                         <a href="{{ route('admin.villabit.managers.show', $m) }}" class="btn btn-outline-primary btn-sm">Edit</a>
                                         <form action="{{ route('admin.villabit.impersonate.start', $m) }}" method="POST" class="d-inline">@csrf<button class="btn btn-outline-info btn-sm">Login As</button></form>
                                         <form action="{{ route('admin.villabit.users.destroy', $m) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete {{ addslashes($m->first_name.' '.$m->last_name) }} and ALL related data? This cannot be undone.')">@csrf @method('DELETE')<button class="btn btn-outline-danger btn-sm">Delete</button></form>

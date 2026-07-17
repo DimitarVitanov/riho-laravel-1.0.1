@@ -7,6 +7,7 @@ use App\Models\AgencyProfile;
 use App\Models\AiFeatureSetting;
 use App\Models\GeneratedPage;
 use App\Services\DomainVerificationService;
+use App\Services\ManagerUrlMatcher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -134,7 +135,13 @@ class AgencySettingsController extends Controller
         }
 
         if ($user->getEffectiveAgencyProfile()) {
-            $user->getEffectiveAgencyProfile()->update(['custom_domain' => $domain]);
+            $profile = $user->getEffectiveAgencyProfile();
+            $profile->update(['custom_domain' => $domain]);
+            
+            // Check if new domain matches any manager URL (auto-affiliate)
+            if ($domain && !$profile->assigned_manager_id) {
+                ManagerUrlMatcher::matchAgencyToManager($profile);
+            }
         }
 
         return back()->with('success', 'Domain settings saved.');

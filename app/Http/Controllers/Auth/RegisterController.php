@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\Registered;
 use App\Models\AffiliateReferral;
+use App\Services\ManagerUrlMatcher;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
@@ -98,7 +99,7 @@ class RegisterController extends Controller
         ]);
 
         if ($data['account_type'] === 'real_estate_agency') {
-            AgencyProfile::create([
+            $agencyProfile = AgencyProfile::create([
                 'user_id' => $user->id,
                 'agency_name' => $data['company_name'] ?? null,
                 'official_website_url' => $data['agency_website_url'] ?? null,
@@ -107,6 +108,9 @@ class RegisterController extends Controller
                 'contact_email' => $data['email'],
                 'contact_phone' => $data['phone'] ?? null,
             ]);
+            
+            // Check if agency domain matches any manager URL (auto-affiliate)
+            ManagerUrlMatcher::matchAgencyToManager($agencyProfile);
         } elseif ($data['account_type'] === 'investor') {
             InvestorProfile::create([
                 'user_id' => $user->id,

@@ -32,7 +32,12 @@ class PageSftpUploader
             $remotePath = rtrim($profile->sftp_path ?: '/public_html', '/');
 
             // Build the file path from slug (slug already contains just the page name like "real-estate-brac")
-            $slug = trim($campaign->page_slug ?? 'real-estate-' . ($campaign->primary_city ?? 'page'), '/');
+            // If no slug is set, generate one from primary_city using Str::slug()
+            $slug = $campaign->page_slug;
+            if (!$slug) {
+                $slug = 'real-estate-' . \Illuminate\Support\Str::slug($campaign->primary_city ?? 'page');
+            }
+            $slug = trim($slug, '/');
             $filePath = $remotePath . '/' . $slug . '/index.html';
 
             // Create SFTP connection and upload
@@ -86,7 +91,12 @@ class PageSftpUploader
             // Use sftp_path directly - it should already point to the correct folder
             $remotePath = rtrim($profile->sftp_path ?: '/public_html', '/');
 
-            $slug = trim($campaign->page_slug ?? '', '/');
+            // Use same slug logic as upload
+            $slug = $campaign->page_slug;
+            if (!$slug) {
+                $slug = 'real-estate-' . \Illuminate\Support\Str::slug($campaign->primary_city ?? 'page');
+            }
+            $slug = trim($slug, '/');
             if (!$slug) {
                 return ['success' => false, 'message' => 'No slug to delete'];
             }

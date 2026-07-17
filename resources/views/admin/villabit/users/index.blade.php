@@ -231,7 +231,23 @@
                                             <tr><th>First Name</th><td>{{ $u->first_name ?? '—' }}</td></tr>
                                             <tr><th>Last Name</th><td>{{ $u->last_name ?? '—' }}</td></tr>
                                             <tr><th>Email</th><td><a style="color:black !important;" href="mailto:{{ $u->email }}">{{ $u->email }}</a></td></tr>
-                                            <tr><th>Phone</th><td>{{ $u->phone ?? '—' }}</td></tr>
+                                            <tr><th>Phone</th><td>@if($u->phone)@php
+                                                $countryCode = match($u->country) {
+                                                    'Republic of Croatia', 'Croatia', 'HR' => '+385',
+                                                    'Slovenia', 'SI' => '+386',
+                                                    'Serbia', 'RS' => '+381',
+                                                    'Bosnia and Herzegovina', 'BA' => '+387',
+                                                    'Montenegro', 'ME' => '+382',
+                                                    'North Macedonia', 'MK' => '+389',
+                                                    'Austria', 'AT' => '+43',
+                                                    'Germany', 'DE' => '+49',
+                                                    'Italy', 'IT' => '+39',
+                                                    'Hungary', 'HU' => '+36',
+                                                    'United States', 'US' => '+1',
+                                                    'United Kingdom', 'UK', 'GB' => '+44',
+                                                    default => ''
+                                                };
+                                            @endphp{{ $countryCode }} {{ $u->phone }}@else—@endif</td></tr>
                                             <tr><th>Role</th><td><span class="badge {{ $roleColors[$u->role] ?? 'bg-secondary' }}">{{ $roleLabels[$u->role] ?? ucfirst($u->role) }}</span></td></tr>
                                             <tr><th>Status</th><td>
                                                 @if($u->status === 'active')<span class="badge bg-success">Active</span>

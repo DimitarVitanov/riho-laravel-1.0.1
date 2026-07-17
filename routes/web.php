@@ -132,6 +132,12 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::get('managers', [AdminManagerController::class, 'index'])->name('managers.index');
     Route::get('managers/{user}', [AdminManagerController::class, 'show'])->name('managers.show');
     Route::put('managers/{user}', [AdminManagerController::class, 'update'])->name('managers.update');
+    
+    // Manager URLs
+    Route::get('managers/{user}/urls', [AdminManagerController::class, 'urls'])->name('managers.urls.show');
+    Route::post('managers/{user}/urls', [AdminManagerController::class, 'storeUrls'])->name('managers.urls.store');
+    Route::put('managers/{user}/urls/{url}', [AdminManagerController::class, 'updateUrl'])->name('managers.urls.update');
+    Route::delete('managers/{user}/urls/{url}', [AdminManagerController::class, 'destroyUrl'])->name('managers.urls.destroy');
 
     // Agencies
     Route::get('agencies', [AdminAgencyController::class, 'index'])->name('agencies.index');

@@ -159,12 +159,9 @@
                                                                 </li>
                                                             @endif
                                                             <li>
-                                                                <form action="{{ route('admin.villabit.impersonate.start', $u) }}" method="POST">
-                                                                    @csrf
-                                                                    <button type="submit" class="dropdown-item text-info">
-                                                                        → Login As
-                                                                    </button>
-                                                                </form>
+                                                                <button type="button" class="dropdown-item text-info" onclick="loginAsNewTab({{ $u->id }})">
+                                                                    ↗ Login As (New Tab)
+                                                                </button>
                                                             </li>
                                                             <li><hr class="dropdown-divider"></li>
                                                             <li>
@@ -325,10 +322,9 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                 @if(!$u->isAdmin())
-                                <form action="{{ route('admin.villabit.impersonate.start', $u) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    <button type="submit" class="btn btn-info">Login As User</button>
-                                </form>
+                                <button type="button" class="btn btn-info" onclick="loginAsNewTab({{ $u->id }})">
+                                    <i class="fa fa-external-link-alt me-1"></i> Login As User (New Tab)
+                                </button>
                                 @endif
                             </div>
                         </div>
@@ -340,7 +336,7 @@
     </div>
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(function (el) {
@@ -349,5 +345,42 @@
             });
         });
     });
+
+    // Login As in new tab
+    function loginAsNewTab(userId) {
+        var csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            csrfToken = '{{ csrf_token() }}';
+        } else {
+            csrfToken = csrfToken.content;
+        }
+        
+        fetch('/admin/villabit/impersonate/' + userId + '/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.url) {
+                window.open(data.url, '_blank');
+            } else {
+                alert('Failed to generate login link: ' + JSON.stringify(data));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to generate login link: ' + error.message);
+        });
+    }
 </script>
-@endpush
+@endsection

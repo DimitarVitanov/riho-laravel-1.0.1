@@ -111,12 +111,37 @@
         <div class="row">
             <div class="col-12">
                 <button type="submit" class="btn btn-primary">Save Changes</button>
-                <form action="{{ route('admin.villabit.impersonate.start', $user) }}" method="POST" class="d-inline ms-2">
-                    @csrf
-                    <button type="submit" class="btn btn-info btn-sm">Login As This Manager</button>
-                </form>
+                <button type="button" class="btn btn-info btn-sm ms-2" onclick="loginAsNewTab({{ $user->id }})">
+                    ↗ Login As This Manager (New Tab)
+                </button>
             </div>
         </div>
     </form>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    function loginAsNewTab(userId) {
+        fetch('/admin/villabit/impersonate/' + userId + '/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.url) {
+                window.open(data.url, '_blank');
+            } else {
+                alert('Failed to generate login link');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to generate login link');
+        });
+    }
+</script>
 @endsection

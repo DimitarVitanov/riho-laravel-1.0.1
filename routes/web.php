@@ -213,8 +213,12 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
 
     // Impersonation
     Route::post('impersonate/{user}', [ImpersonationController::class, 'start'])->name('impersonate.start');
+    Route::post('impersonate/{user}/token', [ImpersonationController::class, 'generateToken'])->name('impersonate.token');
     Route::get('impersonate/stop', [ImpersonationController::class, 'stop'])->name('impersonate.stop');
 });
+
+// Impersonation login (no auth required - uses token)
+Route::get('impersonate/login/{token}', [ImpersonationController::class, 'loginWithToken'])->name('impersonate.login');
 
 /*
 |--------------------------------------------------------------------------

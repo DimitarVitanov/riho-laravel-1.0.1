@@ -35,7 +35,7 @@
                                     <td>
                                         <a href="{{ route('admin.villabit.managers.urls.show', $m) }}" class="btn btn-outline-secondary btn-sm">URLs</a>
                                         <a href="{{ route('admin.villabit.managers.show', $m) }}" class="btn btn-outline-primary btn-sm">Edit</a>
-                                        <form action="{{ route('admin.villabit.impersonate.start', $m) }}" method="POST" class="d-inline">@csrf<button class="btn btn-outline-info btn-sm">Login As</button></form>
+                                        <button type="button" class="btn btn-outline-info btn-sm" onclick="loginAsNewTab({{ $m->id }})">↗ Login As</button>
                                         <form action="{{ route('admin.villabit.users.destroy', $m) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete {{ addslashes($m->first_name.' '.$m->last_name) }} and ALL related data? This cannot be undone.')">@csrf @method('DELETE')<button class="btn btn-outline-danger btn-sm">Delete</button></form>
                                     </td>
                                 </tr>
@@ -51,4 +51,30 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    function loginAsNewTab(userId) {
+        fetch('/admin/villabit/impersonate/' + userId + '/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.url) {
+                window.open(data.url, '_blank');
+            } else {
+                alert('Failed to generate login link');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to generate login link');
+        });
+    }
+</script>
 @endsection

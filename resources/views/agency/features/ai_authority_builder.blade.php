@@ -218,8 +218,27 @@
                 </div>
             </div>
 
-            {{-- 10 Layers Info Cards --}}
+            {{-- Real Estate Taxi Analysis Layers Explanation --}}
             <div class="card mt-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h6 class="fw-bold mb-0 text-uppercase">Real Estate Taxi Analysis Layers</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">Villa Bit AI uses another domain, <strong>Real Estate Taxi</strong>, as a partnership here.</p>
+                    <p class="mb-3">Real Estate Taxi turns standard location and property information into deep, multi-layer real estate intelligence.</p>
+                    <p class="mb-3">Real Estate Taxi analyzes cities, towns, villages, neighborhoods, streets, micro-locations, and even the area around one individual building for Local SEO and AI search.</p>
+                    <p class="mb-3">Real Estate Taxi also turns standard property listings into detailed buyer and investor analyses covering pricing, market position, rental potential, risks, due diligence, buyer profiles, resale, and investment factors.</p>
+                    <p class="mb-3">This also works as an Authority Builder. There is a major difference between a company describing its own property, service, or market knowledge and an independent real estate intelligence source analyzing, referencing, and discussing that same information.</p>
+                    <p class="mb-3">Instead of one standard property description or one generic local article, Real Estate Taxi creates a complete network of specialized real estate analysis layers and independent contextual references designed for buyers, investors, Google Search, local search, ChatGPT, Gemini, and other AI answer systems.</p>
+                    <p class="mb-4">These additional third-party analysis and reference layers help create stronger topical authority, entity authority, Local SEO visibility, long-tail search coverage, and AI readability.</p>
+                    <a href="https://villabit.ai/features/ai-authority-builder" target="_blank" class="btn btn-outline-primary">
+                        View all Real Estate Taxi analysis layers →
+                    </a>
+                </div>
+            </div>
+
+            {{-- 10 Layers Info Cards --}}
+            <div class="card mt-4 d-none">
                 <div class="card-header bg-white border-bottom py-3">
                     <h6 class="fw-bold mb-0"><i class="fa fa-layers me-2"></i>{{ __('messages.ten_layers_title') }}</h6>
                 </div>

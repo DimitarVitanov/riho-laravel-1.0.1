@@ -285,7 +285,30 @@
                                     <tr><th style="width:20%">Agency Name</th><td>{{ $u->agencyProfile->agency_name ?? '—' }}</td></tr>
                                     <tr><th>Subdomain</th><td>{{ $u->agencyProfile->subdomain ?? '—' }}</td></tr>
                                     <tr><th>Contact Email</th><td>{{ $u->agencyProfile->contact_email ?? '—' }}</td></tr>
-                                    <tr><th>Contact Phone</th><td>{{ $u->agencyProfile->contact_phone ?? '—' }}</td></tr>
+                                    <tr><th>Contact Phone</th><td>
+                                        @if($u->agencyProfile->contact_phone)
+                                            @php
+                                                $agencyCountryCode = match($u->country) {
+                                                    'Republic of Croatia', 'Croatia', 'HR' => '+385',
+                                                    'Slovenia', 'SI' => '+386',
+                                                    'Serbia', 'RS' => '+381',
+                                                    'Bosnia and Herzegovina', 'BA' => '+387',
+                                                    'Montenegro', 'ME' => '+382',
+                                                    'North Macedonia', 'MK' => '+389',
+                                                    'Austria', 'AT' => '+43',
+                                                    'Germany', 'DE' => '+49',
+                                                    'Italy', 'IT' => '+39',
+                                                    'Hungary', 'HU' => '+36',
+                                                    'United States', 'US' => '+1',
+                                                    'United Kingdom', 'UK', 'GB' => '+44',
+                                                    default => ''
+                                                };
+                                            @endphp
+                                            {{ $agencyCountryCode }} {{ $u->agencyProfile->contact_phone }}
+                                        @else
+                                            —
+                                        @endif
+                                    </td></tr>
                                     <tr><th>Website</th><td>{{ $u->agencyProfile->website ?? '—' }}</td></tr>
                                 </table>
                                 @endif

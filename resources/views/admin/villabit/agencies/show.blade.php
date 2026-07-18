@@ -8,6 +8,92 @@
 @endsection
 @section('content')
 <div class="container-fluid">
+    {{-- Onboarding Progress Card --}}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Onboarding Progress</h5>
+                    <span class="badge bg-{{ $user->isOnboardingComplete() ? 'success' : 'warning' }} fs-6">
+                        Step {{ $user->onboarding_step }}/6: {{ $user->getOnboardingStepLabel() }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    {{-- Progress Steps --}}
+                    <div class="d-flex justify-content-between mb-4" style="position: relative;">
+                        @foreach(\App\Models\User::$onboardingSteps as $stepNum => $stepInfo)
+                            @php
+                                $isCompleted = $user->onboarding_step > $stepNum;
+                                $isCurrent = $user->onboarding_step == $stepNum;
+                                $isPending = $user->onboarding_step < $stepNum;
+                            @endphp
+                            <div class="text-center" style="flex: 1; position: relative;">
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                                     style="width: 40px; height: 40px; 
+                                            background: {{ $isCompleted ? '#28a745' : ($isCurrent ? '#ffc107' : '#e9ecef') }};
+                                            color: {{ $isCompleted ? '#fff' : ($isCurrent ? '#000' : '#aaa') }};">
+                                    @if($isCompleted)
+                                        <i data-feather="check" style="width:18px;height:18px;"></i>
+                                    @else
+                                        {{ $stepNum }}
+                                    @endif
+                                </div>
+                                <div class="small {{ $isCurrent ? 'fw-bold' : '' }}" style="font-size: 0.75rem;">
+                                    {{ $stepInfo['label'] }}
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Admin Controls --}}
+                    <div class="border-top pt-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Current Step:</strong> {{ $user->getOnboardingStepLabel() }}</p>
+                                <p class="mb-0 text-muted small">{{ $user->getOnboardingStepDescription() }}</p>
+                                @if($user->onboarding_step_updated_at)
+                                    <p class="mb-0 text-muted small">Last updated: {{ \Carbon\Carbon::parse($user->onboarding_step_updated_at)->diffForHumans() }}</p>
+                                @endif
+                            </div>
+                            <div class="col-md-6 text-end">
+                                @if(!$user->isOnboardingComplete())
+                                    <form action="{{ route('admin.villabit.agencies.advance-onboarding', $user) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success" onclick="return confirm('Advance to next step?')">
+                                            <i data-feather="arrow-right" style="width:16px;height:16px;"></i> Advance to Next Step
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="badge bg-success fs-6 py-2 px-3">✓ Onboarding Complete</span>
+                                @endif
+
+                                {{-- Dropdown to set specific step --}}
+                                <div class="dropdown d-inline ms-2">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        Set Step
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        @foreach(\App\Models\User::$onboardingSteps as $stepNum => $stepInfo)
+                                            <li>
+                                                <form action="{{ route('admin.villabit.agencies.set-onboarding-step', $user) }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="step" value="{{ $stepNum }}">
+                                                    <button type="submit" class="dropdown-item {{ $user->onboarding_step == $stepNum ? 'active' : '' }}">
+                                                        {{ $stepNum }}. {{ $stepInfo['label'] }}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             <div class="card">

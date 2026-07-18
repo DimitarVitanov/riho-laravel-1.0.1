@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\AgencyProfile;
+use App\Notifications\AgencyOnboardingStepNotification;
+use App\Notifications\DomainLiveNotification;
 use App\Notifications\DomainNameserverNotification;
 use App\Services\SitemapSftpUploader;
 use Illuminate\Http\Request;
@@ -185,5 +187,79 @@ class AdminAgencyController extends Controller
 
         return redirect()->route('admin.villabit.agencies.show', $user)
             ->with('error', $result['message']);
+    }
+
+    public function advanceOnboarding(User $user)
+    {
+        if (!$user->isAgency()) {
+            return redirect()->back()->with('error', 'This action is only for agencies.');
+        }
+
+        $previousStep = $user->onboarding_step;
+        $user->advanceOnboardingStep();
+        $newStep = $user->onboarding_step;
+
+        $stepLabel = $user->getOnboardingStepLabel();
+
+        // If completed, also set status to active
+        if ($user->isOnboardingComplete() && $user->status === 'waitlist') {
+            $user->update(['status' => 'active']);
+            
+            // Mark DNS as verified
+            if ($user->agencyProfile) {
+                $user->agencyProfile->update(['is_dns_verified' => true]);
+            }
+        }
+
+        // Send appropriate email notification
+        if ($newStep == User::ONBOARDING_COMPLETED && $user->agencyProfile) {
+            // Send welcome/domain live notification for completion
+            $user->notify(new DomainLiveNotification($user->agencyProfile));
+        } else {
+            // Send step notification for intermediate steps
+            $user->notify(new AgencyOnboardingStepNotification($newStep));
+        }
+
+        return redirect()->back()->with('success', "Agency advanced to step: {$stepLabel}. Email notification sent.");
+    }
+
+    public function setOnboardingStep(User $user, Request $request)
+    {
+        if (!$user->isAgency()) {
+            return redirect()->back()->with('error', 'This action is only for agencies.');
+        }
+
+        $step = (int) $request->input('step');
+        if ($step < 1 || $step > User::ONBOARDING_COMPLETED) {
+            return redirect()->back()->with('error', 'Invalid onboarding step.');
+        }
+
+        $previousStep = $user->onboarding_step;
+        $user->setOnboardingStep($step);
+
+        // If completed, also set status to active
+        if ($user->isOnboardingComplete() && $user->status === 'waitlist') {
+            $user->update(['status' => 'active']);
+            
+            // Mark DNS as verified
+            if ($user->agencyProfile) {
+                $user->agencyProfile->update(['is_dns_verified' => true]);
+            }
+        }
+
+        // Send email notification if step increased (not if going backwards)
+        $sendEmail = $request->input('send_email', true);
+        if ($sendEmail && $step > $previousStep) {
+            if ($step == User::ONBOARDING_COMPLETED && $user->agencyProfile) {
+                // Send welcome/domain live notification for completion
+                $user->notify(new DomainLiveNotification($user->agencyProfile));
+            } else {
+                $user->notify(new AgencyOnboardingStepNotification($step));
+            }
+        }
+
+        $stepLabel = $user->getOnboardingStepLabel();
+        $emailSent = ($sendEmail && $step > $previousStep) ? ' Email notification sent.' : '';
+        return redirect()->back()->with('success', "Agency onboarding set to: {$stepLabel}.{$emailSent}");
     }
 }

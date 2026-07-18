@@ -4,32 +4,35 @@ namespace App\Console\Commands;
 
 use App\Models\AgencyProfile;
 use App\Models\User;
-use App\Notifications\AgencyOnboardingStepNotification;
-use App\Notifications\DomainLiveNotification;
+use App\Notifications\AdminDomainDisconnectedNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
-class VerifyAgencyDomains extends Command
+class MonitorAgencyDnsDisconnections extends Command
 {
-    protected $signature = 'app:verify-agency-domains';
+    protected $signature = 'app:monitor-agency-dns-disconnections';
 
-    protected $description = 'Check DNS propagation for agencies on step 5 (nameserver pending) and advance to step 6 when verified';
+    protected $description = 'Monitor active agencies for DNS disconnections and notify admins';
 
     public function handle()
     {
-        $this->info('Checking agency domains for DNS verification...');
+        $this->info('Monitoring active agencies for DNS disconnections...');
 
-        // Get all agencies on step 5 (nameserver pending) with a custom domain
+        // Get all active agencies with verified DNS
         $agencies = AgencyProfile::whereHas('user', function ($q) {
-            $q->where('onboarding_step', User::ONBOARDING_NAMESERVER_PENDING)
-              ->where('status', 'waitlist');
+            $q->where('status', 'active')
+              ->where('role', 'real_estate_agency')
+              ->where('onboarding_step', User::ONBOARDING_COMPLETED);
         })
+        ->where('is_dns_verified', true)
+        ->whereNull('dns_disconnect_notified_at') // Not already notified
         ->whereNotNull('custom_domain')
         ->where('custom_domain', '!=', '')
         ->whereNotNull('nameserver_1')
         ->get();
 
-        $this->info("Found {$agencies->count()} agencies to check.");
+        $this->info("Found {$agencies->count()} active agencies to monitor.");
 
         foreach ($agencies as $profile) {
             $domain = $profile->custom_domain;
@@ -42,52 +45,54 @@ class VerifyAgencyDomains extends Command
             $currentNameservers = $this->getDomainNameservers($domain);
 
             if (empty($currentNameservers)) {
-                $this->warn("  Could not resolve nameservers for {$domain}");
-                $profile->update(['last_dns_check_at' => now()]);
+                $this->warn("  Could not resolve nameservers for {$domain} - skipping");
                 continue;
             }
 
             $currentNsLower = array_map('strtolower', $currentNameservers);
 
-            // Check if expected nameservers are in the current nameservers
+            // Check if expected nameservers are still in the current nameservers
             $ns1Match = in_array($expectedNs1, $currentNsLower);
             $ns2Match = empty($expectedNs2) || in_array($expectedNs2, $currentNsLower);
 
-            if ($ns1Match && $ns2Match) {
-                $this->info("  ✓ DNS verified for {$domain}!");
+            if (!$ns1Match || !$ns2Match) {
+                $this->error("  ⚠️ DNS DISCONNECTED for {$domain}!");
+                $this->line("    Expected: {$expectedNs1}, {$expectedNs2}");
+                $this->line("    Current: " . implode(', ', $currentNameservers));
 
-                // Update profile - clear disconnect notification flag so it can be notified again if disconnected
+                // Update profile - mark as disconnected and set notification flag
                 $profile->update([
-                    'is_dns_verified' => true,
+                    'is_dns_verified' => false,
                     'last_dns_check_at' => now(),
-                    'dns_disconnect_notified_at' => null,
+                    'dns_disconnect_notified_at' => now(),
                 ]);
 
-                // Advance user to step 6 (completed) and set status to active
+                // Move user back to step 5 (nameserver pending) and waitlist
                 $user = $profile->user;
                 $user->update([
-                    'onboarding_step' => User::ONBOARDING_COMPLETED,
+                    'onboarding_step' => User::ONBOARDING_NAMESERVER_PENDING,
                     'onboarding_step_updated_at' => now(),
-                    'status' => 'active',
+                    'status' => 'waitlist',
                 ]);
 
-                // Send welcome/completion notification
-                $user->notify(new DomainLiveNotification($profile));
+                // Notify all admins
+                $admins = User::whereIn('role', ['admin', 'super_admin'])->get();
+                Notification::send($admins, new AdminDomainDisconnectedNotification($profile));
 
-                $this->info("  → Agency {$user->email} advanced to full access!");
+                $this->info("  → Agency moved to waitlist, admins notified.");
 
-                Log::info("DNS verified for agency", [
+                Log::warning("DNS disconnected for agency", [
                     'user_id' => $user->id,
                     'domain' => $domain,
-                    'nameservers' => $currentNameservers,
+                    'expected_ns' => [$expectedNs1, $expectedNs2],
+                    'current_ns' => $currentNameservers,
                 ]);
             } else {
-                $this->line("  ✗ DNS not yet propagated. Current NS: " . implode(', ', $currentNameservers));
-                $profile->update(['last_dns_check_at' => now()]);
+                $this->info("  ✓ DNS still connected");
             }
         }
 
-        $this->info('DNS verification check complete.');
+        $this->info('DNS disconnection monitoring complete.');
 
         return Command::SUCCESS;
     }

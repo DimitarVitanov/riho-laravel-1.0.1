@@ -24,6 +24,8 @@ class AgencyProfile extends Model
         'nameserver_2',
         'dns_verified_at',
         'last_dns_check_at',
+        'dns_disconnect_notified_at',
+        'is_dns_verified',
         'country',
         'city',
         'main_service_area',

@@ -148,6 +148,8 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::post('agencies/{user}/upload-sitemap', [AdminAgencyController::class, 'uploadSitemap'])->name('agencies.upload-sitemap');
     Route::post('agencies/{user}/assign-view-only-manager', [AdminAgencyController::class, 'assignViewOnlyManager'])->name('agencies.assign-view-only-manager');
     Route::post('agencies/{user}/remove-view-only-manager', [AdminAgencyController::class, 'removeViewOnlyManager'])->name('agencies.remove-view-only-manager');
+    Route::post('agencies/{user}/advance-onboarding', [AdminAgencyController::class, 'advanceOnboarding'])->name('agencies.advance-onboarding');
+    Route::post('agencies/{user}/set-onboarding-step', [AdminAgencyController::class, 'setOnboardingStep'])->name('agencies.set-onboarding-step');
 
     // Investors
     Route::get('investors', [AdminInvestorController::class, 'index'])->name('investors.index');

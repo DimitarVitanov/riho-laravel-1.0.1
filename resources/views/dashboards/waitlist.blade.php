@@ -69,6 +69,17 @@
     .stat-box .stat-label { font-size: 0.78rem; color: #0a0b0c; text-transform: uppercase; letter-spacing: 0.5px; }
     .page-body-wrapper a.support-link:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):not(.logo-wrapper a) { color:#000000 !important; text-decoration:underline !important; }
     .page-body-wrapper a.support-link:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):not(.logo-wrapper a):hover { text-decoration:none !important; }
+    /* Subtle box shadow like local-seo */
+    .card { 
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important; 
+        border: 1px solid #e9ecef !important; 
+        border-radius: 16px !important;
+    }
+    .card:hover { box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07) !important; }
+    .stat-box { 
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important; 
+        border: 1px solid #e9ecef !important; 
+    }
 </style>
 @endsection
 
@@ -125,9 +136,20 @@
 
                 {{-- Hero card --}}
                 <div class="waitlist-hero mb-4">
+                    @php
+                        $heroStep = $user->onboarding_step ?? 1;
+                        $heroBadge = match($heroStep) {
+                            1 => 'Payment Required',
+                            2 => 'Payment Confirmed',
+                            3 => 'AI Server Setup',
+                            4 => 'Domain Connection',
+                            5 => 'Nameserver Pending',
+                            default => 'Setup in Progress',
+                        };
+                    @endphp
                     <div class="waitlist-badge">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        Payment Required
+                        {{ $heroBadge }}
                     </div>
                     <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:700px; line-height:1.7;">
                         Your account type: <strong>{{ $userType }}</strong>
@@ -148,30 +170,68 @@
                         </p>
                      
                     @else
-                        <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; line-height:1.7;">
-                            Your account is currently on hold because payment is required before activation.
-                        </p>
-                        @if($subType)
-                            <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
-                                Your subaccount type: <strong>{{ $subType }}</strong>
+                        @php $onboardingStep = $user->onboarding_step ?? 1; @endphp
+                        
+                        @if($onboardingStep == 1)
+                            {{-- Step 1: Payment Required --}}
+                            <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; line-height:1.7;">
+                                Your account is currently on hold because payment is required before activation.
                             </p>
-                        @endif
-                        @if($price)
+                            @if($subType)
+                                <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                                    Your subaccount type: <strong>{{ $subType }}</strong>
+                                </p>
+                            @endif
+                            @if($price)
+                                <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
+                                    Your selected monthly price: <strong>{{ $price }}</strong>
+                                </p>
+                            @endif
                             <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
-                                Your selected monthly price: <strong>{{ $price }}</strong>
+                                To activate your account and begin the Villa Bit AI Server setup process, complete your monthly payment securely through PayPal.
                             </p>
-                        @endif
-                        <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:520px; line-height:1.7;">
-                            To activate your account and begin the Villa Bit AI Server setup process, complete your monthly payment securely through PayPal.
-                        </p>
-                        @if($paypalLink)
-                            <a href="{{ $paypalLink }}" target="_blank" class="btn btn-warning fw-bold px-4 py-2 mt-2 mb-3" style="color:#0a0b0c !important; text-transform:uppercase; letter-spacing:0.5px;">
-                                Activate Your Account and Pay with PayPal
+                            @if($paypalLink)
+                                <a href="{{ $paypalLink }}" target="_blank" class="btn btn-warning fw-bold px-4 py-2 mt-2 mb-3" style="color:#0a0b0c !important; text-transform:uppercase; letter-spacing:0.5px;">
+                                    Activate Your Account and Pay with PayPal
+                                </a>
+                            @endif
+                            <p class="mb-0" style="color:#ffffff !important; font-size:15px; line-height:1.7;">
+                                Once payment is completed, your account will be activated and your domain setup process will begin.
+                            </p>
+                        @elseif($onboardingStep == 2 || $onboardingStep == 3)
+                            {{-- Step 2-3: Payment Confirmed / AI Server Setup --}}
+                            <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; line-height:1.7;">
+                                <strong>✓ Payment Received!</strong> Thank you for your payment.
+                            </p>
+                            <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:600px; line-height:1.7;">
+                                Your Villa Bit AI Server is being configured by our team. This process typically takes 24-48 hours. You will receive an email notification when your server is ready.
+                            </p>
+                            <p class="mb-0" style="color:#ffffff !important; font-size:15px; line-height:1.7;">
+                                Once setup is complete, you will be able to enter your domain name and connect it to your Villa Bit AI Server.
+                            </p>
+                        @elseif($onboardingStep == 4)
+                            {{-- Step 4: Domain Connection --}}
+                            <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; line-height:1.7;">
+                                <strong>🎉 Your AI Server is Ready!</strong>
+                            </p>
+                            <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:600px; line-height:1.7;">
+                                Please enter your domain name to connect it to your Villa Bit AI Server. After you enter your domain, we will provide you with Cloudflare nameservers to complete the connection.
+                            </p>
+                            <a href="{{ route('agency.settings.domain') }}" class="btn btn-warning fw-bold px-4 py-2 mt-2 mb-3" style="color:#0a0b0c !important; text-transform:uppercase; letter-spacing:0.5px;">
+                                <i data-feather="globe" style="width:18px;height:18px;margin-right:8px;"></i> Enter Your Domain
+                            </a>
+                        @elseif($onboardingStep == 5)
+                            {{-- Step 5: Nameserver Pending --}}
+                            <p class="mb-2" style="color:#ffffff !important; font-size:1.05rem; line-height:1.7;">
+                                <strong>⏳ Waiting for DNS Propagation</strong>
+                            </p>
+                            <p class="mb-3" style="color:#ffffff !important; font-size:1.05rem; max-width:600px; line-height:1.7;">
+                                Your domain has been added. Please update your nameservers at your domain registrar. DNS propagation can take up to 24 hours.
+                            </p>
+                            <a href="{{ route('agency.settings.domain') }}" class="btn btn-warning fw-bold px-4 py-2 mt-2 mb-3" style="color:#0a0b0c !important; text-transform:uppercase; letter-spacing:0.5px;">
+                                <i data-feather="settings" style="width:18px;height:18px;margin-right:8px;"></i> View Nameserver Instructions
                             </a>
                         @endif
-                        <p class="mb-0" style="color:#ffffff !important; font-size:15px; line-height:1.7;">
-                            Once payment is completed, your account will be activated and your domain setup process will begin.
-                        </p>
                     @endif
                 </div>
 
@@ -270,7 +330,20 @@
 
                 @else
 
-                {{-- Agency stats row --}}
+                @php
+                    $step = $user->onboarding_step ?? 1;
+                    $agencySteps = [
+                        ['num' => 1, 'key' => 'payment_required', 'label' => 'Payment Required', 'icon' => 'credit-card', 'desc' => 'Complete payment to activate your Villa Bit AI Server account.'],
+                        ['num' => 2, 'key' => 'payment_confirmed', 'label' => 'Payment Confirmed', 'icon' => 'check-circle', 'desc' => 'Payment received! Your AI server setup is being prepared.'],
+                        ['num' => 3, 'key' => 'ai_server_setup', 'label' => 'AI Server Setup', 'icon' => 'server', 'desc' => 'Your account is being added to the AI Server setup process.'],
+                        ['num' => 4, 'key' => 'domain_connection', 'label' => 'Domain Connection', 'icon' => 'globe', 'desc' => 'Enter your domain for Villa Bit AI Server connection.'],
+                        ['num' => 5, 'key' => 'nameserver_pending', 'label' => 'Nameserver Changes', 'icon' => 'settings', 'desc' => 'Update your domain nameservers to the Cloudflare nameservers provided.'],
+                        ['num' => 6, 'key' => 'completed', 'label' => 'Full Panel Access', 'icon' => 'unlock', 'desc' => 'All AI tools and features are now active.'],
+                    ];
+                    $currentStepLabel = $agencySteps[$step - 1]['label'] ?? 'Payment Required';
+                @endphp
+
+                {{-- Agency stats row - dynamic based on step --}}
                 <div class="row g-3 mb-4">
                     <div class="col-4">
                         <div class="stat-box">
@@ -286,18 +359,24 @@
                     </div>
                     <div class="col-4">
                         <div class="stat-box">
-                            <div class="stat-num" style="color:#ffc107;">⏳</div>
-                            <div class="stat-label">Payment Required</div>
+                            @if($step >= 2)
+                                <div class="stat-num" style="color:#28a745;">✓</div>
+                                <div class="stat-label">Payment Done</div>
+                            @else
+                                <div class="stat-num" style="color:#ffc107;">⏳</div>
+                                <div class="stat-label">Payment Required</div>
+                            @endif
                         </div>
                     </div>
                 </div>
 
-                {{-- Agency steps card --}}
+                {{-- Agency steps card - dynamic --}}
                 <div class="card mb-4">
                     <div class="card-header py-3">
-                        <h6 class="mb-0 fw-semibold">YOUR ACTIVATION PROGRESS</h6>
+                        <h6 class="mb-0 fw-semibold">YOUR ACTIVATION PROGRESS — Step {{ $step }} of 6</h6>
                     </div>
                     <div class="card-body px-4 waitlist-steps">
+                        {{-- Account Created - always done --}}
                         <div class="step-item">
                             <div class="step-icon done">
                                 <i data-feather="check" style="width:14px;height:14px;"></i>
@@ -307,6 +386,7 @@
                                 <div class="text-muted small">Your profile has been created successfully.</div>
                             </div>
                         </div>
+                        {{-- Email Verified - always done --}}
                         <div class="step-item">
                             <div class="step-icon done">
                                 <i data-feather="check" style="width:14px;height:14px;"></i>
@@ -316,51 +396,32 @@
                                 <div class="text-muted small">Your email address has been confirmed successfully.</div>
                             </div>
                         </div>
-                        <div class="step-item">
-                            <div class="step-icon active">
-                                <i data-feather="clock" style="width:14px;height:14px;"></i>
+                        {{-- Dynamic steps based on onboarding_step --}}
+                        @foreach($agencySteps as $s)
+                            @php
+                                $isDone = $step > $s['num'];
+                                $isActive = $step == $s['num'];
+                                $isPending = $step < $s['num'];
+                            @endphp
+                            <div class="step-item">
+                                <div class="step-icon {{ $isDone ? 'done' : ($isActive ? 'active' : 'pending') }}">
+                                    @if($isDone)
+                                        <i data-feather="check" style="width:14px;height:14px;"></i>
+                                    @elseif($isActive)
+                                        <i data-feather="clock" style="width:14px;height:14px;"></i>
+                                    @else
+                                        <i data-feather="{{ $s['icon'] }}" style="width:14px;height:14px;"></i>
+                                    @endif
+                                </div>
+                                <div>
+                                    <div class="fw-semibold {{ $isPending ? 'text-muted' : '' }}">
+                                        @if($isDone) ✓ @elseif($isActive) ⏳ @else ○ @endif
+                                        {{ $s['label'] }}
+                                    </div>
+                                    <div class="text-muted small">{{ $s['desc'] }}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div class="fw-semibold">⏳ Payment Required</div>
-                                <div class="text-muted small">Complete payment to activate your Villa Bit AI Server account.</div>
-                            </div>
-                        </div>
-                        <div class="step-item">
-                            <div class="step-icon pending">
-                                <i data-feather="server" style="width:14px;height:14px;"></i>
-                            </div>
-                            <div>
-                                <div class="fw-semibold text-muted">○ AI Server Setup</div>
-                                <div class="text-muted small">After payment, your account will be added to the AI Server setup process.</div>
-                            </div>
-                        </div>
-                        <div class="step-item">
-                            <div class="step-icon pending">
-                                <i data-feather="globe" style="width:14px;height:14px;"></i>
-                            </div>
-                            <div>
-                                <div class="fw-semibold text-muted">○ Domain Connection</div>
-                                <div class="text-muted small">You will enter the yourdomain.com/anyword you want to use for your Villa Bit AI Server connection. Your new Cloudflare nameservers will appear in this panel.</div>
-                            </div>
-                        </div>
-                        <div class="step-item">
-                            <div class="step-icon pending">
-                                <i data-feather="settings" style="width:14px;height:14px;"></i>
-                            </div>
-                            <div>
-                                <div class="fw-semibold text-muted">○ Nameserver Changes</div>
-                                <div class="text-muted small">You will copy the Cloudflare nameservers shown in this panel. Then, log in to the domain registrar where you originally registered your domain name and change the nameservers to the exact Cloudflare nameservers provided by Villa Bit AI.</div>
-                            </div>
-                        </div>
-                        <div class="step-item">
-                            <div class="step-icon pending">
-                                <i data-feather="unlock" style="width:14px;height:14px;"></i>
-                            </div>
-                            <div>
-                                <div class="fw-semibold text-muted">○ Full Panel Access</div>
-                                <div class="text-muted small">Your AI tools, workspace, and onboarding will become active after full DNS propagation.</div>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
 

@@ -18,6 +18,11 @@ Schedule::command('app:verify-agency-domains')
     ->withoutOverlapping()
     ->runInBackground();
 
+Schedule::command('app:monitor-agency-dns-disconnections')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->runInBackground();
+
 Schedule::command('app:refresh-agency-sitemaps')
     ->daily()
     ->withoutOverlapping()

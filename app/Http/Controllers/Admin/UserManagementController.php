@@ -237,6 +237,20 @@ class UserManagementController extends Controller
             return back()->with('error', 'User is not on the waitlist.');
         }
 
+        // For agencies, use the step-by-step onboarding system
+        if ($user->isAgency()) {
+            // Advance to step 2 (Payment Confirmed)
+            $user->update([
+                'onboarding_step' => User::ONBOARDING_PAYMENT_CONFIRMED,
+                'onboarding_step_updated_at' => now(),
+            ]);
+            
+            $user->notify(new \App\Notifications\AgencyOnboardingStepNotification(User::ONBOARDING_PAYMENT_CONFIRMED));
+            
+            return back()->with('success', "{$user->first_name} {$user->last_name} payment confirmed. They will receive step-by-step emails as you advance them through onboarding.");
+        }
+
+        // For non-agencies (investors, managers), give immediate full access
         $user->update(['status' => 'active']);
 
         $user->notify(new AccountApprovedNotification());

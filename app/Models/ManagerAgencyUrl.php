@@ -15,7 +15,17 @@ class ManagerAgencyUrl extends Model
         'url',
         'agency_profile_id',
         'status',
+        'commission_percent',
+        'commission_amount',
+        'commission_status',
+        'commission_paid_at',
         'notes',
+    ];
+
+    protected $casts = [
+        'commission_percent' => 'decimal:2',
+        'commission_amount' => 'decimal:2',
+        'commission_paid_at' => 'datetime',
     ];
 
     /**

@@ -273,6 +273,14 @@
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('manager.urls.index') }}">
+                        <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-ecommerce') }}"></use></svg>
+                        <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-ecommerce') }}"></use></svg>
+                        <span>My URLs & Commissions</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('manager.support-notes.index') }}">
                         <svg class="stroke-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#stroke-others') }}"></use></svg>
                         <svg class="fill-icon"><use href="{{ asset('assets/svg/icon-sprite.svg#fill-others') }}"></use></svg>
@@ -412,6 +420,19 @@
                         <span>{{ __('messages.affiliate') }}</span>
                     </a>
                 </li>
+
+                {{-- Manager viewing agency in read-only mode - show their URLs & Commissions --}}
+                @if($user->isManager() && $user->managerProfile?->can_view_agency_readonly)
+                <li class="sidebar-main-title"><div><h6>Manager</h6></div></li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('manager.urls.index') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
+                        <span>My URLs & Commissions</span>
+                    </a>
+                </li>
+                @endif
 
                 <li class="sidebar-main-title"><div><h6>{{ __('messages.support') }}</h6></div></li>
 

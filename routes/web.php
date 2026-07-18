@@ -244,6 +244,9 @@ Route::prefix('manager')->middleware(['auth', 'verified', 'role:manager'])->name
 
     // Payout Preparation
     Route::get('payout-preparation', [ManagerPayoutPreparationController::class, 'index'])->name('payout-preparation.index');
+
+    // My URLs & Commissions
+    Route::get('urls', [ManagerDashboardController::class, 'urls'])->name('urls.index');
 });
 
 /*

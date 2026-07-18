@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\AgencyProfile;
 use App\Models\InvestorProfile;
 use App\Models\AiDailyReport;
+use App\Models\ManagerAgencyUrl;
 use Illuminate\Support\Facades\Auth;
 
 class ManagerDashboardController extends Controller
@@ -25,5 +26,17 @@ class ManagerDashboardController extends Controller
         ];
 
         return view('manager.dashboard', $data);
+    }
+
+    public function urls()
+    {
+        $user = Auth::user();
+        
+        $urls = ManagerAgencyUrl::where('manager_id', $user->id)
+            ->with('agencyProfile.user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('manager.urls.index', compact('urls'));
     }
 }

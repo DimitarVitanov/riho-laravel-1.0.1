@@ -122,7 +122,7 @@ class AdminManagerController extends Controller
     }
 
     /**
-     * Update a manager URL status.
+     * Update a manager URL status and commission.
      */
     public function updateUrl(Request $request, User $user, ManagerAgencyUrl $url)
     {
@@ -131,13 +131,32 @@ class AdminManagerController extends Controller
         }
 
         $request->validate([
-            'status' => 'required|in:pending,matched,inactive',
+            'status' => 'nullable|in:active,on_hold',
+            'commission_amount' => 'nullable|numeric|min:0',
+            'commission_status' => 'nullable|in:pending,paid',
         ]);
 
-        $url->update(['status' => $request->status]);
+        $data = [];
+        
+        if ($request->has('status')) {
+            $data['status'] = $request->status;
+        }
+        
+        if ($request->has('commission_amount')) {
+            $data['commission_amount'] = $request->commission_amount;
+        }
+        
+        if ($request->has('commission_status')) {
+            $data['commission_status'] = $request->commission_status;
+            if ($request->commission_status === 'paid' && !$url->commission_paid_at) {
+                $data['commission_paid_at'] = now();
+            }
+        }
+
+        $url->update($data);
 
         return redirect()->route('admin.villabit.managers.urls.show', $user)
-            ->with('success', 'Status updated.');
+            ->with('success', 'URL updated.');
     }
 
     /**

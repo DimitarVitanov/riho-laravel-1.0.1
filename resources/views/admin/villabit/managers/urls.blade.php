@@ -43,6 +43,9 @@
                                     <th>Status</th>
                                     <th>Matched Agency</th>
                                     <th>Added</th>
+                                    <th>Commission %</th>
+                                    <th>Commission Amount</th>
+                                    <th>Payment Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -51,12 +54,12 @@
                                 <tr>
                                     <td><code>{{ $url->url }}</code></td>
                                     <td>
-                                        @if($url->status === 'matched')
-                                            <span class="badge bg-success">Matched</span>
-                                        @elseif($url->status === 'inactive')
-                                            <span class="badge bg-secondary">Inactive</span>
+                                        @if($url->status === 'active')
+                                            <span class="badge bg-success">Active</span>
+                                        @elseif($url->status === 'on_hold')
+                                            <span class="badge bg-warning">On Hold</span>
                                         @else
-                                            <span class="badge bg-warning">Pending</span>
+                                            <span class="badge bg-secondary">{{ ucfirst($url->status ?? 'pending') }}</span>
                                         @endif
                                     </td>
                                     <td>
@@ -71,13 +74,39 @@
                                     </td>
                                     <td>{{ $url->created_at->format('M j, Y') }}</td>
                                     <td>
+                                        <span class="fw-bold">{{ number_format($url->commission_percent ?? 10, 0) }}%</span>
+                                    </td>
+                                    <td>
+                                        <form action="{{ route('admin.villabit.managers.urls.update', [$manager, $url]) }}" method="POST" class="d-flex align-items-center gap-1">
+                                            @csrf @method('PUT')
+                                            <input type="hidden" name="status" value="{{ $url->status }}">
+                                            <div class="input-group input-group-sm" style="width:120px;">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" step="0.01" name="commission_amount" value="{{ $url->commission_amount }}" class="form-control form-control-sm" placeholder="0.00">
+                                            </div>
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form action="{{ route('admin.villabit.managers.urls.update', [$manager, $url]) }}" method="POST">
+                                            @csrf @method('PUT')
+                                            <input type="hidden" name="status" value="{{ $url->status }}">
+                                            <input type="hidden" name="commission_amount" value="{{ $url->commission_amount }}">
+                                            <select name="commission_status" class="form-select form-select-sm" style="min-width:100px;" onchange="this.form.submit()">
+                                                <option value="pending" @selected($url->commission_status === 'pending' || !$url->commission_status)>Pending</option>
+                                                <option value="paid" @selected($url->commission_status === 'paid')>Paid</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <form action="{{ route('admin.villabit.managers.urls.update', [$manager, $url]) }}" method="POST">
                                                 @csrf @method('PUT')
-                                                <select name="status" class="form-select form-select-sm" style="min-width:110px;" onchange="this.form.submit()">
-                                                    <option value="pending" @selected($url->status === 'pending' || !$url->status)>Pending</option>
-                                                    <option value="matched" @selected($url->status === 'matched')>Matched</option>
-                                                    <option value="inactive" @selected($url->status === 'inactive')>Inactive</option>
+                                                <input type="hidden" name="commission_amount" value="{{ $url->commission_amount }}">
+                                                <input type="hidden" name="commission_status" value="{{ $url->commission_status }}">
+                                                <select name="status" class="form-select form-select-sm" style="min-width:100px;" onchange="this.form.submit()">
+                                                    <option value="active" @selected($url->status === 'active')>Active</option>
+                                                    <option value="on_hold" @selected($url->status === 'on_hold' || !$url->status)>On Hold</option>
                                                 </select>
                                             </form>
                                             <form action="{{ route('admin.villabit.managers.urls.destroy', [$manager, $url]) }}" method="POST" onsubmit="return confirm('Remove this URL?')">

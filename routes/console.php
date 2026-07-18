@@ -34,3 +34,9 @@ Schedule::command('pages:process-scheduled')
     ->at('06:00')
     ->withoutOverlapping()
     ->runInBackground();
+
+Schedule::command('authority:generate')
+    ->daily()
+    ->at('07:00')
+    ->withoutOverlapping()
+    ->runInBackground();

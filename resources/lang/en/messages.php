@@ -415,6 +415,10 @@ return [
     // Suggestion Management
     'pending_urls' => 'Pending URLs',
     'no_pending_urls' => 'No pending URLs',
+    'scheduled' => 'Scheduled',
+    'page_name' => 'Page Name',
+    'scheduled_date' => 'Scheduled Date',
+    'generating' => 'Generating',
     'accept' => 'Accept',
     'skip' => 'Skip',
     'review_in_ai_employee' => 'Review in Daily AI Employee',

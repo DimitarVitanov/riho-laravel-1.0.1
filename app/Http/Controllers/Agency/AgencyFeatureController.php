@@ -108,11 +108,22 @@ class AgencyFeatureController extends Controller
             }
 
             if ($feature === 'ai_authority_builder') {
-                $viewData['reviewPages'] = $profile ? $profile->generatedPages()
-                    ->where('feature_key', 'ai_authority_builder')
-                    ->latest()
-                    ->paginate(10) : collect();
+                // Generated Authority Builder pages (ready for review/publish)
+                $viewData['reviewPages'] = $profile 
+                    ? \App\Models\AuthorityBuilderPage::where('agency_profile_id', $profile->id)
+                        ->where('status', 'generated')
+                        ->latest()
+                        ->paginate(10) 
+                    : collect();
                 $viewData['usageLimit'] = $profile ? $profile->currentUsageLimit : null;
+                
+                // Pending Authority Builder pages (scheduled for generation)
+                $viewData['pendingAuthorityPages'] = $profile 
+                    ? \App\Models\AuthorityBuilderPage::where('agency_profile_id', $profile->id)
+                        ->whereIn('status', ['pending', 'generating', 'failed'])
+                        ->orderBy('scheduled_for')
+                        ->get()
+                    : collect();
             }
 
             if ($feature === 'daily_competitor_scan') {
@@ -1615,7 +1626,108 @@ class AgencyFeatureController extends Controller
             abort(403);
         }
 
-        return view('agency.features.authority-review-preview', compact('page', 'profile'));
+        // Convert GeneratedPage to format compatible with authority-builder-preview template
+        $contentSections = is_string($page->content) ? json_decode($page->content, true) : $page->content;
+        
+        $previewData = (object) [
+            'title' => $page->title,
+            'location' => $page->location_city ?? 'Location',
+            'country' => $page->location_country ?? 'Country',
+            'source_title' => $page->title,
+            'source_type' => 'generated',
+            'status' => $page->status,
+            'scheduled_for' => $page->created_at,
+            'content_sections' => $contentSections,
+            'id' => $page->id,
+        ];
+
+        return view('agency.features.authority-builder-preview', [
+            'page' => $previewData,
+            'profile' => $profile,
+            'generatedPage' => $page,
+        ]);
+    }
+
+    /**
+     * Preview a scheduled Authority Builder page (before generation)
+     */
+    public function previewScheduledAuthorityPage(\App\Models\AuthorityBuilderPage $authorityBuilderPage)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
+
+        if (!$profile || $authorityBuilderPage->agency_profile_id !== $profile->id) {
+            abort(403);
+        }
+
+        return view('agency.features.authority-builder-preview', [
+            'page' => $authorityBuilderPage,
+            'profile' => $profile,
+        ]);
+    }
+
+    /**
+     * Publish an AuthorityBuilderPage
+     */
+    public function publishAuthorityBuilderPage(\App\Models\AuthorityBuilderPage $authorityBuilderPage)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
+
+        if (!$profile || $authorityBuilderPage->agency_profile_id !== $profile->id) {
+            abort(403);
+        }
+
+        $authorityBuilderPage->update([
+            'status' => 'published',
+        ]);
+
+        return redirect()->back()->with('success', 'Authority page published successfully.');
+    }
+
+    /**
+     * Refresh/regenerate an AuthorityBuilderPage
+     */
+    public function refreshAuthorityBuilderPage(\App\Models\AuthorityBuilderPage $authorityBuilderPage)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
+
+        if (!$profile || $authorityBuilderPage->agency_profile_id !== $profile->id) {
+            abort(403);
+        }
+
+        // Reset to pending for regeneration
+        $authorityBuilderPage->update([
+            'status' => 'pending',
+            'scheduled_for' => now()->toDateString(),
+            'content_sections' => null,
+            'generation_started_at' => null,
+            'generation_completed_at' => null,
+        ]);
+
+        return redirect()->back()->with('success', 'Authority page scheduled for regeneration.');
+    }
+
+    /**
+     * Delete an AuthorityBuilderPage
+     */
+    public function destroyAuthorityBuilderPage(\App\Models\AuthorityBuilderPage $authorityBuilderPage)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $profile = $user->getEffectiveAgencyProfile();
+
+        if (!$profile || $authorityBuilderPage->agency_profile_id !== $profile->id) {
+            abort(403);
+        }
+
+        $authorityBuilderPage->delete();
+
+        return redirect()->back()->with('success', 'Authority page deleted.');
     }
 
     public function publishAuthorityReview(GeneratedPage $page)

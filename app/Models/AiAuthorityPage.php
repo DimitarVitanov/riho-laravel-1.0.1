@@ -9,6 +9,25 @@ class AiAuthorityPage extends Model
 {
     use HasFactory;
 
+    protected static function booted()
+    {
+        static::created(function (AiAuthorityPage $page) {
+            // Schedule Authority Builder page for the next day
+            AuthorityBuilderPage::create([
+                'agency_profile_id' => $page->agency_profile_id,
+                'source_type' => 'ai_search',
+                'source_id' => $page->id,
+                'source_title' => $page->name,
+                'title' => $page->name . ' - Real Estate Analysis',
+                'slug' => \Illuminate\Support\Str::slug($page->name . '-analysis'),
+                'location' => $page->target_city,
+                'country' => $page->country,
+                'scheduled_for' => now()->addDay()->toDateString(),
+                'status' => 'pending',
+            ]);
+        });
+    }
+
     protected $fillable = [
         'agency_profile_id',
         'agency_listing_id',

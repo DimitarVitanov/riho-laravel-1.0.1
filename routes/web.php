@@ -355,12 +355,12 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::post('daily-competitor-scan/results/{result}/dismissed', [AgencyCompetitorController::class, 'markDismissed'])->name('competitor.results.dismissed');
     Route::delete('daily-competitor-scan/results/{result}', [AgencyCompetitorController::class, 'destroyResult'])->name('competitor.results.destroy');
 
-    // AI Authority Builder
+    // AI Authority Builder - All using AuthorityBuilderPage model
     Route::post('ai-authority-builder/generate', [AgencyFeatureController::class, 'generateAuthorityReview'])->name('authority.generate');
-    Route::get('ai-authority-builder/pages/{page}/preview', [AgencyFeatureController::class, 'previewAuthorityReview'])->name('authority.pages.preview');
-    Route::post('ai-authority-builder/pages/{page}/publish', [AgencyFeatureController::class, 'publishAuthorityReview'])->name('authority.pages.publish');
-    Route::post('ai-authority-builder/pages/{page}/refresh', [AgencyFeatureController::class, 'refreshAuthorityReview'])->name('authority.pages.refresh');
-    Route::delete('ai-authority-builder/pages/{page}', [AgencyFeatureController::class, 'destroyAuthorityReview'])->name('authority.pages.destroy');
+    Route::get('ai-authority-builder/{authorityBuilderPage}/preview', [AgencyFeatureController::class, 'previewScheduledAuthorityPage'])->name('authority.preview');
+    Route::post('ai-authority-builder/{authorityBuilderPage}/publish', [AgencyFeatureController::class, 'publishAuthorityBuilderPage'])->name('authority.pages.publish');
+    Route::post('ai-authority-builder/{authorityBuilderPage}/refresh', [AgencyFeatureController::class, 'refreshAuthorityBuilderPage'])->name('authority.pages.refresh');
+    Route::delete('ai-authority-builder/{authorityBuilderPage}', [AgencyFeatureController::class, 'destroyAuthorityBuilderPage'])->name('authority.pages.destroy');
     
     // Suggestion Management for Individual Features
     Route::patch('ai-authority-builder/suggestions/{suggestion}/accept', [AgencyFeatureController::class, 'acceptAuthoritySuggestion'])->name('authority.suggestions.accept');

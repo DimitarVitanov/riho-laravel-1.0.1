@@ -73,59 +73,70 @@
         {{-- RIGHT: Suggestions & Review Pages --}}
         <div class="col-lg-12">
             
-            {{-- Pending Suggestions --}}
+            {{-- Pending URLs - Scheduled Authority Builder Pages --}}
             <div class="card mb-4">
                 <div class="card-header bg-warning bg-opacity-10 border-bottom py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="fw-bold mb-0"><i class="fa fa-lightbulb-o me-2"></i>{{ __('messages.pending_urls') }}</h6>
-                    <a href="{{ route('agency.daily-ai-employee.index') }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="fa fa-inbox me-1"></i>{{ __('messages.daily_ai_employee') }}
-                    </a>
+                    <h6 class="fw-bold mb-0"><i class="fa fa-clock-o me-2"></i>{{ __('messages.pending_urls') }}</h6>
+                    <span class="badge bg-secondary">{{ $pendingAuthorityPages->count() }} {{ __('messages.scheduled') }}</span>
                 </div>
                 <div class="card-body p-0">
-                    @php
-                        $pendingSuggestions = $profile ? $profile->aiSuggestions()
-                            ->where('feature_key', 'ai_authority_builder')
-                            ->where('status', 'pending')
-                            ->latest()
-                            ->get() : collect();
-                    @endphp
-                    @if($pendingSuggestions->isEmpty())
+                    @if($pendingAuthorityPages->isEmpty())
                     <div class="p-4 text-center text-muted">
-                        <i class="fa fa-lightbulb-o fa-2x mb-2 d-block text-muted opacity-50"></i>
+                        <i class="fa fa-check-circle fa-2x mb-2 d-block text-success opacity-50"></i>
                         <p class="mb-0 small">{{ __('messages.no_pending_urls') }}</p>
                     </div>
                     @else
-                    <div class="p-3">
-                        @foreach($pendingSuggestions as $suggestion)
-                        <div class="border rounded p-3 mb-3">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <h6 class="fw-bold mb-1">{{ $suggestion->title }}</h6>
-                                    <small class="text-muted">{{ $suggestion->ai_summary }}</small>
-                                </div>
-                                <span class="badge bg-warning">{{ __('messages.pending') }}</span>
-                            </div>
-                            <div class="d-flex gap-3 mt-3">
-                                <form action="{{ route('agency.authority.suggestions.accept', $suggestion) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="btn btn-success btn-sm px-3">
-                                        <i class="fas fa-check-circle me-2"></i>{{ __('messages.accept') }}
-                                    </button>
-                                </form>
-                                <form action="{{ route('agency.authority.suggestions.skip', $suggestion) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="btn btn-outline-warning btn-sm px-3">
-                                        <i class="fas fa-forward me-2"></i>{{ __('messages.skip') }}
-                                    </button>
-                                </form>
-                                <a href="{{ route('agency.daily-ai-employee.index') }}" class="btn btn-outline-primary btn-sm px-3">
-                                    <i class="fas fa-inbox me-2"></i>{{ __('messages.review_in_ai_employee') }}
-                                </a>
-                            </div>
-                        </div>
-                        @endforeach
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>{{ __('messages.page_name') }}</th>
+                                    <th>{{ __('messages.type') }}</th>
+                                    <th>{{ __('messages.status') }}</th>
+                                    <th>{{ __('messages.scheduled_date') }}</th>
+                                    <th>{{ __('messages.actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($pendingAuthorityPages as $page)
+                                <tr>
+                                    <td>
+                                        <strong>{{ $page->source_title }}</strong>
+                                        <br><small class="text-muted">{{ $page->location }}, {{ $page->country }}</small>
+                                    </td>
+                                    <td>
+                                        @if($page->source_type === 'local_seo')
+                                            <span class="badge bg-primary">Local SEO</span>
+                                        @else
+                                            <span class="badge bg-info">AI Search</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($page->status === 'pending')
+                                            <span class="badge bg-warning">{{ __('messages.pending') }}</span>
+                                        @elseif($page->status === 'generating')
+                                            <span class="badge bg-info"><i class="fa fa-spinner fa-spin me-1"></i>{{ __('messages.generating') }}</span>
+                                        @elseif($page->status === 'failed')
+                                            <span class="badge bg-danger">{{ __('messages.failed') }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <i class="fa fa-calendar me-1"></i>{{ $page->scheduled_for->format('M j, Y') }}
+                                        @if($page->scheduled_for->isToday())
+                                            <span class="badge bg-success ms-1">Today</span>
+                                        @elseif($page->scheduled_for->isPast())
+                                            <span class="badge bg-danger ms-1">Overdue</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('agency.authority.preview', $page) }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                                            <i class="fa fa-eye me-1"></i>{{ __('messages.preview') }}
+                                        </a>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                     @endif
                 </div>
@@ -160,17 +171,17 @@
                                 <tr>
                                     <td class="fw-bold">{{ Str::limit($page->title, 55) }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $page->status === 'published' ? 'success' : ($page->status === 'pending_review' ? 'warning' : 'secondary') }}">
+                                        <span class="badge bg-{{ $page->status === 'published' ? 'success' : 'info' }}">
                                             {{ ucfirst(str_replace('_', ' ', $page->status)) }}
                                         </span>
                                     </td>
                                     <td class="text-muted">
-                                        {{ isset($page->content_json['layers']) ? count($page->content_json['layers']) : '10' }} / 10
+                                        {{ is_array($page->content_sections) ? count($page->content_sections) : '31' }} / 31
                                     </td>
-                                    <td class="text-muted">{{ $page->created_at->format('d M Y') }}</td>
+                                    <td class="text-muted">{{ $page->generation_completed_at ? $page->generation_completed_at->format('d M Y') : $page->created_at->format('d M Y') }}</td>
                                     <td>
                                         <div class="d-flex gap-1 flex-wrap">
-                                            <a href="{{ route('agency.authority.pages.preview', $page) }}" class="btn btn-outline-dark btn-sm px-2">
+                                            <a href="{{ route('agency.authority.preview', $page) }}" class="btn btn-outline-dark btn-sm px-2" target="_blank">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                             @if($page->status !== 'published')

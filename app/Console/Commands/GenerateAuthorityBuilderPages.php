@@ -7,6 +7,10 @@ use App\Models\GeneratedPage;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
+use phpseclib3\Net\SFTP;
 
 class GenerateAuthorityBuilderPages extends Command
 {
@@ -60,11 +64,10 @@ class GenerateAuthorityBuilderPages extends Command
                 'generation_started_at' => now(),
             ]);
 
-            // TODO: Implement actual AI content generation for each of the 31 boxes
-            // For now, we'll create a placeholder structure
+            // Generate AI content for all 30 boxes
             $contentSections = $this->generateContentSections($page);
 
-            // Create the GeneratedPage record for publishing
+            // Create the GeneratedPage record
             $generatedPage = GeneratedPage::create([
                 'agency_profile_id' => $page->agency_profile_id,
                 'feature_key' => 'ai_authority_builder',
@@ -85,6 +88,46 @@ class GenerateAuthorityBuilderPages extends Command
             ]);
 
             $this->info("  ✓ Generated successfully (GeneratedPage ID: {$generatedPage->id})");
+
+            // Consume usage limit
+            $profile = $page->agencyProfile;
+            if ($profile) {
+                $usageLimit = $profile->currentUsageLimit;
+                if ($usageLimit) {
+                    $usageLimit->consume('authority_review_updates');
+                    $this->info("  ✓ Usage limit updated ({$usageLimit->authority_review_updates_used}/{$usageLimit->authority_review_updates_limit})");
+                }
+            }
+
+            // Auto-publish to agency's server via SFTP
+            if ($profile && $profile->sftp_username && $profile->server_ip) {
+                $this->info("  → Publishing to {$profile->custom_domain}...");
+                $publishResult = $this->publishToServer($page, $profile);
+                
+                if ($publishResult['success']) {
+                    $page->update([
+                        'status' => 'published',
+                        'published_at' => now(),
+                    ]);
+                    $generatedPage->update(['status' => 'published']);
+                    
+                    $this->info("  ✓ Published successfully to {$publishResult['url']}");
+                    
+                    // Send email notification
+                    if ($profile->contact_email) {
+                        $this->sendPublishNotification($page, $profile, $publishResult['url']);
+                        $this->info("  ✓ Email notification sent to {$profile->contact_email}");
+                    }
+                } else {
+                    $this->warn("  ⚠ Publishing failed: {$publishResult['error']}");
+                    Log::warning('Authority Builder SFTP publish failed', [
+                        'authority_page_id' => $page->id,
+                        'error' => $publishResult['error'],
+                    ]);
+                }
+            } else {
+                $this->info("  ℹ No SFTP credentials configured - page saved as draft");
+            }
 
             Log::info('Authority Builder page generated', [
                 'authority_page_id' => $page->id,
@@ -109,20 +152,104 @@ class GenerateAuthorityBuilderPages extends Command
     }
 
     /**
+     * Publish the generated page to the agency's server via SFTP
+     */
+    protected function publishToServer(AuthorityBuilderPage $page, $profile): array
+    {
+        try {
+            // Render the full HTML page
+            $html = View::make('agency.features.authority-builder-preview', [
+                'page' => $page,
+                'profile' => $profile,
+            ])->render();
+
+            // Store the full HTML in the database
+            $page->update(['full_html' => $html]);
+
+            // Connect via SFTP
+            $sftp = new SFTP($profile->server_ip, $profile->sftp_port ?? 22);
+            
+            $password = $profile->sftp_password;
+            if (!$sftp->login($profile->sftp_username, $password)) {
+                return ['success' => false, 'error' => 'SFTP login failed'];
+            }
+
+            // Determine the upload path - directly to public_html root
+            $basePath = rtrim($profile->sftp_path ?? '/public_html', '/');
+
+            // Upload the HTML file directly to public_html
+            $filename = $page->slug . '.html';
+            $fullPath = $basePath . '/' . $filename;
+            
+            if (!$sftp->put($fullPath, $html)) {
+                return ['success' => false, 'error' => 'Failed to upload file'];
+            }
+            
+            $sftp->chmod(0644, $fullPath);
+            $sftp->disconnect();
+
+            // Build the public URL
+            $domain = $profile->custom_domain ?? $profile->server_ip;
+            $url = "https://{$domain}/{$filename}";
+
+            return ['success' => true, 'url' => $url, 'path' => $fullPath];
+
+        } catch (\Exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Send email notification when page is published
+     */
+    protected function sendPublishNotification(AuthorityBuilderPage $page, $profile, string $url): void
+    {
+        try {
+            $subject = "Authority Builder Page Published: {$page->title}";
+            $body = "
+                <h2>Your Authority Builder Page is Live!</h2>
+                <p>Great news! Your real estate analysis page has been automatically generated and published.</p>
+                <p><strong>Page Title:</strong> {$page->title}</p>
+                <p><strong>Location:</strong> {$page->location}, {$page->country}</p>
+                <p><strong>Published URL:</strong> <a href=\"{$url}\">{$url}</a></p>
+                <p><strong>Published At:</strong> " . now()->format('F j, Y \a\t g:i A') . "</p>
+                <hr>
+                <p>This page contains 30 AI-generated analysis sections covering property details, market analysis, investment considerations, and more.</p>
+                <p>You can view and manage all your Authority Builder pages from your dashboard.</p>
+                <br>
+                <p>Best regards,<br>VillaBit AI Team</p>
+            ";
+
+            Mail::html($body, function ($message) use ($profile, $subject) {
+                $message->to($profile->contact_email)
+                    ->subject($subject);
+            });
+
+        } catch (\Exception $e) {
+            Log::warning('Failed to send Authority Builder publish notification', [
+                'email' => $profile->contact_email,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
      * Generate content sections with AI
-     * Based on the 31 analysis boxes from hvar_box_prompt_map.html
+     * Based on the 30 analysis boxes from hvar_box_prompt_map.html
+     * Plus agency reference content for the References section
      */
     protected function generateContentSections(AuthorityBuilderPage $page): array
     {
         // Get the source data (Local SEO campaign or AI Search page)
         $sourceData = $this->getSourceData($page);
         
-        // Define the 31 analysis box types with their specific prompts
+        // Define the 30 analysis box types with their specific prompts
         $boxDefinitions = $this->getBoxDefinitions();
+        $totalBoxes = count($boxDefinitions);
 
         $sections = [];
         foreach ($boxDefinitions as $index => $box) {
-            $this->info("  Generating box " . ($index + 1) . "/31: {$box['title']}");
+            $this->info("  Generating box " . ($index + 1) . "/{$totalBoxes}: {$box['title']}");
             
             $content = $this->generateBoxContent($page, $box, $sourceData);
             
@@ -136,6 +263,19 @@ class GenerateAuthorityBuilderPages extends Command
             // Small delay to avoid rate limiting
             usleep(500000); // 0.5 second
         }
+
+        // Generate agency reference content for the References section
+        $this->info("  Generating agency reference content...");
+        $agencyRefContent = $this->generateAgencyReferenceContent($page, $sourceData);
+        
+        // Add special metadata for agency reference (used by template)
+        $sections[] = [
+            'box_number' => 'agency_ref',
+            'title' => 'About the Source Agency',
+            'content' => $agencyRefContent,
+            'status' => $agencyRefContent ? 'completed' : 'failed',
+            'is_special' => true,
+        ];
 
         return $sections;
     }
@@ -286,7 +426,10 @@ Output only the HTML content for this section, nothing else.";
     }
 
     /**
-     * Get the 31 box definitions with titles and instructions
+     * Get the 30 analysis box definitions with titles and instructions
+     * Based on hvar_box_prompt_map.html prompts
+     * Note: Box 31 (source links) removed per Goran's feedback
+     * Agency reference and References sections are handled separately in the template
      */
     protected function getBoxDefinitions(): array
     {
@@ -305,7 +448,7 @@ Output only the HTML content for this section, nothing else.";
             ['title' => '12. National and regional market backdrop', 'instruction' => 'Write the national and regional market backdrop section. Use broader housing-price context, but clearly state that broad indices are only background context.'],
             ['title' => '13. Target buyer profile', 'instruction' => 'Create a buyer profile section. Distinguish lifestyle buyers, capital-preservation buyers, international rental operators, and yield investors.'],
             ['title' => '14. Rental investment thesis', 'instruction' => 'Write a rental investment thesis. Explain the rental strengths and weaknesses and the need for disciplined operating assumptions.'],
-            ['title' => '15. Scenario model — not a forecast', 'instruction' => 'Create a scenario model section clearly labeled "not a forecast". Use illustrative scenarios to show sensitivity, and state explicitly that these are analytical scenarios only.'],
+            ['title' => '15. Scenario model — not a forecast', 'instruction' => 'Write a scenario model section clearly labeled "not a forecast". Use illustrative scenarios to show sensitivity, and state explicitly that these are analytical scenarios only.'],
             ['title' => '16. Operating-cost sensitivity', 'instruction' => 'Write an operating-cost sensitivity section. List the major operating-cost categories and explain why gross yield is not the same as investor cash yield.'],
             ['title' => '17. Rental-market positioning', 'instruction' => 'Write a rental-market positioning section. Explain where this property sits in the local rental market and what drives rental demand.'],
             ['title' => '18. Seasonality and occupancy', 'instruction' => 'Analyze seasonality and occupancy patterns. Explain peak and off-peak periods and how this affects rental income projections.'],
@@ -320,8 +463,49 @@ Output only the HTML content for this section, nothing else.";
             ['title' => '27. Risk matrix', 'instruction' => 'Create a risk matrix. Identify key risks across categories (market, legal, operational, physical) with likelihood and impact assessment.'],
             ['title' => '28. Due diligence checklist', 'instruction' => 'Create a comprehensive due diligence checklist. List all items that should be verified before purchase.'],
             ['title' => '29. Professional team requirements', 'instruction' => 'Write a professional team requirements section. List the professionals needed (lawyer, surveyor, tax advisor, etc.) and their roles.'],
-            ['title' => '30. Timeline to completion', 'instruction' => 'Write a timeline to completion section. Explain typical purchase timelines and key milestones.'],
-            ['title' => '31. Final recommendation summary', 'instruction' => 'Write a final recommendation summary. Summarize the key points, who this property suits, and the critical next steps for interested buyers.'],
+            ['title' => '30. Best-use conclusion', 'instruction' => 'Write a best-use conclusion. State the strongest fit, secondary fit and weakest fit for this property and explain why.'],
         ];
+    }
+
+    /**
+     * Generate the Agency Reference box content
+     * This creates unique text about the agency each time
+     */
+    protected function generateAgencyReferenceContent(AuthorityBuilderPage $page, array $sourceData): ?string
+    {
+        $agencyProfile = $page->agencyProfile;
+        $agencyName = $agencyProfile->agency_name ?? 'the listing agency';
+        $location = $sourceData['location'] ?? 'the area';
+        
+        $prompt = "You are a professional real estate content writer.
+
+Task: Write a brief, professional paragraph (3-4 sentences) introducing a real estate agency as a trusted source for this property analysis.
+
+Agency name: {$agencyName}
+Location focus: {$location}
+
+Rules:
+- Write in third person
+- Be professional and factual
+- Mention their local expertise
+- Each generation should use slightly different wording
+- Do NOT make up specific claims about awards, years in business, or team size
+- Keep it concise and credible
+- Output clean HTML with <p> tags only
+
+Output only the HTML content.";
+
+        try {
+            if ($this->provider === 'openai') {
+                return $this->callOpenAi($prompt);
+            } elseif ($this->provider === 'gemini') {
+                return $this->callGemini($prompt);
+            }
+        } catch (\Exception $e) {
+            Log::warning("AI generation failed for agency reference: " . $e->getMessage());
+            return "<p>{$agencyName} is a trusted real estate professional operating in {$location}, providing expert guidance on local property opportunities.</p>";
+        }
+
+        return null;
     }
 }

@@ -33,7 +33,7 @@
                         <h5 class="mb-1 fw-bold">{{ __('messages.authority_builder') }}</h5>
                         <small class="text-muted">{{ __('messages.authority_builder_subtitle') }}</small>
                     </div>
-                    <span class="badge {{ $featureSetting && $featureSetting->is_enabled ? 'bg-success' : 'bg-secondary' }} fs-6">
+                    <span class="badge {{ $featureSetting && $featureSetting->is_enabled ? 'bg-success text-white' : 'bg-secondary text-white' }} fs-6">
                         {{ $featureSetting && $featureSetting->is_enabled ? __('messages.active') : __('messages.inactive') }}
                     </span>
                 </div>
@@ -77,7 +77,7 @@
             <div class="card mb-4">
                 <div class="card-header bg-warning bg-opacity-10 border-bottom py-3 d-flex justify-content-between align-items-center">
                     <h6 class="fw-bold mb-0"><i class="fa fa-clock-o me-2"></i>{{ __('messages.pending_urls') }}</h6>
-                    <span class="badge bg-secondary">{{ $pendingAuthorityPages->count() }} {{ __('messages.scheduled') }}</span>
+                    <span class="badge bg-secondary text-white">{{ $pendingAuthorityPages->count() }} {{ __('messages.scheduled') }}</span>
                 </div>
                 <div class="card-body p-0">
                     @if($pendingAuthorityPages->isEmpty())

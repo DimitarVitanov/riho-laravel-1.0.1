@@ -20,6 +20,7 @@ class AuthorityBuilderPage extends Model
         'location',
         'country',
         'content_sections',
+        'property_images',
         'full_html',
         'scheduled_for',
         'status',
@@ -35,6 +36,7 @@ class AuthorityBuilderPage extends Model
     {
         return [
             'content_sections' => 'array',
+            'property_images' => 'array',
             'scheduled_for' => 'date',
             'generation_started_at' => 'datetime',
             'generation_completed_at' => 'datetime',

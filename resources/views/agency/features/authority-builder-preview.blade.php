@@ -93,56 +93,6 @@ body {
 a { color: inherit; text-decoration: none; }
 button, input { font: inherit; }
 
-/* ── PREVIEW BANNER ── */
-.preview-banner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 9999;
-  background: linear-gradient(135deg, #0f172a, #1e3a5f);
-  color: #fff;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-}
-.preview-banner h3 { font-size: 14px; font-weight: 700; margin: 0; }
-.preview-banner p { font-size: 12px; opacity: 0.8; margin: 4px 0 0; }
-.preview-banner .badge { 
-  background: var(--gold); 
-  color: #0a0a0a; 
-  padding: 4px 10px; 
-  border-radius: 6px; 
-  font-size: 11px; 
-  font-weight: 900; 
-}
-.preview-banner .btn-back {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-}
-.preview-banner .btn-back:hover { background: rgba(255,255,255,0.2); }
-.preview-banner .btn-publish {
-  background: #22c55e;
-  border: none;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.preview-banner .btn-publish:hover { background: #16a34a; }
-
 /* ── TOP STRIP ── */
 .top-strip {
   background: {{ $topbarBg }};
@@ -150,7 +100,6 @@ button, input { font: inherit; }
   font-size: 12.5px;
   font-weight: 600;
   border-bottom: 1px solid rgba(255,255,255,.06);
-  margin-top: 52px;
 }
 .top-strip-inner {
   width: min(1420px, calc(100% - 36px));
@@ -577,6 +526,134 @@ button, input { font: inherit; }
   margin-bottom: 8px;
   color: #475569;
 }
+
+/* ── PROPERTY IMAGES SECTION ── */
+.property-images-section {
+  background: #fff;
+}
+.property-images-section .topic-number {
+  background: #0f172a;
+  color: #fff;
+  font-size: 18px;
+}
+.property-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+.gallery-item {
+  aspect-ratio: 4/3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+.images-placeholder {
+  text-align: center;
+  padding: 40px 20px;
+}
+.images-placeholder .placeholder-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.images-placeholder h4 {
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.images-placeholder p {
+  color: #64748b;
+  font-size: 15px;
+  max-width: 500px;
+  margin: 0 auto 24px;
+}
+.placeholder-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.placeholder-img {
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #e2e8f0, #f1f5f9);
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  position: relative;
+}
+.placeholder-img::after {
+  content: "📷";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  opacity: 0.4;
+}
+.source-attribution {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+.source-attribution p {
+  color: #64748b;
+  font-size: 13px;
+}
+.source-attribution a {
+  color: var(--teal-dark);
+  font-weight: 700;
+}
+@media (max-width: 768px) {
+  .property-gallery,
+  .placeholder-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── REFERENCES SECTION ── */
+.references-section {
+  background: linear-gradient(135deg, #f8fafc, #eef2f7);
+  border: 2px solid var(--line);
+}
+.references-section .topic-number {
+  background: var(--teal);
+  color: #fff;
+}
+.references-section .reference-item h4 {
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 12px;
+}
+.references-section .reference-item p {
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.references-section .reference-item a {
+  color: var(--teal-dark);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.references-section .reference-item ul {
+  margin-top: 10px;
+}
+.references-section .reference-item ul li {
+  color: #475569;
+  font-size: 14px;
+}
 .placeholder-content p {
   font-size: 14px;
   line-height: 1.5;
@@ -660,29 +737,6 @@ footer::before {
 </head>
 <body>
 
-{{-- Preview Banner --}}
-<div class="preview-banner">
-  <div>
-    <h3>Authority Builder Preview</h3>
-    <p>
-      @if($page->status === 'generated' || $page->status === 'published')
-        Generated: {{ $page->generation_completed_at ? $page->generation_completed_at->format('M j, Y') : $page->scheduled_for->format('M j, Y') }} • Status: {{ ucfirst(str_replace('_', ' ', $page->status)) }}
-      @else
-        Scheduled for: {{ $page->scheduled_for->format('M j, Y') }} • Status: {{ ucfirst($page->status) }}
-      @endif
-    </p>
-  </div>
-  <div style="display:flex;align-items:center;gap:12px;">
-    <span class="badge">{{ $page->source_type === 'local_seo' ? 'Local SEO' : 'AI Search' }}</span>
-    @if($page->status === 'generated')
-      <form action="{{ route('agency.authority.pages.publish', $page) }}" method="POST" style="margin:0;">
-        @csrf
-        <button type="submit" class="btn-publish">✓ Publish</button>
-      </form>
-    @endif
-    <a href="{{ route('agency.features.show', 'ai_authority_builder') }}" class="btn-back">← Back to Authority Builder</a>
-  </div>
-</div>
 
 {{-- Top Strip --}}
 @if($topbarEnabled)
@@ -793,18 +847,24 @@ footer::before {
 
       {{-- Analysis Boxes --}}
       @if($hasContent)
-        @foreach($sections as $index => $section)
-          @if($index === 1) @continue @endif {{-- Skip box 2 as it's shown above --}}
+        @php
+          // Separate regular boxes from special sections
+          $regularSections = collect($sections)->filter(fn($s) => !isset($s['is_special']) && $s['box_number'] !== 'agency_ref');
+          $agencyRefSection = collect($sections)->firstWhere('box_number', 'agency_ref');
+        @endphp
+        
+        @foreach($regularSections as $index => $section)
+          @if($section['box_number'] == 2) @continue @endif {{-- Skip box 2 as it's shown above --}}
           @php
             $boxNum = str_pad($section['box_number'] ?? ($index + 1), 2, '0', STR_PAD_LEFT);
-            $isWide = $index < 3;
+            $isWide = $section['box_number'] <= 3;
             $isAlert = str_contains(strtolower($section['title'] ?? ''), 'risk') || str_contains(strtolower($section['title'] ?? ''), 'alert') || str_contains(strtolower($section['title'] ?? ''), 'consistency');
           @endphp
           <section class="card topic-card analysis-card {{ $isWide ? 'span-12 wide-analysis' : 'span-6' }} {{ $isAlert ? 'alert-card' : '' }}" data-no="{{ $boxNum }}">
             <div class="card-pad">
               <div class="topic-head">
                 <span class="topic-number" aria-hidden="true">{{ $boxNum }}</span>
-                <h2>{{ $section['title'] ?? 'Analysis Section ' . ($index + 1) }}</h2>
+                <h2>{{ $section['title'] ?? 'Analysis Section ' . $section['box_number'] }}</h2>
               </div>
               <div class="analysis-copy">
                 @if(!empty($section['content']))
@@ -819,6 +879,106 @@ footer::before {
             </div>
           </section>
         @endforeach
+
+        {{-- Property Images Section --}}
+        @php
+          // Get property images from source listing if available
+          $propertyImages = $page->property_images ?? [];
+          
+          // If no images stored, try to get from source listing
+          if (empty($propertyImages) && $page->source_type === 'ai_search') {
+              $aiPage = \App\Models\AiAuthorityPage::find($page->source_id);
+              if ($aiPage && $aiPage->agency_listing_id) {
+                  $listing = \App\Models\AgencyListing::find($aiPage->agency_listing_id);
+                  if ($listing && $listing->images) {
+                      $propertyImages = collect($listing->images)->map(function($img) {
+                          return asset('storage/' . $img);
+                      })->toArray();
+                  }
+              }
+          } elseif (empty($propertyImages) && $page->source_type === 'local_seo') {
+              $campaign = \App\Models\LocalSeoCampaign::find($page->source_id);
+              if ($campaign && $campaign->agency_listing_id) {
+                  $listing = \App\Models\AgencyListing::find($campaign->agency_listing_id);
+                  if ($listing && $listing->images) {
+                      $propertyImages = collect($listing->images)->map(function($img) {
+                          return asset('storage/' . $img);
+                      })->toArray();
+                  }
+              }
+          }
+          
+          $hasImages = !empty($propertyImages);
+        @endphp
+        <section class="card span-12 property-images-section" id="property-gallery">
+          <div class="card-pad">
+            <div class="topic-head">
+              <span class="topic-number" aria-hidden="true">📷</span>
+              <h2>Property Gallery</h2>
+            </div>
+            <div class="images-content">
+              @if($hasImages)
+                <div class="property-gallery">
+                  @foreach($propertyImages as $index => $image)
+                    <div class="gallery-item">
+                      <img src="{{ $image['url'] ?? $image }}" alt="Property image {{ $index + 1 }}" loading="lazy">
+                    </div>
+                  @endforeach
+                </div>
+              @else
+                <div class="images-placeholder">
+                  <div class="placeholder-icon">🏠</div>
+                  <h4>Property Images</h4>
+                  <p>High-quality images of this property will be displayed here once available from the listing source.</p>
+                  <div class="placeholder-grid">
+                    <div class="placeholder-img"></div>
+                    <div class="placeholder-img"></div>
+                    <div class="placeholder-img"></div>
+                    <div class="placeholder-img"></div>
+                  </div>
+                </div>
+              @endif
+              <div class="source-attribution">
+                <p>Images sourced from <a href="#references">{{ $profile->agency_name ?? 'listing agency' }}</a>. <a href="#references">View source reference →</a></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {{-- References Section --}}
+        <section class="card span-12 references-section" id="references">
+          <div class="card-pad">
+            <div class="topic-head">
+              <span class="topic-number" aria-hidden="true">REF</span>
+              <h2>References & Sources</h2>
+            </div>
+            <div class="analysis-copy">
+              <div class="reference-item">
+                <h4>Source Agency</h4>
+                @if($agencyRefSection && !empty($agencyRefSection['content']))
+                  {!! $agencyRefSection['content'] !!}
+                @else
+                  <p>{{ $profile->agency_name ?? 'Listing Agency' }} is a trusted real estate professional operating in {{ $page->location }}, providing expert guidance on local property opportunities.</p>
+                @endif
+                @if($profile->official_website_url)
+                  <p><a href="{{ $profile->official_website_url }}" target="_blank" rel="noopener">Visit {{ $profile->agency_name ?? 'Agency' }} Website →</a></p>
+                @endif
+              </div>
+              <div class="reference-item" style="margin-top: 24px;">
+                <h4>Analysis Methodology</h4>
+                <p>This analysis was generated using AI-assisted real estate intelligence tools. All data points are derived from publicly available listing information and should be independently verified before making any investment decisions. This content does not constitute financial, legal, or investment advice.</p>
+              </div>
+              <div class="reference-item" style="margin-top: 24px;">
+                <h4>Data Sources</h4>
+                <ul>
+                  <li>Original property listing from {{ $profile->agency_name ?? 'source agency' }}</li>
+                  <li>Local market data and regional statistics</li>
+                  <li>{{ $page->location }}, {{ $page->country }} real estate market analysis</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
       @else
         {{-- Show placeholder boxes when content not yet generated --}}
         @php
@@ -852,10 +1012,10 @@ footer::before {
         {{-- More sections indicator --}}
         <section class="card span-12" style="background: #f8fafc; border-style: dashed;">
           <div class="card-pad" style="text-align: center; padding: 60px;">
-            <h3 style="color: #475569; font-size: 20px; margin-bottom: 12px;">+ 25 More Analysis Sections</h3>
+            <h3 style="color: #475569; font-size: 20px; margin-bottom: 12px;">+ 24 More Analysis Sections</h3>
             <p style="color: #64748b; font-size: 15px; max-width: 600px; margin: 0 auto;">
-              The full Authority Builder page will include 31 comprehensive analysis boxes covering market pricing, rental analysis, 
-              living conditions, legal considerations, investment risks, FAQ, and methodology.
+              The full Authority Builder page will include 30 comprehensive analysis boxes covering market pricing, rental analysis, 
+              living conditions, legal considerations, investment risks, and professional recommendations, plus a References section.
             </p>
           </div>
         </section>

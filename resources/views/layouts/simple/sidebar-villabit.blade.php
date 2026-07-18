@@ -350,6 +350,14 @@
                     </a>
                 </li>
 
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="javascript:void(0)" style="cursor: default; opacity: 0.6;">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
+                        <span>Property Chain *</span>
+                    </a>
+                </li>
+
 
                 <li class="sidebar-main-title"><div><h6>{{ __('messages.settings') }}</h6></div></li>
 

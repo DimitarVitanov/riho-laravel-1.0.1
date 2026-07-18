@@ -4,11 +4,13 @@ namespace App\Services;
 
 use App\Models\AgencyProfile;
 use App\Models\LocalSeoCampaign;
+use App\Models\AiAuthorityPage;
 use League\Flysystem\Filesystem;
 use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 use League\Flysystem\PhpseclibV3\SftpAdapter;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Mail;
 
 class PageSftpUploader
 {
@@ -151,5 +153,166 @@ class PageSftpUploader
                 'seo_title' => $campaign->name . ' | ' . $profile->agency_name,
             ]),
         ])->render();
+    }
+
+    /**
+     * Upload an AI Search Ranking page to the agency's server via SFTP.
+     */
+    public function uploadAiSearchPage(AiAuthorityPage $page, AgencyProfile $profile): array
+    {
+        if (!$profile->server_ip || !$profile->sftp_username || !$profile->sftp_password) {
+            return [
+                'success' => false,
+                'message' => 'Missing SFTP credentials. Please configure server connection in Agency Settings.',
+            ];
+        }
+
+        try {
+            // Render the full HTML page
+            $html = $this->renderAiSearchHtml($page, $profile);
+
+            // Determine remote path
+            $remotePath = rtrim($profile->sftp_path ?: '/public_html', '/');
+
+            // Build the file path from slug
+            $slug = $page->slug ?: 'ai-' . \Illuminate\Support\Str::slug($page->target_city . '-' . $page->name);
+            $slug = trim($slug, '/');
+            $filePath = $remotePath . '/' . $slug . '.html';
+
+            // Create SFTP connection and upload
+            $filesystem = $this->createSftpFilesystem($profile);
+
+            // Write the HTML file
+            $filesystem->write($filePath, $html);
+
+            Log::info('AI Search page uploaded via SFTP', [
+                'page_id' => $page->id,
+                'path' => $filePath,
+                'server' => $profile->server_ip,
+            ]);
+
+            $url = 'https://' . rtrim($profile->custom_domain, '/') . '/' . $slug . '.html';
+
+            // Send email notification
+            $this->sendPublishNotification($profile, $page->name, 'ai_search', $url, $page->target_city);
+
+            return [
+                'success' => true,
+                'message' => "Page uploaded to {$filePath}",
+                'path' => $filePath,
+                'url' => $url,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('AI Search SFTP upload failed', [
+                'page_id' => $page->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'SFTP upload failed: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Delete an AI Search page from the server.
+     */
+    public function deleteAiSearchPage(AiAuthorityPage $page, AgencyProfile $profile): array
+    {
+        if (!$profile->server_ip || !$profile->sftp_username || !$profile->sftp_password) {
+            return ['success' => false, 'message' => 'Missing SFTP credentials'];
+        }
+
+        try {
+            $remotePath = rtrim($profile->sftp_path ?: '/public_html', '/');
+            $slug = $page->slug ?: 'ai-' . \Illuminate\Support\Str::slug($page->target_city . '-' . $page->name);
+            $slug = trim($slug, '/');
+            $filePath = $remotePath . '/' . $slug . '.html';
+
+            $filesystem = $this->createSftpFilesystem($profile);
+
+            if ($filesystem->fileExists($filePath)) {
+                $filesystem->delete($filePath);
+            }
+
+            return [
+                'success' => true,
+                'message' => "Page deleted from {$filePath}",
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'SFTP delete failed: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    protected function renderAiSearchHtml(AiAuthorityPage $page, AgencyProfile $profile): string
+    {
+        return View::make('realestate-taxi.ai-search-page', [
+            'page' => $page,
+            'profile' => $profile,
+            'listing' => $page->listing,
+            'preview' => false,
+        ])->render();
+    }
+
+    /**
+     * Send email notification when page is published.
+     */
+    public function sendPublishNotification(
+        AgencyProfile $profile, 
+        string $pageTitle, 
+        string $pageType, 
+        string $url,
+        ?string $location = null
+    ): void {
+        if (empty($profile->contact_email)) {
+            return;
+        }
+
+        try {
+            $typeLabel = match ($pageType) {
+                'local_seo' => 'Local SEO',
+                'ai_search' => 'AI Search Ranking',
+                default => 'Generated',
+            };
+
+            $subject = "{$typeLabel} Page Published: {$pageTitle}";
+            
+            $locationInfo = $location ? "<p><strong>Location:</strong> {$location}</p>" : '';
+            
+            $body = "
+                <h2>Your {$typeLabel} Page is Live!</h2>
+                <p>Great news! Your page has been automatically generated and published.</p>
+                <p><strong>Page Title:</strong> {$pageTitle}</p>
+                {$locationInfo}
+                <p><strong>Published URL:</strong> <a href=\"{$url}\">{$url}</a></p>
+                <p><strong>Published At:</strong> " . now()->format('F j, Y \a\t g:i A') . "</p>
+                <hr>
+                <p>You can view and manage all your pages from your dashboard.</p>
+                <br>
+                <p>Best regards,<br>VillaBit AI Team</p>
+            ";
+
+            Mail::html($body, function ($message) use ($profile, $subject) {
+                $message->to($profile->contact_email)
+                    ->subject($subject);
+            });
+
+            Log::info('Publish notification sent', [
+                'email' => $profile->contact_email,
+                'page_type' => $pageType,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::warning('Failed to send publish notification', [
+                'email' => $profile->contact_email,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

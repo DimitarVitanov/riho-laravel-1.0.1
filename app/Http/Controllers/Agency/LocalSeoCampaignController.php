@@ -364,6 +364,14 @@ class LocalSeoCampaignController extends Controller
                 $uploader = new \App\Services\PageSftpUploader();
                 $uploadResult = $uploader->uploadCampaignPage($campaign, $profile);
                 if ($uploadResult['success']) {
+                    // Send email notification
+                    $uploader->sendPublishNotification(
+                        $profile,
+                        $campaign->name,
+                        'local_seo',
+                        $uploadResult['url'] ?? '',
+                        $campaign->primary_city
+                    );
                     $msg = 'Campaign published and uploaded to server.';
                 } else {
                     $msg = 'Campaign published but upload failed: ' . $uploadResult['message'];
@@ -436,6 +444,17 @@ class LocalSeoCampaignController extends Controller
         if ($profile->server_ip && $profile->sftp_username && $profile->sftp_password) {
             $uploader = new \App\Services\PageSftpUploader();
             $uploadResult = $uploader->uploadCampaignPage($campaign, $profile);
+            
+            // Send email notification on successful upload
+            if ($uploadResult && $uploadResult['success']) {
+                $uploader->sendPublishNotification(
+                    $profile,
+                    $campaign->name,
+                    'local_seo',
+                    $uploadResult['url'] ?? $targetUrl,
+                    $campaign->primary_city
+                );
+            }
         }
 
         if ($uploadResult && $uploadResult['success']) {

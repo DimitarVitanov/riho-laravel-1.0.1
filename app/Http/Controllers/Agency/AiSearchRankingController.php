@@ -243,11 +243,32 @@ class AiSearchRankingController extends Controller
         }
 
         if ($page->status === 'published') {
+            // Unpublish - also delete from server
             $page->update(['status' => 'draft', 'published_at' => null]);
-            $msg = 'Page unpublished.';
+            
+            // Delete from server via SFTP
+            if ($profile->server_ip && $profile->sftp_username && $profile->sftp_password) {
+                $uploader = new \App\Services\PageSftpUploader();
+                $uploader->deleteAiSearchPage($page, $profile);
+            }
+            
+            $msg = 'Page unpublished and removed from server.';
         } else {
+            // Publish - also upload to server
             $page->update(['status' => 'published', 'published_at' => now()]);
-            $msg = 'Page published.';
+            
+            // Upload to server via SFTP
+            if ($profile->server_ip && $profile->sftp_username && $profile->sftp_password) {
+                $uploader = new \App\Services\PageSftpUploader();
+                $uploadResult = $uploader->uploadAiSearchPage($page, $profile);
+                if ($uploadResult['success']) {
+                    $msg = 'Page published and uploaded to server: ' . ($uploadResult['url'] ?? '');
+                } else {
+                    $msg = 'Page published but upload failed: ' . $uploadResult['message'];
+                }
+            } else {
+                $msg = 'Page published (SFTP not configured).';
+            }
         }
 
         return redirect()->route('agency.features.show', 'ai_search_ranking')

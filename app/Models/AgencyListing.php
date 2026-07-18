@@ -34,6 +34,18 @@ class AgencyListing extends Model
         'is_turnkey',
         'property_condition',
         'year_built',
+        // Property Chain - Looking to Buy
+        'looking_to_buy',
+        'looking_property_type',
+        'looking_location',
+        'looking_locations',
+        'looking_budget_min',
+        'looking_budget_max',
+        'looking_currency',
+        'looking_min_bedrooms',
+        'looking_min_size',
+        'looking_timeline',
+        'looking_notes',
     ];
 
     protected $casts = [
@@ -44,6 +56,11 @@ class AgencyListing extends Model
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
         'is_turnkey' => 'boolean',
+        'looking_to_buy' => 'boolean',
+        'looking_locations' => 'array',
+        'looking_budget_min' => 'decimal:2',
+        'looking_budget_max' => 'decimal:2',
+        'looking_min_size' => 'decimal:2',
     ];
 
     public function agencyProfile()

@@ -833,6 +833,9 @@
                                     @if($listing->property_type)
                                     <br><span style="font-size:11px;color:var(--muted);">{{ $listing->property_type }}</span>
                                     @endif
+                                    @if($listing->looking_to_buy)
+                                    <br><span class="badge bg-info text-white" style="font-size:9px;"><i class="fa fa-link"></i> Looking to buy</span>
+                                    @endif
                                 </td>
                                 <td>
                                     @foreach($listing->campaigns as $camp)
@@ -968,7 +971,12 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Property Type</label>
-                        <input type="text" name="property_type" class="form-control" value="{{ $editListing->property_type }}">
+                        <select name="property_type" class="form-select">
+                            <option value="">Select type...</option>
+                            @foreach(['Villa', 'Apartment', 'House', 'Penthouse', 'Studio', 'Duplex', 'Land', 'Commercial', 'Office', 'Retail', 'Hotel', 'Building', 'Farm', 'Warehouse', 'Parking', 'Other'] as $type)
+                                <option value="{{ $type }}" {{ $editListing->property_type === $type ? 'selected' : '' }}>{{ $type }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="col-md-4 position-relative">
                         <label class="form-label">Location *</label>
@@ -1042,6 +1050,90 @@
                         <input type="file" name="images[]" class="form-control" multiple accept="image/*">
                         <small class="text-muted">Upload new images to replace existing ones.</small>
                     </div>
+
+                    {{-- Property Chain - Looking to Buy Section --}}
+                    <div class="col-12 mt-4">
+                        <div class="border rounded p-3" style="background:#fafbfc;">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="looking_to_buy" id="editLookingToBuy" value="1" {{ $editListing->looking_to_buy ? 'checked' : '' }} onchange="toggleLookingToBuyFields('edit')">
+                                <label class="form-check-label fw-bold" for="editLookingToBuy">
+                                    <i class="fa fa-link me-1"></i> Property Chain: Seller is also looking to buy
+                                </label>
+                                <small class="text-muted d-block">Optional: If the seller wants to buy another property with the sale proceeds</small>
+                            </div>
+                            <div id="editLookingToBuyFields" style="{{ $editListing->looking_to_buy ? '' : 'display:none;' }}">
+                                <p class="text-muted small mb-3">These details allow Villa Bit AI to include the seller in a possible property sales chain that can result in the sale of multiple properties at the same time.</p>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold">Wanted Property Type</label>
+                                        <select name="looking_property_type" class="form-select">
+                                            <option value="">Select property type...</option>
+                                            @foreach(['Villa', 'Apartment', 'House', 'Penthouse', 'Studio', 'Duplex', 'Land', 'Commercial', 'Office', 'Retail', 'Hotel', 'Building', 'Farm', 'Warehouse', 'Parking', 'Other'] as $type)
+                                                <option value="{{ $type }}" {{ $editListing->looking_property_type === $type ? 'selected' : '' }}>{{ $type }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label fw-bold">Wanted Locations or Areas</label>
+                                        <div id="editLocationsContainer">
+                                            @php $editLocations = $editListing->looking_locations ?? [$editListing->looking_location]; @endphp
+                                            @foreach($editLocations as $idx => $loc)
+                                            <div class="d-flex gap-2 mb-2 location-row">
+                                                <input type="text" name="looking_locations[]" class="form-control" value="{{ $loc }}" placeholder="e.g. Split, Solin, island Brač, Meje neighborhood, or within 20 km">
+                                                @if($idx > 0)
+                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.location-row').remove()">Remove</button>
+                                                @endif
+                                            </div>
+                                            @endforeach
+                                            @if(count($editLocations) === 0)
+                                            <div class="d-flex gap-2 mb-2 location-row">
+                                                <input type="text" name="looking_locations[]" class="form-control" placeholder="e.g. Split, Solin, island Brač, Meje neighborhood, or within 20 km">
+                                            </div>
+                                            @endif
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addLocationField('editLocationsContainer')">+ Add Another Location or Area</button>
+                                        <small class="text-muted ms-2">Enter each acceptable city, neighborhood, island, micro-location, or wider search area separately.</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-bold">Maximum Budget</label>
+                                        <input type="number" name="looking_budget_max" class="form-control" value="{{ $editListing->looking_budget_max }}" placeholder="0" min="0">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-bold">Currency</label>
+                                        <select name="looking_currency" class="form-select">
+                                            <option value="EUR" {{ ($editListing->looking_currency ?? 'EUR') === 'EUR' ? 'selected' : '' }}>EUR</option>
+                                            <option value="USD" {{ $editListing->looking_currency === 'USD' ? 'selected' : '' }}>USD</option>
+                                            <option value="GBP" {{ $editListing->looking_currency === 'GBP' ? 'selected' : '' }}>GBP</option>
+                                            <option value="HRK" {{ $editListing->looking_currency === 'HRK' ? 'selected' : '' }}>HRK</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-bold">Minimum Bedrooms</label>
+                                        <input type="number" name="looking_min_bedrooms" class="form-control" value="{{ $editListing->looking_min_bedrooms }}" placeholder="0" min="0">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-bold">Minimum Size (m²)</label>
+                                        <input type="number" name="looking_min_size" class="form-control" value="{{ $editListing->looking_min_size }}" placeholder="0" min="0" step="0.01">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-bold">Purchase Timeline</label>
+                                        <select name="looking_timeline" class="form-select">
+                                            <option value="">Select...</option>
+                                            <option value="asap" {{ $editListing->looking_timeline === 'asap' ? 'selected' : '' }}>As soon as possible</option>
+                                            <option value="3_months" {{ $editListing->looking_timeline === '3_months' ? 'selected' : '' }}>Within 3 months</option>
+                                            <option value="6_months" {{ $editListing->looking_timeline === '6_months' ? 'selected' : '' }}>Within 6 months</option>
+                                            <option value="1_year" {{ $editListing->looking_timeline === '1_year' ? 'selected' : '' }}>Within 1 year</option>
+                                            <option value="flexible" {{ $editListing->looking_timeline === 'flexible' ? 'selected' : '' }}>Flexible / No rush</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">Main Requirements</label>
+                                        <textarea name="looking_notes" class="form-control" rows="2" placeholder="e.g. Sea view, parking, minimum three bedrooms, no major renovation needed...">{{ $editListing->looking_notes }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="actions-bar">
                     <a href="{{ route('agency.features.show', 'local_seo_presence_boost') }}?show_listings=1" class="btn" style="background:#fff;color:#26303a;border:1px solid #cfd4d9;">Cancel</a>
@@ -1076,7 +1168,12 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Property Type</label>
-                        <input type="text" name="property_type" class="form-control" placeholder="e.g. Villa, Apartment, Land">
+                        <select name="property_type" class="form-select">
+                            <option value="">Select type...</option>
+                            @foreach(['Villa', 'Apartment', 'House', 'Penthouse', 'Studio', 'Duplex', 'Land', 'Commercial', 'Office', 'Retail', 'Hotel', 'Building', 'Farm', 'Warehouse', 'Parking', 'Other'] as $type)
+                                <option value="{{ $type }}">{{ $type }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="col-md-4 position-relative">
                         <label class="form-label">Location *</label>
@@ -1101,9 +1198,35 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-9">
+                    <div class="col-md-3">
+                        <label class="form-label">Living Area (m²)</label>
+                        <input type="number" name="living_area" class="form-control" placeholder="0" min="0" step="0.01">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Plot Size (m²)</label>
+                        <input type="number" name="plot_size" class="form-control" placeholder="0" min="0" step="0.01">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Bedrooms / Bathrooms</label>
+                        <div class="input-group">
+                            <input type="number" name="bedrooms" class="form-control" min="0" placeholder="Beds">
+                            <input type="number" name="bathrooms" class="form-control" min="0" placeholder="Baths">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                         <label class="form-label">Description</label>
                         <textarea name="description" class="form-control" rows="4" placeholder="Describe the property, features, and unique selling points..."></textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Year Built</label>
+                        <input type="number" name="year_built" class="form-control" placeholder="e.g. 2020" min="1800" max="{{ date('Y') + 5 }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label d-block">Turnkey Ready</label>
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" name="is_turnkey" value="1">
+                            <label class="form-check-label">Yes, ready to move in</label>
+                        </div>
                     </div>
                     <div class="col-12">
                         <label class="form-label">Images</label>
@@ -1114,6 +1237,79 @@
                         </div>
                         <button type="button" class="btn btn-sm btn-outline-secondary mt-2" onclick="addImageField()">+ Add Image</button>
                         <small class="text-muted d-block mt-1">Max 5MB per image.</small>
+                    </div>
+
+                    {{-- Property Chain - Looking to Buy Section --}}
+                    <div class="col-12 mt-4">
+                        <div class="border rounded p-3" style="background:#fafbfc;">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" name="looking_to_buy" id="addLookingToBuy" value="1" onchange="toggleLookingToBuyFields('add')">
+                                <label class="form-check-label fw-bold" for="addLookingToBuy">
+                                    <i class="fa fa-link me-1"></i> Property Chain: Seller is also looking to buy
+                                </label>
+                                <small class="text-muted d-block">Optional: If the seller wants to buy another property with the sale proceeds</small>
+                            </div>
+                            <div id="addLookingToBuyFields" style="display:none;">
+                                <p class="text-muted small mb-3">These details allow Villa Bit AI to include the seller in a possible property sales chain that can result in the sale of multiple properties at the same time.</p>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold">Wanted Property Type</label>
+                                        <select name="looking_property_type" class="form-select">
+                                            <option value="">Select property type...</option>
+                                            @foreach(['Villa', 'Apartment', 'House', 'Penthouse', 'Studio', 'Duplex', 'Land', 'Commercial', 'Office', 'Retail', 'Hotel', 'Building', 'Farm', 'Warehouse', 'Parking', 'Other'] as $type)
+                                                <option value="{{ $type }}">{{ $type }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label fw-bold">Wanted Locations or Areas</label>
+                                        <div id="addLocationsContainer">
+                                            <div class="d-flex gap-2 mb-2 location-row">
+                                                <input type="text" name="looking_locations[]" class="form-control" placeholder="e.g. Split, Solin, island Brač, Meje neighborhood, or within 20 km">
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="addLocationField('addLocationsContainer')">+ Add Another Location or Area</button>
+                                        <small class="text-muted ms-2">Enter each acceptable city, neighborhood, island, micro-location, or wider search area separately.</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-bold">Maximum Budget</label>
+                                        <input type="number" name="looking_budget_max" class="form-control" placeholder="0" min="0">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-bold">Currency</label>
+                                        <select name="looking_currency" class="form-select">
+                                            <option value="EUR" selected>EUR</option>
+                                            <option value="USD">USD</option>
+                                            <option value="GBP">GBP</option>
+                                            <option value="HRK">HRK</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-bold">Minimum Bedrooms</label>
+                                        <input type="number" name="looking_min_bedrooms" class="form-control" placeholder="0" min="0">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-bold">Minimum Size (m²)</label>
+                                        <input type="number" name="looking_min_size" class="form-control" placeholder="0" min="0" step="0.01">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-bold">Purchase Timeline</label>
+                                        <select name="looking_timeline" class="form-select">
+                                            <option value="">Select...</option>
+                                            <option value="asap">As soon as possible</option>
+                                            <option value="3_months">Within 3 months</option>
+                                            <option value="6_months">Within 6 months</option>
+                                            <option value="1_year">Within 1 year</option>
+                                            <option value="flexible">Flexible / No rush</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">Main Requirements</label>
+                                        <textarea name="looking_notes" class="form-control" rows="2" placeholder="e.g. Sea view, parking, minimum three bedrooms, no major renovation needed..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="actions-bar">
@@ -2226,6 +2422,27 @@
         container.appendChild(row);
     }
     window.addImageField = addImageField;
+
+    // Toggle Looking to Buy fields
+    function toggleLookingToBuyFields(prefix) {
+        var checkbox = document.getElementById(prefix + 'LookingToBuy');
+        var fields = document.getElementById(prefix + 'LookingToBuyFields');
+        if (checkbox && fields) {
+            fields.style.display = checkbox.checked ? 'block' : 'none';
+        }
+    }
+    window.toggleLookingToBuyFields = toggleLookingToBuyFields;
+
+    // Add location field for Looking to Buy
+    function addLocationField(containerId) {
+        var container = document.getElementById(containerId);
+        var row = document.createElement('div');
+        row.className = 'd-flex gap-2 mb-2 location-row';
+        row.innerHTML = '<input type="text" name="looking_locations[]" class="form-control" placeholder="e.g. Split, Solin, island Brač, Meje neighborhood, or within 20 km">' +
+                        '<button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest(\'.location-row\').remove()">Remove</button>';
+        container.appendChild(row);
+    }
+    window.addLocationField = addLocationField;
 
 </script>
 @endsection

@@ -366,10 +366,7 @@
                             <td>{{ $pub->page_slug ?? '/properties/' . ($property->slug ?? 'new-property') }}</td>
                             <td>
                                 @if($isEdit && $pub && $hasSftp)
-                                    <form action="{{ route('admin.villabit.villa-ready.properties.publish', [$property, $agency]) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-success">Deploy via SFTP</button>
-                                    </form>
+                                    <button type="button" class="btn btn-sm btn-success" onclick="deployToAgency({{ $property->id }}, {{ $agency->id }})">Deploy via SFTP</button>
                                 @elseif($isEdit && $pub && !$hasSftp)
                                     <span class="text-muted small">No SFTP configured</span>
                                 @else
@@ -453,5 +450,22 @@ function addUnitRow() {
     `;
     tbody.appendChild(tr);
     unitIndex++;
+}
+
+function deployToAgency(propertyId, agencyId) {
+    if (!confirm('Deploy this property page to the agency server via SFTP?')) return;
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/admin/villabit/villa-ready/properties/${propertyId}/publish/${agencyId}`;
+    
+    const csrf = document.createElement('input');
+    csrf.type = 'hidden';
+    csrf.name = '_token';
+    csrf.value = '{{ csrf_token() }}';
+    form.appendChild(csrf);
+    
+    document.body.appendChild(form);
+    form.submit();
 }
 </script>

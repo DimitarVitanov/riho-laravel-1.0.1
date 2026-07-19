@@ -16,6 +16,8 @@ class VillaReadyAgencyPublication extends Model
         'affiliate_code',
         'page_slug',
         'is_published',
+        'published_at',
+        'published_url',
     ];
 
     protected $casts = [

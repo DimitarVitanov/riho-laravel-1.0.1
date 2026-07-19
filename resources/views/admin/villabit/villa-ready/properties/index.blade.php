@@ -61,12 +61,14 @@
                                     <td>{{ $property->publications_count }}</td>
                                     <td>{{ $property->referrals_count }}</td>
                                     <td>
-                                        <a href="{{ url('/properties/' . $property->slug) }}" target="_blank" class="btn btn-sm btn-outline-success">Preview</a>
-                                        <a href="{{ route('admin.villabit.villa-ready.properties.edit', $property) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                                        <form action="{{ route('admin.villabit.villa-ready.properties.destroy', $property) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this property?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                        </form>
+                                        <div class="d-flex gap-1 flex-nowrap">
+                                            <a href="{{ url('/properties/' . $property->slug) }}" target="_blank" class="btn btn-sm btn-outline-success">Preview</a>
+                                            <a href="{{ route('admin.villabit.villa-ready.properties.edit', $property) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                            <form action="{{ route('admin.villabit.villa-ready.properties.destroy', $property) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this property?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty

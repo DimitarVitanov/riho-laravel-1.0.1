@@ -8,8 +8,10 @@ use App\Models\AiFeatureSetting;
 use App\Models\GeneratedPage;
 use App\Services\DomainVerificationService;
 use App\Services\ManagerUrlMatcher;
+use App\Services\SitemapSftpUploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AgencySettingsController extends Controller
 {
@@ -69,11 +71,79 @@ class AgencySettingsController extends Controller
 
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        if ($user->getEffectiveAgencyProfile() && $feature->agency_profile_id === $user->getEffectiveAgencyProfile()->id) {
-            $feature->update(['is_enabled' => $request->boolean('is_enabled')]);
+        $profile = $user->getEffectiveAgencyProfile();
+        
+        if (!$profile || $feature->agency_profile_id !== $profile->id) {
+            return back()->with('error', 'Unauthorized.');
         }
 
+        $isEnabling = $request->boolean('is_enabled');
+        $featureKey = $feature->feature_key;
+
+        // Handle affiliate_sale and invisible_lead_magnet dependency
+        if (in_array($featureKey, ['affiliate_sale', 'invisible_lead_magnet'])) {
+            $linkedFeatureKey = $featureKey === 'affiliate_sale' ? 'invisible_lead_magnet' : 'affiliate_sale';
+            $linkedFeature = AiFeatureSetting::where('agency_profile_id', $profile->id)
+                ->where('feature_key', $linkedFeatureKey)
+                ->first();
+
+            if (!$isEnabling) {
+                // Turning OFF - both must be disabled together
+                $feature->update(['is_enabled' => false]);
+                if ($linkedFeature) {
+                    $linkedFeature->update(['is_enabled' => false]);
+                }
+
+                // Delete property files from server
+                $this->deleteVillaReadyPagesFromServer($profile);
+
+                return back()->with('success', 'Affiliate Sale and Invisible Lead Magnet have been disabled. Property pages removed from your server.');
+            } else {
+                // Turning ON - both must be enabled together
+                $feature->update(['is_enabled' => true]);
+                if ($linkedFeature) {
+                    $linkedFeature->update(['is_enabled' => true]);
+                }
+
+                // Re-upload property files to server
+                $this->uploadVillaReadyPagesToServer($profile);
+
+                return back()->with('success', 'Affiliate Sale and Invisible Lead Magnet have been enabled. Property pages uploaded to your server.');
+            }
+        }
+
+        // Normal feature toggle
+        $feature->update(['is_enabled' => $isEnabling]);
+
         return back()->with('success', 'Feature toggled.');
+    }
+
+    protected function deleteVillaReadyPagesFromServer(AgencyProfile $profile): void
+    {
+        if (!$profile->server_ip || !$profile->sftp_username || !$profile->sftp_password) {
+            return;
+        }
+
+        try {
+            $uploader = app(SitemapSftpUploader::class);
+            $uploader->deleteVillaReadyPages($profile);
+        } catch (\Exception $e) {
+            Log::warning("Failed to delete Villa Ready pages: " . $e->getMessage());
+        }
+    }
+
+    protected function uploadVillaReadyPagesToServer(AgencyProfile $profile): void
+    {
+        if (!$profile->server_ip || !$profile->sftp_username || !$profile->sftp_password) {
+            return;
+        }
+
+        try {
+            $uploader = app(SitemapSftpUploader::class);
+            $uploader->upload($profile); // This uploads sitemap + property pages
+        } catch (\Exception $e) {
+            Log::warning("Failed to upload Villa Ready pages: " . $e->getMessage());
+        }
     }
 
     public function domainSettings()

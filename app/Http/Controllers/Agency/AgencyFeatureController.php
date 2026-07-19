@@ -23,6 +23,7 @@ class AgencyFeatureController extends Controller
         'daily_competitor_scan',
         'ai_authority_builder',
         'small_ai_actions',
+        'affiliate_sale',
     ];
 
     public function show(string $feature)
@@ -138,6 +139,38 @@ class AgencyFeatureController extends Controller
                     ->latest('scanned_at')
                     ->paginate(10) : collect();
                 $viewData['usageLimit'] = $profile ? $profile->currentUsageLimit : null;
+            }
+
+            if ($feature === 'affiliate_sale') {
+                $viewData['feature'] = $featureSetting;
+                
+                // Get Villa Ready referrals for this agency
+                $viewData['referrals'] = $profile 
+                    ? \App\Models\VillaReadyPropertyReferral::where('agency_profile_id', $profile->id)
+                        ->with('property')
+                        ->latest('first_visit_at')
+                        ->paginate(20)
+                    : collect();
+                
+                // Get publications (properties published to this agency's site)
+                $viewData['publications'] = $profile 
+                    ? \App\Models\VillaReadyAgencyPublication::where('agency_profile_id', $profile->id)
+                        ->where('is_published', true)
+                        ->with('property.images')
+                        ->get()
+                    : collect();
+                
+                // Calculate stats
+                $referrals = $profile 
+                    ? \App\Models\VillaReadyPropertyReferral::where('agency_profile_id', $profile->id) 
+                    : \App\Models\VillaReadyPropertyReferral::whereNull('id');
+                
+                $viewData['stats'] = [
+                    'total_visits' => $referrals->count(),
+                    'viewed' => (clone $referrals)->where('status', 'viewed')->count(),
+                    'paid_sales' => (clone $referrals)->where('status', 'paid')->count(),
+                    'total_commission' => (clone $referrals)->where('status', 'paid')->sum('commission_amount'),
+                ];
             }
 
             return view($featureView, $viewData);

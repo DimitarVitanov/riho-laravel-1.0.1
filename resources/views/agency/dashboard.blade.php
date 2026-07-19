@@ -137,6 +137,7 @@
                 'daily_competitor_scan' => 3,
                 'ai_authority_builder' => 4,
                 'invisible_lead_magnet' => 5,
+                'affiliate_sale' => 6,
             ];
             $sortedFeatures = $aiFeatures
                 ->reject(fn($f) => $f->feature_key === 'small_ai_actions')

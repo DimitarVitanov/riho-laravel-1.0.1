@@ -89,6 +89,39 @@ class SitemapSftpUploader
         return ['count' => $count];
     }
 
+    public function deleteVillaReadyPages(AgencyProfile $profile): array
+    {
+        if (!$profile->server_ip || !$profile->sftp_username || !$profile->sftp_password) {
+            return [
+                'success' => false,
+                'message' => 'Missing SFTP credentials',
+            ];
+        }
+
+        try {
+            $remotePath = rtrim($profile->sftp_path ?: '/public_html', '/');
+            $propertiesDir = $remotePath . '/properties';
+
+            $filesystem = $this->createSftpFilesystem($profile);
+
+            if ($filesystem->directoryExists($propertiesDir)) {
+                $filesystem->deleteDirectory($propertiesDir);
+            }
+
+            return [
+                'success' => true,
+                'message' => "Property pages deleted from {$propertiesDir}",
+            ];
+
+        } catch (\Exception $e) {
+            Log::warning("Failed to delete Villa Ready pages: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Failed to delete property pages: ' . $e->getMessage(),
+            ];
+        }
+    }
+
     protected function renderPropertyPage(VillaReadyProperty $property, AgencyProfile $profile): string
     {
         return View::make('realestate-taxi.villa-ready-property', [

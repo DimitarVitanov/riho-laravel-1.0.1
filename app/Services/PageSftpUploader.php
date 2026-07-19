@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\AgencyProfile;
 use App\Models\LocalSeoCampaign;
 use App\Models\AiAuthorityPage;
+use App\Models\VillaReadyProperty;
+use App\Models\VillaReadyAgencyPublication;
 use League\Flysystem\Filesystem;
 use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 use League\Flysystem\PhpseclibV3\SftpAdapter;
@@ -261,6 +263,128 @@ class PageSftpUploader
     }
 
     /**
+     * Upload a Villa Ready property page to the agency's server via SFTP.
+     */
+    public function uploadVillaReadyPropertyPage(
+        VillaReadyProperty $property, 
+        AgencyProfile $profile,
+        VillaReadyAgencyPublication $publication
+    ): array {
+        if (!$profile->server_ip || !$profile->sftp_username || !$profile->sftp_password) {
+            return [
+                'success' => false,
+                'message' => 'Missing SFTP credentials. Please configure server connection in Agency Settings.',
+            ];
+        }
+
+        try {
+            // Render the full HTML page
+            $html = $this->renderVillaReadyPropertyHtml($property, $profile, $publication);
+
+            // Determine remote path
+            $remotePath = rtrim($profile->sftp_path ?: '/public_html', '/');
+
+            // Build the file path from property slug
+            $slug = 'properties/' . $property->slug;
+            $filePath = $remotePath . '/' . $slug . '/index.html';
+
+            // Create SFTP connection and upload
+            $filesystem = $this->createSftpFilesystem($profile);
+
+            // Ensure directory exists
+            $directory = dirname($filePath);
+            if (!$filesystem->directoryExists($directory)) {
+                $filesystem->createDirectory($directory);
+            }
+
+            // Write the HTML file
+            $filesystem->write($filePath, $html);
+
+            Log::info('Villa Ready property page uploaded via SFTP', [
+                'property_id' => $property->id,
+                'agency_id' => $profile->id,
+                'path' => $filePath,
+                'server' => $profile->server_ip,
+            ]);
+
+            $url = 'https://' . rtrim($profile->custom_domain, '/') . '/' . $slug . '/';
+
+            // Update publication record
+            $publication->update([
+                'is_published' => true,
+                'published_at' => now(),
+                'published_url' => $url,
+            ]);
+
+            // Send email notification
+            $this->sendPublishNotification($profile, $property->title, 'villa_ready', $url, $property->location);
+
+            return [
+                'success' => true,
+                'message' => "Property page uploaded to {$filePath}",
+                'path' => $filePath,
+                'url' => $url,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Villa Ready SFTP upload failed', [
+                'property_id' => $property->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'SFTP upload failed: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Delete a Villa Ready property page from the server.
+     */
+    public function deleteVillaReadyPropertyPage(VillaReadyProperty $property, AgencyProfile $profile): array
+    {
+        if (!$profile->server_ip || !$profile->sftp_username || !$profile->sftp_password) {
+            return ['success' => false, 'message' => 'Missing SFTP credentials'];
+        }
+
+        try {
+            $remotePath = rtrim($profile->sftp_path ?: '/public_html', '/');
+            $slug = 'properties/' . $property->slug;
+            $directory = $remotePath . '/' . $slug;
+
+            $filesystem = $this->createSftpFilesystem($profile);
+
+            if ($filesystem->directoryExists($directory)) {
+                $filesystem->deleteDirectory($directory);
+            }
+
+            return [
+                'success' => true,
+                'message' => "Property page deleted from {$directory}",
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'SFTP delete failed: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    protected function renderVillaReadyPropertyHtml(
+        VillaReadyProperty $property, 
+        AgencyProfile $profile,
+        VillaReadyAgencyPublication $publication
+    ): string {
+        return View::make('realestate-taxi.villa-ready-property', [
+            'property' => $property->load(['images', 'units']),
+            'profile' => $profile,
+            'publication' => $publication,
+        ])->render();
+    }
+
+    /**
      * Send email notification when page is published.
      */
     public function sendPublishNotification(
@@ -278,6 +402,7 @@ class PageSftpUploader
             $typeLabel = match ($pageType) {
                 'local_seo' => 'Local SEO',
                 'ai_search' => 'AI Search Ranking',
+                'villa_ready' => 'Villa Ready Property',
                 default => 'Generated',
             };
 

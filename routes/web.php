@@ -232,6 +232,8 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
         Route::delete('properties/{property}', [AdminVillaReadyPropertyController::class, 'destroy'])->name('properties.destroy');
         Route::delete('properties/images/{image}', [AdminVillaReadyPropertyController::class, 'deleteImage'])->name('properties.images.destroy');
         Route::delete('properties/units/{unit}', [AdminVillaReadyPropertyController::class, 'deleteUnit'])->name('properties.units.destroy');
+        Route::post('properties/{property}/publish/{agency}', [AdminVillaReadyPropertyController::class, 'publishToAgency'])->name('properties.publish');
+        Route::post('properties/{property}/unpublish/{agency}', [AdminVillaReadyPropertyController::class, 'unpublishFromAgency'])->name('properties.unpublish');
 
         // Affiliate Referral Tracking
         Route::get('referrals', [AdminVillaReadyReferralController::class, 'index'])->name('referrals.index');

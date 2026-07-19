@@ -347,12 +347,14 @@
                             <th>Domain</th>
                             <th>Affiliate Code</th>
                             <th>Page URL</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($agencies as $agency)
                         @php
                             $pub = $isEdit ? $property->publications->where('agency_profile_id', $agency->id)->first() : null;
+                            $hasSftp = $agency->server_ip && $agency->sftp_username && $agency->sftp_password;
                         @endphp
                         <tr>
                             <td>
@@ -362,6 +364,18 @@
                             <td>{{ $agency->custom_domain ?? $agency->subdomain ?? '—' }}</td>
                             <td>{{ $pub->affiliate_code ?? '—' }}</td>
                             <td>{{ $pub->page_slug ?? '/properties/' . ($property->slug ?? 'new-property') }}</td>
+                            <td>
+                                @if($isEdit && $pub && $hasSftp)
+                                    <form action="{{ route('admin.villabit.villa-ready.properties.publish', [$property, $agency]) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-success">Deploy via SFTP</button>
+                                    </form>
+                                @elseif($isEdit && $pub && !$hasSftp)
+                                    <span class="text-muted small">No SFTP configured</span>
+                                @else
+                                    <span class="text-muted">—</span>
+                                @endif
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>

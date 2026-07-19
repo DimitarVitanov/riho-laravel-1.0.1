@@ -8,6 +8,7 @@ use App\Models\VillaReadyPropertyImage;
 use App\Models\VillaReadyPropertyUnit;
 use App\Models\VillaReadyAgencyPublication;
 use App\Models\AgencyProfile;
+use App\Services\PageSftpUploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -288,5 +289,55 @@ class AdminVillaReadyPropertyController extends Controller
     {
         $unit->delete();
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Publish property page to agency's server via SFTP.
+     */
+    public function publishToAgency(Request $request, VillaReadyProperty $property, AgencyProfile $agency)
+    {
+        $publication = VillaReadyAgencyPublication::where('villa_ready_property_id', $property->id)
+            ->where('agency_profile_id', $agency->id)
+            ->first();
+
+        if (!$publication) {
+            return back()->with('error', 'Property is not assigned to this agency.');
+        }
+
+        $uploader = new PageSftpUploader();
+        $result = $uploader->uploadVillaReadyPropertyPage($property, $agency, $publication);
+
+        if ($result['success']) {
+            return back()->with('success', "Property page published to {$agency->agency_name}. URL: {$result['url']}");
+        }
+
+        return back()->with('error', $result['message']);
+    }
+
+    /**
+     * Unpublish property page from agency's server via SFTP.
+     */
+    public function unpublishFromAgency(Request $request, VillaReadyProperty $property, AgencyProfile $agency)
+    {
+        $publication = VillaReadyAgencyPublication::where('villa_ready_property_id', $property->id)
+            ->where('agency_profile_id', $agency->id)
+            ->first();
+
+        if (!$publication) {
+            return back()->with('error', 'Property is not assigned to this agency.');
+        }
+
+        $uploader = new PageSftpUploader();
+        $result = $uploader->deleteVillaReadyPropertyPage($property, $agency);
+
+        if ($result['success']) {
+            $publication->update([
+                'is_published' => false,
+                'published_url' => null,
+            ]);
+            return back()->with('success', "Property page removed from {$agency->agency_name}.");
+        }
+
+        return back()->with('error', $result['message']);
     }
 }

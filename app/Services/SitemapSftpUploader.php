@@ -78,8 +78,15 @@ class SitemapSftpUploader
         foreach ($properties as $property) {
             try {
                 $html = $this->renderPropertyPage($property, $profile);
-                $pagePath = $propertiesDir . '/' . $property->slug . '.html';
-                $filesystem->write($pagePath, $html);
+                
+                // Create directory for property (slug/index.html format)
+                $propertyDir = $propertiesDir . '/' . $property->slug;
+                if (!$filesystem->directoryExists($propertyDir)) {
+                    $filesystem->createDirectory($propertyDir, ['visibility' => 'public']);
+                }
+                
+                $pagePath = $propertyDir . '/index.html';
+                $filesystem->write($pagePath, $html, ['visibility' => 'public']);
                 $count++;
             } catch (\Exception $e) {
                 Log::warning("Failed to upload property page {$property->slug}: " . $e->getMessage());

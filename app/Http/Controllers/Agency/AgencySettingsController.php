@@ -8,7 +8,9 @@ use App\Models\AiFeatureSetting;
 use App\Models\GeneratedPage;
 use App\Services\DomainVerificationService;
 use App\Services\ManagerUrlMatcher;
-use App\Services\SitemapSftpUploader;
+use App\Services\PageSftpUploader;
+use App\Models\VillaReadyProperty;
+use App\Models\VillaReadyAgencyPublication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -125,8 +127,13 @@ class AgencySettingsController extends Controller
         }
 
         try {
-            $uploader = app(SitemapSftpUploader::class);
-            $uploader->deleteVillaReadyPages($profile);
+            $uploader = app(PageSftpUploader::class);
+            
+            // Get all published properties and delete their pages
+            $properties = VillaReadyProperty::where('status', 'published')->get();
+            foreach ($properties as $property) {
+                $uploader->deleteVillaReadyPropertyPage($property, $profile);
+            }
         } catch (\Exception $e) {
             Log::warning("Failed to delete Villa Ready pages: " . $e->getMessage());
         }
@@ -139,8 +146,28 @@ class AgencySettingsController extends Controller
         }
 
         try {
-            $uploader = app(SitemapSftpUploader::class);
-            $uploader->upload($profile); // This uploads sitemap + property pages
+            $uploader = app(PageSftpUploader::class);
+            
+            // Get all published properties and upload their pages
+            $properties = VillaReadyProperty::where('status', 'published')
+                ->with(['images', 'units', 'content'])
+                ->get();
+                
+            foreach ($properties as $property) {
+                // Get or create publication record for this agency
+                $publication = VillaReadyAgencyPublication::firstOrCreate(
+                    [
+                        'villa_ready_property_id' => $property->id,
+                        'agency_profile_id' => $profile->id,
+                    ],
+                    [
+                        'affiliate_code' => 'VRC-' . strtoupper(substr(md5($profile->id . $property->id), 0, 8)),
+                        'page_slug' => 'properties/' . $property->slug,
+                    ]
+                );
+                
+                $uploader->uploadVillaReadyPropertyPage($property, $profile, $publication);
+            }
         } catch (\Exception $e) {
             Log::warning("Failed to upload Villa Ready pages: " . $e->getMessage());
         }

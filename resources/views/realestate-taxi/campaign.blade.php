@@ -1401,8 +1401,41 @@ textarea { min-height: 100px; resize: vertical; }
         </section>
         @endif
 
-        {{-- Property Promo Box --}}
-        @if($sidebarPromoEnabled)
+        {{-- Villa Ready Properties --}}
+        @php
+          $villaReadyProperties = \App\Models\VillaReadyAgencyPublication::where('agency_profile_id', $profile->id)
+            ->where('is_published', true)
+            ->with('property')
+            ->get()
+            ->pluck('property')
+            ->filter();
+        @endphp
+        @foreach($villaReadyProperties->take(2) as $vrProperty)
+        <section class="card" style="overflow:hidden;">
+          @php
+            $propertyImage = $vrProperty->featured_image 
+              ? asset('storage/' . $vrProperty->featured_image) 
+              : ($vrProperty->images->first() ? $vrProperty->images->first()->image_url : null);
+            $propertyUrl = '/properties/' . $vrProperty->slug;
+          @endphp
+          @if($propertyImage)
+          <a href="{{ $propertyUrl }}" style="display:block;">
+            <img src="{{ $propertyImage }}" alt="{{ $vrProperty->title }}" style="width:100%;height:160px;object-fit:cover;">
+          </a>
+          @endif
+          <div class="pad">
+            <strong style="font-size:15px;display:block;margin-bottom:4px;">{{ $vrProperty->short_title ?? $vrProperty->title }}</strong>
+            <p class="sub" style="margin:0 0 8px;font-size:13px;">{{ $vrProperty->location }}</p>
+            @if($vrProperty->price_display)
+            <span style="background:var(--ink);color:#fff;font-size:12px;padding:4px 10px;border-radius:6px;font-weight:600;">{{ $vrProperty->price_display }}</span>
+            @endif
+            <a href="{{ $propertyUrl }}" class="btn primary" style="margin-top:12px;width:100%;text-align:center;">View Property</a>
+          </div>
+        </section>
+        @endforeach
+
+        {{-- Property Promo Box (fallback if no Villa Ready properties) --}}
+        @if($sidebarPromoEnabled && $villaReadyProperties->isEmpty())
         <section class="card" style="overflow:hidden;">
           @if($sidebarPromoImage)
           <a href="{{ $sidebarPromoUrl }}" style="display:block;">

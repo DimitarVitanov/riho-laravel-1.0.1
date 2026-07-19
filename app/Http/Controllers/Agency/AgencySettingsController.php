@@ -139,6 +139,9 @@ class AgencySettingsController extends Controller
             foreach ($properties as $property) {
                 $uploader->deleteVillaReadyPropertyPage($property, $profile);
             }
+            
+            // Also delete the /properties folder itself
+            $uploader->deletePropertiesFolder($profile);
         } catch (\Exception $e) {
             Log::warning("Failed to delete Villa Ready pages: " . $e->getMessage());
         }

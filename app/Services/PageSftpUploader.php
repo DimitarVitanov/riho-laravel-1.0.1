@@ -395,6 +395,44 @@ class PageSftpUploader
         }
     }
 
+    /**
+     * Delete the entire /properties folder from the server.
+     */
+    public function deletePropertiesFolder(AgencyProfile $profile): array
+    {
+        if (!$profile->server_ip || !$profile->sftp_username || !$profile->sftp_password) {
+            return ['success' => false, 'message' => 'Missing SFTP credentials'];
+        }
+
+        try {
+            $remotePath = rtrim($profile->sftp_path ?: '/public_html', '/');
+            $propertiesDir = $remotePath . '/properties';
+
+            $filesystem = $this->createSftpFilesystem($profile);
+
+            if ($filesystem->directoryExists($propertiesDir)) {
+                $filesystem->deleteDirectory($propertiesDir);
+                Log::info('Properties folder deleted via SFTP', [
+                    'agency_id' => $profile->id,
+                    'path' => $propertiesDir,
+                    'server' => $profile->server_ip,
+                ]);
+            }
+
+            return [
+                'success' => true,
+                'message' => "Properties folder deleted from {$propertiesDir}",
+            ];
+
+        } catch (\Exception $e) {
+            Log::warning('Failed to delete properties folder: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'SFTP delete failed: ' . $e->getMessage(),
+            ];
+        }
+    }
+
     protected function renderVillaReadyPropertyHtml(
         VillaReadyProperty $property, 
         AgencyProfile $profile,

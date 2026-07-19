@@ -139,7 +139,20 @@ class PageSftpUploader
             30
         );
 
-        $adapter = new SftpAdapter($provider, '/');
+        $adapter = new SftpAdapter(
+            $provider,
+            '/',
+            \League\Flysystem\UnixVisibility\PortableVisibilityConverter::fromArray([
+                'file' => [
+                    'public' => 0644,
+                    'private' => 0600,
+                ],
+                'dir' => [
+                    'public' => 0777,
+                    'private' => 0700,
+                ],
+            ])
+        );
 
         return new Filesystem($adapter);
     }

@@ -47,14 +47,14 @@ class PageSftpUploader
             // Create SFTP connection and upload
             $filesystem = $this->createSftpFilesystem($profile);
 
-            // Ensure directory exists
+            // Ensure directory exists with public visibility (777)
             $directory = dirname($filePath);
             if (!$filesystem->directoryExists($directory)) {
-                $filesystem->createDirectory($directory);
+                $filesystem->createDirectory($directory, ['visibility' => 'public']);
             }
 
-            // Write the HTML file
-            $filesystem->write($filePath, $html);
+            // Write the HTML file with public visibility
+            $filesystem->write($filePath, $html, ['visibility' => 'public']);
 
             Log::info('Campaign page uploaded via SFTP', [
                 'campaign_id' => $campaign->id,
@@ -197,8 +197,8 @@ class PageSftpUploader
             // Create SFTP connection and upload
             $filesystem = $this->createSftpFilesystem($profile);
 
-            // Write the HTML file
-            $filesystem->write($filePath, $html);
+            // Write the HTML file with public visibility
+            $filesystem->write($filePath, $html, ['visibility' => 'public']);
 
             Log::info('AI Search page uploaded via SFTP', [
                 'page_id' => $page->id,
@@ -304,14 +304,14 @@ class PageSftpUploader
             // Create SFTP connection and upload
             $filesystem = $this->createSftpFilesystem($profile);
 
-            // Ensure directory exists
+            // Ensure directory exists with public visibility (777)
             $directory = dirname($filePath);
             if (!$filesystem->directoryExists($directory)) {
-                $filesystem->createDirectory($directory);
+                $filesystem->createDirectory($directory, ['visibility' => 'public']);
             }
 
-            // Write the HTML file
-            $filesystem->write($filePath, $html);
+            // Write the HTML file with public visibility
+            $filesystem->write($filePath, $html, ['visibility' => 'public']);
 
             Log::info('Villa Ready property page uploaded via SFTP', [
                 'property_id' => $property->id,

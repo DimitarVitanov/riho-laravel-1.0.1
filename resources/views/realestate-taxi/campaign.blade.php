@@ -1403,14 +1403,14 @@ textarea { min-height: 100px; resize: vertical; }
 
         {{-- Villa Ready Properties with 6% Commission Badge --}}
         @php
-          $villaReadyProperties = \App\Models\VillaReadyAgencyPublication::where('agency_profile_id', $profile->id)
+          $villaReadyPublications = \App\Models\VillaReadyAgencyPublication::where('agency_profile_id', $profile->id)
             ->where('is_published', true)
-            ->with('property')
-            ->get()
-            ->pluck('property')
-            ->filter();
+            ->with(['property.images'])
+            ->get();
         @endphp
-        @foreach($villaReadyProperties->take(2) as $vrProperty)
+        @foreach($villaReadyPublications->take(2) as $vrPub)
+        @php $vrProperty = $vrPub->property; @endphp
+        @if($vrProperty)
         <section class="card" style="overflow:hidden;">
           {{-- 6% Commission Badge above image --}}
           <div style="padding:14px 16px;background:var(--soft);border-bottom:1px solid var(--line);">
@@ -1426,7 +1426,9 @@ textarea { min-height: 100px; resize: vertical; }
             $propertyImage = $vrProperty->featured_image 
               ? asset('storage/' . $vrProperty->featured_image) 
               : ($vrProperty->images->first() ? $vrProperty->images->first()->image_url : null);
-            $propertyUrl = '/properties/' . $vrProperty->slug;
+            
+            // Use published URL if available, otherwise fallback to app.villabit.ai
+            $propertyUrl = $vrPub->published_url ?: 'https://app.villabit.ai/properties/' . $vrProperty->slug;
           @endphp
           @if($propertyImage)
           <a href="{{ $propertyUrl }}" style="display:block;">
@@ -1442,10 +1444,11 @@ textarea { min-height: 100px; resize: vertical; }
             <a href="{{ $propertyUrl }}" class="btn primary" style="margin-top:12px;width:100%;text-align:center;">Get Property Options</a>
           </div>
         </section>
+        @endif
         @endforeach
 
         {{-- Property Promo Box (fallback if no Villa Ready properties) --}}
-        @if($sidebarPromoEnabled && $villaReadyProperties->isEmpty())
+        @if($sidebarPromoEnabled && $villaReadyPublications->isEmpty())
         <section class="card" style="overflow:hidden;">
           @if($sidebarPromoImage)
           <a href="{{ $sidebarPromoUrl }}" style="display:block;">

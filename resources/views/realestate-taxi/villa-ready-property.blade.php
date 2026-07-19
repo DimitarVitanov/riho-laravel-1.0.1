@@ -790,9 +790,13 @@ textarea { min-height: 100px; resize: vertical; }
 <div class="topbar-strip">Property information presented by the real estate agency on behalf of Villa Ready Croatia.</div>
 <header class="site-header">
 <div class="header-inner">
-<a class="brand" href="01_AGENCY_SEO_PAGE_WITH_VILLA_OFFER.html">
+<a class="brand" href="{{ $profile->official_website_url ?? '/' }}">
+@if($profile->logo_url)
+<img src="{{ $profile->logo_url }}" alt="{{ $profile->agency_name }}" style="height: 44px; width: auto; border-radius: 12px;">
+@else
 <span class="brand-mark">⌂</span>
-<span><strong>YOUR REAL ESTATE AGENCY</strong><small>Authorized property presentation</small></span>
+@endif
+<span><strong>{{ strtoupper($profile->agency_name ?? 'YOUR REAL ESTATE AGENCY') }}</strong><small>Authorized property presentation</small></span>
 </a>
 <nav class="nav">
 <a href="#">Properties</a>
@@ -805,7 +809,7 @@ textarea { min-height: 100px; resize: vertical; }
 </header><div class="sticky-property-nav"><div class="inner"><a href="#location-value">Location Value</a><a href="#chain-location">4-Villa Location</a><a href="#sea-view">Sea View</a><a href="#access">Access</a><a href="#plot-sizes">Plots</a><a href="#concept">Concept</a><a href="#pricing">Pricing</a><a href="#tax">Tax</a><a href="#core-values">Core Values</a><a href="#contact">Contact Agency</a></div></div>
 <div class="wrap">
 <div class="original-source-note">
-<div class="source-logo-row"><img alt="Villa Ready Croatia logo" src="/villa-ready-assets/logo.webp"/><div><strong>Original Villa Ready Croatia property content</strong><p>All supplied property texts and meaningful images from the saved source page are inserted below inside the agency design.</p></div></div>
+<div class="source-logo-row"><img alt="Villa Ready Croatia logo" src="https://villareadycroatia.com/villa-ready-assets/logo.webp"/><div><strong>Original Villa Ready Croatia property content</strong><p>All supplied property texts and meaningful images from the saved source page are inserted below inside the agency design.</p></div></div>
 <span class="badge">Agency presentation</span>
 </div>
 <section class="hero original-hero">

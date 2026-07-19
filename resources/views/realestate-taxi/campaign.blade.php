@@ -1401,7 +1401,7 @@ textarea { min-height: 100px; resize: vertical; }
         </section>
         @endif
 
-        {{-- Villa Ready Properties --}}
+        {{-- Villa Ready Properties with 6% Commission Badge --}}
         @php
           $villaReadyProperties = \App\Models\VillaReadyAgencyPublication::where('agency_profile_id', $profile->id)
             ->where('is_published', true)
@@ -1412,6 +1412,16 @@ textarea { min-height: 100px; resize: vertical; }
         @endphp
         @foreach($villaReadyProperties->take(2) as $vrProperty)
         <section class="card" style="overflow:hidden;">
+          {{-- 6% Commission Badge above image --}}
+          <div style="padding:14px 16px;background:var(--soft);border-bottom:1px solid var(--line);">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="background:var(--ink);color:#fff;font-weight:700;padding:5px 10px;border-radius:6px;font-size:14px;">6%</span>
+              <strong style="font-size:14px;">Buyer commission</strong>
+            </div>
+            <p class="sub" style="margin:8px 0 0;font-size:12px;line-height:1.4;">
+              We charge a transparent 6% buyer commission on successful purchases. No hidden fees.
+            </p>
+          </div>
           @php
             $propertyImage = $vrProperty->featured_image 
               ? asset('storage/' . $vrProperty->featured_image) 
@@ -1429,7 +1439,7 @@ textarea { min-height: 100px; resize: vertical; }
             @if($vrProperty->price_display)
             <span style="background:var(--ink);color:#fff;font-size:12px;padding:4px 10px;border-radius:6px;font-weight:600;">{{ $vrProperty->price_display }}</span>
             @endif
-            <a href="{{ $propertyUrl }}" class="btn primary" style="margin-top:12px;width:100%;text-align:center;">View Property</a>
+            <a href="{{ $propertyUrl }}" class="btn primary" style="margin-top:12px;width:100%;text-align:center;">Get Property Options</a>
           </div>
         </section>
         @endforeach
@@ -1450,17 +1460,6 @@ textarea { min-height: 100px; resize: vertical; }
         </section>
         @endif
 
-        {{-- Agency Commission Info Box --}}
-        <section class="card pad" style="background:var(--soft);">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-            <span style="background:var(--accent);color:#fff;font-weight:700;padding:6px 12px;border-radius:8px;font-size:18px;">6%</span>
-            <strong style="font-size:15px;">Buyer commission</strong>
-          </div>
-          <p class="sub" style="margin:0;line-height:1.5;">
-            We charge a transparent 6% buyer commission on successful purchases. No hidden fees. You only pay when you buy.
-          </p>
-          <a href="#contact" class="btn primary" style="margin-top:14px;width:100%;text-align:center;">Get Property Options</a>
-        </section>
 
         @if($showLastUpdated ?? true)
         <section class="card pad">

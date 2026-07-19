@@ -809,7 +809,7 @@ textarea { min-height: 100px; resize: vertical; }
 </header><div class="sticky-property-nav"><div class="inner"><a href="#location-value">Location Value</a><a href="#chain-location">4-Villa Location</a><a href="#sea-view">Sea View</a><a href="#access">Access</a><a href="#plot-sizes">Plots</a><a href="#concept">Concept</a><a href="#pricing">Pricing</a><a href="#tax">Tax</a><a href="#core-values">Core Values</a><a href="#contact">Contact Agency</a></div></div>
 <div class="wrap">
 <div class="original-source-note">
-<div class="source-logo-row"><img alt="Villa Ready Croatia logo" src="https://app.villabit.ai/storage/villa-ready/logo.webp" style="width:58px;height:58px;object-fit:contain;border-radius:12px;background:#f8f9fa;"/><div><strong>Original Villa Ready Croatia property content</strong><p>All supplied property texts and meaningful images from the saved source page are inserted below inside the agency design.</p></div></div>
+<div class="source-logo-row"><img alt="Villa Ready Croatia logo" src="https://app.villabit.ai/villa-ready-assets/logo.webp" style="width:58px;height:58px;object-fit:contain;border-radius:12px;background:#f8f9fa;"/><div><strong>Original Villa Ready Croatia property content</strong><p>All supplied property texts and meaningful images from the saved source page are inserted below inside the agency design.</p></div></div>
 <span class="badge">Agency presentation</span>
 </div>
 <section class="hero original-hero">

@@ -122,7 +122,10 @@ class AgencySettingsController extends Controller
 
     protected function deleteVillaReadyPagesFromServer(AgencyProfile $profile): void
     {
+        Log::info('deleteVillaReadyPagesFromServer called', ['agency_id' => $profile->id]);
+        
         if (!$profile->server_ip || !$profile->sftp_username || !$profile->sftp_password) {
+            Log::warning('Missing SFTP credentials for delete', ['agency_id' => $profile->id]);
             return;
         }
 
@@ -131,6 +134,8 @@ class AgencySettingsController extends Controller
             
             // Get all published properties and delete their pages
             $properties = VillaReadyProperty::where('status', 'published')->get();
+            Log::info('Deleting Villa Ready pages', ['count' => $properties->count()]);
+            
             foreach ($properties as $property) {
                 $uploader->deleteVillaReadyPropertyPage($property, $profile);
             }

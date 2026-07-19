@@ -369,6 +369,17 @@ class PageSftpUploader
 
             if ($filesystem->directoryExists($directory)) {
                 $filesystem->deleteDirectory($directory);
+                Log::info('Villa Ready property page deleted via SFTP', [
+                    'property_id' => $property->id,
+                    'agency_id' => $profile->id,
+                    'path' => $directory,
+                    'server' => $profile->server_ip,
+                ]);
+            } else {
+                Log::info('Villa Ready property page directory not found (already deleted?)', [
+                    'property_id' => $property->id,
+                    'path' => $directory,
+                ]);
             }
 
             return [

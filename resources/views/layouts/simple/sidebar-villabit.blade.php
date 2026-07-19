@@ -198,6 +198,24 @@
                     </a>
                 </li>
 
+                <li class="sidebar-main-title"><div><h6>Villa Ready Croatia</h6></div></li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.villa-ready.properties.index') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/agencies.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/agencies.svg') }}" alt="">
+                        <span>Properties</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.villa-ready.referrals.index') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/affiliate_tracking.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/affiliate_tracking.svg') }}" alt="">
+                        <span>Property Referrals</span>
+                    </a>
+                </li>
+
                 @if(session('impersonating'))
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.impersonate.stop') }}">
@@ -371,10 +389,10 @@
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="javascript:void(0)" style="cursor: default; opacity: 0.6;">
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.villa-ready.index') }}">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
-                        <span>Property Chain *</span>
+                        <span>Villa Ready Croatia</span>
                     </a>
                 </li>
 

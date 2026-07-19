@@ -53,6 +53,10 @@ use App\Http\Controllers\Admin\AdminAiSettingsController;
 use App\Http\Controllers\Agency\AgencySitemapController;
 use App\Http\Controllers\RealEstateTaxiController;
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\VillaReadyPropertyPageController;
+use App\Http\Controllers\Admin\AdminVillaReadyPropertyController;
+use App\Http\Controllers\Admin\AdminVillaReadyReferralController;
+use App\Http\Controllers\Agency\AgencyVillaReadyController;
 
 // Public Agency Pages (Authority Builder) — served on agency custom domains
 Route::get('/blog', [PublicPageController::class, 'index'])->name('public.blog.index');
@@ -217,6 +221,26 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::post('impersonate/{user}', [ImpersonationController::class, 'start'])->name('impersonate.start');
     Route::post('impersonate/{user}/token', [ImpersonationController::class, 'generateToken'])->name('impersonate.token');
     Route::get('impersonate/stop', [ImpersonationController::class, 'stop'])->name('impersonate.stop');
+
+    // Villa Ready Croatia Properties
+    Route::prefix('villa-ready')->name('villa-ready.')->group(function () {
+        Route::get('properties', [AdminVillaReadyPropertyController::class, 'index'])->name('properties.index');
+        Route::get('properties/create', [AdminVillaReadyPropertyController::class, 'create'])->name('properties.create');
+        Route::post('properties', [AdminVillaReadyPropertyController::class, 'store'])->name('properties.store');
+        Route::get('properties/{property}/edit', [AdminVillaReadyPropertyController::class, 'edit'])->name('properties.edit');
+        Route::put('properties/{property}', [AdminVillaReadyPropertyController::class, 'update'])->name('properties.update');
+        Route::delete('properties/{property}', [AdminVillaReadyPropertyController::class, 'destroy'])->name('properties.destroy');
+        Route::delete('properties/images/{image}', [AdminVillaReadyPropertyController::class, 'deleteImage'])->name('properties.images.destroy');
+        Route::delete('properties/units/{unit}', [AdminVillaReadyPropertyController::class, 'deleteUnit'])->name('properties.units.destroy');
+
+        // Affiliate Referral Tracking
+        Route::get('referrals', [AdminVillaReadyReferralController::class, 'index'])->name('referrals.index');
+        Route::get('referrals/create', [AdminVillaReadyReferralController::class, 'create'])->name('referrals.create');
+        Route::post('referrals', [AdminVillaReadyReferralController::class, 'store'])->name('referrals.store');
+        Route::post('referrals/{referral}/set-viewed', [AdminVillaReadyReferralController::class, 'setViewed'])->name('referrals.set-viewed');
+        Route::post('referrals/{referral}/set-paid', [AdminVillaReadyReferralController::class, 'setPaid'])->name('referrals.set-paid');
+        Route::delete('referrals/{referral}', [AdminVillaReadyReferralController::class, 'destroy'])->name('referrals.destroy');
+    });
 });
 
 // Impersonation login (no auth required - uses token)
@@ -405,6 +429,9 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
     Route::get('leads', [AgencyLeadController::class, 'index'])->name('leads.index');
     Route::get('leads/{lead}', [AgencyLeadController::class, 'show'])->name('leads.show');
     Route::patch('leads/{lead}/status', [AgencyLeadController::class, 'updateStatus'])->name('leads.update-status');
+
+    // Villa Ready Croatia Affiliate
+    Route::get('villa-ready', [AgencyVillaReadyController::class, 'index'])->name('villa-ready.index');
 });
 
 /*
@@ -453,3 +480,7 @@ Route::prefix('investor')->middleware(['auth', 'verified', 'role:investor'])->na
 Route::get('/ref/{code}', function ($code) {
     return redirect('/')->withCookie(cookie('referral_code', $code, 60 * 24 * 180));
 })->name('referral.track');
+
+// Villa Ready Croatia Property Pages (public, on agency domains)
+Route::get('/properties/{slug}', [VillaReadyPropertyPageController::class, 'show'])->name('villa-ready.property.show');
+Route::post('/villa-ready/track-visit', [VillaReadyPropertyPageController::class, 'trackVisit'])->name('villa-ready.track-visit');

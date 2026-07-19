@@ -247,30 +247,35 @@ class AdminVillaReadyPropertyController extends Controller
 
     protected function handlePublications(Request $request, VillaReadyProperty $property): void
     {
-        if ($request->has('publish_agencies')) {
-            $publishAgencies = $request->input('publish_agencies', []);
-            
-            // Remove publications for unchecked agencies
+        // Get checked agencies (empty array if none checked)
+        $publishAgencies = $request->input('publish_agencies', []);
+        
+        // Remove publications for unchecked agencies
+        if (empty($publishAgencies)) {
+            // If no agencies checked, delete all publications
+            $property->publications()->delete();
+        } else {
+            // Delete only unchecked ones
             $property->publications()
                 ->whereNotIn('agency_profile_id', $publishAgencies)
                 ->delete();
-            
-            // Add publications for newly checked agencies
-            foreach ($publishAgencies as $agencyId) {
-                $agency = AgencyProfile::find($agencyId);
-                if ($agency) {
-                    VillaReadyAgencyPublication::firstOrCreate(
-                        [
-                            'villa_ready_property_id' => $property->id,
-                            'agency_profile_id' => $agencyId,
-                        ],
-                        [
-                            'affiliate_code' => VillaReadyAgencyPublication::generateAffiliateCode($agency),
-                            'page_slug' => '/properties/' . $property->slug,
-                            'is_published' => true,
-                        ]
-                    );
-                }
+        }
+        
+        // Add publications for newly checked agencies
+        foreach ($publishAgencies as $agencyId) {
+            $agency = AgencyProfile::find($agencyId);
+            if ($agency) {
+                VillaReadyAgencyPublication::firstOrCreate(
+                    [
+                        'villa_ready_property_id' => $property->id,
+                        'agency_profile_id' => $agencyId,
+                    ],
+                    [
+                        'affiliate_code' => VillaReadyAgencyPublication::generateAffiliateCode($agency),
+                        'page_slug' => '/properties/' . $property->slug,
+                        'is_published' => true,
+                    ]
+                );
             }
         }
     }

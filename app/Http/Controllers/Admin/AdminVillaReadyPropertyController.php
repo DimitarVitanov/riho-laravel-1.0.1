@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\VillaReadyProperty;
+use App\Models\VillaReadyPropertyContent;
 use App\Models\VillaReadyPropertyImage;
 use App\Models\VillaReadyPropertyUnit;
 use App\Models\VillaReadyAgencyPublication;
@@ -60,6 +61,19 @@ class AdminVillaReadyPropertyController extends Controller
             'cookie_duration_days' => 'nullable|integer|min:1',
             'source_url' => 'nullable|url',
             'status' => 'required|in:draft,published,reserved,sold',
+            // Content fields (stored in villa_ready_property_content table)
+            'hero_eyebrow' => 'nullable|string|max:255',
+            'sidebar_price_label' => 'nullable|string|max:50',
+            'sidebar_price_value' => 'nullable|string|max:50',
+            'sidebar_price_note' => 'nullable|string',
+            'contact_form_title' => 'nullable|string|max:255',
+            'contact_form_subtitle' => 'nullable|string|max:255',
+            'access_title' => 'nullable|string|max:255',
+            'access_subtitle' => 'nullable|string|max:255',
+            'access_intro' => 'nullable|string',
+            'pricing_payment_text' => 'nullable|string',
+            'tax_intro' => 'nullable|string',
+            'non_eu_note' => 'nullable|string',
         ]);
 
         $validated['slug'] = Str::slug($validated['title']);
@@ -70,7 +84,47 @@ class AdminVillaReadyPropertyController extends Controller
             $validated['featured_image'] = $request->file('featured_image')->store('villa-ready/properties', 'public');
         }
 
+        // Separate content fields from property fields
+        $contentFields = [
+            'hero_eyebrow', 'sidebar_price_label', 'sidebar_price_value', 'sidebar_price_note',
+            'contact_form_title', 'contact_form_subtitle', 'access_title', 'access_subtitle',
+            'access_intro', 'pricing_payment_text', 'tax_intro', 'non_eu_note',
+        ];
+        
+        $contentData = [];
+        foreach ($contentFields as $field) {
+            if (array_key_exists($field, $validated)) {
+                $contentData[$field] = $validated[$field];
+                unset($validated[$field]);
+            }
+        }
+
+        // Handle hero_chips from comma-separated text
+        if ($request->filled('hero_chips_text')) {
+            $contentData['hero_chips'] = array_map('trim', explode(',', $request->input('hero_chips_text')));
+        }
+
+        // Handle JSON fields
+        if ($request->filled('key_facts_json')) {
+            $contentData['key_facts'] = json_decode($request->input('key_facts_json'), true);
+        }
+        if ($request->filled('access_cards_json')) {
+            $contentData['access_cards'] = json_decode($request->input('access_cards_json'), true);
+        }
+        if ($request->filled('buildings_data_json')) {
+            $contentData['buildings_data'] = json_decode($request->input('buildings_data_json'), true);
+        }
+        if ($request->filled('tax_groups_json')) {
+            $contentData['tax_groups'] = json_decode($request->input('tax_groups_json'), true);
+        }
+
         $property = VillaReadyProperty::create($validated);
+
+        // Create content record
+        if (!empty($contentData)) {
+            $contentData['villa_ready_property_id'] = $property->id;
+            VillaReadyPropertyContent::create($contentData);
+        }
 
         // Handle gallery images
         $this->handleImageUploads($request, $property);
@@ -123,6 +177,19 @@ class AdminVillaReadyPropertyController extends Controller
             'cookie_duration_days' => 'nullable|integer|min:1',
             'source_url' => 'nullable|url',
             'status' => 'required|in:draft,published,reserved,sold',
+            // Content fields (stored in villa_ready_property_content table)
+            'hero_eyebrow' => 'nullable|string|max:255',
+            'sidebar_price_label' => 'nullable|string|max:50',
+            'sidebar_price_value' => 'nullable|string|max:50',
+            'sidebar_price_note' => 'nullable|string',
+            'contact_form_title' => 'nullable|string|max:255',
+            'contact_form_subtitle' => 'nullable|string|max:255',
+            'access_title' => 'nullable|string|max:255',
+            'access_subtitle' => 'nullable|string|max:255',
+            'access_intro' => 'nullable|string',
+            'pricing_payment_text' => 'nullable|string',
+            'tax_intro' => 'nullable|string',
+            'non_eu_note' => 'nullable|string',
         ]);
 
         $validated['slug'] = Str::slug($validated['title']);
@@ -130,14 +197,55 @@ class AdminVillaReadyPropertyController extends Controller
 
         // Handle featured image upload
         if ($request->hasFile('featured_image')) {
-            // Delete old image
             if ($property->featured_image) {
                 Storage::disk('public')->delete($property->featured_image);
             }
             $validated['featured_image'] = $request->file('featured_image')->store('villa-ready/properties', 'public');
         }
 
+        // Separate content fields from property fields
+        $contentFields = [
+            'hero_eyebrow', 'sidebar_price_label', 'sidebar_price_value', 'sidebar_price_note',
+            'contact_form_title', 'contact_form_subtitle', 'access_title', 'access_subtitle',
+            'access_intro', 'pricing_payment_text', 'tax_intro', 'non_eu_note',
+        ];
+        
+        $contentData = [];
+        foreach ($contentFields as $field) {
+            if (array_key_exists($field, $validated)) {
+                $contentData[$field] = $validated[$field];
+                unset($validated[$field]);
+            }
+        }
+
+        // Handle hero_chips from comma-separated text
+        if ($request->filled('hero_chips_text')) {
+            $contentData['hero_chips'] = array_map('trim', explode(',', $request->input('hero_chips_text')));
+        }
+
+        // Handle JSON fields
+        if ($request->filled('key_facts_json')) {
+            $contentData['key_facts'] = json_decode($request->input('key_facts_json'), true);
+        }
+        if ($request->filled('access_cards_json')) {
+            $contentData['access_cards'] = json_decode($request->input('access_cards_json'), true);
+        }
+        if ($request->filled('buildings_data_json')) {
+            $contentData['buildings_data'] = json_decode($request->input('buildings_data_json'), true);
+        }
+        if ($request->filled('tax_groups_json')) {
+            $contentData['tax_groups'] = json_decode($request->input('tax_groups_json'), true);
+        }
+
         $property->update($validated);
+
+        // Update or create content record
+        if (!empty($contentData)) {
+            VillaReadyPropertyContent::updateOrCreate(
+                ['villa_ready_property_id' => $property->id],
+                $contentData
+            );
+        }
 
         // Handle gallery images
         $this->handleImageUploads($request, $property);

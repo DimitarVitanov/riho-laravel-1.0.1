@@ -25,9 +25,15 @@ class VillaReadyPropertyImage extends Model
 
     public function getImageUrlAttribute(): string
     {
+        // External URLs
         if (str_starts_with($this->image_path, 'http')) {
             return $this->image_path;
         }
+        // Static assets in public folder (starts with /)
+        if (str_starts_with($this->image_path, '/')) {
+            return asset($this->image_path);
+        }
+        // Uploaded files in storage
         return asset('storage/' . $this->image_path);
     }
 }

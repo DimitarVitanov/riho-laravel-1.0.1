@@ -3,6 +3,8 @@
     $action = $isEdit 
         ? route('admin.villabit.villa-ready.properties.update', $property) 
         : route('admin.villabit.villa-ready.properties.store');
+    // Content is stored in a separate table
+    $content = $isEdit ? $property->content : null;
 @endphp
 
 <style>
@@ -198,8 +200,15 @@
                     <div></div>
                     <input type="file" name="gallery_images[]" accept="image/*">
                     <select name="gallery_types[]">
+                        <option value="main">Main / Hero image</option>
                         <option value="gallery">Gallery image</option>
+                        <option value="drone">Drone view</option>
+                        <option value="360">360° view</option>
+                        <option value="map">Map / Location</option>
                         <option value="floor_plan">Floor plan</option>
+                        <option value="aerial">Aerial perspective</option>
+                        <option value="concept">Concept / Render</option>
+                        <option value="sea_view">Sea view</option>
                     </select>
                     <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.vrc-image-row').remove()">×</button>
                 </div>
@@ -212,8 +221,15 @@
                     <div></div>
                     <input type="url" name="image_urls[]" placeholder="Paste image URL">
                     <select name="image_url_types[]">
+                        <option value="main">Main / Hero image</option>
                         <option value="gallery">Gallery image</option>
+                        <option value="drone">Drone view</option>
+                        <option value="360">360° view</option>
+                        <option value="map">Map / Location</option>
                         <option value="floor_plan">Floor plan</option>
+                        <option value="aerial">Aerial perspective</option>
+                        <option value="concept">Concept / Render</option>
+                        <option value="sea_view">Sea view</option>
                     </select>
                     <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.vrc-image-row').remove()">×</button>
                 </div>
@@ -326,6 +342,137 @@
                 <div class="vrc-field">
                     <label>Optional Management Service</label>
                     <textarea name="management_service">{{ old('management_service', $property->management_service ?? '') }}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Hero Section Fields --}}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="vrc-section-title">Hero Section</h5>
+            <p class="vrc-help">Customize the hero banner at the top of the property page.</p>
+        </div>
+        <div class="card-body">
+            <div class="vrc-grid-2">
+                <div class="vrc-field">
+                    <label>Hero Eyebrow Text</label>
+                    <input type="text" name="hero_eyebrow" value="{{ old('hero_eyebrow', $content->hero_eyebrow ?? '') }}" placeholder="e.g., Exclusive property offered by our agency">
+                </div>
+                <div class="vrc-field">
+                    <label>Hero Chips (comma-separated)</label>
+                    <input type="text" name="hero_chips_text" value="{{ old('hero_chips_text', $content->hero_chips ?? null ? implode(', ', $content->hero_chips) : '') }}" placeholder="e.g., Milna, Sea View, 4 Buildings">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Buildings Data --}}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="vrc-section-title">Buildings Data (JSON)</h5>
+            <p class="vrc-help">Complete building information including floors, units, and pricing.</p>
+        </div>
+        <div class="card-body">
+            <div class="vrc-field">
+                <label>Buildings Data (JSON array)</label>
+                <textarea name="buildings_data_json" rows="10">{{ old('buildings_data_json', $content->buildings_data ?? null ? json_encode($content->buildings_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '') }}</textarea>
+                <small>Format: [{"name":"BUILDING 1","gross":885,"net":664,"total":3917600,"floors":[...]}]</small>
+            </div>
+        </div>
+    </div>
+
+    {{-- Access Cards --}}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="vrc-section-title">Access Cards</h5>
+            <p class="vrc-help">Land access and infrastructure information cards.</p>
+        </div>
+        <div class="card-body">
+            <div class="vrc-grid-2">
+                <div class="vrc-field">
+                    <label>Access Section Title</label>
+                    <input type="text" name="access_title" value="{{ old('access_title', $content->access_title ?? '') }}">
+                </div>
+                <div class="vrc-field">
+                    <label>Access Section Subtitle</label>
+                    <input type="text" name="access_subtitle" value="{{ old('access_subtitle', $content->access_subtitle ?? '') }}">
+                </div>
+            </div>
+            <div class="vrc-field mt-3">
+                <label>Access Intro Text</label>
+                <textarea name="access_intro">{{ old('access_intro', $content->access_intro ?? '') }}</textarea>
+            </div>
+            <div class="vrc-field mt-3">
+                <label>Access Cards (JSON array)</label>
+                <textarea name="access_cards_json" rows="6">{{ old('access_cards_json', $content->access_cards ?? null ? json_encode($content->access_cards, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '') }}</textarea>
+                <small>Format: [{"title":"MAIN ACCESS ROAD","description":"...","order":1}]</small>
+            </div>
+        </div>
+    </div>
+
+    {{-- Sidebar & Contact Settings --}}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="vrc-section-title">Sidebar & Contact Form Settings</h5>
+            <p class="vrc-help">Customize the sidebar price panel and contact form.</p>
+        </div>
+        <div class="card-body">
+            <div class="vrc-grid-3">
+                <div class="vrc-field">
+                    <label>Sidebar Price Label</label>
+                    <input type="text" name="sidebar_price_label" value="{{ old('sidebar_price_label', $content->sidebar_price_label ?? '') }}" placeholder="e.g., NET PRICE">
+                </div>
+                <div class="vrc-field">
+                    <label>Sidebar Price Value</label>
+                    <input type="text" name="sidebar_price_value" value="{{ old('sidebar_price_value', $content->sidebar_price_value ?? '') }}" placeholder="e.g., €5,900 / m² net">
+                </div>
+                <div class="vrc-field">
+                    <label>Sidebar Price Note</label>
+                    <input type="text" name="sidebar_price_note" value="{{ old('sidebar_price_note', $content->sidebar_price_note ?? '') }}" placeholder="e.g., Final unit price depends on floor...">
+                </div>
+            </div>
+            <div class="vrc-grid-2 mt-3">
+                <div class="vrc-field">
+                    <label>Contact Form Title</label>
+                    <input type="text" name="contact_form_title" value="{{ old('contact_form_title', $content->contact_form_title ?? '') }}" placeholder="e.g., Contact Our Agency About This Property">
+                </div>
+                <div class="vrc-field">
+                    <label>Contact Form Subtitle</label>
+                    <input type="text" name="contact_form_subtitle" value="{{ old('contact_form_subtitle', $content->contact_form_subtitle ?? '') }}" placeholder="e.g., Your enquiry goes to the real estate agency...">
+                </div>
+            </div>
+            <div class="vrc-field mt-3">
+                <label>Key Facts (JSON array)</label>
+                <textarea name="key_facts_json" rows="3">{{ old('key_facts_json', $content->key_facts ?? null ? json_encode($content->key_facts, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '') }}</textarea>
+                <small>Format: [{"icon":"map-pin","text":"Milna, Island of Brač"}]</small>
+            </div>
+        </div>
+    </div>
+
+    {{-- Extended Payment & VAT Details --}}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="vrc-section-title">Extended Payment & VAT Details</h5>
+            <p class="vrc-help">Additional detailed text for payment terms and VAT information.</p>
+        </div>
+        <div class="card-body">
+            <div class="vrc-grid-2">
+                <div class="vrc-field">
+                    <label>Pricing Payment Text</label>
+                    <textarea name="pricing_payment_text">{{ old('pricing_payment_text', $content->pricing_payment_text ?? '') }}</textarea>
+                </div>
+                <div class="vrc-field">
+                    <label>Tax Intro</label>
+                    <textarea name="tax_intro">{{ old('tax_intro', $content->tax_intro ?? '') }}</textarea>
+                </div>
+                <div class="vrc-field">
+                    <label>Non-EU Note</label>
+                    <textarea name="non_eu_note">{{ old('non_eu_note', $content->non_eu_note ?? '') }}</textarea>
+                </div>
+                <div class="vrc-field">
+                    <label>Tax Groups (JSON)</label>
+                    <textarea name="tax_groups_json">{{ old('tax_groups_json', $content->tax_groups ?? null ? json_encode($content->tax_groups, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '') }}</textarea>
                 </div>
             </div>
         </div>

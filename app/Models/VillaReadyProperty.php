@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class VillaReadyProperty extends Model
 {
@@ -41,6 +42,13 @@ class VillaReadyProperty extends Model
         'source_url',
         'agency_can_edit',
         'featured_image',
+        // Extended fields
+        'hero_eyebrow',
+        'hero_chips',
+        'building_1_description',
+        'building_2_description',
+        'building_3_description',
+        'building_4_description',
     ];
 
     protected $casts = [
@@ -48,6 +56,18 @@ class VillaReadyProperty extends Model
         'commission_percent' => 'decimal:2',
         'agency_can_edit' => 'boolean',
     ];
+
+    // Content is stored in a separate table to avoid MySQL row size limits
+    public function content(): HasOne
+    {
+        return $this->hasOne(VillaReadyPropertyContent::class);
+    }
+
+    // Helper to get or create content record
+    public function getOrCreateContent(): VillaReadyPropertyContent
+    {
+        return $this->content ?? $this->content()->create([]);
+    }
 
     public function images(): HasMany
     {

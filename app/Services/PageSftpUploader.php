@@ -329,8 +329,7 @@ class PageSftpUploader
                 'published_url' => $url,
             ]);
 
-            // Send email notification
-            $this->sendPublishNotification($profile, $property->title, 'villa_ready', $url, $property->location);
+            // No email notification for Villa Ready - all agencies get all properties automatically
 
             return [
                 'success' => true,

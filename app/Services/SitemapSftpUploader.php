@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\AgencyProfile;
 use App\Models\GeneratedPage;
+use App\Models\VillaReadyProperty;
 use League\Flysystem\Filesystem;
 use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 use League\Flysystem\PhpseclibV3\SftpAdapter;
@@ -80,6 +81,11 @@ class SitemapSftpUploader
             ->select(['slug', 'target_url', 'published_at', 'updated_at'])
             ->get();
 
+        // Get ALL published Villa Ready properties (all agencies get all properties)
+        $villaReadyProperties = VillaReadyProperty::where('status', 'published')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
         $baseUrl = $profile->custom_domain
             ? 'https://' . rtrim($profile->custom_domain, '/')
             : ($profile->official_website_url
@@ -89,6 +95,7 @@ class SitemapSftpUploader
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 
+        // Add generated pages (Local SEO, AI Search, etc.)
         foreach ($pages as $page) {
             $loc = $page->target_url
                 ? htmlspecialchars($page->target_url)
@@ -102,6 +109,19 @@ class SitemapSftpUploader
             $xml .= "    <lastmod>{$lastmod}</lastmod>\n";
             $xml .= "    <changefreq>monthly</changefreq>\n";
             $xml .= "    <priority>0.7</priority>\n";
+            $xml .= "  </url>\n";
+        }
+
+        // Add ALL Villa Ready properties (automatically available to all agencies)
+        foreach ($villaReadyProperties as $property) {
+            $loc = htmlspecialchars($baseUrl . '/properties/' . $property->slug);
+            $lastmod = $property->updated_at->toAtomString();
+
+            $xml .= "  <url>\n";
+            $xml .= "    <loc>{$loc}</loc>\n";
+            $xml .= "    <lastmod>{$lastmod}</lastmod>\n";
+            $xml .= "    <changefreq>weekly</changefreq>\n";
+            $xml .= "    <priority>0.9</priority>\n";
             $xml .= "  </url>\n";
         }
 

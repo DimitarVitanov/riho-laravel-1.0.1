@@ -64,11 +64,16 @@ class SitemapSftpUploader
 
         $count = 0;
 
-        // Ensure properties directory exists
+        // Ensure properties directory exists with proper permissions
         $propertiesDir = $remotePath . '/properties';
         if (!$filesystem->directoryExists($propertiesDir)) {
-            $filesystem->createDirectory($propertiesDir);
+            $filesystem->createDirectory($propertiesDir, [
+                'visibility' => 'public',
+                'directory_visibility' => 'public',
+            ]);
         }
+        // Set visibility to public (755 for dirs, 644 for files)
+        $filesystem->setVisibility($propertiesDir, 'public');
 
         foreach ($properties as $property) {
             try {
@@ -106,7 +111,20 @@ class SitemapSftpUploader
             30
         );
 
-        $adapter = new SftpAdapter($provider, '/');
+        $adapter = new SftpAdapter(
+            $provider,
+            '/',
+            \League\Flysystem\UnixVisibility\PortableVisibilityConverter::fromArray([
+                'file' => [
+                    'public' => 0644,
+                    'private' => 0600,
+                ],
+                'dir' => [
+                    'public' => 0777,
+                    'private' => 0700,
+                ],
+            ])
+        );
 
         return new Filesystem($adapter);
     }

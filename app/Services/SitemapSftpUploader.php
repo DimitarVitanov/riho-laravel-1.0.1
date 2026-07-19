@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\AgencyProfile;
 use App\Models\GeneratedPage;
 use App\Models\VillaReadyProperty;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
 use League\Flysystem\Filesystem;
 use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 use League\Flysystem\PhpseclibV3\SftpAdapter;
@@ -31,10 +33,19 @@ class SitemapSftpUploader
             // Upload sitemap to the configured SFTP path root
             $filesystem->write($fullPath, $sitemapContent);
 
+            // Upload Villa Ready property pages
+            $propertyResults = $this->uploadVillaReadyPages($filesystem, $profile, $remotePath);
+
+            $message = "Sitemap uploaded to {$fullPath}";
+            if ($propertyResults['count'] > 0) {
+                $message .= ". Uploaded {$propertyResults['count']} property page(s).";
+            }
+
             return [
                 'success' => true,
-                'message' => "Sitemap uploaded to {$fullPath}",
+                'message' => $message,
                 'path' => $fullPath,
+                'properties_uploaded' => $propertyResults['count'],
             ];
 
         } catch (\Exception $e) {
@@ -43,6 +54,43 @@ class SitemapSftpUploader
                 'message' => 'SFTP upload failed: ' . $e->getMessage(),
             ];
         }
+    }
+
+    protected function uploadVillaReadyPages(Filesystem $filesystem, AgencyProfile $profile, string $remotePath): array
+    {
+        $properties = VillaReadyProperty::where('status', 'published')
+            ->with(['images', 'units', 'content'])
+            ->get();
+
+        $count = 0;
+
+        // Ensure properties directory exists
+        $propertiesDir = $remotePath . '/properties';
+        if (!$filesystem->directoryExists($propertiesDir)) {
+            $filesystem->createDirectory($propertiesDir);
+        }
+
+        foreach ($properties as $property) {
+            try {
+                $html = $this->renderPropertyPage($property, $profile);
+                $pagePath = $propertiesDir . '/' . $property->slug . '.html';
+                $filesystem->write($pagePath, $html);
+                $count++;
+            } catch (\Exception $e) {
+                Log::warning("Failed to upload property page {$property->slug}: " . $e->getMessage());
+            }
+        }
+
+        return ['count' => $count];
+    }
+
+    protected function renderPropertyPage(VillaReadyProperty $property, AgencyProfile $profile): string
+    {
+        return View::make('realestate-taxi.villa-ready-property', [
+            'property' => $property,
+            'profile' => $profile,
+            'isStatic' => true,
+        ])->render();
     }
 
     protected function createSftpFilesystem(AgencyProfile $profile): Filesystem

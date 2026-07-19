@@ -284,15 +284,19 @@ class AdminVillaReadyPropertyController extends Controller
         // Handle new image uploads
         if ($request->hasFile('gallery_images')) {
             foreach ($request->file('gallery_images') as $index => $file) {
-                $path = $file->store('villa-ready/gallery', 'public');
-                $type = $request->input('gallery_types.' . $index, 'gallery');
-                
-                VillaReadyPropertyImage::create([
-                    'villa_ready_property_id' => $property->id,
-                    'image_path' => $path,
-                    'image_type' => $type,
-                    'sort_order' => $property->images()->count(),
-                ]);
+                if ($file && $file->isValid()) {
+                    $path = $file->store('villa-ready/gallery', 'public');
+                    if ($path) {
+                        $type = $request->input('gallery_types.' . $index, 'gallery');
+                        
+                        VillaReadyPropertyImage::create([
+                            'villa_ready_property_id' => $property->id,
+                            'image_path' => $path,
+                            'image_type' => $type,
+                            'sort_order' => $property->images()->count(),
+                        ]);
+                    }
+                }
             }
         }
 

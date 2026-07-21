@@ -852,7 +852,8 @@ textarea { min-height: 100px; resize: vertical; }
 <div class="footer-bottom"><span>© 2026 Your Real Estate Agency. All rights reserved.</span><div class="footer-links"><a href="#">Privacy</a><a href="#">Terms</a></div></div>
 </div>
 </footer>
-<div class="modal-viewer" id="imageViewer"><span class="modal-close" onclick="closeViewer()">×</span><img alt="" id="viewerImage"/></div>
+<div class="modal-viewer" id="imageViewer"><span class="modal-close" onclick="closeViewer()">×</span><span class="modal-nav modal-prev" onclick="prevImage()">‹</span><img alt="" id="viewerImage"/><span class="modal-nav modal-next" onclick="nextImage()">›</span></div>
+<style>.modal-nav{position:fixed;top:50%;transform:translateY(-50%);font-size:60px;color:#fff;cursor:pointer;padding:20px;z-index:10001;user-select:none;}.modal-nav:hover{color:#ccc;}.modal-prev{left:20px;}.modal-next{right:20px;}</style>
 <div class="modal-viewer" id="videoViewer"><span class="modal-close" onclick="closeVideoViewer()">×</span><video id="droneVideo" controls autoplay loop style="max-width:95vw;max-height:90vh;border-radius:12px;"><source src="{{ asset('villa-ready-assets/MilnaDroneAerial.mp4') }}" type="video/mp4"></video></div>
 <script>
 function setAffiliateCookie() {
@@ -867,11 +868,27 @@ function setAffiliateCookie() {
     expires_at: new Date(Date.now() + 180*24*60*60*1000).toISOString()
   }));
 }
-function openViewer(src) { document.getElementById('viewerImage').src=src; document.getElementById('imageViewer').classList.add('open'); }
+var galleryImages = [];
+var currentImageIndex = 0;
+document.addEventListener('DOMContentLoaded', function() {
+  galleryImages = Array.from(document.querySelectorAll('.original-gallery img, .original-hero-media img')).map(img => img.src);
+});
+function openViewer(src) {
+  currentImageIndex = galleryImages.indexOf(src);
+  if (currentImageIndex === -1) { galleryImages.push(src); currentImageIndex = galleryImages.length - 1; }
+  document.getElementById('viewerImage').src = src;
+  document.getElementById('imageViewer').classList.add('open');
+}
 function closeViewer() { document.getElementById('imageViewer').classList.remove('open'); }
+function prevImage() { currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length; document.getElementById('viewerImage').src = galleryImages[currentImageIndex]; }
+function nextImage() { currentImageIndex = (currentImageIndex + 1) % galleryImages.length; document.getElementById('viewerImage').src = galleryImages[currentImageIndex]; }
 function openVideoViewer() { document.getElementById('videoViewer').classList.add('open'); document.getElementById('droneVideo').play(); }
 function closeVideoViewer() { document.getElementById('videoViewer').classList.remove('open'); document.getElementById('droneVideo').pause(); }
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeViewer();closeVideoViewer();}});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeViewer();closeVideoViewer();}
+  if(e.key==='ArrowLeft'){prevImage();}
+  if(e.key==='ArrowRight'){nextImage();}
+});
 setAffiliateCookie();
 </script>
 </body>

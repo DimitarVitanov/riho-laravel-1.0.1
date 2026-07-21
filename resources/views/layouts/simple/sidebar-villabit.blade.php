@@ -198,7 +198,7 @@
                     </a>
                 </li>
 
-                <li class="sidebar-main-title"><div><h6>Villa Ready Croatia</h6></div></li>
+                <li class="sidebar-main-title"><div><h6>Villa Bit Estate Projects</h6></div></li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.villa-ready.properties.index') }}">
@@ -392,7 +392,7 @@
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.villa-ready.index') }}">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
-                        <span>Villa Ready Croatia</span>
+                        <span>Villa Bit Estate Projects</span>
                     </a>
                 </li>
 

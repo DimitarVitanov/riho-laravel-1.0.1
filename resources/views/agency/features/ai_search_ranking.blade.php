@@ -344,13 +344,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Property Type</label>
                         <select name="property_type" class="form-select">
-                            <option value="">Select type</option>
-                            <option value="villa" {{ ($editPage->property_type ?? '') === 'villa' ? 'selected' : '' }}>Villa</option>
-                            <option value="apartment" {{ ($editPage->property_type ?? '') === 'apartment' ? 'selected' : '' }}>Apartment</option>
-                            <option value="house" {{ ($editPage->property_type ?? '') === 'house' ? 'selected' : '' }}>House</option>
-                            <option value="land" {{ ($editPage->property_type ?? '') === 'land' ? 'selected' : '' }}>Land</option>
-                            <option value="commercial" {{ ($editPage->property_type ?? '') === 'commercial' ? 'selected' : '' }}>Commercial</option>
-                            <option value="luxury" {{ ($editPage->property_type ?? '') === 'luxury' ? 'selected' : '' }}>Luxury Property</option>
+                            @include('partials.property-type-options', ['selected' => $editPage->property_type ?? ''])
                         </select>
                     </div>
 

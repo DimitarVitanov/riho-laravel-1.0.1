@@ -972,10 +972,7 @@
                     <div class="col-md-4">
                         <label class="form-label">Property Type</label>
                         <select name="property_type" class="form-select">
-                            <option value="">Select type...</option>
-                            @foreach(['Villa', 'Apartment', 'House', 'Penthouse', 'Studio', 'Duplex', 'Land', 'Commercial', 'Office', 'Retail', 'Hotel', 'Building', 'Farm', 'Warehouse', 'Parking', 'Other'] as $type)
-                                <option value="{{ $type }}" {{ $editListing->property_type === $type ? 'selected' : '' }}>{{ $type }}</option>
-                            @endforeach
+                            @include('partials.property-type-options', ['selected' => $editListing->property_type])
                         </select>
                     </div>
                     <div class="col-md-4 position-relative">
@@ -1067,10 +1064,7 @@
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold">Wanted Property Type</label>
                                         <select name="looking_property_type" class="form-select">
-                                            <option value="">Select property type...</option>
-                                            @foreach(['Villa', 'Apartment', 'House', 'Penthouse', 'Studio', 'Duplex', 'Land', 'Commercial', 'Office', 'Retail', 'Hotel', 'Building', 'Farm', 'Warehouse', 'Parking', 'Other'] as $type)
-                                                <option value="{{ $type }}" {{ $editListing->looking_property_type === $type ? 'selected' : '' }}>{{ $type }}</option>
-                                            @endforeach
+                                            @include('partials.property-type-options', ['selected' => $editListing->looking_property_type])
                                         </select>
                                     </div>
                                     <div class="col-md-8">
@@ -1169,10 +1163,7 @@
                     <div class="col-md-4">
                         <label class="form-label">Property Type</label>
                         <select name="property_type" class="form-select">
-                            <option value="">Select type...</option>
-                            @foreach(['Villa', 'Apartment', 'House', 'Penthouse', 'Studio', 'Duplex', 'Land', 'Commercial', 'Office', 'Retail', 'Hotel', 'Building', 'Farm', 'Warehouse', 'Parking', 'Other'] as $type)
-                                <option value="{{ $type }}">{{ $type }}</option>
-                            @endforeach
+                            @include('partials.property-type-options', ['selected' => ''])
                         </select>
                     </div>
                     <div class="col-md-4 position-relative">
@@ -1255,10 +1246,7 @@
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold">Wanted Property Type</label>
                                         <select name="looking_property_type" class="form-select">
-                                            <option value="">Select property type...</option>
-                                            @foreach(['Villa', 'Apartment', 'House', 'Penthouse', 'Studio', 'Duplex', 'Land', 'Commercial', 'Office', 'Retail', 'Hotel', 'Building', 'Farm', 'Warehouse', 'Parking', 'Other'] as $type)
-                                                <option value="{{ $type }}">{{ $type }}</option>
-                                            @endforeach
+                                            @include('partials.property-type-options', ['selected' => ''])
                                         </select>
                                     </div>
                                     <div class="col-md-8">

@@ -153,7 +153,9 @@
             <div class="vrc-grid-2 mt-3">
                 <div class="vrc-field">
                     <label for="property_type">Property Type</label>
-                    <input type="text" id="property_type" name="property_type" value="{{ old('property_type', $property->property_type ?? '') }}" placeholder="Villa Development">
+                    <select id="property_type" name="property_type" class="form-select">
+                        @include('partials.property-type-options', ['selected' => old('property_type', $property->property_type ?? '')])
+                    </select>
                 </div>
                 <div class="vrc-field">
                     <label for="price_display">Price Display</label>

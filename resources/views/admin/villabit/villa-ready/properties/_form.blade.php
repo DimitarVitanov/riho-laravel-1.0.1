@@ -504,7 +504,7 @@
             </div>
             <div class="vrc-field mt-3">
                 <label for="access_cards_json">Access Cards (JSON)</label>
-                <textarea id="access_cards_json" name="access_cards_json" rows="6" placeholder='[{"title":"MAIN ACCESS ROAD","description":"..."},{"title":"SUPPORTING ACCESS ROAD","description":"..."}]'>{{ old('access_cards_json', $content->access_cards ? json_encode($content->access_cards, JSON_PRETTY_PRINT) : '') }}</textarea>
+                <textarea id="access_cards_json" name="access_cards_json" rows="6" placeholder='[{"title":"MAIN ACCESS ROAD","description":"..."},{"title":"SUPPORTING ACCESS ROAD","description":"..."}]'>{{ old('access_cards_json', ($content->access_cards ?? null) ? json_encode($content->access_cards, JSON_PRETTY_PRINT) : '') }}</textarea>
                 <small>Enter as JSON array with title and description for each access card.</small>
             </div>
         </div>
@@ -540,7 +540,7 @@
             </div>
             <div class="vrc-field mt-3">
                 <label for="buildings_data_json">Buildings Data (JSON)</label>
-                <textarea id="buildings_data_json" name="buildings_data_json" rows="8" placeholder='[{"name":"BUILDING 1","gross_area":"885 m²","net_area":"664 m²","floors":[...]}]'>{{ old('buildings_data_json', $content->buildings_data ? json_encode($content->buildings_data, JSON_PRETTY_PRINT) : '') }}</textarea>
+                <textarea id="buildings_data_json" name="buildings_data_json" rows="8" placeholder='[{"name":"BUILDING 1","gross_area":"885 m²","net_area":"664 m²","floors":[...]}]'>{{ old('buildings_data_json', ($content->buildings_data ?? null) ? json_encode($content->buildings_data, JSON_PRETTY_PRINT) : '') }}</textarea>
                 <small>Enter detailed building data as JSON array.</small>
             </div>
         </div>
@@ -566,7 +566,7 @@
             </div>
             <div class="vrc-field mt-3">
                 <label for="tax_groups_json">Tax Information Groups (JSON)</label>
-                <textarea id="tax_groups_json" name="tax_groups_json" rows="6" placeholder='[{"title":"VAT on New Construction","items":["25% VAT applies...","..."]}]'>{{ old('tax_groups_json', $content->tax_groups ? json_encode($content->tax_groups, JSON_PRETTY_PRINT) : '') }}</textarea>
+                <textarea id="tax_groups_json" name="tax_groups_json" rows="6" placeholder='[{"title":"VAT on New Construction","items":["25% VAT applies...","..."]}]'>{{ old('tax_groups_json', ($content->tax_groups ?? null) ? json_encode($content->tax_groups, JSON_PRETTY_PRINT) : '') }}</textarea>
                 <small>Enter as JSON array with title and items array for each group.</small>
             </div>
         </div>

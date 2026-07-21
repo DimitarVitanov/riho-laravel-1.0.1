@@ -820,7 +820,7 @@ textarea { min-height: 100px; resize: vertical; }
 <p class="hero-desc">Limited Supply Means Really Limited — It's Real, Not a Sales Pitch.</p>
 <div class="property-meta"><span class="chip">WATCH A 360° DRONE VIEW FROM THE SKY</span><span class="chip">MILNA</span><span class="chip">ISLAND OF BRAČ</span></div>
 </div>
-<div class="original-hero-media"><img alt="360 degree drone view preview" onclick="openViewer(this.src)" src="{{ $property->images->where('image_type', 'drone')->first()?->image_url ?? $property->images->where('image_type', '360')->first()?->image_url ?? '/villa-ready-assets/1.webp' }}"/><span class="media-label">360° Drone View</span></div>
+<div class="original-hero-media"><img alt="360 degree drone view preview" onclick="openViewer(this.src)" src="https://app.villabit.ai/storage/villa-ready/gallery/eJdXoVJHDlZeD3NThGzwFxCnX5Nd37Y2pW5hetzA.jpg"/><span class="media-label" onclick="openVideoViewer()" style="cursor:pointer;">360° Drone View ▶</span></div>
 </div>
 </section>
 <section class="card pad" id="location-value"><div class="title"><div><h2>UNDERSTAND LOCATION VALUE</h2><p class="sub">Why the supply is structurally limited on Brač and other Split-area islands.</p></div></div><div class="original-copy"><p>This is not a sales tactic. It is a structural reality of the Croatian islands — especially on islands where, in strategically located main places, new development is not allowed. On Brač, Milna and Supetar are the two main strategically located places.</p><p>New construction in coastal and natural zones is heavily restricted by law. Large parts of the island are protected, and available building-permitted land is both scarce and tightly regulated.</p><p>At the same time, demand continues to grow — driven by tourism, EU and worldwide buyers, and global interest in Croatian properties, backed by constantly increasing touristic demand.</p><p>So even if we ignore that building-permitted areas are rare, another angle is that these are small islands, literally with no space to grow anyway!</p><p>You understand why local people, when they see that someone on the Split-area islands like Brač and Hvar has property, consider you a "rich man."</p><div class="exact-highlight">The result of any fact-based analysis is simple:<br/>Real limited supply + constant tourism demand = long-term value.</div><p>This is why opportunities like the one we offer here in Milna are not widely available — in fact, this is the ONLY EXISTING ONE for the new building of 25 modern apartments in a 4-villa chain area.</p><p>You can learn more about Milna on the island of Brač if you click here .</p></div></section><section class="card pad" id="original-gallery"><div class="title"><div><h2>ORIGINAL LOCATION AND PROJECT IMAGES</h2><p class="sub">All principal property images supplied in the downloaded source page.</p></div></div>
@@ -853,6 +853,7 @@ textarea { min-height: 100px; resize: vertical; }
 </div>
 </footer>
 <div class="modal-viewer" id="imageViewer"><span class="modal-close" onclick="closeViewer()">×</span><img alt="" id="viewerImage"/></div>
+<div class="modal-viewer" id="videoViewer"><span class="modal-close" onclick="closeVideoViewer()">×</span><video id="droneVideo" controls autoplay loop style="max-width:95vw;max-height:90vh;border-radius:12px;"><source src="{{ asset('villa-ready-assets/MilnaDroneAerial.mp4') }}" type="video/mp4"></video></div>
 <script>
 function setAffiliateCookie() {
   const agencyCode = 'AGENCY-DEMO-001';
@@ -868,7 +869,9 @@ function setAffiliateCookie() {
 }
 function openViewer(src) { document.getElementById('viewerImage').src=src; document.getElementById('imageViewer').classList.add('open'); }
 function closeViewer() { document.getElementById('imageViewer').classList.remove('open'); }
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeViewer();});
+function openVideoViewer() { document.getElementById('videoViewer').classList.add('open'); document.getElementById('droneVideo').play(); }
+function closeVideoViewer() { document.getElementById('videoViewer').classList.remove('open'); document.getElementById('droneVideo').pause(); }
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeViewer();closeVideoViewer();}});
 setAffiliateCookie();
 </script>
 </body>

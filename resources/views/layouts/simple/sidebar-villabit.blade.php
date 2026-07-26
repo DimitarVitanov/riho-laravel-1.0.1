@@ -335,7 +335,13 @@
                     </a>
                 </li>
 
-
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.competitor-intelligence.comparison') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
+                        <span>All Competitors Summary</span>
+                    </a>
+                </li>
 
                 <li class="sidebar-list" style="display: none"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.daily-ai-employee.index') }}">
@@ -365,11 +371,17 @@
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.features.show', 'daily_competitor_scan') }}">
+                    <a class="sidebar-link sidebar-title {{ request()->routeIs('agency.competitor-intelligence.*') ? 'active' : '' }}" href="javascript:void(0)">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
-                        <span>{{ __('messages.competitor_scan') }}</span>
+                        <span>Competitor Intelligence </span>
                     </a>
+                    <ul class="sidebar-submenu" style="{{ request()->routeIs('agency.competitor-intelligence.*') ? 'display: block;' : '' }}">
+                        <li><a href="{{ route('agency.competitor-intelligence.today') }}" class="{{ request()->routeIs('agency.competitor-intelligence.today') ? 'active' : '' }}">Today</a></li>
+                        <li><a href="{{ route('agency.competitor-intelligence.competitors.index') }}" class="{{ request()->routeIs('agency.competitor-intelligence.competitors.*') ? 'active' : '' }}">Competitors</a></li>
+                        <li><a href="{{ route('agency.competitor-intelligence.reports.index') }}" class="{{ request()->routeIs('agency.competitor-intelligence.reports.*') ? 'active' : '' }}">Daily Reports</a></li>
+                        <li><a href="{{ route('agency.competitor-intelligence.scan-center') }}" class="{{ request()->routeIs('agency.competitor-intelligence.scan-center') ? 'active' : '' }}">Scan Center</a></li>
+                    </ul>
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>

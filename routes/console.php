@@ -45,3 +45,28 @@ Schedule::command('authority:generate')
     ->at('07:00')
     ->withoutOverlapping()
     ->runInBackground();
+
+// ============================================
+// COMPETITOR INTELLIGENCE - 3-LEVEL SCANNING
+// ============================================
+
+// LEVEL 1 - Lightweight discovery (every 2 hours)
+// Checks sitemaps, RSS, homepage for change signals
+Schedule::command('competitor:discover')
+    ->everyTwoHours()
+    ->withoutOverlapping()
+    ->runInBackground();
+
+// LEVEL 2 - Deep scan (daily at 1am)
+// Full property extraction, snapshot comparison
+Schedule::command('competitor:scan-all')
+    ->dailyAt('01:00')
+    ->withoutOverlapping()
+    ->runInBackground();
+
+// LEVEL 3 - AI analysis & daily report (daily at 5am)
+// Analyzes all changes, generates daily intelligence report
+Schedule::command('competitor:daily-report')
+    ->dailyAt('05:00')
+    ->withoutOverlapping()
+    ->runInBackground();

@@ -11,7 +11,6 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/slick.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/slick-theme.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/scrollbar.css') }}">
-@yield('css')
 <!-- Plugins css Ends-->
 <!-- Bootstrap css-->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/bootstrap.css') }}">
@@ -25,3 +24,6 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/toastr.min.css')}}">
 <!-- Villa Bit AI Panel css -->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/villabit-panel.css') }}">
+<!-- Page-specific CSS (loaded last to override) -->
+@yield('css')
+@stack('css')

@@ -965,6 +965,25 @@ body .page-body-wrapper a.vb-domain-support-link:not(.sidebar-link):not(.menu-li
     display: inline-block !important;
 }
 
+.sidebar-wrapper .according-menu i {
+    display: none !important;
+}
+
+.sidebar-wrapper .according-menu::before {
+    content: "";
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid #e7e9ed;
+    border-bottom: 2px solid #e7e9ed;
+    transform: rotate(-45deg);
+    transition: transform 0.2s ease;
+}
+
+.sidebar-wrapper .sidebar-title.active .according-menu::before {
+    transform: rotate(45deg);
+}
+
 /* Hover/active state for img icons */
 .sidebar-wrapper .sidebar-link:hover img.svg-icon,
 .sidebar-wrapper .sidebar-link.active img.svg-icon {

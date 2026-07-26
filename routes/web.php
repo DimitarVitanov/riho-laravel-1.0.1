@@ -57,6 +57,7 @@ use App\Http\Controllers\VillaReadyPropertyPageController;
 use App\Http\Controllers\Admin\AdminVillaReadyPropertyController;
 use App\Http\Controllers\Admin\AdminVillaReadyReferralController;
 use App\Http\Controllers\Agency\AgencyVillaReadyController;
+use App\Http\Controllers\CompetitorIntelligenceController;
 
 // Public Agency Pages (Authority Builder) — served on agency custom domains
 Route::get('/blog', [PublicPageController::class, 'index'])->name('public.blog.index');
@@ -434,6 +435,43 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
 
     // Villa Ready Croatia Affiliate
     Route::get('villa-ready', [AgencyVillaReadyController::class, 'index'])->name('villa-ready.index');
+
+    // Competitor Intelligence
+    Route::prefix('competitor-intelligence')->name('competitor-intelligence.')->group(function () {
+        Route::redirect('/', '/agency/competitor-intelligence/today');
+        Route::get('/today', [CompetitorIntelligenceController::class, 'todayIntelligence'])->name('today');
+        Route::get('/comparison', [CompetitorIntelligenceController::class, 'comparison'])->name('comparison');
+        Route::get('/scan-center', [CompetitorIntelligenceController::class, 'scanCenter'])->name('scan-center');
+        Route::get('/events/{event}/evidence', [CompetitorIntelligenceController::class, 'eventEvidence'])->name('events.evidence');
+        Route::post('/scan/run-full', [CompetitorIntelligenceController::class, 'runFullScan'])->name('scan.run-full');
+        Route::post('/scan/run-custom', [CompetitorIntelligenceController::class, 'runCustomScan'])->name('scan.run-custom');
+
+        // Competitors CRUD
+        Route::get('/competitors', [CompetitorIntelligenceController::class, 'index'])->name('competitors.index');
+        Route::get('/competitors/create', [CompetitorIntelligenceController::class, 'create'])->name('competitors.create');
+        Route::post('/competitors', [CompetitorIntelligenceController::class, 'store'])->name('competitors.store');
+        Route::get('/competitors/{competitor}', [CompetitorIntelligenceController::class, 'show'])->name('competitors.show');
+        Route::get('/competitors/{competitor}/edit', [CompetitorIntelligenceController::class, 'edit'])->name('competitors.edit');
+        Route::put('/competitors/{competitor}', [CompetitorIntelligenceController::class, 'update'])->name('competitors.update');
+        Route::delete('/competitors/{competitor}', [CompetitorIntelligenceController::class, 'destroy'])->name('competitors.destroy');
+        Route::post('/competitors/{competitor}/scan', [CompetitorIntelligenceController::class, 'triggerScan'])->name('competitors.scan');
+        Route::patch('/competitors/{competitor}/toggle-status', [CompetitorIntelligenceController::class, 'toggleStatus'])->name('competitors.toggle-status');
+
+        // Competitor Properties
+        Route::get('/competitors/{competitor}/properties', [CompetitorIntelligenceController::class, 'properties'])->name('competitors.properties');
+        Route::get('/competitors/{competitor}/properties/{property}', [CompetitorIntelligenceController::class, 'propertyDetail'])->name('competitors.properties.show');
+
+        // Daily Reports
+        Route::get('/reports', [CompetitorIntelligenceController::class, 'dailyReports'])->name('reports.index');
+        Route::get('/reports/{report}', [CompetitorIntelligenceController::class, 'dailyReportShow'])->name('reports.show');
+        Route::post('/reports/generate', [CompetitorIntelligenceController::class, 'generateReport'])->name('reports.generate');
+        Route::get('/reports/{report}/export', [CompetitorIntelligenceController::class, 'exportReport'])->name('reports.export');
+
+        // Properties (all competitors)
+        Route::get('/properties', [CompetitorIntelligenceController::class, 'allProperties'])->name('properties.index');
+        Route::get('/properties/{competitor}/{property}', [CompetitorIntelligenceController::class, 'propertyDetail'])->name('properties.show');
+        Route::get('/properties/export', [CompetitorIntelligenceController::class, 'exportProperties'])->name('properties.export');
+    });
 });
 
 /*

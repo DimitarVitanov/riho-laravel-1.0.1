@@ -23,7 +23,7 @@ class CompetitorService
                 'country' => $data['country'] ?? null,
                 'website_url' => $data['website_url'],
                 'normalized_domain' => $this->normalizeDomain($data['website_url']),
-                'google_place_id' => $data['google_place_id'] ?? null,
+                'google_place_id' => $this->normalizeGooglePlaceId($data['google_place_id'] ?? null),
                 'google_maps_url' => $data['google_maps_url'] ?? null,
                 'is_active' => $data['is_active'] ?? true,
                 'include_in_daily_report' => $data['include_in_daily_report'] ?? true,
@@ -63,8 +63,13 @@ class CompetitorService
                 'name' => $data['name'] ?? null,
                 'legal_name' => $data['legal_name'] ?? null,
                 'primary_market' => $data['primary_market'] ?? null,
-                'google_place_id' => $data['google_place_id'] ?? null,
+                'country' => $data['country'] ?? null,
+                'google_place_id' => $this->normalizeGooglePlaceId($data['google_place_id'] ?? null),
+                'google_maps_url' => $data['google_maps_url'] ?? null,
                 'is_active' => $data['is_active'] ?? null,
+                'include_in_daily_report' => $data['include_in_daily_report'] ?? null,
+                'include_in_comparison' => $data['include_in_comparison'] ?? null,
+                'priority' => $data['priority'] ?? null,
             ], fn($v) => $v !== null);
 
             if (isset($data['website_url']) && $data['website_url'] !== $competitor->website_url) {
@@ -120,6 +125,19 @@ class CompetitorService
             'url' => $competitor->website_url,
             'status' => 'pending',
         ]);
+    }
+
+    protected function normalizeGooglePlaceId(?string $value): ?string
+    {
+        if (!$value) {
+            return null;
+        }
+
+        if (preg_match('/ChI[A-Za-z0-9_-]+/', $value, $match)) {
+            return $match[0];
+        }
+
+        return trim($value);
     }
 
     public function normalizeDomain(string $url): string

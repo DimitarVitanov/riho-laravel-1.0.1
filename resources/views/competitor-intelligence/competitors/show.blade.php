@@ -149,7 +149,7 @@
                 <p class="muted">{{ $competitor->google_rating ?? '—' }} · {{ $competitor->google_review_count ?? 0 }} reviews</p>
                 <b>External mentions 30d</b>
                 <p class="muted">{{ $competitor->external_mentions_30d ?? 0 }} discovered</p>
-                <a class="vb-link" href="#">Open reputation →</a>
+                <a class="vb-link" href="{{ route('agency.competitor-intelligence.reputation.index', ['competitor_id' => $competitor->id]) }}">Open reputation →</a>
             </div>
         </div>
     </div>

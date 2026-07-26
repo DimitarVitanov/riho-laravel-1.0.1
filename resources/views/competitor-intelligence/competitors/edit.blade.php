@@ -14,7 +14,7 @@
             <p>Update competitor settings, monitoring sources and identity signals.</p>
         </div>
         <div class="vb-toolbar">
-            <a href="{{ route('agency.competitor-intelligence.competitors.show', $competitor) }}" class="vb-btn vb-btn-light">Cancel</a>
+            <a href="{{ route('agency.competitor-intelligence.competitors.show', $competitor) }}" class="vb-btn vb-btn-light"><span class="text-dark">Cancel</span></a>
             <button type="submit" form="competitor-form" class="vb-btn">Save Changes</button>
         </div>
     </div>
@@ -53,10 +53,10 @@
                         <div>
                             <label>Country</label>
                             <select class="form-control" name="country">
-                                <option value="Croatia" {{ old('country', $competitor->country) == 'Croatia' ? 'selected' : '' }}>Croatia</option>
-                                <option value="Italy" {{ old('country', $competitor->country) == 'Italy' ? 'selected' : '' }}>Italy</option>
-                                <option value="Germany" {{ old('country', $competitor->country) == 'Germany' ? 'selected' : '' }}>Germany</option>
-                                <option value="Other" {{ old('country', $competitor->country) == 'Other' ? 'selected' : '' }}>Other</option>
+                                <option value="" disabled {{ old('country', $competitor->country) ? '' : 'selected' }}>Select country</option>
+                                @foreach($countries as $country)
+                                <option value="{{ $country }}" {{ old('country', $competitor->country) === $country ? 'selected' : '' }}>{{ $country }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -120,16 +120,16 @@
         </div>
 
         <div style="display:flex;justify-content:space-between;margin-top:18px">
-            <form action="{{ route('agency.competitor-intelligence.competitors.destroy', $competitor) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this competitor?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="vb-btn vb-btn-danger">Delete Competitor</button>
-            </form>
+            <button type="submit" form="delete-competitor-form" class="vb-btn vb-btn-danger text-white">Delete Competitor</button>
             <div class="vb-toolbar">
-                <a href="{{ route('agency.competitor-intelligence.competitors.show', $competitor) }}" class="vb-btn vb-btn-light">Cancel</a>
+                <a href="{{ route('agency.competitor-intelligence.competitors.show', $competitor) }}" class="vb-btn vb-btn-light"><span class="text-dark">Cancel</span></a>
                 <button type="submit" class="vb-btn">Save Changes</button>
             </div>
         </div>
+    </form>
+    <form id="delete-competitor-form" action="{{ route('agency.competitor-intelligence.competitors.destroy', $competitor) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this competitor?')">
+        @csrf
+        @method('DELETE')
     </form>
 </div>
 @endsection

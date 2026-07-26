@@ -11,6 +11,7 @@ class AiAuthorityContentGenerator
 {
     protected string $provider;
     protected ?string $apiKey;
+    protected ?string $generationBrief = null;
 
     public function __construct()
     {
@@ -25,6 +26,8 @@ class AiAuthorityContentGenerator
 
     public function generateForPage(AiAuthorityPage $page, AgencyProfile $profile): array
     {
+        $this->generationBrief = $page->generation_brief;
+
         $results = [
             'meta_title' => null,
             'meta_description' => null,
@@ -286,6 +289,10 @@ Return as JSON:
 
     protected function callAi(string $prompt): ?string
     {
+        if ($this->generationBrief) {
+            $prompt = "COMPETITOR INTELLIGENCE BRIEF:\n{$this->generationBrief}\n\n{$prompt}";
+        }
+
         if (!$this->apiKey) {
             Log::warning('AI API key not configured for provider: ' . $this->provider);
             return null;

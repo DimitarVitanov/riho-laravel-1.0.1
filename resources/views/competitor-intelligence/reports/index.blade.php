@@ -29,10 +29,6 @@
     <div class="alert alert-danger">{{ $errors->first() }}</div>
     @endif
 
-    @php
-        $latestReport = $reports->first();
-    @endphp
-
     <div class="vb-grid-3">
         <div class="vb-card" style="grid-column:span 2">
             @if($latestReport)
@@ -113,17 +109,35 @@
                 <div class="vb-card-head">
                     <h2>Archive</h2>
                 </div>
-                <div class="vb-card-body">
-                    @forelse($reports ?? [] as $report)
-                    <p>
-                        <a class="vb-link" href="{{ route('agency.competitor-intelligence.reports.show', $report) }}">
-                            {{ $report->report_date->format('d M Y') }} — {{ $report->metrics?->total_changes ?? 0 }} changes
-                        </a>
-                    </p>
+                <div class="vb-card-body" style="padding:0">
+                    @forelse($reports as $report)
+                    <div style="padding:14px 16px;border-bottom:1px solid #e6e9ef">
+                        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                            <div>
+                                <a href="{{ route('agency.competitor-intelligence.reports.show', $report) }}" style="color:#17212b!important;font-weight:700;text-decoration:none">
+                                    {{ $report->report_date->format('d M Y') }}
+                                </a>
+                                @if($latestReport && $report->is($latestReport))
+                                <span class="badge-soft b-blue" style="margin-left:6px">LATEST</span>
+                                @endif
+                                <div class="muted" style="font-size:12px;margin-top:4px">
+                                    {{ $report->metrics?->total_changes ?? 0 }} changes
+                                    @if($report->created_at) · Generated {{ $report->created_at->format('d M Y H:i') }}@endif
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:8px;flex-shrink:0">
+                                <a href="{{ route('agency.competitor-intelligence.reports.show', $report) }}" class="vb-btn vb-btn-light" style="padding:6px 10px"><span class="text-dark">View</span></a>
+                                <a href="{{ route('agency.competitor-intelligence.reports.export', $report) }}" class="vb-btn vb-btn-light" style="padding:6px 10px"><span class="text-dark">Download</span></a>
+                            </div>
+                        </div>
+                    </div>
                     @empty
-                    <p class="muted">No archived reports yet.</p>
+                    <div class="empty-state" style="padding:24px 16px"><h3>No archived reports yet</h3><p>Generated daily reports will be stored here automatically.</p></div>
                     @endforelse
                 </div>
+                @if($reports->hasPages())
+                <div class="vb-card-body" style="padding-top:14px">{{ $reports->onEachSide(1)->links('vendor.pagination.competitor') }}</div>
+                @endif
             </div>
         </div>
     </div>

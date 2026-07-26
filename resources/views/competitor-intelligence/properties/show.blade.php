@@ -8,15 +8,19 @@
 
 @section('main_content')
 <div class="container-fluid">
+    @php
+        $snapshot = $property->latestSnapshot;
+        $listingUrl = $property->canonical_url ?? $property->url?->url;
+    @endphp
     <div class="vb-page-head">
         <div>
-            <h1>{{ $property->title }}</h1>
-            <p>Property tracked from {{ $property->competitor->name ?? 'Unknown' }} — {{ $property->location }}</p>
+            <h1>{{ $property->display_name }}</h1>
+            <p>Property tracked from {{ $competitor->name }}{{ $snapshot?->location_text ? ' — ' . $snapshot->location_text : '' }}</p>
         </div>
         <div class="vb-toolbar">
-            <a href="{{ route('agency.competitor-intelligence.properties.index', $property->competitor) }}" class="vb-btn vb-btn-light">← Back</a>
-            @if($property->source_url)
-            <a href="{{ $property->source_url }}" target="_blank" class="vb-btn">View Original</a>
+            <a href="{{ route('agency.competitor-intelligence.competitors.properties', $competitor) }}" class="vb-btn vb-btn-light">← Back</a>
+            @if($listingUrl)
+            <a href="{{ $listingUrl }}" target="_blank" rel="noopener noreferrer" class="vb-btn">Open Listing</a>
             @endif
         </div>
     </div>
@@ -24,33 +28,23 @@
     <div class="vb-grid-4">
         <div class="vb-stat">
             <div class="label">Current Price</div>
-            <div class="value">€{{ number_format($property->current_price, 0) }}</div>
-            @if($property->original_price && $property->original_price != $property->current_price)
-            <div class="sub">Originally €{{ number_format($property->original_price, 0) }}</div>
-            @endif
+            <div class="value">{{ $snapshot?->price !== null ? '€' . number_format((float) $snapshot->price, 0) : '—' }}</div>
+            <div class="sub">{{ $snapshot?->currency ?? 'EUR' }}</div>
         </div>
         <div class="vb-stat">
             <div class="label">First Seen</div>
-            <div class="value">{{ $property->first_seen_at->diffInDays() }}d</div>
-            <div class="sub">{{ $property->first_seen_at->format('d M Y') }}</div>
+            <div class="value">{{ (int) floor($property->display_first_detected_at?->diffInDays(now()) ?? 0) }}d</div>
+            <div class="sub">{{ $property->display_first_detected_at?->format('d M Y') ?? '—' }}</div>
         </div>
         <div class="vb-stat">
-            <div class="label">Price Changes</div>
-            <div class="value">{{ $property->price_changes_count ?? 0 }}</div>
-            <div class="sub">Since tracking started</div>
+            <div class="label">Snapshots</div>
+            <div class="value">{{ $property->snapshots->count() }}</div>
+            <div class="sub">{{ $property->events->count() }} detected events</div>
         </div>
         <div class="vb-stat">
             <div class="label">Status</div>
-            <div class="value" style="font-size:18px">
-                @if($property->status == 'active')
-                <span class="badge-soft b-green">ACTIVE</span>
-                @elseif($property->status == 'removed')
-                <span class="badge-soft b-red">REMOVED</span>
-                @else
-                <span class="badge-soft b-yellow">{{ strtoupper($property->status) }}</span>
-                @endif
-            </div>
-            <div class="sub">Last checked {{ $property->last_checked_at ? $property->last_checked_at->diffForHumans() : 'Never' }}</div>
+            <div class="value" style="font-size:18px"><span class="badge-soft b-{{ $property->current_status === 'active' ? 'green' : ($property->current_status === 'possibly_removed' ? 'yellow' : 'red') }}">{{ strtoupper(str_replace('_', ' ', $property->current_status)) }}</span></div>
+            <div class="sub">Last seen {{ $property->last_seen_at?->diffForHumans() ?? '—' }}</div>
         </div>
     </div>
 
@@ -61,14 +55,14 @@
             </div>
             <div class="vb-card-body">
                 <table class="vb-table">
-                    <tr><td><b>Title</b></td><td>{{ $property->title }}</td></tr>
-                    <tr><td><b>Location</b></td><td>{{ $property->location }}</td></tr>
-                    <tr><td><b>Property Type</b></td><td>{{ $property->property_type ?? 'Unknown' }}</td></tr>
-                    <tr><td><b>Bedrooms</b></td><td>{{ $property->bedrooms ?? '—' }}</td></tr>
-                    <tr><td><b>Bathrooms</b></td><td>{{ $property->bathrooms ?? '—' }}</td></tr>
-                    <tr><td><b>Size</b></td><td>{{ $property->size_sqm ? $property->size_sqm . ' m²' : '—' }}</td></tr>
-                    <tr><td><b>Reference</b></td><td>{{ $property->external_id ?? '—' }}</td></tr>
-                    <tr><td><b>Source URL</b></td><td><a href="{{ $property->source_url }}" target="_blank" class="vb-link">{{ Str::limit($property->source_url, 50) }}</a></td></tr>
+                    <tr><td><b>Title</b></td><td>{{ $property->display_name }}</td></tr>
+                    <tr><td><b>Location</b></td><td>{{ $snapshot?->location_text ?? (Str::contains($property->display_name, ' in ') ? Str::afterLast($property->display_name, ' in ') : '—') }}</td></tr>
+                    <tr><td><b>Property Type</b></td><td>{{ $snapshot?->property_type ? ucfirst($snapshot->property_type) : '—' }}</td></tr>
+                    <tr><td><b>Bedrooms</b></td><td>{{ $snapshot?->bedrooms ?? '—' }}</td></tr>
+                    <tr><td><b>Bathrooms</b></td><td>{{ $snapshot?->bathrooms ?? '—' }}</td></tr>
+                    <tr><td><b>Size</b></td><td>{{ $snapshot?->surface_m2 ? $snapshot->surface_m2 . ' m²' : '—' }}</td></tr>
+                    <tr><td><b>Reference</b></td><td>{{ $property->external_reference ?? '—' }}</td></tr>
+                    <tr><td><b>Source URL</b></td><td>@if($listingUrl)<a href="{{ $listingUrl }}" target="_blank" rel="noopener noreferrer" class="vb-link" style="color:#1b5fbf!important">{{ Str::limit($listingUrl, 60) }}</a>@else — @endif</td></tr>
                 </table>
             </div>
         </div>
@@ -80,19 +74,10 @@
             <div class="vb-card-body">
                 @if(isset($priceHistory) && $priceHistory->count() > 0)
                 <div class="timeline">
-                    @foreach($priceHistory as $change)
+                    @foreach($priceHistory as $priceSnapshot)
                     <div class="timeline-item">
-                        <b>{{ $change->detected_at->format('d M Y H:i') }}</b>
-                        <div class="small">
-                            @if($change->old_price)
-                            <span class="change-old">€{{ number_format($change->old_price, 0) }}</span>
-                            →
-                            @endif
-                            <span class="change-new">€{{ number_format($change->new_price, 0) }}</span>
-                            @if($change->percent_change)
-                            ({{ $change->percent_change > 0 ? '+' : '' }}{{ $change->percent_change }}%)
-                            @endif
-                        </div>
+                        <b>{{ $priceSnapshot->captured_at->format('d M Y H:i') }}</b>
+                        <div class="small"><span class="change-new">€{{ number_format((float) $priceSnapshot->price, 0) }}</span></div>
                     </div>
                     @endforeach
                 </div>
@@ -103,15 +88,28 @@
         </div>
     </div>
 
-    @if($property->description)
+    @if($snapshot?->description)
     <div class="vb-card" style="margin-top:18px">
-        <div class="vb-card-head">
-            <h2>Description</h2>
-        </div>
-        <div class="vb-card-body">
-            <p>{{ $property->description }}</p>
-        </div>
+        <div class="vb-card-head"><h2>Description</h2></div>
+        <div class="vb-card-body"><p>{{ $snapshot->description }}</p></div>
     </div>
     @endif
+
+    <div class="vb-card" style="margin-top:18px">
+        <div class="vb-card-head"><h2>Detected Changes & Evidence</h2></div>
+        <div class="vb-card-body">
+            @forelse($property->events as $event)
+            <div class="event" style="margin:0;padding:14px 0;{{ !$loop->last ? 'border-bottom:1px solid #e2e5ea' : '' }}">
+                <div class="event-top"><span class="badge-soft b-{{ $event->getEventColor() }}">{{ strtoupper($event->getEventTypeLabel()) }}</span><span class="event-meta">{{ $event->detected_at->format('d M Y H:i') }}</span></div>
+                <div class="event-title">{{ $event->getDisplayTitle() }}</div>
+                <div class="event-meta">{{ $event->getDescription() }}</div>
+                @if($event->ai_interpretation)<div class="event-box"><b>AI interpretation:</b> {{ $event->ai_interpretation }}</div>@endif
+                @if($event->ai_opportunity)<div class="event-box"><b>Opportunity:</b> {{ $event->ai_opportunity }}@if($event->ai_action) <b>Recommended action:</b> {{ $event->ai_action }}@endif</div>@endif
+            </div>
+            @empty
+            <p class="muted">No property changes have been detected yet.</p>
+            @endforelse
+        </div>
+    </div>
 </div>
 @endsection

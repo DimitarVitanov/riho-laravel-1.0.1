@@ -31,6 +31,8 @@ class CompetitorEvent extends Model
         'ai_evidence_event_ids',
         'ai_priority',
         'opportunity_status',
+        'created_page_feature',
+        'created_page_id',
     ];
 
     protected $casts = [
@@ -347,6 +349,51 @@ class CompetitorEvent extends Model
             'faq' => ['label' => 'FAQ PAGE', 'color' => 'blue'],
             default => null,
         };
+    }
+
+    public function canCreateBetterPage(): bool
+    {
+        if ($this->created_page_id) {
+            return true;
+        }
+
+        $content = strtolower(implode(' ', array_filter([
+            $this->event_type,
+            $this->new_value_json['title'] ?? null,
+            $this->new_value_json['page_type'] ?? null,
+            $this->ai_opportunity,
+            $this->ai_action,
+        ])));
+
+        return in_array($this->event_type, ['new_url', 'new_seo_page', 'seo_move'], true)
+            && preg_match('/page|landing|guide|faq|market|location|content|seo|ranking|inventory|properties|villas|apartments|houses/iu', $content) === 1;
+    }
+
+    public function getSuggestedPageFeature(): string
+    {
+        if ($this->created_page_feature) {
+            return $this->created_page_feature;
+        }
+
+        $content = strtolower(implode(' ', array_filter([
+            $this->new_value_json['title'] ?? null,
+            $this->new_value_json['page_type'] ?? null,
+            $this->fact_json['title'] ?? null,
+            $this->ai_opportunity,
+            $this->ai_action,
+        ])));
+
+        $transactional = preg_match('/for sale|properties? in|real estate in|villas? in|apartments? in|houses? in|landing page|location page|dedicated .+ page|local seo/iu', $content) === 1;
+        $authority = preg_match('/buyer guide|seller guide|investment guide|legal guide|market report|market analysis|faq page|frequently asked|comparison|how to|ai search|answer engine|authority page/iu', $content) === 1;
+
+        return $authority && !$transactional ? 'ai_search_ranking' : 'local_seo_presence_boost';
+    }
+
+    public function getSuggestedPageFeatureLabel(): string
+    {
+        return $this->getSuggestedPageFeature() === 'ai_search_ranking'
+            ? 'AI Search Ranking'
+            : 'Local SEO';
     }
 
     public function getEventColor(): string

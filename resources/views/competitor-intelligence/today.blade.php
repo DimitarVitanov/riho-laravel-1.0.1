@@ -129,8 +129,13 @@
                     <a href="{{ route('agency.competitor-intelligence.events.evidence', $event) }}" style="display:inline-flex;align-items:center;padding:10px 14px;background:#202733;color:#fff;border-radius:7px;font-weight:700;font-size:13px;text-decoration:none">View Evidence</a>
                     @if(in_array($event->event_type, ['price_increase', 'price_decrease']))
                     <a href="{{ route('agency.competitor-intelligence.events.evidence', $event) }}#detected-changes" style="display:inline-flex;align-items:center;padding:10px 14px;background:#202733;color:#fff;border-radius:7px;font-weight:700;font-size:13px;text-decoration:none">AI Action</a>
-                    @elseif(in_array($event->event_type, ['new_seo_page', 'seo_move']))
-                    <a href="#" style="display:inline-flex;align-items:center;padding:10px 14px;background:#202733;color:#fff;border-radius:7px;font-weight:700;font-size:13px;text-decoration:none">Create Better Page</a>
+                    @elseif($event->canCreateBetterPage())
+                    <form action="{{ route('agency.competitor-intelligence.events.create-better-page', $event) }}" method="POST" style="display:inline">
+                        @csrf
+                        <button type="submit" style="display:inline-flex;align-items:center;padding:10px 14px;background:#202733;color:#fff;border:0;border-radius:7px;font-weight:700;font-size:13px;cursor:pointer">
+                            {{ $event->created_page_id ? 'Open Better Page' : 'Create Better Page' }} · {{ $event->getSuggestedPageFeatureLabel() }}
+                        </button>
+                    </form>
                     @endif
                 </div>
             </div>

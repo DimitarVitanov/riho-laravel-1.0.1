@@ -10,33 +10,36 @@
 <div class="container-fluid">
     <div class="vb-page-head">
         <div>
-            <h1>Property Intelligence — {{ $competitor->name }}</h1>
-            <p>Permanent competitor property history: new listings, price movement, disappearance signals, listing lifetime, image and description changes.</p>
+            <h1>Property Intelligence{{ isset($competitor) ? ' — ' . $competitor->name : '' }}</h1>
+            <p>Tracked competitor listings with current property data, status history, and direct listing access.</p>
         </div>
         <div class="vb-toolbar">
+            @if(isset($competitor))
             <a href="{{ route('agency.competitor-intelligence.competitors.show', $competitor) }}" class="vb-btn vb-btn-light">← Back to Competitor</a>
+            @endif
+            <a href="{{ route('agency.competitor-intelligence.properties.export', array_merge(request()->query(), isset($competitor) ? ['competitor_id' => $competitor->id] : [])) }}" class="vb-btn">Export CSV</a>
         </div>
     </div>
 
     <div class="vb-grid-4">
         <div class="vb-stat">
-            <div class="label">Active Tracked</div>
-            <div class="value">{{ $properties->total() }}</div>
-            <div class="sub">For {{ $competitor->name }}</div>
+            <div class="label">Tracked Listings</div>
+            <div class="value">{{ $stats['total'] }}</div>
+            <div class="sub">{{ isset($competitor) ? $competitor->name : 'All competitors' }}</div>
         </div>
         <div class="vb-stat">
             <div class="label">New 7 Days</div>
-            <div class="value">{{ $properties->where('first_detected_at', '>=', now()->subDays(7))->count() }}</div>
+            <div class="value">{{ $stats['new_7d'] }}</div>
             <div class="sub">Recently discovered</div>
         </div>
         <div class="vb-stat">
-            <div class="label">Price Changes</div>
-            <div class="value">{{ $properties->where('current_status', 'price_changed')->count() }}</div>
-            <div class="sub">Recent price movement</div>
+            <div class="label">Active</div>
+            <div class="value">{{ $stats['active'] }}</div>
+            <div class="sub">Currently visible listings</div>
         </div>
         <div class="vb-stat">
             <div class="label">Possibly Removed</div>
-            <div class="value">{{ $properties->where('current_status', 'possibly_removed')->count() }}</div>
+            <div class="value">{{ $stats['possibly_removed'] }}</div>
             <div class="sub">Needs verification</div>
         </div>
     </div>
@@ -44,15 +47,16 @@
     <div class="vb-card" style="margin-top:18px">
         <div class="vb-card-head">
             <h2>Tracked Property Inventory</h2>
-            <div class="vb-toolbar">
-                <input class="vb-input" placeholder="Search title, location, reference...">
-                <select class="vb-select">
-                    <option>All statuses</option>
-                    <option>Active</option>
-                    <option>Price changed</option>
-                    <option>Possibly removed</option>
+            <form method="GET" class="vb-toolbar">
+                <input class="vb-input" name="search" value="{{ request('search') }}" placeholder="Search title, location, reference...">
+                <select class="vb-select" name="status" onchange="this.form.submit()">
+                    <option value="">All statuses</option>
+                    @foreach(['active' => 'Active', 'possibly_removed' => 'Possibly removed', 'removed' => 'Removed', 'sold' => 'Sold', 'unlisted' => 'Unlisted'] as $value => $label)
+                    <option value="{{ $value }}" {{ request('status') === $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
                 </select>
-            </div>
+                <button class="vb-btn vb-btn-light" type="submit">Filter</button>
+            </form>
         </div>
         <div class="vb-card-body" style="padding:0">
             @if(isset($properties) && $properties->count() > 0)
@@ -65,39 +69,29 @@
                         <th>Current Price</th>
                         <th>First Seen</th>
                         <th>Last Change</th>
-                        <th>Signal</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($properties as $property)
                     <tr>
+                        @php
+                            $snapshot = $property->latestSnapshot;
+                            $listingUrl = $property->canonical_url ?? $property->url?->url;
+                        @endphp
+                        <td><b>{{ Str::limit($property->display_name, 48) }}</b></td>
+                        <td>{{ $property->competitor?->name ?? 'Unknown' }}</td>
+                        <td>{{ $snapshot?->location_text ?? (Str::contains($property->display_name, ' in ') ? Str::afterLast($property->display_name, ' in ') : '—') }}</td>
+                        <td><b>{{ $snapshot?->price !== null ? '€' . number_format((float) $snapshot->price, 0) : '—' }}</b></td>
+                        <td>{{ $property->display_first_detected_at?->diffForHumans() ?? '—' }}</td>
+                        <td>{{ $property->last_seen_at?->diffForHumans() ?? '—' }}</td>
+                        <td><span class="badge-soft b-{{ $property->current_status === 'active' ? 'green' : ($property->current_status === 'possibly_removed' ? 'yellow' : 'red') }}">{{ strtoupper(str_replace('_', ' ', $property->current_status)) }}</span></td>
                         <td>
-                            <span class="thumb">IMG</span>
-                            <b style="margin-left:8px">{{ Str::limit($property->title, 30) }}</b>
-                        </td>
-                        <td>{{ $property->competitor->name ?? 'Unknown' }}</td>
-                        <td>{{ $property->location }}</td>
-                        <td>
-                            <b>€{{ number_format($property->current_price, 0) }}</b>
-                            @if($property->price_change)
-                            <div class="small" style="color:{{ $property->price_change < 0 ? '#c83232' : '#108948' }}">
-                                {{ $property->price_change > 0 ? '+' : '' }}€{{ number_format($property->price_change, 0) }}
-                            </div>
+                            @if($listingUrl)
+                            <a class="vb-link" href="{{ $listingUrl }}" target="_blank" rel="noopener noreferrer" style="color:#1b5fbf!important">Open listing</a>
                             @endif
-                        </td>
-                        <td>{{ $property->first_seen_at->diffForHumans() }}</td>
-                        <td>{{ $property->last_change_at ? $property->last_change_at->diffForHumans() : '—' }}</td>
-                        <td>
-                            @if($property->status == 'new')
-                            <span class="badge-soft b-green">NEW</span>
-                            @elseif($property->status == 'price_changed')
-                            <span class="badge-soft b-red">PRICE DROP</span>
-                            @elseif($property->status == 'removed')
-                            <span class="badge-soft b-yellow">POSSIBLY REMOVED</span>
-                            @elseif($property->status == 'changed')
-                            <span class="badge-soft b-blue">CHANGED</span>
-                            @endif
-                            <a class="vb-link" style="margin-left:8px" href="{{ route('agency.competitor-intelligence.properties.show', [$competitor, $property]) }}">Open</a>
+                            <a class="vb-link" style="margin-left:8px;color:#1b5fbf!important" href="{{ route('agency.competitor-intelligence.properties.show', [$property->competitor, $property]) }}">Details</a>
                         </td>
                     </tr>
                     @endforeach

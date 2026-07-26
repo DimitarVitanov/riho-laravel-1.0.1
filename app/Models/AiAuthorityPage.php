@@ -40,6 +40,7 @@ class AiAuthorityPage extends Model
         'longitude',
         'property_type',
         'page_type',
+        'generation_brief',
         'status',
         'published_at',
         'ai_generated_content',

@@ -443,6 +443,7 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
         Route::get('/comparison', [CompetitorIntelligenceController::class, 'comparison'])->name('comparison');
         Route::get('/scan-center', [CompetitorIntelligenceController::class, 'scanCenter'])->name('scan-center');
         Route::get('/events/{event}/evidence', [CompetitorIntelligenceController::class, 'eventEvidence'])->name('events.evidence');
+        Route::post('/events/{event}/create-better-page', [CompetitorIntelligenceController::class, 'createBetterPage'])->name('events.create-better-page');
         Route::post('/scan/run-full', [CompetitorIntelligenceController::class, 'runFullScan'])->name('scan.run-full');
         Route::post('/scan/run-custom', [CompetitorIntelligenceController::class, 'runCustomScan'])->name('scan.run-custom');
 
@@ -469,6 +470,8 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
 
         // Properties (all competitors)
         Route::get('/properties', [CompetitorIntelligenceController::class, 'allProperties'])->name('properties.index');
+        Route::get('/reputation', [CompetitorIntelligenceController::class, 'reputation'])->name('reputation.index');
+        Route::post('/reputation/refresh', [CompetitorIntelligenceController::class, 'refreshReputation'])->name('reputation.refresh');
         Route::get('/properties/{competitor}/{property}', [CompetitorIntelligenceController::class, 'propertyDetail'])->name('properties.show');
         Route::get('/properties/export', [CompetitorIntelligenceController::class, 'exportProperties'])->name('properties.export');
     });

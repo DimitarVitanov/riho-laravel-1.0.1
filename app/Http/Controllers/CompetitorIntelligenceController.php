@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Competitor;
 use App\Models\CompetitorDailyReport;
+use App\Models\Country;
 use App\Models\CompetitorEvent;
 use App\Models\CompetitorProperty;
+use App\Jobs\CompetitorIntelligence\GenerateCompetitorOpportunityPage;
 use App\Jobs\CompetitorIntelligence\GenerateDailyCompetitorReport;
+use App\Jobs\CompetitorIntelligence\RefreshCompetitorReputation;
 use App\Jobs\CompetitorIntelligence\RunCompetitorDiscoveryCycle;
 use App\Jobs\CompetitorIntelligence\ScanChangedUrls;
+use App\Services\CompetitorIntelligence\CompetitorOpportunityPageService;
 use App\Services\CompetitorIntelligence\CompetitorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -144,7 +148,9 @@ class CompetitorIntelligenceController extends Controller
 
     public function create()
     {
-        return view('competitor-intelligence.competitors.create');
+        $countries = Country::orderBy('name')->pluck('name')->map(fn ($country) => $country === 'Republic of Croatia' ? 'Croatia' : $country)->values();
+
+        return view('competitor-intelligence.competitors.create', compact('countries'));
     }
 
     public function store(Request $request)
@@ -264,8 +270,9 @@ class CompetitorIntelligenceController extends Controller
         $this->authorizeCompetitor($competitor);
 
         $competitor->load(['aliases', 'identifiers', 'sourceSettings']);
+        $countries = Country::orderBy('name')->pluck('name')->map(fn ($country) => $country === 'Republic of Croatia' ? 'Croatia' : $country)->values();
 
-        return view('competitor-intelligence.competitors.edit', compact('competitor'));
+        return view('competitor-intelligence.competitors.edit', compact('competitor', 'countries'));
     }
 
     public function update(Request $request, Competitor $competitor)
@@ -276,9 +283,19 @@ class CompetitorIntelligenceController extends Controller
             'name' => 'required|string|max:255',
             'legal_name' => 'nullable|string|max:255',
             'primary_market' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:100',
+            'website_url' => 'required|url|max:2048',
             'google_place_id' => 'nullable|string|max:255',
-            'is_active' => 'boolean',
+            'google_maps_url' => 'nullable|url|max:2048',
+            'is_active' => 'nullable|boolean',
+            'include_in_daily_report' => 'nullable|boolean',
+            'include_in_comparison' => 'nullable|boolean',
+            'priority' => 'required|in:high,normal,low',
         ]);
+
+        $validated['is_active'] = $request->boolean('is_active');
+        $validated['include_in_daily_report'] = $request->boolean('include_in_daily_report');
+        $validated['include_in_comparison'] = $request->boolean('include_in_comparison');
 
         $this->competitorService->update($competitor, $validated);
 
@@ -317,16 +334,14 @@ class CompetitorIntelligenceController extends Controller
         return back()->with('success', "Competitor monitoring {$status}.");
     }
 
-    public function properties(Competitor $competitor)
+    public function properties(Request $request, Competitor $competitor)
     {
         $this->authorizeCompetitor($competitor);
 
-        $properties = $competitor->properties()
-            ->with('latestSnapshot')
-            ->orderByDesc('first_detected_at')
-            ->paginate(30);
+        $properties = $this->propertyQuery($request, $competitor->properties())->paginate(10)->withQueryString();
+        $stats = $this->propertyStats($competitor->properties());
 
-        return view('competitor-intelligence.properties.index', compact('competitor', 'properties'));
+        return view('competitor-intelligence.properties.index', compact('competitor', 'properties', 'stats'));
     }
 
     public function propertyDetail(Competitor $competitor, CompetitorProperty $property)
@@ -337,9 +352,110 @@ class CompetitorIntelligenceController extends Controller
             abort(404);
         }
 
-        $property->load(['snapshots' => fn($q) => $q->orderByDesc('captured_at'), 'events']);
+        $property->load([
+            'url',
+            'latestSnapshot',
+            'snapshots' => fn($query) => $query->orderByDesc('captured_at'),
+            'events' => fn($query) => $query->orderByDesc('detected_at'),
+        ]);
 
-        return view('competitor-intelligence.properties.show', compact('competitor', 'property'));
+        $priceHistory = $property->snapshots
+            ->sortBy('captured_at')
+            ->filter(fn($snapshot) => $snapshot->price !== null)
+            ->values();
+
+        return view('competitor-intelligence.properties.show', compact('competitor', 'property', 'priceHistory'));
+    }
+
+    public function reputation(Request $request)
+    {
+        $competitors = Competitor::where('agency_profile_id', $this->getAgencyProfileId())
+            ->where('is_active', true)
+            ->with('latestGoogleMetric')
+            ->orderBy('name')
+            ->get();
+
+        $competitorIds = $competitors->pluck('id');
+        $selectedCompetitorId = $request->integer('competitor_id') ?: null;
+
+        if ($selectedCompetitorId && !$competitorIds->contains($selectedCompetitorId)) {
+            abort(403);
+        }
+
+        $scopedCompetitorIds = $selectedCompetitorId ? collect([$selectedCompetitorId]) : $competitorIds;
+        $profileCompetitors = $selectedCompetitorId ? $competitors->where('id', $selectedCompetitorId) : $competitors;
+        $reviewEvents = CompetitorEvent::whereIn('competitor_id', $scopedCompetitorIds)
+            ->whereIn('event_type', ['new_review', 'rating_changed'])
+            ->with('competitor')
+            ->orderByDesc('detected_at')
+            ->paginate(10, ['*'], 'reviews_page')
+            ->withQueryString();
+
+        $mentions = \App\Models\CompetitorMention::whereIn('competitor_id', $scopedCompetitorIds)
+            ->with('competitor')
+            ->orderByDesc('first_detected_at')
+            ->paginate(10, ['*'], 'mentions_page')
+            ->withQueryString();
+
+        $recentMetrics = $profileCompetitors
+            ->pluck('latestGoogleMetric')
+            ->filter()
+            ->sortByDesc('captured_at')
+            ->values();
+
+        $availableMetrics = $recentMetrics;
+        $stats = [
+            'profiles' => $availableMetrics->count(),
+            'average_rating' => $availableMetrics->whereNotNull('rating')->avg('rating'),
+            'review_profiles' => $availableMetrics->whereNotNull('review_count')->count(),
+            'total_reviews' => $availableMetrics->sum('review_count'),
+            'new_review_signals' => CompetitorEvent::whereIn('competitor_id', $scopedCompetitorIds)
+                ->where('event_type', 'new_review')
+                ->where('detected_at', '>=', now()->subDays(30))
+                ->count(),
+        ];
+
+        return view('competitor-intelligence.reputation.index', compact(
+            'competitors',
+            'profileCompetitors',
+            'selectedCompetitorId',
+            'reviewEvents',
+            'mentions',
+            'recentMetrics',
+            'stats'
+        ));
+    }
+
+    public function refreshReputation(Request $request)
+    {
+        $competitors = Competitor::where('agency_profile_id', $this->getAgencyProfileId())
+            ->where('is_active', true)
+            ->when($request->integer('competitor_id'), fn ($query, $competitorId) => $query->where('id', $competitorId))
+            ->get();
+
+        if ($request->integer('competitor_id') && $competitors->isEmpty()) {
+            abort(403);
+        }
+
+        $queued = 0;
+
+        foreach ($competitors as $competitor) {
+            if (!$competitor->google_maps_url && !$competitor->google_place_id) {
+                continue;
+            }
+
+            RefreshCompetitorReputation::dispatch($competitor->id);
+            $queued++;
+        }
+
+        if ($queued === 0) {
+            return back()->with('reputation_error', 'No configured Google Maps profiles were found for the selected competitors.');
+        }
+
+        return back()->with(
+            'reputation_success',
+            "Queued {$queued} Google profile " . ($queued === 1 ? 'refresh.' : 'refreshes.') . ' Results will appear when the queue finishes.'
+        );
     }
 
     public function todayIntelligence()
@@ -376,12 +492,14 @@ class CompetitorIntelligenceController extends Controller
     {
         $agencyProfileId = $this->getAgencyProfileId();
 
-        $reports = CompetitorDailyReport::where('agency_profile_id', $agencyProfileId)
+        $reportQuery = CompetitorDailyReport::where('agency_profile_id', $agencyProfileId)
             ->with(['metrics', 'items'])
-            ->orderByDesc('report_date')
-            ->paginate(30);
+            ->orderByDesc('report_date');
 
-        return view('competitor-intelligence.reports.index', compact('reports')); 
+        $latestReport = (clone $reportQuery)->first();
+        $reports = $reportQuery->paginate(30);
+
+        return view('competitor-intelligence.reports.index', compact('reports', 'latestReport'));
     }
 
     public function dailyReportShow(CompetitorDailyReport $report)
@@ -393,6 +511,40 @@ class CompetitorIntelligenceController extends Controller
         $report->load(['items', 'metrics']);
 
         return view('competitor-intelligence.reports.show', compact('report'));
+    }
+
+    public function createBetterPage(CompetitorEvent $event, CompetitorOpportunityPageService $pageService)
+    {
+        $event->load('competitor');
+        if (!$event->competitor || $event->competitor->agency_profile_id !== $this->getAgencyProfileId()) {
+            abort(403);
+        }
+
+        if (!$event->canCreateBetterPage()) {
+            return back()->with('error', 'This intelligence event does not contain an actionable page opportunity.');
+        }
+
+        $user = \App\Models\User::findOrFail(Auth::id());
+        $profile = $user->getEffectiveAgencyProfile();
+        $result = $pageService->create($event, $profile);
+        $page = $result['page'];
+
+        if ($result['created']) {
+            GenerateCompetitorOpportunityPage::dispatch($result['feature'], $page->id, $profile->id);
+        }
+
+        $label = $result['feature'] === 'ai_search_ranking' ? 'AI Search Ranking' : 'Local SEO';
+        $route = route('agency.features.show', [
+            'feature' => $result['feature'],
+            $result['feature'] === 'ai_search_ranking' ? 'edit_page_id' : 'edit_campaign_id' => $page->id,
+        ]);
+
+        return redirect($route)->with(
+            'success',
+            $result['created']
+                ? "{$label} page created from competitor intelligence. AI content generation is queued."
+                : "Opening the existing {$label} page created from this opportunity."
+        );
     }
 
     public function eventEvidence(CompetitorEvent $event)
@@ -502,33 +654,86 @@ class CompetitorIntelligenceController extends Controller
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
-    public function allProperties()
+    public function allProperties(Request $request)
     {
-        $agencyProfileId = $this->getAgencyProfileId();
-
-        $competitorIds = Competitor::where('agency_profile_id', $agencyProfileId)
+        $competitorIds = Competitor::where('agency_profile_id', $this->getAgencyProfileId())
             ->where('is_active', true)
             ->pluck('id');
 
-        $properties = CompetitorProperty::whereIn('competitor_id', $competitorIds)
-            ->with(['competitor', 'latestSnapshot'])
-            ->orderByDesc('first_detected_at')
-            ->paginate(30);
-
-        $stats = [
-            'total_active' => $properties->total(),
-            'new_7d' => CompetitorProperty::whereIn('competitor_id', $competitorIds)
-                ->where('first_detected_at', '>=', now()->subDays(7))
-                ->count(),
-        ];
+        $baseQuery = CompetitorProperty::whereIn('competitor_id', $competitorIds);
+        $properties = $this->propertyQuery($request, $baseQuery)->paginate(10)->withQueryString();
+        $stats = $this->propertyStats($baseQuery);
 
         return view('competitor-intelligence.properties.index', compact('properties', 'stats'));
     }
 
-    public function exportProperties()
+    public function exportProperties(Request $request)
     {
-        // TODO: Implement CSV export
-        return back()->with('info', 'Export coming soon.');
+        $competitorIds = Competitor::where('agency_profile_id', $this->getAgencyProfileId())
+            ->where('is_active', true)
+            ->pluck('id');
+
+        $query = CompetitorProperty::whereIn('competitor_id', $competitorIds);
+        if ($request->filled('competitor_id')) {
+            $query->where('competitor_id', $request->integer('competitor_id'));
+        }
+
+        $properties = $this->propertyQuery($request, $query)->get();
+        $filename = 'competitor-properties-' . now()->format('Y-m-d-His') . '.csv';
+
+        return response()->streamDownload(function () use ($properties) {
+            $stream = fopen('php://output', 'w');
+            fputcsv($stream, ['Competitor', 'Property', 'Reference', 'Location', 'Type', 'Price', 'Currency', 'Status', 'First Seen', 'Last Seen', 'Listing URL'], ',', '"', '\\');
+
+            foreach ($properties as $property) {
+                $snapshot = $property->latestSnapshot;
+                fputcsv($stream, [
+                    $property->competitor?->name,
+                    $snapshot?->title,
+                    $property->external_reference,
+                    $snapshot?->location_text,
+                    $snapshot?->property_type,
+                    $snapshot?->price,
+                    $snapshot?->currency,
+                    $property->current_status,
+                    $property->first_detected_at?->toDateTimeString(),
+                    $property->last_seen_at?->toDateTimeString(),
+                    $property->canonical_url ?? $property->url?->url,
+                ], ',', '"', '\\');
+            }
+
+            fclose($stream);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    protected function propertyQuery(Request $request, $query)
+    {
+        $search = trim((string) $request->input('search'));
+        $status = $request->input('status');
+
+        return $query
+            ->with(['competitor', 'url', 'latestSnapshot'])
+            ->when($status, fn($builder) => $builder->where('current_status', $status))
+            ->when($search, function ($builder) use ($search) {
+                $builder->where(function ($nested) use ($search) {
+                    $nested->where('external_reference', 'like', "%{$search}%")
+                        ->orWhere('canonical_url', 'like', "%{$search}%")
+                        ->orWhereHas('latestSnapshot', fn($snapshot) => $snapshot
+                            ->where('title', 'like', "%{$search}%")
+                            ->orWhere('location_text', 'like', "%{$search}%"));
+                });
+            })
+            ->orderByDesc('first_detected_at');
+    }
+
+    protected function propertyStats($query): array
+    {
+        return [
+            'total' => (clone $query)->count(),
+            'active' => (clone $query)->where('current_status', 'active')->count(),
+            'new_7d' => (clone $query)->where('first_detected_at', '>=', now()->subDays(7))->count(),
+            'possibly_removed' => (clone $query)->where('current_status', 'possibly_removed')->count(),
+        ];
     }
 
     protected function getAgencyProfileId(): int

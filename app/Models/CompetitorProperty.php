@@ -70,6 +70,48 @@ class CompetitorProperty extends Model
         return $query->whereDate('first_detected_at', today());
     }
 
+    public function getDisplayNameAttribute(): string
+    {
+        if ($this->latestSnapshot?->title) {
+            return $this->latestSnapshot->title;
+        }
+
+        if ($this->external_reference) {
+            return $this->external_reference;
+        }
+
+        $url = $this->canonical_url ?? $this->url?->url;
+        $segments = array_values(array_filter(explode('/', trim((string) parse_url($url, PHP_URL_PATH), '/'))));
+        $listingIndex = array_search('listinzi', $segments, true);
+
+        if ($listingIndex !== false && isset($segments[$listingIndex + 3])) {
+            $type = $this->formatUrlSegment($segments[$listingIndex + 1]);
+            $location = $this->formatUrlSegment($segments[$listingIndex + 3]);
+
+            return "{$type} in {$location}";
+        }
+
+        return 'Property listing';
+    }
+
+    protected function formatUrlSegment(string $segment): string
+    {
+        if (preg_match('//u', $segment) !== 1) {
+            return 'Property';
+        }
+
+        return ucfirst(str_replace('-', ' ', $segment));
+    }
+
+    public function getDisplayFirstDetectedAtAttribute()
+    {
+        if ($this->first_detected_at && $this->last_seen_at && $this->first_detected_at->greaterThan($this->last_seen_at)) {
+            return $this->last_seen_at;
+        }
+
+        return $this->first_detected_at;
+    }
+
     public function getListingLifetimeDaysAttribute(): ?int
     {
         if (!$this->first_detected_at) {

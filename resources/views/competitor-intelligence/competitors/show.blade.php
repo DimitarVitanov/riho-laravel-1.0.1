@@ -166,10 +166,6 @@
                     <p>{{ $competitor->website_url }}</p>
                 </div>
                 <div>
-                    <label>Primary Market</label>
-                    <p>{{ $competitor->primary_market ?? 'Not set' }}</p>
-                </div>
-                <div>
                     <label>Status</label>
                     <p>
                         @if($competitor->is_active)

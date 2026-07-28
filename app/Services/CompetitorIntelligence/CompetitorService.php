@@ -19,7 +19,6 @@ class CompetitorService
                 'agency_profile_id' => $data['agency_profile_id'],
                 'name' => $data['name'],
                 'legal_name' => $data['legal_name'] ?? null,
-                'primary_market' => $data['primary_market'] ?? null,
                 'country' => $data['country'] ?? null,
                 'website_url' => $data['website_url'],
                 'normalized_domain' => $this->normalizeDomain($data['website_url']),
@@ -62,7 +61,6 @@ class CompetitorService
             $updateData = array_filter([
                 'name' => $data['name'] ?? null,
                 'legal_name' => $data['legal_name'] ?? null,
-                'primary_market' => $data['primary_market'] ?? null,
                 'country' => $data['country'] ?? null,
                 'google_place_id' => $this->normalizeGooglePlaceId($data['google_place_id'] ?? null),
                 'google_maps_url' => $data['google_maps_url'] ?? null,

@@ -142,7 +142,7 @@
                         <td style="background:#fff;padding:13px 14px;border-bottom:1px solid #edf0f3"><span style="width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#202733;color:#fff;font-weight:800">{{ $index + 1 }}</span></td>
                         <td style="background:#fff;padding:13px 14px;border-bottom:1px solid #edf0f3">
                             <b>{{ $competitor->name }}</b>
-                            <div style="font-size:11px;color:#747b87">{{ $competitor->primary_market ?? $competitor->country ?? 'Croatia' }}</div>
+                            <div style="font-size:11px;color:#747b87">{{ $competitor->country ?? 'Croatia' }}</div>
                         </td>
                         @if($competitor->properties_count == $maxProperties && $maxProperties > 0)
                         <td style="background:#f1fbf5 !important;padding:13px 14px;border-bottom:1px solid #edf0f3;font-weight:800;font-size:14px">

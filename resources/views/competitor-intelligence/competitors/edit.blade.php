@@ -29,16 +29,10 @@
                     <h2>Competitor Identity</h2>
                 </div>
                 <div class="vb-card-body">
-                    <div class="form-row">
-                        <div>
-                            <label>Competitor / Agency Name *</label>
-                            <input class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name', $competitor->name) }}" required>
-                            @error('name')<div class="text-danger small">{{ $message }}</div>@enderror
-                        </div>
-                        <div>
-                            <label>Primary Market</label>
-                            <input class="form-control" name="primary_market" value="{{ old('primary_market', $competitor->primary_market) }}" placeholder="e.g. Split, Croatia">
-                        </div>
+                    <div class="form-group">
+                        <label>Competitor / Agency Name *</label>
+                        <input class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name', $competitor->name) }}" required>
+                        @error('name')<div class="text-danger small">{{ $message }}</div>@enderror
                     </div>
                     <div class="form-group">
                         <label>Main Website URL *</label>
@@ -55,7 +49,7 @@
                             <select class="form-control" name="country">
                                 <option value="" disabled {{ old('country', $competitor->country) ? '' : 'selected' }}>Select country</option>
                                 @foreach($countries as $country)
-                                <option value="{{ $country }}" {{ old('country', $competitor->country) === $country ? 'selected' : '' }}>{{ $country }}</option>
+                                <option value="{{ $country->name }}" {{ old('country', $competitor->country) === $country->name ? 'selected' : '' }}>{{ $country->iso_3166_2 }} — {{ $country->name }}</option>
                                 @endforeach
                             </select>
                         </div>

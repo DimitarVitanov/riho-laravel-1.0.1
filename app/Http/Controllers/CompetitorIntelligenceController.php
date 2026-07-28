@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Competitor;
 use App\Models\CompetitorDailyReport;
-use App\Models\Country;
 use App\Models\CompetitorEvent;
 use App\Models\CompetitorProperty;
 use App\Jobs\CompetitorIntelligence\GenerateCompetitorOpportunityPage;
@@ -148,7 +147,7 @@ class CompetitorIntelligenceController extends Controller
 
     public function create()
     {
-        $countries = Country::orderBy('name')->pluck('name')->map(fn ($country) => $country === 'Republic of Croatia' ? 'Croatia' : $country)->values();
+        $countries = DB::table('countries')->orderBy('iso_3166_2')->get(['name', 'iso_3166_2']);
 
         return view('competitor-intelligence.competitors.create', compact('countries'));
     }
@@ -159,7 +158,6 @@ class CompetitorIntelligenceController extends Controller
             'name' => 'required|string|max:255',
             'website_url' => 'required|url|max:2048',
             'legal_name' => 'nullable|string|max:255',
-            'primary_market' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:100',
             'google_place_id' => 'nullable|string|max:255',
             'google_maps_url' => 'nullable|url|max:2048',
@@ -270,7 +268,7 @@ class CompetitorIntelligenceController extends Controller
         $this->authorizeCompetitor($competitor);
 
         $competitor->load(['aliases', 'identifiers', 'sourceSettings']);
-        $countries = Country::orderBy('name')->pluck('name')->map(fn ($country) => $country === 'Republic of Croatia' ? 'Croatia' : $country)->values();
+        $countries = DB::table('countries')->orderBy('iso_3166_2')->get(['name', 'iso_3166_2']);
 
         return view('competitor-intelligence.competitors.edit', compact('competitor', 'countries'));
     }
@@ -282,7 +280,6 @@ class CompetitorIntelligenceController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'legal_name' => 'nullable|string|max:255',
-            'primary_market' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:100',
             'website_url' => 'required|url|max:2048',
             'google_place_id' => 'nullable|string|max:255',

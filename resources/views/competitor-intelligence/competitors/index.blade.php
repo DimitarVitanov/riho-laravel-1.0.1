@@ -54,7 +54,6 @@
                     <tr>
                         <td>
                             <b>{{ $competitor->name }}</b>
-                            <div class="small muted">{{ $competitor->primary_market ?? 'No market set' }}</div>
                         </td>
                         <td>{{ $competitor->normalized_domain }}</td>
                         <td>

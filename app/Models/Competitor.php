@@ -16,7 +16,6 @@ class Competitor extends Model
         'agency_profile_id',
         'name',
         'legal_name',
-        'primary_market',
         'country',
         'website_url',
         'normalized_domain',

@@ -54,14 +54,11 @@ label{font-weight:700;font-size:11px;margin-bottom:6px;display:block}
   <div class="vb-card" style="grid-column:span 3">
     <div class="vb-card-head"><h2>1. Competitor Identity</h2><span class="badge-soft b-blue">REQUIRED</span></div>
     <div class="vb-card-body">
-      <div class="form-row">
-        <div><label>Competitor / Agency Name</label><input class="form-control" name="name" value="{{ old('name') }}" placeholder="e.g. Viga Nekretnine" required></div>
-        <div><label>Primary Market</label><input class="form-control" name="primary_market" value="{{ old('primary_market') }}" placeholder="e.g. Split, Croatia"></div>
-      </div>
+      <div class="form-group"><label>Competitor / Agency Name</label><input class="form-control" name="name" value="{{ old('name') }}" placeholder="e.g. Viga Nekretnine" required></div>
       <div class="form-group"><label>Main Website URL</label><input class="form-control" name="website_url" value="{{ old('website_url') }}" placeholder="https://www.competitor.com" required></div>
       <div class="form-row">
         <div><label>Legal Company Name (optional)</label><input class="form-control" name="legal_name" value="{{ old('legal_name') }}" placeholder="e.g. Example Real Estate d.o.o."></div>
-        <div><label>Country</label><select class="form-control" name="country"><option value="" disabled {{ old('country') ? '' : 'selected' }}>Select country</option>@foreach($countries as $country)<option value="{{ $country }}" {{ old('country') === $country ? 'selected' : '' }}>{{ $country }}</option>@endforeach</select></div>
+        <div><label>Country</label><select class="form-control" name="country"><option value="" disabled {{ old('country') ? '' : 'selected' }}>Select country</option>@foreach($countries as $country)<option value="{{ $country->name }}" {{ old('country') === $country->name ? 'selected' : '' }}>{{ $country->iso_3166_2 }} — {{ $country->name }}</option>@endforeach</select></div>
       </div>
       <div class="form-group"><label>Brand Variations / Aliases</label><input class="form-control" name="aliases" value="{{ old('aliases') }}" placeholder="Separate aliases with commas"></div>
       <div class="notice">Villa Bit AI uses identity signals such as brand name, legal name, domain, phones, emails and aliases to match the same competitor across different websites and external sources.</div>

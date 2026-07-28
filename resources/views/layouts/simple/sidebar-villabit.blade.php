@@ -162,6 +162,24 @@
                     </a>
                 </li>
 
+                <li class="sidebar-main-title"><div><h6>TAXI</h6></div></li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.taxi.global-data') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/global_ai_prompts.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/global_ai_prompts.svg') }}" alt="">
+                        <span>Global Data Reports</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('admin.villabit.taxi.prompts') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/ai_api_settings.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/ai_api_settings.svg') }}" alt="">
+                        <span>Global Data AI Prompts</span>
+                    </a>
+                </li>
+
                 <li class="sidebar-main-title"><div><h6>Support</h6></div></li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>

@@ -16,7 +16,7 @@ class RealEstateTaxiController extends Controller
         $currencies = self::supportedCurrencies();
 
         // Auto-detect language + currency from the visitor's IP (cached per IP).
-        $geo = $this->detectGeo($request);
+        $geo = self::detectGeo($request);
 
         // Language: explicit choice (query) > saved cookie > IP detection > English.
         $locale = $request->query('lang')
@@ -57,7 +57,25 @@ class RealEstateTaxiController extends Controller
      * Resolve the visitor's language + currency from their IP address.
      * Uses the free ip-api.com service, cached per IP for a day.
      */
-    private function detectGeo(Request $request): array
+    /**
+     * Language for a visitor when no explicit locale is present in the URL:
+     * cookie > IP country > English.
+     */
+    public static function detectLocale(Request $request): string
+    {
+        $languages = AgencySettingsController::supportedPanelLanguages();
+
+        $cookie = $request->cookie('taxi_lang');
+        if ($cookie && array_key_exists($cookie, $languages)) {
+            return $cookie;
+        }
+
+        $locale = self::detectGeo($request)['language'] ?? 'en';
+
+        return array_key_exists($locale, $languages) ? $locale : 'en';
+    }
+
+    public static function detectGeo(Request $request): array
     {
         $ip = $request->ip();
 

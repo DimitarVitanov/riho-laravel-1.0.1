@@ -40,6 +40,13 @@ Schedule::command('pages:process-scheduled')
     ->withoutOverlapping()
     ->runInBackground();
 
+// Real Estate Taxi — Global Data country reports, 30-day content refresh cycle.
+// The command itself only picks reports whose next_refresh_at has passed.
+Schedule::command('taxi:refresh-reports --limit=5')
+    ->dailyAt('04:00')
+    ->withoutOverlapping()
+    ->runInBackground();
+
 Schedule::command('authority:generate')
     ->daily()
     ->at('07:00')

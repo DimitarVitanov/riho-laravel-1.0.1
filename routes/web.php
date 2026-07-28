@@ -52,6 +52,8 @@ use App\Http\Controllers\Agency\AgencySupportController;
 use App\Http\Controllers\Admin\AdminAiSettingsController;
 use App\Http\Controllers\Agency\AgencySitemapController;
 use App\Http\Controllers\RealEstateTaxiController;
+use App\Http\Controllers\TaxiGlobalDataController;
+use App\Http\Controllers\Admin\AdminTaxiController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\VillaReadyPropertyPageController;
 use App\Http\Controllers\Admin\AdminVillaReadyPropertyController;
@@ -63,6 +65,18 @@ use App\Http\Controllers\CompetitorIntelligenceController;
 Route::get('/blog', [PublicPageController::class, 'index'])->name('public.blog.index');
 Route::get('/blog/{slug}', [PublicPageController::class, 'show'])->name('public.blog.show');
 
+// Real Estate Taxi — Global Data country market reports (must precede the catch-all)
+Route::domain('realestate.taxi')->group(function () {
+    Route::get('/globaldata', [TaxiGlobalDataController::class, 'index'])->name('taxi.globaldata.index');
+    Route::get('/globaldata/{slug}', [TaxiGlobalDataController::class, 'show'])
+        ->where('slug', '[a-z0-9\-]+')->name('taxi.globaldata.show');
+
+    Route::get('/{locale}/globaldata', [TaxiGlobalDataController::class, 'indexLocalized'])
+        ->where('locale', '[a-z]{2}')->name('taxi.globaldata.index.localized');
+    Route::get('/{locale}/globaldata/{slug}', [TaxiGlobalDataController::class, 'showLocalized'])
+        ->where(['locale' => '[a-z]{2}', 'slug' => '[a-z0-9\-]+'])->name('taxi.globaldata.show.localized');
+});
+
 // Real Estate Taxi domain homepage
 Route::domain('realestate.taxi')->group(function () {
     Route::get('/{any?}', [RealEstateTaxiController::class, 'home'])->name('realestatetaxi.home')
@@ -72,6 +86,11 @@ Route::domain('realestate.taxi')->group(function () {
 // Real Estate Taxi fallback via prefix (for local/testing)
 Route::prefix('realestate')->group(function () {
     Route::get('/', [RealEstateTaxiController::class, 'home']);
+    Route::get('/globaldata', [TaxiGlobalDataController::class, 'index']);
+    Route::get('/globaldata/{slug}', [TaxiGlobalDataController::class, 'show'])->where('slug', '[a-z0-9\-]+');
+    Route::get('/{locale}/globaldata', [TaxiGlobalDataController::class, 'indexLocalized'])->where('locale', '[a-z]{2}');
+    Route::get('/{locale}/globaldata/{slug}', [TaxiGlobalDataController::class, 'showLocalized'])
+        ->where(['locale' => '[a-z]{2}', 'slug' => '[a-z0-9\-]+']);
 });
 
 // Home page redirects to marketing website
@@ -201,6 +220,20 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::get('ai-prompts', [AdminGlobalAiPromptController::class, 'index'])->name('ai-prompts.index');
     Route::get('ai-prompts/{prompt}/edit', [AdminGlobalAiPromptController::class, 'edit'])->name('ai-prompts.edit');
     Route::put('ai-prompts/{prompt}', [AdminGlobalAiPromptController::class, 'update'])->name('ai-prompts.update');
+
+    // TAXI — realestate.taxi Global Data reports
+    Route::prefix('taxi')->name('taxi.')->group(function () {
+        Route::get('global-data', [AdminTaxiController::class, 'globalData'])->name('global-data');
+        Route::post('global-data/settings', [AdminTaxiController::class, 'updateSettings'])->name('settings.update');
+        Route::post('global-data/run-cron', [AdminTaxiController::class, 'runCron'])->name('run-cron');
+        Route::get('global-data/prompts', [AdminTaxiController::class, 'prompts'])->name('prompts');
+        Route::put('global-data/prompts/{prompt}', [AdminTaxiController::class, 'updatePrompt'])->name('prompts.update');
+        Route::get('global-data/{report}', [AdminTaxiController::class, 'show'])->name('reports.show');
+        Route::get('global-data/{report}/preview', [AdminTaxiController::class, 'preview'])->name('reports.preview');
+        Route::post('global-data/{report}/refresh', [AdminTaxiController::class, 'refresh'])->name('reports.refresh');
+        Route::post('global-data/{report}/translate', [AdminTaxiController::class, 'translate'])->name('reports.translate');
+        Route::post('global-data/{report}/toggle-published', [AdminTaxiController::class, 'togglePublished'])->name('reports.toggle-published');
+    });
 
     // AI API Settings
     Route::get('ai-settings', [AdminAiSettingsController::class, 'index'])->name('ai-settings.index');

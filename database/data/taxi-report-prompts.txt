@@ -1,0 +1,437 @@
+This go in URL:
+https://realestate.taxi/globaldata/
+
+
+Imas tocan dizajn i tocne rijeci koje idu u koja polja.
+Imas i 1.PROMPT-VILLA_BIT_AI_ADD_LISTING_WITH_MULTIPLE_WANTED_LOCATIONS.html gdje je ChatGPT unio u svako box koji prompot se koristio da bi se dobili ti tekstovi.
+
+Trebamo namjestiti da ovo se pokazuje na svim jezicima koje ChatGPT prevodi.
+
+
+Znaci ako je IP iz hrvatske kao home se ucitava https://realestate.taxi/hr/
+a kad klikne naravno Global Data ucitava se: https://realestate.taxi/hr/globaldata/ na hrvatskom
+
+
+Updatei svake stranice svakih 30 dana da se provjere zadnji podaci i akos e stom moze ubaciti.
+
+Idemo odraditi taj dio sajta prvo. 
+
+Kakom je to isa baza kao Villa Bit AI, u admin panelu napravis sekciju: TAXI
+
+I ako sto iz admina se steluje to stavljas u tu sekciju.
+
+
+
+
+
+
+REAL ESTATE TAXI COUNTRY REPORT — EXACT PROMPT MAP FOR EVERY HTML AREA
+================================================================================
+
+VARIABLES: {{COUNTRY}}, {{COUNTRY_SLUG}}, {{REPORT_NUMBER}}, {{YEAR}}, {{CURRENT_DATE}}, {{GPG_URL}}, {{CAPITAL_CITY}}, {{SECOND_CITY}}
+
+[GLOBAL-001] Global research and writing rules
+HTML PLACEMENT: Apply before generating any individual HTML area.
+
+You are generating one English-language Real Estate Taxi residential real estate market report for {{COUNTRY}} for {{YEAR}}.
+
+GLOBAL RULES THAT APPLY TO EVERY HTML AREA:
+1. Research current information as of {{CURRENT_DATE}}.
+2. Prioritize authoritative primary sources: national statistics office, central bank, land registry or cadastre, housing ministry, tax authority, government legal portals and official regulators.
+3. Use {{GPG_URL}} only as a secondary source.
+4. Never invent a number, legal rule, date, tax rate, price, yield, transaction count or policy statement.
+5. Clearly separate official completed-transaction or index evidence, official credit and construction evidence, asking-price or asking-rent evidence, third-party gross-yield estimates and Real Estate Taxi analysis.
+6. State the exact reference period for every figure.
+7. Use the native currency first. Add EUR or USD only when useful.
+8. Never treat a national average as a property-level valuation.
+9. Never treat asking prices as completed sale prices.
+10. Never describe gross yield as net return.
+11. Explain that legal and tax outcomes depend on buyer, property, location and transaction date.
+12. Write precise professional English for buyers, investors, agents and AI search engines.
+13. Avoid promotional exaggeration and unsupported forecasts.
+14. Return only the content requested for the named HTML area. Do not add markdown fences.
+
+--------------------------------------------------------------------------------
+
+[META-001] HTML title
+HTML PLACEMENT: Inside the document <title> tag.
+
+Create one title in this exact pattern:
+{{COUNTRY}} Residential Real Estate Market Analysis {{YEAR}} | Prices, Rents, Yields & Investment Intelligence
+
+Output only the title text.
+
+--------------------------------------------------------------------------------
+
+[META-002] Meta description
+HTML PLACEMENT: Inside <meta name="description" content="...">.
+
+Write one factual 145–165 character meta description mentioning official price evidence, major markets, rents, yields, mortgages, supply, taxes, foreign-buyer rules and due diligence. Output only plain text.
+
+--------------------------------------------------------------------------------
+
+[META-003] Canonical URL
+HTML PLACEMENT: Inside canonical link and matching og:url.
+
+Return exactly:
+https://realestatetaxi.com/europe/{{COUNTRY_SLUG}}-residential-real-estate-market-analysis-{{YEAR}}/
+
+--------------------------------------------------------------------------------
+
+[NAV-001] Breadcrumb label
+HTML PLACEMENT: Final breadcrumb item above the hero.
+
+Return exactly:
+{{COUNTRY}} Market Analysis {{YEAR}}
+
+--------------------------------------------------------------------------------
+
+[HERO-001] Report number label
+HTML PLACEMENT: Small label above the H1.
+
+Return exactly:
+{{REPORT_NUMBER}} · EUROPE COUNTRY MARKET REPORT
+
+For the final country use:
+{{REPORT_NUMBER}} · FINAL EUROPE COUNTRY MARKET REPORT
+
+--------------------------------------------------------------------------------
+
+[HERO-002] Main H1
+HTML PLACEMENT: Inside the report <h1>.
+
+Return exactly:
+{{COUNTRY}} Residential Real Estate Market Analysis {{YEAR}}
+
+--------------------------------------------------------------------------------
+
+[HERO-003] Hero introduction
+HTML PLACEMENT: Paragraph directly below the H1.
+
+Write one 45–80 word introduction listing the actual report coverage: official price momentum, transactions, major cities and regions, rents, gross yields, mortgages, supply, taxes, foreign-buyer rules, due diligence and {{YEAR}} scenarios. Do not include unsupported numbers. Output one paragraph.
+
+--------------------------------------------------------------------------------
+
+[METRIC-001] Metric 1 — official price movement
+HTML PLACEMENT: Hero metric card 1.
+
+Select the most important official national residential price indicator.
+
+Return exactly three lines:
+LABEL: short label of 2–5 words
+VALUE: verified value
+PERIOD: exact reference period or context
+
+Do not use an asking-price figure unless this prompt explicitly requests secondary evidence.
+
+--------------------------------------------------------------------------------
+
+[METRIC-002] Metric 2 — price or transaction level
+HTML PLACEMENT: Hero metric card 2.
+
+Select an official average or median price, completed transaction count, transaction value or real price change that does not repeat metric 1.
+
+Return exactly three lines:
+LABEL: short label of 2–5 words
+VALUE: verified value
+PERIOD: exact reference period or context
+
+Do not use an asking-price figure unless this prompt explicitly requests secondary evidence.
+
+--------------------------------------------------------------------------------
+
+[METRIC-003] Metric 3 — activity
+HTML PLACEMENT: Hero metric card 3.
+
+Select the most decision-useful official transaction, sales, contract or mortgage-approval figure.
+
+Return exactly three lines:
+LABEL: short label of 2–5 words
+VALUE: verified value
+PERIOD: exact reference period or context
+
+Do not use an asking-price figure unless this prompt explicitly requests secondary evidence.
+
+--------------------------------------------------------------------------------
+
+[METRIC-004] Metric 4 — financing
+HTML PLACEMENT: Hero metric card 4.
+
+Select the most relevant verified new mortgage rate, housing-loan rate or central-bank policy rate.
+
+Return exactly three lines:
+LABEL: short label of 2–5 words
+VALUE: verified value
+PERIOD: exact reference period or context
+
+Do not use an asking-price figure unless this prompt explicitly requests secondary evidence.
+
+--------------------------------------------------------------------------------
+
+[METRIC-005] Metric 5 — supply
+HTML PLACEMENT: Hero metric card 5.
+
+Select the clearest official completions, starts, permits, vacancy or housing-stock figure.
+
+Return exactly three lines:
+LABEL: short label of 2–5 words
+VALUE: verified value
+PERIOD: exact reference period or context
+
+Do not use an asking-price figure unless this prompt explicitly requests secondary evidence.
+
+--------------------------------------------------------------------------------
+
+[METRIC-006] Metric 6 — yield or risk
+HTML PLACEMENT: Hero metric card 6.
+
+Select a supported gross-yield estimate, clearly secondary, or a concise risk classification when yield is unreliable.
+
+Return exactly three lines:
+LABEL: short label of 2–5 words
+VALUE: verified value
+PERIOD: exact reference period or context
+
+Do not use an asking-price figure unless this prompt explicitly requests secondary evidence.
+
+--------------------------------------------------------------------------------
+
+[HERO-004] Real Estate Taxi direct view
+HTML PLACEMENT: Direct-view box at the bottom of the hero.
+
+Write a 45–85 word direct assessment. State the most important investment interpretation, explain why national averages are insufficient, identify the property-level factors that determine whether an investment works, avoid repeating metrics and never promise profit.
+
+--------------------------------------------------------------------------------
+
+[SEC-001] Executive decision frame
+HTML PLACEMENT: First full-width analysis section.
+
+Write exactly two paragraphs, 110–180 words total. Paragraph 1: current cycle direction, supports and constraints. Paragraph 2: strongest risk-adjusted property profile and weakest or highest-risk profile.
+
+--------------------------------------------------------------------------------
+
+[SEC-002] Market snapshot
+HTML PLACEMENT: Market snapshot card.
+
+Write 2–3 paragraphs with the latest official annual price change, quarterly change, new-build versus resale difference when available, exact period and one sentence explaining what the number does not prove.
+
+--------------------------------------------------------------------------------
+
+[SEC-003] Data separation
+HTML PLACEMENT: How to interpret the evidence card.
+
+Create four labeled paragraphs:
+OFFICIAL PRICE OR TRANSACTION EVIDENCE:
+OFFICIAL CREDIT / MACRO / SUPPLY EVIDENCE:
+SECONDARY ASKING OR YIELD EVIDENCE:
+REAL ESTATE TAXI ANALYSIS:
+Name the actual institutions and explain that asking prices are not completed sales and gross yields are not net returns.
+
+--------------------------------------------------------------------------------
+
+[SEC-004] Price cycle
+HTML PLACEMENT: Full-width price-cycle section.
+
+Write 2–3 analytical paragraphs describing the residential cycle from approximately 2019 to {{CURRENT_DATE}}: pre-pandemic direction, pandemic effect, rate shock or correction, current movement and structural supply-demand factors.
+
+--------------------------------------------------------------------------------
+
+[SEC-005] Official national price index
+HTML PLACEMENT: Official-index card.
+
+Explain the latest official national residential price index: institution, index name, annual change, quarterly change, exact period, methodology note and warning that it is not a valuation of one property.
+
+--------------------------------------------------------------------------------
+
+[SEC-006] Long-term price history
+HTML PLACEMENT: Long-term history card.
+
+Summarize verified 5-year and, when available, 10-year nominal and real price trends. Identify the main peak, correction or acceleration and explain why past appreciation cannot be projected mechanically.
+
+--------------------------------------------------------------------------------
+
+[SEC-007] Transactions and liquidity
+HTML PLACEMENT: Transaction-activity card.
+
+Present the latest official completed or registered residential transaction count, annual or quarterly change, transaction value when available, exact period and one sentence interpreting liquidity.
+
+--------------------------------------------------------------------------------
+
+[SEC-008] Regional market map
+HTML PLACEMENT: Regional-map card.
+
+Cover 4–7 major regions or market types. For each state the demand driver, relative price or liquidity position and main investment risk. Use short labeled paragraphs.
+
+--------------------------------------------------------------------------------
+
+[SEC-009] Capital city analysis
+HTML PLACEMENT: Capital-city market card.
+
+Write three paragraphs about {{CAPITAL_CITY}}: demand anchors; verified price evidence and important districts; rents, liquidity, supply and property-specific risks. Never describe the city as homogeneous.
+
+--------------------------------------------------------------------------------
+
+[SEC-010] Second major city analysis
+HTML PLACEMENT: Second-city market card.
+
+Write 2–3 paragraphs about {{SECOND_CITY}}: demand anchors, current price or rent evidence, difference from the capital, best-fit property type and main liquidity or supply risk.
+
+--------------------------------------------------------------------------------
+
+[SEC-011] Additional cities and special markets
+HTML PLACEMENT: Regional, coastal, island, alpine or tourism cards.
+
+Select 2–5 additional residential markets. For each explain buyer or tenant demand, relative entry price, demand type, main risk and expected resale depth. One short paragraph per market.
+
+--------------------------------------------------------------------------------
+
+[SEC-012] New-build market
+HTML PLACEMENT: New-build card.
+
+Analyze official new-build price or transaction trends, buyer advantages, developer and permit risk, financing and completion risk, all-in costs, required documents and why one-quarter movement can reflect transaction mix.
+
+--------------------------------------------------------------------------------
+
+[SEC-013] Resale market
+HTML PLACEMENT: Resale card.
+
+Analyze advantages of immediate inspection and occupancy, title and inheritance risk, mortgage and alteration risk, building-condition and common-cost risk, and why renovation cost must be added to the purchase price.
+
+--------------------------------------------------------------------------------
+
+[SEC-014] Mortgage market
+HTML PLACEMENT: Mortgage and buyer-leverage card.
+
+Present the latest verified mortgage conditions: average new rate, fixation type, lending or approval trend, down-payment or LTV rules and affordability tests. State exact dates and official sources.
+
+--------------------------------------------------------------------------------
+
+[SEC-015] Monetary conditions
+HTML PLACEMENT: Central-bank card.
+
+Explain the latest policy rate, decision date, inflation direction and transmission to mortgages, buyer capacity and construction. Clarify that policy rates and actual mortgage rates are not identical.
+
+--------------------------------------------------------------------------------
+
+[SEC-016] Housing supply and construction
+HTML PLACEMENT: Housing-supply card.
+
+Present the latest official completions, starts, permits, planned dwellings, vacancy or stock. State exact period and whether data are preliminary. Explain why national supply can differ from local project supply.
+
+--------------------------------------------------------------------------------
+
+[SEC-017] Rental market
+HTML PLACEMENT: Rental-market card.
+
+Analyze official rent inflation, asking-rent evidence for major cities, tenant-demand drivers, vacancy, negotiation, rent regulation and why asking rent is not achieved rent.
+
+--------------------------------------------------------------------------------
+
+[SEC-018] Gross rental yields
+HTML PLACEMENT: Yield card.
+
+Present the best-supported national and major-city gross-yield estimates, source and date. Explicitly state they are gross and list vacancy, tax, management, maintenance, insurance, furnishing and capital expenditure that reduce net return.
+
+--------------------------------------------------------------------------------
+
+[SEC-019] Foreign-buyer rules
+HTML PLACEMENT: Foreign-ownership card.
+
+Explain whether ordinary residential ownership is allowed, nationality or reciprocity conditions, residence or authorization rules, land restrictions, whether ownership gives immigration residence, proposed changes and need for transaction-specific legal confirmation.
+
+--------------------------------------------------------------------------------
+
+[SEC-020] Transaction and registration
+HTML PLACEMENT: Purchase-process card.
+
+Describe the safe chronological purchase process: buyer eligibility and finance, title or cadastre review, preliminary agreement, legal and technical due diligence, notarization or completion, tax payment and ownership registration. Name the registry system.
+
+--------------------------------------------------------------------------------
+
+[SEC-021] Purchase taxes and costs
+HTML PLACEMENT: Purchase-tax card.
+
+Explain new-build VAT or equivalent, resale transfer tax or stamp duty, notary, registry, legal, mortgage and valuation costs, and higher rates for investors, companies, second homes or non-residents. Use exact official rates only.
+
+--------------------------------------------------------------------------------
+
+[SEC-022] Recurring, rental and exit taxes
+HTML PLACEMENT: Annual-tax, rental-tax and capital-gains cards.
+
+Explain annual property or municipal tax, wealth tax where relevant, rental-income tax, deductible expenses, capital-gains tax, main-home or holding-period relief and non-resident obligations. State that structure and residence can change the result.
+
+--------------------------------------------------------------------------------
+
+[SEC-023] Due-diligence checklist
+HTML PLACEMENT: Essential due-diligence card.
+
+Create a property-level checklist covering owner and title, mortgages and litigation, registry match, permitted use, building and occupancy permits, association liabilities, utilities and arrears, energy and structure, tenancy and occupancy, and seller identity and authority.
+
+--------------------------------------------------------------------------------
+
+[SEC-024] Investment strategies
+HTML PLACEMENT: Investment-strategies card.
+
+Identify 4–6 strategies supported by the evidence. For each give a short strategy name, best property and location profile, demand source and main risk. Do not include unsupported strategies.
+
+--------------------------------------------------------------------------------
+
+[SEC-025] Risk matrix
+HTML PLACEMENT: Full-width alert risk card.
+
+Create a concise risk matrix using only material risks: affordability, interest rates, title, regulation, supply, liquidity, building or association, climate, security, currency and tax. Format each as RISK NAME: one-sentence explanation.
+
+--------------------------------------------------------------------------------
+
+[SEC-026] 2026 scenarios
+HTML PLACEMENT: Full-width outlook section.
+
+Create BASE CASE, UPSIDE CASE and DOWNSIDE CASE paragraphs connecting prices, transactions, financing, supply and regulation. Use conditional language and no invented probabilities.
+
+--------------------------------------------------------------------------------
+
+[SEC-027] Buyer profile
+HTML PLACEMENT: Who this country fits best card.
+
+Write exactly two paragraphs. First: suitable buyer profile. Second: unsuitable buyer profile. Refer to holding period, leverage, yield expectations, legal complexity, liquidity, local management and risk tolerance.
+
+--------------------------------------------------------------------------------
+
+[SEC-028] Decision framework
+HTML PLACEMENT: Final card before FAQ.
+
+Write a three-step decision framework: legal eligibility and title; property, building and micro-location evidence; conservative financial model and exit. End with one explicit rejection rule.
+
+--------------------------------------------------------------------------------
+
+[FAQ-001] FAQ
+HTML PLACEMENT: Visible FAQ card and matching FAQPage JSON-LD.
+
+Create 6–8 concise Q&A pairs covering current price direction, strongest city, foreign-buyer eligibility, mortgage or policy rate, purchase tax, gross yield and main due-diligence risk. Each answer must match the report facts exactly. Return QUESTION: and ANSWER: pairs.
+
+--------------------------------------------------------------------------------
+
+[SRC-001] Sources and methodology
+HTML PLACEMENT: Final sources card.
+
+Create four labeled parts:
+OFFICIAL PRIMARY SOURCES: exact institutions and datasets actually used.
+SECONDARY SOURCES: Global Property Guide and portals actually used.
+METHODOLOGY: explain separation of official data, asking evidence, yield estimates and analysis.
+SOURCE LINKS: exact direct URLs consulted. Do not include a source that was not used.
+
+--------------------------------------------------------------------------------
+
+[JSONLD-001] Article and FAQ JSON-LD
+HTML PLACEMENT: Inside <script type="application/ld+json"> in the head.
+
+Create valid JSON-LD with Article, FAQPage and BreadcrumbList. Use the approved headline, meta description, {{CURRENT_DATE}}, canonical URL, Real Estate Taxi publisher and exact visible FAQ answers. Return JSON only.
+
+--------------------------------------------------------------------------------
+
+[QA-001] Final factual and HTML verification
+HTML PLACEMENT: Run before publishing or linking the file.
+
+Verify: file exists; non-empty; at least 50 KB; starts with <!doctype html>; parses with html, head and body; correct title and exact H1; at least 15 sections; stylesheet, header, navigation and footer retained; no previous-country or property-template residue; every major number supported by a listed source; official data, asking data, yield estimates and analysis separated; no unsupported legal, tax or investment claim; FAQ and JSON-LD match visible text. If any check fails, correct it and rerun.
+
+--------------------------------------------------------------------------------

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EST8ADS User Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ asset('est8ads/panel/panel.css') }}"></head>
+<body data-panel-role="user">
+<div class="panel-app">
+<aside class="panel-sidebar">
+<a class="panel-brand" href="{{ route('est8ads.home') }}">
+<img src="{{ asset('est8ads/panel/est8ads-logo.svg') }}" alt="EST8ADS"></a>
+<div class="workspace-label">USER WORKSPACE</div>
+<nav class="side-nav">
+<button data-section-target="overview" class="active">
+<span class="nav-dot">◆</span>Dashboard</button>
+<button data-section-target="move" class="">
+<span class="nav-dot">↔</span>My complete move</button>
+<button data-section-target="properties" class="">
+<span class="nav-dot">P</span>My properties</button>
+<button data-section-target="chains" class="">
+<span class="nav-dot">AI</span>Chain analysis</button>
+<button data-section-target="matches" class="">
+<span class="nav-dot">M</span>Matches</button>
+<button data-section-target="messages" class="">
+<span class="nav-dot">✉</span>Messages</button>
+<button data-section-target="billing" class="">
+<span class="nav-dot">$</span>Billing</button>
+<button data-section-target="agency" class="">
+<span class="nav-dot">A</span>Agency workspace</button>
+<button data-section-target="profile" class="">
+<span class="nav-dot">U</span>Profile & security</button></nav>
+<div class="sidebar-footer">
+<div class="account-mini">
+<div class="avatar">AK</div>
+<div>
+<strong data-account-name>{{ auth()->user()->full_name }}</strong>
+<small data-account-type>{{ auth()->user()->isAgency() ? 'Agency account' : 'Private user' }}</small></div></div>
+<button class="logout" data-logout>Sign out</button></div></aside>
+<main class="panel-main">
+<header class="panel-topbar">
+<div style="display:flex;align-items:center;gap:12px">
+<button class="icon-btn mobile-nav-toggle" aria-label="Open navigation">☰</button>
+<div class="topbar-title">
+<h1 data-page-title>My EST8ADS dashboard</h1>
+<p>Your complete sell-and-buy move in one connected workspace</p></div></div>
+<div class="topbar-actions">
+<button class="icon-btn" title="Notifications">●</button>
+<button class="top-primary" data-open-property>Add property</button></div></header>
+<div class="panel-content">
+<section class="panel-section active" data-section="overview">
+<div class="section-head">
+<div>
+<h2>Your property move</h2>
+<p>Track your current property, next purchase, chain candidates and request status.</p></div>
+<button class="btn primary" data-nav-to="move">Edit complete move</button></div>
+<div class="grid kpis">
+<div class="kpi-card">
+<div class="kpi-top">
+<span class="kpi-icon">P</span>
+<span class="status active">Live</span></div>
+<h3>{{ count($est8adsData['properties']) }}</h3>
+<p>Properties in your move</p></div>
+<div class="kpi-card">
+<div class="kpi-top"><span class="kpi-icon">AI</span></div>
+<h3>{{ count($est8adsData['chains']) }}</h3>
+<p>Potential chain candidates</p></div>
+<div class="kpi-card">
+<div class="kpi-top"><span class="kpi-icon">M</span></div>
+<h3>{{ count($est8adsData['missingLinks']) }}</h3>
+<p>Missing links</p></div>
+<div class="kpi-card">
+<div class="kpi-top"><span class="kpi-icon">R</span></div>
+<h3>{{ count($est8adsData['requests']) }}</h3>
+<p>Active property moves</p></div></div>
+<div class="two-col" style="margin-top:18px">
+<div class="card">
+<div class="card-head">
+<div>
+<h3>Live move summary</h3>
+<p>Your sale and next purchase are analyzed together.</p></div>
+<button class="btn small" data-nav-to="move">Edit</button></div>
+<div class="card-body">
+<div class="property-grid" style="grid-template-columns:repeat(2,1fr)" id="userOverviewProperties"></div></div></div>
+<div class="card">
+<div class="card-head">
+<div>
+<h3>Latest updates</h3>
+<p>Messages and match activity.</p></div></div>
+<div class="card-body">
+<div class="message-list" id="overviewMessages"></div></div></div></div></section>
+<section class="panel-section" data-section="move">
+<div class="section-head">
+<div>
+<h2>My complete property move</h2>
+<p>Add one or several properties to sell and one or several properties you may buy.</p></div>
+<button class="btn primary" data-open-property>Add another property</button></div>
+<div class="card">
+<div class="card-head">
+<div>
+<h3>Move settings</h3>
+<p>These conditions help EST8ADS build realistic chains.</p></div>
+<span class="status active">Request active</span></div>
+<div class="card-body">
+<div class="form-grid">
+<div class="form-field">
+<label>Move type</label>
+<select>
+<option>Sell one property and buy the next</option>
+<option>Sell only</option>
+<option>Buy only</option>
+<option>Open to direct exchange</option></select></div>
+<div class="form-field">
+<label>Current stage</label>
+<select>
+<option>Planning only</option>
+<option>Property ready to list</option>
+<option>Property already advertised</option>
+<option>Offer received</option>
+<option>Next property already found</option></select></div>
+<div class="form-field">
+<label>Must sell before buying</label>
+<select>
+<option>Yes</option>
+<option>No</option>
+<option>Flexible</option></select></div>
+<div class="form-field">
+<label>Temporary housing possible</label>
+<select>
+<option>No</option>
+<option>Yes</option></select></div>
+<div class="form-field">
+<label>Open to direct exchange</label>
+<select>
+<option>No</option>
+<option>Yes</option></select></div>
+<div class="form-field">
+<label>Selling price flexibility</label>
+<select>
+<option>Up to 5%</option>
+<option>Up to 10%</option>
+<option>Up to 15%</option>
+<option>Not flexible</option></select></div>
+<div class="form-field full">
+<label>Conditions that must be met</label>
+<textarea>Sale proceeds must be available for the next purchase. Completion dates should be coordinated.</textarea></div></div>
+<div style="display:flex;justify-content:flex-end;margin-top:16px">
+<button class="btn primary" data-save-generic>Save move settings</button></div></div></div>
+<div class="section-head" style="margin-top:25px">
+<div>
+<h2 style="font-size:23px">Properties connected to this move</h2>
+<p>EST8ADS can analyze several possible sales and purchases in the same request.</p></div></div>
+<div class="property-grid" id="userMoveProperties"></div></section>
+<section class="panel-section" data-section="properties">
+<div class="section-head">
+<div>
+<h2>My properties and requirements</h2>
+<p>Manage listings you want to sell and the properties you want to buy.</p></div>
+<button class="btn primary" data-open-property>Add property</button></div>
+<div class="toolbar">
+<div class="search">
+<input id="userPropertySearch" placeholder="Search my properties"></div>
+<select class="filter-select" id="userPropertySide">
+<option value="all">Sell and buy</option>
+<option value="sell">For sale</option>
+<option value="buy">Wanted</option></select></div>
+<div class="property-grid" id="userPropertiesGrid"></div></section>
+<section class="panel-section" data-section="chains">
+<div class="section-head">
+<div>
+<h2>AI property-chain analysis</h2>
+<p>Review complete chains that connect your move with other participants and properties.</p></div>
+<button class="btn primary" id="userRunAnalysis">Refresh analysis</button></div>
+<div class="network-map" id="userNetworkMap">
+<div class="network-caption">Illustrative property-chain preview — not a live calculated result.</div></div>
+<div class="card" style="margin-top:18px">
+<div class="card-head"><div><h3>Your strongest chain candidate</h3><p>Calculated from live properties and active requests.</p></div></div>
+<div class="card-body" id="userStrongestChain"><p>No calculated property chain yet.</p></div></div></section>
+<section class="panel-section" data-section="matches">
+<div class="section-head">
+<div>
+<h2>My matches</h2>
+<p>Compatible properties, buyers and chain participants selected for your request.</p></div>
+<select class="filter-select">
+<option>All matches</option>
+<option>Direct matches</option>
+<option>Chain matches</option></select></div>
+<div class="property-grid" id="userMatchesGrid"></div></section>
+<section class="panel-section" data-section="messages">
+<div class="section-head">
+<div>
+<h2>Messages</h2>
+<p>Communicate with verified agencies and the EST8ADS match team.</p></div>
+<button class="btn primary">New message</button></div>
+<div class="two-col">
+<div class="card">
+<div class="card-head">
+<h3>Inbox</h3></div>
+<div class="card-body">
+<div class="message-list" id="messagesInbox"></div></div></div>
+<div class="card"><div class="card-head"><h3>Conversation</h3></div><div class="card-body"><p>Select a live conversation from your inbox.</p></div></div></div></section>
+<section class="panel-section" data-section="billing">
+<div class="section-head">
+<div>
+<h2>Billing</h2>
+<p>Manage request activation, invoices and payment history.</p></div></div>
+<div class="card"><div class="card-head"><h3>Payment history</h3></div><div class="table-wrap" style="border:0;border-radius:0"><table class="data-table"><thead><tr><th>Date</th><th>Item</th><th>Amount</th><th>Status</th></tr></thead><tbody id="userPaymentsTable"><tr><td colspan="4">No payment records yet.</td></tr></tbody></table></div></div></section>
+<section class="panel-section" data-section="agency">
+<div class="section-head">
+<div>
+<h2>Agency workspace</h2>
+<p>Available when your account belongs to a verified real estate agency.</p></div>
+<span class="status active">VIEW enabled</span></div>
+<div class="agency-workspace">
+<h2 style="margin:0">{{ auth()->user()->agencyProfile?->agency_name ?? 'Agency workspace' }}</h2>
+<p>Manage agency listings, property moves and live chain opportunities.</p>
+<div class="grid kpis" style="margin-top:20px">
+<div class="kpi-card" style="color:#111"><h3>{{ count($est8adsData['properties']) }}</h3><p>Active agency listings</p></div>
+<div class="kpi-card" style="color:#111"><h3>{{ count($est8adsData['chains']) }}</h3><p>Chain opportunities</p></div>
+<div class="kpi-card" style="color:#111"><h3>{{ count($est8adsData['requests']) }}</h3><p>Property moves</p></div>
+<div class="kpi-card" style="color:#111"><h3>{{ count($est8adsData['messages']) }}</h3><p>Messages</p></div></div></div>
+<div class="card" style="margin-top:18px">
+<div class="card-head">
+<div>
+<h3>Agency clients and moves</h3>
+<p>Submit and manage requests on behalf of clients.</p></div>
+<button class="btn primary" data-open-property>Add client property</button></div>
+<div class="table-wrap" style="border:0;border-radius:0">
+<table class="data-table">
+<thead>
+<tr>
+<th>Client</th>
+<th>Move</th>
+<th>Properties</th>
+<th>Best chain</th>
+<th>Status</th>
+<th>Actions</th></tr></thead>
+<tbody id="agencyMovesTable"><tr><td colspan="6">No agency client moves yet.</td></tr></tbody></table></div></div></section>
+<section class="panel-section" data-section="profile">
+<div class="section-head">
+<div>
+<h2>Profile and security</h2>
+<p>Manage your personal details, privacy permissions and account security.</p></div>
+<button class="btn primary" data-save-generic>Save profile</button></div>
+<div class="card">
+<div class="card-body">
+<div class="profile-card">
+<div class="profile-avatar">{{ strtoupper(substr(auth()->user()->first_name, 0, 1) . substr(auth()->user()->last_name, 0, 1)) }}</div>
+<div class="form-grid">
+<div class="form-field">
+<label>First name</label>
+<input value="{{ auth()->user()->first_name }}"></div>
+<div class="form-field">
+<label>Last name</label>
+<input value="{{ auth()->user()->last_name }}"></div>
+<div class="form-field">
+<label>Email</label>
+<input value="{{ auth()->user()->email }}"></div>
+<div class="form-field">
+<label>Phone number</label>
+<input value="{{ auth()->user()->phone }}"></div>
+<div class="form-field">
+<label>Preferred language</label>
+<select>
+<option>English</option>
+<option>Croatian</option>
+<option>German</option></select></div>
+<div class="form-field">
+<label>Country</label>
+<input value="Croatia"></div>
+<div class="form-field full">
+<label>Account permissions</label>
+<label style="display:flex;gap:9px;align-items:center;font-size:11px">
+<input type="checkbox" checked> Verified agencies may contact me when they have a relevant buyer, seller or property.</label></div></div></div></div></div>
+<div class="card" style="margin-top:18px">
+<div class="card-head">
+<h3>Security</h3></div>
+<div class="card-body">
+<div class="form-grid">
+<div class="form-field">
+<label>Current password</label>
+<input type="password"></div>
+<div class="form-field">
+<label>New password</label>
+<input type="password"></div>
+<div class="form-field">
+<label>Two-factor authentication</label>
+<select>
+<option>Enabled</option>
+<option>Disabled</option></select></div>
+<div class="form-field">
+<label>Login alerts</label>
+<select>
+<option>Email and SMS</option>
+<option>Email only</option></select></div></div></div></div></section></div></main></div>
+<div class="modal-backdrop" id="propertyModal">
+<div class="modal">
+<div class="modal-head">
+<h2>Add property to your move</h2>
+<button class="modal-close">×</button></div>
+<form id="propertyForm" method="POST" action="{{ route(request()->routeIs('est8ads.dev.*') ? 'est8ads.dev.listings.store' : (request()->routeIs('est8ads.local.*') ? 'est8ads.local.listings.store' : 'est8ads.listings.store')) }}" enctype="multipart/form-data">
+@csrf
+<div class="modal-body">
+<div class="form-grid">
+<div class="form-field">
+<label>Property side *</label>
+<select name="side" required>
+<option value="sell">Property I want to sell</option>
+<option value="buy">Property I want to buy</option></select></div>
+<div class="form-field">
+<label>Property type *</label>
+<select name="type" required>
+@include('partials.property-type-options', ['selected' => ''])
+</select></div>
+<div class="form-field full">
+<label>Title *</label>
+<input name="title" required></div>
+<div class="form-field">
+<label>Country *</label>
+<input name="country" value="Croatia" required></div>
+<div class="form-field">
+<label>City or preferred location *</label>
+<input name="city" required></div>
+<div class="form-field full">
+<label>Area / micro-location</label>
+<input name="area"></div>
+<div class="form-field">
+<label>Asking price or maximum budget *</label>
+<input name="price" type="number" required></div>
+<div class="form-field">
+<label>Currency</label>
+<select name="currency">
+<option>EUR</option>
+<option>USD</option>
+<option>GBP</option></select></div>
+<div class="form-field">
+<label>Interior size (m²)</label>
+<input name="size" type="number"></div>
+<div class="form-field">
+<label>Bedrooms</label>
+<input name="beds" type="number"></div>
+<div class="form-field">
+<label>Bathrooms</label>
+<input name="baths" type="number"></div>
+<div class="form-field">
+<label>Price flexibility (%)</label>
+<input name="flexibility" type="number" value="5"></div>
+<div class="form-field full">
+<label>Description and required conditions</label>
+<textarea name="description"></textarea></div>
+<div class="form-field full">
+<label>Listing URL</label>
+<input name="url" type="url" placeholder="https://..."></div>
+<div class="form-field full">
+<label>Property photos</label>
+<input type="file" name="images[]" accept="image/jpeg,image/png,image/webp" multiple></div></div></div>
+<div class="modal-foot">
+<button class="btn" type="button" data-close-modal>Cancel</button>
+<button class="btn primary" type="submit">Save property</button></div></form></div></div>
+<div class="toast" id="panelToast"></div>
+<script>window.EST8DATA = {{ Illuminate\Support\Js::from($est8adsData) }};</script>
+<script src="{{ asset('est8ads/panel/panel.js') }}"></script></body></html>

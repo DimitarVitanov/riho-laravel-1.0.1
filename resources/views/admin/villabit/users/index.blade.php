@@ -53,6 +53,14 @@
                                 </select>
                             </div>
                             <div class="col-auto">
+                                <select name="platform" class="form-select form-select-sm">
+                                    <option value="">All Platforms</option>
+                                    <option value="villabit" {{ request('platform') === 'villabit' ? 'selected' : '' }}>Villa Bit AI</option>
+                                    <option value="est8ads" {{ request('platform') === 'est8ads' ? 'selected' : '' }}>EST8ADS</option>
+                                    <option value="est8ads_only" {{ request('platform') === 'est8ads_only' ? 'selected' : '' }}>EST8ADS Only</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
                                 <button type="submit" class="btn btn-sm btn-outline-primary">Filter</button>
                             </div>
                         </form>
@@ -66,6 +74,7 @@
                                         <th>Email</th>
                                         <th>Role</th>
                                         <th>Status</th>
+                                        <th>Platforms</th>
                                         <th>Server Type</th>
                                         <th>Reseller</th>
                                         <th>Joined</th>
@@ -116,6 +125,11 @@
                                                 @endif
                                             </td>
                                             <td>
+                                                @if($u->has_villabit_access)<span class="badge bg-dark">Villa Bit</span>@endif
+                                                @if($u->has_est8ads_access)<span class="badge bg-primary">EST8ADS</span>@endif
+                                                @if(!$u->has_villabit_access && !$u->has_est8ads_access)<span class="text-muted">None</span>@endif
+                                            </td>
+                                            <td>
                                                 @if($u->agency_server_type === 'subdomain_ai_server')
                                                     <span class="badge bg-dark">Subdomain</span>
                                                 @elseif($u->agency_server_type === 'domain_folder_ai_server')
@@ -158,6 +172,26 @@
                                                                     </form>
                                                                 </li>
                                                             @endif
+                                                            <li><hr class="dropdown-divider"></li>
+                                                            <li>
+                                                                <form action="{{ route('admin.villabit.users.platform-access', $u) }}" method="POST">
+                                                                    @csrf
+                                                                    <input type="hidden" name="has_villabit_access" value="{{ $u->has_villabit_access ? 0 : 1 }}">
+                                                                    <input type="hidden" name="has_est8ads_access" value="{{ $u->has_est8ads_access ? 1 : 0 }}">
+                                                                    <button type="submit" class="dropdown-item">{{ $u->has_villabit_access ? 'Remove Villa Bit access' : 'Grant Villa Bit access' }}</button>
+                                                                </form>
+                                                            </li>
+                                                            @if(!$u->isAgency() || !$u->has_villabit_access)
+                                                            <li>
+                                                                <form action="{{ route('admin.villabit.users.platform-access', $u) }}" method="POST">
+                                                                    @csrf
+                                                                    <input type="hidden" name="has_villabit_access" value="{{ $u->has_villabit_access ? 1 : 0 }}">
+                                                                    <input type="hidden" name="has_est8ads_access" value="{{ $u->has_est8ads_access ? 0 : 1 }}">
+                                                                    <button type="submit" class="dropdown-item">{{ $u->has_est8ads_access ? 'Remove EST8ADS access' : 'Grant EST8ADS access' }}</button>
+                                                                </form>
+                                                            </li>
+                                                            @endif
+                                                            <li><hr class="dropdown-divider"></li>
                                                             <li>
                                                                 <button type="button" class="dropdown-item text-info" onclick="loginAsNewTab({{ $u->id }})">
                                                                     ↗ Login As (New Tab)

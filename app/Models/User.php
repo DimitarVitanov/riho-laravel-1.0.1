@@ -52,6 +52,8 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'agency_server_price',
         'role',
         'status',
+        'has_villabit_access',
+        'has_est8ads_access',
         'timezone',
         'preferred_language',
         'notes_internal',
@@ -96,6 +98,8 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
             'is_affiliate_enabled' => 'boolean',
             'is_investor_enabled' => 'boolean',
             'is_agency_enabled' => 'boolean',
+            'has_villabit_access' => 'boolean',
+            'has_est8ads_access' => 'boolean',
             'privacy_accepted_at' => 'datetime',
             'terms_accepted_at' => 'datetime',
         ];
@@ -128,6 +132,19 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     public function isOnWaitlist(): bool
     {
         return $this->status === 'waitlist';
+    }
+
+    public function canAccessPlatform(string $platform): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        return match ($platform) {
+            'villabit' => (bool) $this->has_villabit_access,
+            'est8ads' => (bool) $this->has_est8ads_access,
+            default => false,
+        };
     }
 
     public function getOnboardingStepLabel(): string

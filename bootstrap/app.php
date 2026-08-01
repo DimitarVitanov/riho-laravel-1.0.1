@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'agency' => \App\Http\Middleware\AgencyAccessMiddleware::class,
             'view_only' => \App\Http\Middleware\ViewOnlyMiddleware::class,
+            'platform' => \App\Http\Middleware\EnsurePlatformAccess::class,
         ]);
         $middleware->appendToGroup('web', [
             \App\Http\Middleware\AffiliateClickMiddleware::class,

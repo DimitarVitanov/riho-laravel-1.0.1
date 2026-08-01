@@ -56,6 +56,14 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="col-12">
+                                    <label class="form-label">Platform Access *</label>
+                                    <select name="account_access" class="form-select" required>
+                                        <option value="villabit_est8ads" {{ old('account_access', 'villabit_est8ads') === 'villabit_est8ads' ? 'selected' : '' }}>Villa Bit AI + EST8ADS (same credentials)</option>
+                                        <option value="est8ads_only" {{ old('account_access') === 'est8ads_only' ? 'selected' : '' }}>EST8ADS only</option>
+                                    </select>
+                                    <small class="text-muted">Villa Bit agencies automatically receive EST8ADS access. EST8ADS-only agencies cannot enter the Villa Bit application.</small>
+                                </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Password *</label>
                                     <input type="password" name="password" class="form-control" required>

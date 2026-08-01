@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Models\ManagerProfile;
 use App\Models\AgencyProfile;
 use App\Models\InvestorProfile;
+use App\Models\Est8ads\Profile as Est8adsProfile;
 use App\Models\UsageLimit;
+use App\Services\Est8ads\AgencyProvisioner;
 use App\Models\SupportTicket;
 use App\Models\SupportTicketMessage;
 use App\Notifications\ManagerAddedNotification;
@@ -103,6 +105,7 @@ class UserManagementController extends Controller
             'company_name' => 'required|string|max:255',
             'country' => 'required|string|max:255',
             'assigned_manager_id' => 'nullable|exists:users,id',
+            'account_access' => 'required|in:villabit_est8ads,est8ads_only',
         ]);
 
         // Remove any soft-deleted user with the same email
@@ -118,7 +121,9 @@ class UserManagementController extends Controller
             'account_type' => 'real_estate_agency',
             'role' => 'real_estate_agency',
             'status' => 'active',
-            'is_reseller_enabled' => true,
+            'has_villabit_access' => $request->account_access === 'villabit_est8ads',
+            'has_est8ads_access' => true,
+            'is_reseller_enabled' => $request->account_access === 'villabit_est8ads',
             'referral_code' => strtoupper(\Illuminate\Support\Str::random(8)),
             'assigned_manager_id' => $request->assigned_manager_id,
             'created_by_admin_id' => auth()->id(),
@@ -132,8 +137,9 @@ class UserManagementController extends Controller
             'assigned_manager_id' => $request->assigned_manager_id,
         ]);
 
-        // Create default usage limits for the agency
-        UsageLimit::create([
+        // EST8ADS-only agencies do not receive Villa Bit usage entitlements.
+        if ($user->has_villabit_access) {
+            UsageLimit::create([
             'agency_profile_id' => $agencyProfile->id,
             'period_start' => now()->startOfMonth(),
             'period_end' => now()->endOfMonth(),
@@ -146,11 +152,14 @@ class UserManagementController extends Controller
             'authority_review_updates_limit' => 1,
             'authority_review_updates_used' => 0,
             'small_ai_content_actions_limit' => 10,
-            'small_ai_content_actions_used' => 0,
-        ]);
+                'small_ai_content_actions_used' => 0,
+            ]);
+        }
 
         return redirect()->route('admin.villabit.users.index')
-            ->with('success', 'Agency user created successfully with default usage limits.');
+            ->with('success', $user->has_villabit_access
+                ? 'Agency created with Villa Bit and EST8ADS access.'
+                : 'EST8ADS-only agency created successfully.');
     }
 
     public function createInvestor()
@@ -168,10 +177,14 @@ class UserManagementController extends Controller
             'password' => 'required|min:8|confirmed',
             'country' => 'required|string|max:255',
             'assigned_manager_id' => 'nullable|exists:users,id',
+            'account_access' => 'required|in:villabit_only,villabit_est8ads,est8ads_only',
         ]);
 
         // Remove any soft-deleted user with the same email
         User::onlyTrashed()->where('email', $request->email)->forceDelete();
+
+        $villabitAccess = $request->account_access !== 'est8ads_only';
+        $est8adsAccess = $request->account_access !== 'villabit_only';
 
         $user = User::create([
             'first_name' => $request->first_name,
@@ -182,21 +195,39 @@ class UserManagementController extends Controller
             'account_type' => 'investor',
             'role' => 'investor',
             'status' => 'active',
-            'is_reseller_enabled' => true,
+            'has_villabit_access' => $villabitAccess,
+            'has_est8ads_access' => $est8adsAccess,
+            'is_reseller_enabled' => $villabitAccess,
             'referral_code' => strtoupper(\Illuminate\Support\Str::random(8)),
             'assigned_manager_id' => $request->assigned_manager_id,
             'created_by_admin_id' => auth()->id(),
         ]);
 
-        InvestorProfile::create([
-            'user_id' => $user->id,
-            'citizenship_country' => $request->country,
-            'residence_country' => $request->country,
-            'assigned_manager_id' => $request->assigned_manager_id,
-        ]);
+        if ($villabitAccess) {
+            InvestorProfile::create([
+                'user_id' => $user->id,
+                'citizenship_country' => $request->country,
+                'residence_country' => $request->country,
+                'assigned_manager_id' => $request->assigned_manager_id,
+            ]);
+        }
+
+        if ($est8adsAccess) {
+            Est8adsProfile::create([
+                'user_id' => $user->id,
+                'type' => 'individual',
+                'status' => 'active',
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'public_reference' => 'EST-' . strtoupper(Str::random(12)),
+                'consent_at' => now(),
+                'metadata' => ['source' => 'admin_creation'],
+            ]);
+        }
 
         return redirect()->route('admin.villabit.users.index')
-            ->with('success', 'Investor user created successfully.');
+            ->with('success', 'User created with the selected platform access.');
     }
 
     public function index(Request $request)
@@ -209,10 +240,62 @@ class UserManagementController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+        if ($request->platform === 'villabit') {
+            $query->where('has_villabit_access', true);
+        } elseif ($request->platform === 'est8ads') {
+            $query->where('has_est8ads_access', true);
+        } elseif ($request->platform === 'est8ads_only') {
+            $query->where('has_est8ads_access', true)->where('has_villabit_access', false);
+        }
 
-        $users = $query->latest()->paginate(25);
+        $users = $query->latest()->paginate(25)->withQueryString();
 
         return view('admin.villabit.users.index', compact('users'));
+    }
+
+    public function updatePlatformAccess(Request $request, User $user, AgencyProvisioner $provisioner)
+    {
+        abort_if($user->isAdmin(), 422, 'Administrator platform access cannot be changed here.');
+
+        $validated = $request->validate([
+            'has_villabit_access' => ['required', 'boolean'],
+            'has_est8ads_access' => ['required', 'boolean'],
+        ]);
+
+        $villabit = (bool) $validated['has_villabit_access'];
+        $est8ads = (bool) $validated['has_est8ads_access'];
+
+        if ($user->isAgency() && $villabit) {
+            $est8ads = true;
+        }
+
+        if (!$villabit && !$est8ads) {
+            return back()->with('error', 'An account must have access to at least one platform.');
+        }
+
+        $user->update([
+            'has_villabit_access' => $villabit,
+            'has_est8ads_access' => $est8ads,
+        ]);
+
+        if ($est8ads && $user->isAgency() && $user->agencyProfile) {
+            $provisioner->provision($user->agencyProfile);
+        } elseif ($est8ads && !$user->isAgency()) {
+            Est8adsProfile::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'type' => 'individual',
+                    'status' => $user->status === 'active' ? 'active' : 'pending',
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'public_reference' => 'EST-' . strtoupper(Str::random(12)),
+                    'metadata' => ['source' => 'admin_platform_access'],
+                ]
+            );
+        }
+
+        return back()->with('success', 'Platform access updated successfully.');
     }
 
     public function toggleStatus(User $user)

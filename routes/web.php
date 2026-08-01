@@ -60,6 +60,78 @@ use App\Http\Controllers\Admin\AdminVillaReadyPropertyController;
 use App\Http\Controllers\Admin\AdminVillaReadyReferralController;
 use App\Http\Controllers\Agency\AgencyVillaReadyController;
 use App\Http\Controllers\CompetitorIntelligenceController;
+use App\Http\Controllers\Est8ads\AdminDashboardController as Est8adsAdminDashboardController;
+use App\Http\Controllers\Est8ads\AuthController as Est8adsAuthController;
+use App\Http\Controllers\Est8ads\ContactController as Est8adsContactController;
+use App\Http\Controllers\Est8ads\DashboardController as Est8adsDashboardController;
+use App\Http\Controllers\Est8ads\IntakeController as Est8adsIntakeController;
+use App\Http\Controllers\Est8ads\ListingController as Est8adsListingController;
+use App\Http\Controllers\Est8ads\PublicSiteController as Est8adsPublicSiteController;
+use App\Http\Controllers\Est8ads\RegisterController as Est8adsRegisterController;
+use App\Http\Controllers\Est8ads\SsoController as Est8adsSsoController;
+
+// EST8ADS — isolated public website and role-based workspaces (must precede catch-all routes)
+Route::domain('est8ads.com')->name('est8ads.')->group(function () {
+    Route::get('/', [Est8adsPublicSiteController::class, 'index'])->name('home');
+    Route::get('/contact', [Est8adsPublicSiteController::class, 'contact'])->name('contact');
+    Route::post('/contact', [Est8adsContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
+    Route::get('/privacy', [Est8adsPublicSiteController::class, 'privacy'])->name('privacy');
+    Route::get('/terms', [Est8adsPublicSiteController::class, 'terms'])->name('terms');
+    Route::post('/property-moves', [Est8adsIntakeController::class, 'store'])->middleware('throttle:3,1')->name('moves.store');
+    Route::get('/sso/{token}', [Est8adsSsoController::class, 'consume'])->middleware('throttle:20,1')->name('sso.consume');
+
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [Est8adsAuthController::class, 'create'])->name('login');
+        Route::post('/login', [Est8adsAuthController::class, 'store'])->middleware('throttle:5,1')->name('login.store');
+        Route::get('/register', [Est8adsRegisterController::class, 'create'])->name('register');
+        Route::post('/register', [Est8adsRegisterController::class, 'store'])->middleware('throttle:3,1')->name('register.store');
+    });
+
+    Route::post('/logout', [Est8adsAuthController::class, 'destroy'])->middleware('auth')->name('logout');
+    Route::post('/listings', [Est8adsListingController::class, 'store'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('listings.store');
+    Route::get('/dashboard', [Est8adsDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('dashboard');
+    Route::get('/admin', [Est8adsAdminDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads', 'role:admin'])->name('admin.dashboard');
+});
+
+// EST8ADS local/testing fallback. Production links continue to use est8ads.com.
+Route::prefix('est8ads')->name('est8ads.local.')->group(function () {
+    Route::get('/', [Est8adsPublicSiteController::class, 'index'])->name('home');
+    Route::get('/contact', [Est8adsPublicSiteController::class, 'contact'])->name('contact');
+    Route::post('/contact', [Est8adsContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
+    Route::get('/privacy', [Est8adsPublicSiteController::class, 'privacy'])->name('privacy');
+    Route::get('/terms', [Est8adsPublicSiteController::class, 'terms'])->name('terms');
+    Route::post('/property-moves', [Est8adsIntakeController::class, 'store'])->middleware('throttle:3,1')->name('moves.store');
+    Route::get('/sso/{token}', [Est8adsSsoController::class, 'consume'])->middleware('throttle:20,1')->name('sso.consume');
+
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [Est8adsAuthController::class, 'create'])->name('login');
+        Route::post('/login', [Est8adsAuthController::class, 'store'])->middleware('throttle:5,1')->name('login.store');
+        Route::get('/register', [Est8adsRegisterController::class, 'create'])->name('register');
+        Route::post('/register', [Est8adsRegisterController::class, 'store'])->middleware('throttle:3,1')->name('register.store');
+    });
+
+    Route::post('/logout', [Est8adsAuthController::class, 'destroy'])->middleware('auth')->name('logout');
+    Route::post('/listings', [Est8adsListingController::class, 'store'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('listings.store');
+    Route::get('/dashboard', [Est8adsDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('dashboard');
+    Route::get('/admin', [Est8adsAdminDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads', 'role:admin'])->name('admin.dashboard');
+});
+
+// EST8ADS local authentication/workspace routes use a non-physical prefix.
+Route::prefix('est8ads-app')->name('est8ads.dev.')->group(function () {
+    Route::get('/sso/{token}', [Est8adsSsoController::class, 'consume'])->middleware('throttle:20,1')->name('sso.consume');
+
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [Est8adsAuthController::class, 'create'])->name('login');
+        Route::post('/login', [Est8adsAuthController::class, 'store'])->middleware('throttle:5,1')->name('login.store');
+        Route::get('/register', [Est8adsRegisterController::class, 'create'])->name('register');
+        Route::post('/register', [Est8adsRegisterController::class, 'store'])->middleware('throttle:3,1')->name('register.store');
+    });
+
+    Route::post('/logout', [Est8adsAuthController::class, 'destroy'])->middleware('auth')->name('logout');
+    Route::post('/listings', [Est8adsListingController::class, 'store'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('listings.store');
+    Route::get('/dashboard', [Est8adsDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('dashboard');
+    Route::get('/admin', [Est8adsAdminDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads', 'role:admin'])->name('admin.dashboard');
+});
 
 // Public Agency Pages (Authority Builder) — served on agency custom domains
 Route::get('/blog', [PublicPageController::class, 'index'])->name('public.blog.index');
@@ -129,14 +201,14 @@ Route::get('/dashboard', function () {
     if ($user->isAgency()) return redirect()->route('agency.dashboard');
     if ($user->isInvestor()) return redirect()->route('investor.dashboard');
     return redirect()->route('login');
-})->middleware(['auth'])->name('dashboard');
+})->middleware(['auth', 'platform:villabit'])->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
 | ADMIN VillaBit Routes (super_admin, admin)
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])->name('admin.villabit.')->group(function () {
+Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'platform:villabit', 'role:admin'])->name('admin.villabit.')->group(function () {
     Route::get('dashboard', [VillaBitDashboardController::class, 'index'])->name('dashboard');
 
     // User management
@@ -147,6 +219,7 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::post('users/store-agency', [UserManagementController::class, 'storeAgency'])->name('users.store-agency');
     Route::get('users/create-investor', [UserManagementController::class, 'createInvestor'])->name('users.create-investor');
     Route::post('users/store-investor', [UserManagementController::class, 'storeInvestor'])->name('users.store-investor');
+    Route::post('users/{user}/platform-access', [UserManagementController::class, 'updatePlatformAccess'])->name('users.platform-access');
     Route::post('users/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::post('users/{user}/approve-waitlist', [UserManagementController::class, 'approveWaitlist'])->name('users.approve-waitlist');
     Route::post('users/{user}/enable-reseller', [UserManagementController::class, 'enableReseller'])->name('users.enable-reseller');
@@ -251,6 +324,8 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     Route::post('support-tickets/{ticket}/reply', [AdminSupportTicketController::class, 'reply'])->name('support-tickets.reply');
     Route::post('support-tickets/{ticket}/update-status', [AdminSupportTicketController::class, 'updateStatus'])->name('support-tickets.update-status');
 
+    Route::post('est8ads/sso', [Est8adsSsoController::class, 'initiate'])->middleware('throttle:10,1')->name('est8ads.sso');
+
     // Impersonation
     Route::post('impersonate/{user}', [ImpersonationController::class, 'start'])->name('impersonate.start');
     Route::post('impersonate/{user}/token', [ImpersonationController::class, 'generateToken'])->name('impersonate.token');
@@ -279,6 +354,10 @@ Route::prefix('admin/villabit')->middleware(['auth', 'verified', 'role:admin'])-
     });
 });
 
+Route::post('multiple-sales-chain/sso', [Est8adsSsoController::class, 'initiate'])
+    ->middleware(['auth', 'verified', 'platform:villabit', 'throttle:10,1'])
+    ->name('est8ads.sso.start');
+
 // Impersonation login (no auth required - uses token)
 Route::get('impersonate/login/{token}', [ImpersonationController::class, 'loginWithToken'])->name('impersonate.login');
 
@@ -287,7 +366,7 @@ Route::get('impersonate/login/{token}', [ImpersonationController::class, 'loginW
 | MANAGER Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('manager')->middleware(['auth', 'verified', 'role:manager'])->name('manager.')->group(function () {
+Route::prefix('manager')->middleware(['auth', 'verified', 'platform:villabit', 'role:manager'])->name('manager.')->group(function () {
     Route::get('dashboard', [ManagerDashboardController::class, 'index'])->name('dashboard');
     Route::get('agencies', [ManagerAgencyController::class, 'index'])->name('agencies.index');
     Route::get('investors', [ManagerInvestorController::class, 'index'])->name('investors.index');
@@ -314,7 +393,7 @@ Route::prefix('manager')->middleware(['auth', 'verified', 'role:manager'])->name
 | AGENCY Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agency', 'view_only'])->name('agency.')->group(function () {
+Route::prefix('agency')->middleware(['auth', 'verified', 'platform:villabit', 'role:real_estate_agency', 'view_only'])->name('agency.')->group(function () {
     Route::get('dashboard', [AgencyDashboardController::class, 'index'])->name('dashboard');
 
     // Settings
@@ -515,7 +594,7 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'role:real_estate_agenc
 | AGENCY Support Routes (accessible to agencies on the waitlist too)
 |--------------------------------------------------------------------------
 */
-Route::prefix('agency')->middleware(['auth', 'verified', 'agency'])->name('agency.')->group(function () {
+Route::prefix('agency')->middleware(['auth', 'verified', 'platform:villabit', 'agency'])->name('agency.')->group(function () {
     Route::get('support', [AgencySupportController::class, 'index'])->name('support.index');
     Route::get('support/create', [AgencySupportController::class, 'create'])->name('support.create');
     Route::post('support', [AgencySupportController::class, 'store'])->name('support.store');
@@ -528,7 +607,7 @@ Route::prefix('agency')->middleware(['auth', 'verified', 'agency'])->name('agenc
 | INVESTOR Routes
 |--------------------------------------------------------------------------
 */
-Route::prefix('investor')->middleware(['auth', 'verified', 'role:investor'])->name('investor.')->group(function () {
+Route::prefix('investor')->middleware(['auth', 'verified', 'platform:villabit', 'role:investor'])->name('investor.')->group(function () {
     Route::get('dashboard', [InvestorDashboardController::class, 'index'])->name('dashboard');
     Route::get('projects', [InvestorProjectController::class, 'index'])->name('projects.index');
     Route::get('projects/{project}', [InvestorProjectController::class, 'show'])->name('projects.show');

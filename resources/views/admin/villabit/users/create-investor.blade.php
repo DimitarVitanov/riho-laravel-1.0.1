@@ -51,7 +51,14 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-6"></div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Platform Access *</label>
+                                    <select name="account_access" class="form-select" required>
+                                        <option value="villabit_only" {{ old('account_access', 'villabit_only') === 'villabit_only' ? 'selected' : '' }}>Villa Bit AI only</option>
+                                        <option value="villabit_est8ads" {{ old('account_access') === 'villabit_est8ads' ? 'selected' : '' }}>Villa Bit AI + EST8ADS</option>
+                                        <option value="est8ads_only" {{ old('account_access') === 'est8ads_only' ? 'selected' : '' }}>EST8ADS only (private user)</option>
+                                    </select>
+                                </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Password *</label>
                                     <input type="password" name="password" class="form-control" required>

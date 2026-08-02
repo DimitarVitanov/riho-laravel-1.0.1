@@ -136,16 +136,16 @@
 <tbody id="requestsTable"></tbody></table></div></section>
 
 
-@php($discoveryRoute = (\Illuminate\Support\Facades\Route::is('est8ads.local.*') ? 'est8ads.local.' : 'est8ads.') . 'admin.discovery.')
+@php($discovery = 'admin.discovery.')
 <section class="panel-section" data-section="discovery"
-    data-jobs-store-url="{{ route($discoveryRoute . 'jobs.store') }}"
-    data-job-retry-url="{{ route($discoveryRoute . 'jobs.retry', ['__JOB__']) }}"
-    data-settings-url="{{ route($discoveryRoute . 'settings.update') }}"
-    data-match-import-url="{{ route($discoveryRoute . 'matches.import', ['__MATCH__']) }}"
-    data-match-connect-url="{{ route($discoveryRoute . 'matches.connect', ['__MATCH__']) }}"
-    data-match-reject-url="{{ route($discoveryRoute . 'matches.reject', ['__MATCH__']) }}"
-    data-bulk-import-url="{{ route($discoveryRoute . 'matches.bulk-import') }}"
-    data-bulk-connect-url="{{ route($discoveryRoute . 'matches.bulk-connect') }}">
+    data-jobs-store-url="{{ \App\Support\Est8adsRoute::to($discovery . 'jobs.store') }}"
+    data-job-retry-url="{{ \App\Support\Est8adsRoute::to($discovery . 'jobs.retry', ['__JOB__']) }}"
+    data-settings-url="{{ \App\Support\Est8adsRoute::to($discovery . 'settings.update') }}"
+    data-match-import-url="{{ \App\Support\Est8adsRoute::to($discovery . 'matches.import', ['__MATCH__']) }}"
+    data-match-connect-url="{{ \App\Support\Est8adsRoute::to($discovery . 'matches.connect', ['__MATCH__']) }}"
+    data-match-reject-url="{{ \App\Support\Est8adsRoute::to($discovery . 'matches.reject', ['__MATCH__']) }}"
+    data-bulk-import-url="{{ \App\Support\Est8adsRoute::to($discovery . 'matches.bulk-import') }}"
+    data-bulk-connect-url="{{ \App\Support\Est8adsRoute::to($discovery . 'matches.bulk-connect') }}">
   
 <div class="section-head">
     

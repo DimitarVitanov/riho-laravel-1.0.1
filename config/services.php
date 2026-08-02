@@ -68,7 +68,7 @@ return [
 
     'gemini' => [
         'api_key' => env('GOOGLE_AI_API_KEY'),
-        'model' => env('GOOGLE_AI_DEFAULT_MODEL', 'gemini-pro'),
+        'model' => env('GOOGLE_AI_DEFAULT_MODEL', 'gemini-2.5-flash'),
     ],
 
     'ai' => [

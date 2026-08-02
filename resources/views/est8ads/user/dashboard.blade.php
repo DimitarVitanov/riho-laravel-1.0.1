@@ -17,8 +17,8 @@
 <nav class="side-nav">
 <button data-section-target="overview" class="active">
 <span class="nav-dot">◆</span>Dashboard</button>
-<button data-section-target="move" class="">
-<span class="nav-dot">↔</span>My complete move</button>
+ <!-- <button data-section-target="move" class="">
+<span class="nav-dot">↔</span>My complete move</button> -->
 <button data-section-target="properties" class="">
 <span class="nav-dot">P</span>My properties</button>
 <button data-section-target="chains" class="">
@@ -174,11 +174,89 @@
 <h2>AI property-chain analysis</h2>
 <p>Review complete chains that connect your move with other participants and properties.</p></div>
 <button class="btn primary" id="userRunAnalysis">Refresh analysis</button></div>
-<div class="network-map" id="userNetworkMap">
-<div class="network-caption">Illustrative property-chain preview — not a live calculated result.</div></div>
+@php
+$hasMatches = count($est8adsData['chainMatches'] ?? []) > 0;
+@endphp
+<div class="network-map {{ $hasMatches ? 'network-map--active' : '' }}" id="userNetworkMap">
+@if (!$hasMatches)
+<div class="network-caption">Chain visualization will appear here once properties are discovered and matched.</div>
+@endif
+</div>
+@php 
+$chainMatches = $est8adsData['chainMatches'] ?? [];
+$discoveryJob = $est8adsData['latestDiscoveryJob'] ?? null;
+@endphp
 <div class="card" style="margin-top:18px">
-<div class="card-head"><div><h3>Your strongest chain candidate</h3><p>Calculated from live properties and active requests.</p></div></div>
-<div class="card-body" id="userStrongestChain"><p>No calculated property chain yet.</p></div></div></section>
+<div class="card-head">
+<div><h3>AI discovery activity</h3>
+<p>Watch the AI search the internet, scrape property sites, and match listings to your requirements.</p></div>
+<span class="status {{ $discoveryJob && $discoveryJob['status'] === 'running' ? 'active' : 'pending' }}" id="discoveryStatus">
+{{ $discoveryJob ? ucfirst($discoveryJob['status']) : 'Idle' }}
+</span>
+</div>
+<div class="card-body">
+<div class="discovery-activity-feed" id="discoveryActivityFeed">
+@if ($discoveryJob && isset($discoveryJob['activity']))
+@foreach (array_slice($discoveryJob['activity'], -8) as $event)
+<div class="activity-item discovery-event discovery-event--{{ $event['type'] ?? 'info' }}">
+<span class="activity-mark">{{ $event['icon'] ?? '●' }}</span>
+<div>
+<strong>{{ $event['title'] }}</strong>
+<p>{{ $event['message'] }}</p>
+</div>
+<time>{{ $event['time'] ?? 'just now' }}</time>
+</div>
+@endforeach
+@else
+<div class="discovery-event-empty">
+<span class="discovery-pulse">◆</span>
+<p>No active discovery running. Click "Refresh analysis" to start searching the internet.</p>
+</div>
+@endif
+</div>
+</div>
+</div>
+<div class="card" style="margin-top:18px">
+<div class="card-head">
+<div><h3>Properties found on the internet</h3>
+<p>Exact matches first, then near matches inside your {{ (int) ($est8adsData['chainTolerance'] ?? 10) }}% size and price tolerance.</p></div>
+@if (count($chainMatches))<span class="status potential">{{ count($chainMatches) }} found</span>@endif</div>
+<div class="card-body">
+@if (count($chainMatches))
+<div class="chain-match-grid">
+@foreach ($chainMatches as $match)
+<article class="chain-match chain-match--{{ $match['kind'] }}">
+<header class="chain-match-top">
+<span class="chain-match-score">{{ number_format((float) $match['score']) }}<small>%</small></span>
+<span class="status {{ $match['kind'] === 'exact' ? 'active' : 'pending' }}">{{ $match['kind'] === 'exact' ? 'Exact match' : 'Within tolerance' }}</span>
+</header>
+<div class="chain-match-body">
+<h4>{{ $match['title'] }}</h4>
+<p class="chain-match-location">{{ $match['city'] ?: 'Location not published' }}</p>
+<div class="chain-match-meta">
+<span>Price<strong>{{ $match['price'] ? number_format((float) $match['price']) . ' ' . $match['currency'] : '—' }}</strong>
+@if ($match['priceNote'])<em>{{ $match['priceNote'] }}</em>@endif</span>
+<span>Size<strong>{{ $match['size'] ? number_format((float) $match['size']) . ' m²' : '—' }}</strong>
+@if ($match['sizeNote'])<em>{{ $match['sizeNote'] }}</em>@endif</span>
+</div>
+@if ($match['explanation'])<p class="chain-match-why">{{ $match['explanation'] }}</p>@endif
+</div>
+@if ($match['url'])
+<footer class="chain-match-footer">
+<a class="btn small" href="{{ $match['url'] }}" target="_blank" rel="noopener noreferrer">View listing ↗</a>
+<span class="chain-match-host">{{ parse_url($match['url'], PHP_URL_HOST) }}</span>
+</footer>
+@endif
+</article>
+@endforeach
+</div>
+@else
+<div class="chain-match-empty">
+<strong>No properties discovered yet</strong>
+<p>Results appear here automatically once a chain search has run for this listing.</p>
+</div>
+@endif
+</div></div></section>
 <section class="panel-section" data-section="matches">
 <div class="section-head">
 <div>
@@ -188,7 +266,7 @@
 <option>All matches</option>
 <option>Direct matches</option>
 <option>Chain matches</option></select></div>
-<div class="property-grid" id="userMatchesGrid"></div></section>
+<div id="userMatchesGrid"></div></section>
 <section class="panel-section" data-section="messages">
 <div class="section-head">
 <div>

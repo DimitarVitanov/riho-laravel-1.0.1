@@ -853,7 +853,7 @@ class AgencyFeatureController extends Controller
             'status' => 'nullable|string|in:active,inactive',
             'campaign_ids' => 'nullable|array',
             'campaign_ids.*' => 'exists:local_seo_campaigns,id',
-        ]);
+        ] + $this->lookingToBuyRules($request));
 
         // Verify all campaigns belong to this agency
         $campaignIds = collect($validated['campaign_ids'] ?? [])->filter(function ($id) use ($profile) {
@@ -881,12 +881,14 @@ class AgencyFeatureController extends Controller
             'currency' => $validated['currency'] ?? 'EUR',
             'images_json' => $images,
             'status' => $validated['status'] ?? 'active',
-        ]);
+        ] + $this->lookingToBuyAttributes($request, $validated));
 
         // Attach campaigns via pivot table (optional)
         if (!empty($campaignIds)) {
             $listing->campaigns()->attach($campaignIds);
         }
+
+        app(\App\Services\Est8ads\Discovery\ChainDiscoveryDispatcher::class)->handle($listing, $user->id);
 
         return redirect()->back()->with('success', 'Listing added successfully.');
     }
@@ -976,7 +978,7 @@ class AgencyFeatureController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'status' => 'nullable|string|in:active,inactive',
             'campaign_ids' => 'nullable|array',
-        ]);
+        ] + $this->lookingToBuyRules($request));
 
         $images = $listing->images_json ?? [];
         if ($request->hasFile('images')) {
@@ -1006,15 +1008,91 @@ class AgencyFeatureController extends Controller
             'is_turnkey' => $request->has('is_turnkey'),
             'images_json' => $images,
             'status' => $validated['status'] ?? 'active',
-        ]);
+        ] + $this->lookingToBuyAttributes($request, $validated));
 
         // Update campaign associations
         if (isset($validated['campaign_ids'])) {
             $listing->campaigns()->sync($validated['campaign_ids']);
         }
 
+        app(\App\Services\Est8ads\Discovery\ChainDiscoveryDispatcher::class)->handle($listing->refresh(), $user->id);
+
         return redirect()->route('agency.features.show', ['feature' => 'local_seo_presence_boost', 'show_listings' => 1])
             ->with('success', 'Listing updated successfully.');
+    }
+
+    /**
+     * Validation rules for the "Property Chain: Seller is also looking to buy" block.
+     */
+    private function lookingToBuyRules(Request $request): array
+    {
+        // `gte:looking_budget_min` fails whenever the compared field is null, and
+        // the chain form only exposes a maximum budget. Compare the two values
+        // only when a minimum was genuinely submitted.
+        $maxBudget = ['nullable', 'numeric', 'min:0'];
+
+        if (filled($request->input('looking_budget_min'))) {
+            $maxBudget[] = 'gte:looking_budget_min';
+        }
+
+        return [
+            'looking_to_buy' => 'nullable|boolean',
+            'looking_property_type' => 'nullable|string|max:100',
+            'looking_location' => 'nullable|string|max:255',
+            'looking_locations' => 'nullable|array|max:20',
+            'looking_locations.*' => 'nullable|string|max:255',
+            'looking_budget_min' => 'nullable|numeric|min:0',
+            'looking_budget_max' => $maxBudget,
+            'looking_currency' => 'nullable|string|max:10',
+            'looking_min_bedrooms' => 'nullable|integer|min:0|max:100',
+            'looking_min_size' => 'nullable|numeric|min:0',
+            'looking_timeline' => 'nullable|string|max:100',
+            'looking_notes' => 'nullable|string|max:5000',
+        ];
+    }
+
+    /**
+     * Map the chain criteria onto listing attributes. When the box is unchecked the
+     * criteria are cleared so stale wanted-profiles cannot keep triggering discovery.
+     */
+    private function lookingToBuyAttributes(Request $request, array $validated): array
+    {
+        if (! $request->boolean('looking_to_buy')) {
+            return [
+                'looking_to_buy' => false,
+                'looking_property_type' => null,
+                'looking_location' => null,
+                'looking_locations' => null,
+                'looking_budget_min' => null,
+                'looking_budget_max' => null,
+                'looking_min_bedrooms' => null,
+                'looking_min_size' => null,
+                'looking_timeline' => null,
+                'looking_notes' => null,
+            ];
+        }
+
+        $locations = collect($validated['looking_locations'] ?? [])
+            ->push($validated['looking_location'] ?? null)
+            ->map(fn ($value) => trim((string) $value))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        return [
+            'looking_to_buy' => true,
+            'looking_property_type' => $validated['looking_property_type'] ?? null,
+            'looking_location' => $locations[0] ?? null,
+            'looking_locations' => $locations,
+            'looking_budget_min' => $validated['looking_budget_min'] ?? null,
+            'looking_budget_max' => $validated['looking_budget_max'] ?? null,
+            'looking_currency' => $validated['looking_currency'] ?? ($validated['currency'] ?? 'EUR'),
+            'looking_min_bedrooms' => $validated['looking_min_bedrooms'] ?? null,
+            'looking_min_size' => $validated['looking_min_size'] ?? null,
+            'looking_timeline' => $validated['looking_timeline'] ?? null,
+            'looking_notes' => $validated['looking_notes'] ?? null,
+        ];
     }
 
     public function destroyListing(\App\Models\AgencyListing $listing)

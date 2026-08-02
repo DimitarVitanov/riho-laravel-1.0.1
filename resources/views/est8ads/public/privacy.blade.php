@@ -15,28 +15,28 @@
 
 <header class="site-header" id="top">
   <div class="nav-shell">
-    <a class="brand" href="{{ route('est8ads.home') }}" aria-label="EST8ADS home"><img src="{{ asset('est8ads-assets/est8ads-logo.svg') }}" alt="EST8ADS logo"></a>
+    <a class="brand" href="{{ \App\Support\Est8adsRoute::to('home') }}" aria-label="EST8ADS home"><img src="{{ asset('est8ads-assets/est8ads-logo.svg') }}" alt="EST8ADS logo"></a>
     <nav class="desktop-nav" aria-label="Primary navigation">
-      <a href="{{ route('est8ads.home') }}#create">Create your move</a>
-      <a href="{{ route('est8ads.home') }}#what">What is EST8ADS?</a>
-      <a href="{{ route('est8ads.home') }}#how">How it works</a>
-      <a href="{{ route('est8ads.home') }}#faq">FAQ</a>
-      <a href="{{ route('est8ads.contact') }}">Contact</a>
+      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Create your move</a>
+      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#what">What is EST8ADS?</a>
+      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#how">How it works</a>
+      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#faq">FAQ</a>
+      <a href="{{ \App\Support\Est8adsRoute::to('contact') }}">Contact</a>
     </nav>
     <div class="nav-actions">
       <button class="language-button" type="button" aria-label="Choose language">EN</button>
-      <a class="sign-in" href="{{ route('est8ads.login') }}">Sign in</a>
-      <a class="primary-small" href="{{ route('est8ads.home') }}#create">Get started</a>
+      <a class="sign-in" href="{{ \App\Support\Est8adsRoute::to('login') }}">Sign in</a>
+      <a class="primary-small" href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Get started</a>
     </div>
     <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
   <div class="mobile-menu" hidden>
-    <a href="{{ route('est8ads.home') }}#create">Create your move</a>
-    <a href="{{ route('est8ads.home') }}#what">What is EST8ADS?</a>
-    <a href="{{ route('est8ads.home') }}#how">How it works</a>
-    <a href="{{ route('est8ads.home') }}#faq">FAQ</a>
-    <a href="{{ route('est8ads.contact') }}">Contact</a>
-    <a href="{{ route('est8ads.login') }}">Sign in</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Create your move</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#what">What is EST8ADS?</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#how">How it works</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#faq">FAQ</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('contact') }}">Contact</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('login') }}">Sign in</a>
   </div>
 </header>
 
@@ -47,7 +47,7 @@
 <h2>1. Summary</h2>
 <p>This Privacy Policy explains how EST8ADS collects and uses personal information when people submit property moves, create accounts, use AI analysis, publish Missing Link Ads, respond to opportunities, communicate with agencies, use Chain Rooms, or contact us.</p>
 <p>EST8ADS uses data to provide property-chain matching and analytics. We do not guarantee a sale, and we do not intend to sell personal information for money. Public ads are designed to use privacy-safe summaries rather than automatically publishing participant identities or contact details.</p>
-<div class="legal-actions"><a class="legal-button primary" href="{{ route('est8ads.contact') }}?subject=privacy-request">Submit a privacy request</a><a class="legal-button" href="{{ route('est8ads.contact') }}?subject=privacy-opt-out">Opt out / privacy choices</a></div>
+<div class="legal-actions"><a class="legal-button primary" href="{{ \App\Support\Est8adsRoute::to('contact') }}?subject=privacy-request">Submit a privacy request</a><a class="legal-button" href="{{ \App\Support\Est8adsRoute::to('contact') }}?subject=privacy-opt-out">Opt out / privacy choices</a></div>
 </section>
 
 <section class="legal-section" id="controller">
@@ -225,7 +225,7 @@
 
 <section class="legal-section" id="contact">
 <h2>21. Contact and rights requests</h2>
-<p>Use the <a href="{{ route('est8ads.contact') }}?subject=privacy-request">privacy request form</a> to exercise rights, withdraw consent, object, appeal, or ask about transfers and automated analysis.</p>
+<p>Use the <a href="{{ \App\Support\Est8adsRoute::to('contact') }}?subject=privacy-request">privacy request form</a> to exercise rights, withdraw consent, object, appeal, or ask about transfers and automated analysis.</p>
 <div class="operator-box"><strong>Privacy contact details to complete before launch</strong><br>[INSERT LEGAL ENTITY NAME]<br>[INSERT REGISTERED ADDRESS]<br>Privacy: privacy@est8ads.com<br>General: contact@est8ads.com<br>EU representative: [INSERT IF REQUIRED]<br>UK representative: [INSERT IF REQUIRED]<br>DPO: [INSERT IF REQUIRED]</div>
 </section>
 </article></div>
@@ -233,9 +233,9 @@
 <footer class="site-footer">
   <div class="section-shell footer-grid">
     <div><p>EST8ADS — Property Chain Intelligence based on Villa Bit AI technology.</p></div>
-    <div><h4>Platform</h4><a href="{{ route('est8ads.home') }}#create">Create your move</a><a href="{{ route('est8ads.home') }}#what">What is EST8ADS?</a><a href="{{ route('est8ads.home') }}#how">How it works</a><a href="{{ route('est8ads.home') }}#faq">FAQ</a></div>
-    <div><h4>For users</h4><a href="{{ route('est8ads.home') }}#create">Private buyers and sellers</a><a href="{{ route('est8ads.home') }}#create">Real estate agents</a><a href="{{ route('est8ads.login') }}">Sign in</a></div>
-    <div><h4>Legal</h4><a href="{{ route('est8ads.privacy') }}">Privacy Policy</a><a href="{{ route('est8ads.terms') }}">Terms of Use</a><a href="{{ route('est8ads.contact') }}">Contact</a></div>
+    <div><h4>Platform</h4><a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Create your move</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#what">What is EST8ADS?</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#how">How it works</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#faq">FAQ</a></div>
+    <div><h4>For users</h4><a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Private buyers and sellers</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Real estate agents</a><a href="{{ \App\Support\Est8adsRoute::to('login') }}">Sign in</a></div>
+    <div><h4>Legal</h4><a href="{{ \App\Support\Est8adsRoute::to('privacy') }}">Privacy Policy</a><a href="{{ \App\Support\Est8adsRoute::to('terms') }}">Terms of Use</a><a href="{{ \App\Support\Est8adsRoute::to('contact') }}">Contact</a></div>
   </div>
   <div class="section-shell footer-bottom"><span>© 2026 EST8ADS. All rights reserved.</span><span>Powered by Villa Bit AI</span></div>
 </footer>

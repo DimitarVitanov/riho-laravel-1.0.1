@@ -14,7 +14,10 @@ class ListingNormalizer
     public function normalize(InternetSource $source, array $record): array
     {
         $url = $this->canonicalize((string) ($record['canonical_url'] ?? $record['url'] ?? ''));
-        $this->urlPolicy->assertAllowed($url, $source->domain ?: parse_url($source->base_url, PHP_URL_HOST));
+        $expectedHost = data_get($source->configuration, 'allow_any_host', false)
+            ? null
+            : ($source->domain ?: parse_url($source->base_url, PHP_URL_HOST));
+        $this->urlPolicy->assertAllowed($url, $expectedHost);
         $externalId = trim((string) ($record['external_id'] ?? $record['source_listing_id'] ?? ''));
         if ($externalId === '') throw new InvalidArgumentException('Provider record has no source listing ID.');
 

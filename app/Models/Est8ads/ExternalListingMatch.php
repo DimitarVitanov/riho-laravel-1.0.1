@@ -17,7 +17,8 @@ class ExternalListingMatch extends Model
             'confidence_score' => 'decimal:4', 'deterministic_score' => 'decimal:2',
             'semantic_score' => 'decimal:2', 'final_score' => 'decimal:2',
             'data_confidence' => 'decimal:2', 'reasons' => 'array',
-            'hard_conflicts' => 'array', 'is_manual' => 'boolean', 'reviewed_at' => 'datetime',
+            'hard_conflicts' => 'array', 'tolerance' => 'array',
+            'is_manual' => 'boolean', 'reviewed_at' => 'datetime',
         ];
     }
 

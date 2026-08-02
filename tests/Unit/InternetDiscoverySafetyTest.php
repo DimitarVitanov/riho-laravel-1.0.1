@@ -6,7 +6,7 @@ use App\Models\Est8ads\ExternalListing;
 use App\Services\Est8ads\Discovery\DeterministicMatchScorer;
 use App\Services\Est8ads\Discovery\SafeUrlPolicy;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class InternetDiscoverySafetyTest extends TestCase
 {
@@ -41,5 +41,6 @@ class InternetDiscoverySafetyTest extends TestCase
         $this->assertNotEmpty($result['hard_conflicts']);
         $this->assertContains('budget', $result['hard_conflicts']);
         $this->assertContains('property_type', $result['hard_conflicts']);
+        $this->assertSame('conflict', $result['match_type'], 'A listing breaking hard rules must never be reported as an exact match.');
     }
 }

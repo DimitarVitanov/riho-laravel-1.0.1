@@ -3,6 +3,7 @@
 namespace App\Services\Est8ads\Discovery;
 
 use App\Models\Est8ads\ExternalListing;
+use App\Support\CountryCode;
 use Illuminate\Support\Str;
 
 class DeterministicMatchScorer
@@ -21,23 +22,37 @@ class DeterministicMatchScorer
         $parts['type'] = $types === [] || in_array(Str::lower((string) $listing->property_type), $types, true) ? 15 : 0;
         if (! $parts['type'] && $types !== []) $conflicts[] = 'property_type';
 
-        $countries = array_map('strtoupper', $profile['countries'] ?? []);
+        $countries = array_values(array_filter($profile['countries'] ?? []));
         $cities = array_map(fn ($v) => Str::lower((string) $v), $profile['cities'] ?? []);
-        $countryPass = $countries === [] || in_array(strtoupper((string) $listing->country_code), $countries, true);
+        // "Croatia" on the wanted profile and "HR" on a scraped listing are the
+        // same country, so both sides are reduced to an ISO code before comparing.
+        $countryPass = $countries === [] || collect($countries)->contains(fn ($country) => CountryCode::matches($country, $listing->country_code));
         $cityPass = $cities === [] || in_array(Str::lower((string) $listing->city), $cities, true);
         $parts['location'] = $countryPass && $cityPass ? 25 : ($countryPass ? 10 : 0);
         if (! $countryPass) $conflicts[] = 'country';
 
-        $max = (float) data_get($profile, 'price.max', 0); $flex = (float) ($profile['flexibility_percent'] ?? 0);
-        $pricePass = ! $max || ! $listing->price || (float) $listing->price <= $max * (1 + $flex / 100);
-        $parts['price'] = $pricePass ? 20 : 0;
-        if (! $pricePass) $conflicts[] = 'budget';
+        $priceTolerance = (float) ($profile['price_tolerance_percent'] ?? $profile['flexibility_percent'] ?? 10);
+        $price = ToleranceBand::evaluate(
+            (float) data_get($profile, 'price.max', 0) ?: null,
+            $listing->price !== null ? (float) $listing->price : null,
+            $priceTolerance,
+            20,
+            upperBound: true,
+        );
+        $parts['price'] = $price['points'];
+        if ($price['status'] === 'outside') $conflicts[] = 'budget';
 
-        $sizePass = empty($profile['minimum_size_m2']) || ! $listing->size_m2 || (float) $listing->size_m2 >= (float) $profile['minimum_size_m2'];
+        $sizeTolerance = (float) ($profile['size_tolerance_percent'] ?? $profile['flexibility_percent'] ?? 10);
+        $size = ToleranceBand::evaluate(
+            (float) ($profile['target_size_m2'] ?? $profile['minimum_size_m2'] ?? 0) ?: null,
+            $listing->size_m2 !== null ? (float) $listing->size_m2 : null,
+            $sizeTolerance,
+            10,
+        );
         $bedsPass = empty($profile['minimum_bedrooms']) || ! $listing->bedrooms || $listing->bedrooms >= $profile['minimum_bedrooms'];
         $bathsPass = empty($profile['minimum_bathrooms']) || ! $listing->bathrooms || $listing->bathrooms >= $profile['minimum_bathrooms'];
-        $parts['dimensions'] = ($sizePass ? 10 : 0) + ($bedsPass ? 5 : 0) + ($bathsPass ? 5 : 0);
-        if (! $sizePass) $conflicts[] = 'minimum_size';
+        $parts['dimensions'] = $size['points'] + ($bedsPass ? 5 : 0) + ($bathsPass ? 5 : 0);
+        if ($size['status'] === 'outside') $conflicts[] = 'minimum_size';
         if (! $bedsPass) $conflicts[] = 'minimum_bedrooms';
         if (! $bathsPass) $conflicts[] = 'minimum_bathrooms';
 
@@ -48,6 +63,26 @@ class DeterministicMatchScorer
         if ($missing !== []) $conflicts[] = 'missing_features:'.implode(',', $missing);
 
         $known = collect([$listing->property_type, $listing->country_code, $listing->city, $listing->price, $listing->size_m2, $listing->bedrooms, $listing->bathrooms])->filter(fn ($v) => $v !== null && $v !== '')->count();
-        return ['score' => array_sum($parts), 'data_confidence' => round($known / 7 * 100, 2), 'breakdown' => $parts, 'hard_conflicts' => $conflicts];
+
+        // Exact only when nothing was relaxed: no conflicts and neither the
+        // price nor the size needed the tolerance window.
+        $usedTolerance = in_array('tolerance', [$price['status'], $size['status']], true);
+        $matchType = $conflicts !== [] ? 'conflict' : ($usedTolerance ? 'tolerance' : 'exact');
+
+        return [
+            'score' => round(array_sum($parts), 2),
+            'data_confidence' => round($known / 7 * 100, 2),
+            'breakdown' => $parts,
+            'hard_conflicts' => $conflicts,
+            'match_type' => $matchType,
+            'tolerance' => [
+                'price_percent' => $priceTolerance,
+                'size_percent' => $sizeTolerance,
+                'price_status' => $price['status'],
+                'size_status' => $size['status'],
+                'price_deviation' => $price['deviation'],
+                'size_deviation' => $size['deviation'],
+            ],
+        ];
     }
 }

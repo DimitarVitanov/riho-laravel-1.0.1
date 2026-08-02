@@ -10,8 +10,10 @@ class AiService
 {
     protected array $providers = [
         'gemini' => [
-            'endpoint' => 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent',
+            // gemini-1.5-* was retired and now returns HTTP 404 from v1beta.
+            'endpoint' => 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent',
             'config_key' => 'services.gemini.api_key',
+            'model' => 'gemini-2.5-flash',
         ],
         'openai' => [
             'endpoint' => 'https://api.openai.com/v1/chat/completions',
@@ -82,9 +84,12 @@ class AiService
             throw new \Exception("Gemini API key not configured");
         }
 
+        $model = $options['model'] ?? config('services.gemini.model', $this->providers['gemini']['model']);
+        $endpoint = str_replace('{model}', $model, $this->providers['gemini']['endpoint']);
+
         $response = Http::timeout(60)
             ->withHeaders(['Content-Type' => 'application/json'])
-            ->post($this->providers['gemini']['endpoint'] . '?key=' . $apiKey, [
+            ->post($endpoint . '?key=' . $apiKey, [
                 'contents' => [
                     ['parts' => [['text' => $prompt]]]
                 ],

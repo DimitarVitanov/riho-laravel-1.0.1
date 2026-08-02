@@ -26,7 +26,12 @@ class FetchExternalListing implements ShouldQueue
         $source = $job->internetSource;
         if (! $source->isApprovedForDiscovery()) throw new RuntimeException('Source approval changed before fetch.');
         $url = (string) ($this->record['canonical_url'] ?? $this->record['url'] ?? '');
-        $urls->assertAllowed($url, $source->domain ?: parse_url($source->base_url, PHP_URL_HOST));
+        // Open-web sources are not pinned to a single domain. SSRF, scheme and
+        // private-network checks still apply to every URL.
+        $expectedHost = data_get($source->configuration, 'allow_any_host', false)
+            ? null
+            : ($source->domain ?: parse_url($source->base_url, PHP_URL_HOST));
+        $urls->assertAllowed($url, $expectedHost);
         $key = 'internet-discovery-source:'.$source->id;
         if (! RateLimiter::attempt($key, max(1, $source->requests_per_minute), fn () => true, 60)) {
             $this->release(60);

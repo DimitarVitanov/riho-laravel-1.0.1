@@ -25,7 +25,11 @@ class DiscoverInternetProperties implements ShouldQueue
     public function handle(ProviderRegistry $providers, DiscoveryAudit $audit, \App\Services\Est8ads\Discovery\SafeUrlPolicy $urls): void
     {
         $job = DiscoveryJob::with('internetSource')->findOrFail($this->discoveryJobId);
-        $urls->assertAllowed($job->internetSource->base_url, $job->internetSource->domain ?: parse_url($job->internetSource->base_url, PHP_URL_HOST));
+        $source = $job->internetSource;
+        $expectedHost = data_get($source->configuration, 'allow_any_host', false)
+            ? null
+            : ($source->domain ?: parse_url($source->base_url, PHP_URL_HOST));
+        $urls->assertAllowed($source->base_url, $expectedHost);
         $job->update(['status' => 'running', 'started_at' => $job->started_at ?: now(), 'error_message' => null]);
         $count = 0;
         foreach ($providers->for($job->internetSource)->search($job->internetSource, $job->parameters ?? []) as $record) {

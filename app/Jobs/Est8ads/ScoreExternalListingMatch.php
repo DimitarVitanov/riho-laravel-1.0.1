@@ -6,6 +6,7 @@ use App\Models\Est8ads\DiscoveryJob;
 use App\Models\Est8ads\ExternalListing;
 use App\Models\Est8ads\ExternalListingMatch;
 use App\Services\Est8ads\Discovery\DeterministicMatchScorer;
+use App\Services\Est8ads\Discovery\SemanticMatchRanker;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -20,23 +21,27 @@ class ScoreExternalListingMatch implements ShouldQueue
 
     public function __construct(public int $discoveryJobId, public int $externalListingId) { $this->onQueue('external-match'); }
 
-    public function handle(DeterministicMatchScorer $scorer): void
+    public function handle(DeterministicMatchScorer $scorer, SemanticMatchRanker $ranker): void
     {
         $job = DiscoveryJob::with('propertyMove.properties')->findOrFail($this->discoveryJobId);
         $listing = ExternalListing::findOrFail($this->externalListingId);
         $property = $job->propertyMove?->properties->first(fn ($p) => $p->listing_type === 'wanted') ?? $job->propertyMove?->properties->first();
         if (! $property) return;
-        $result = $scorer->score($job->parameters ?? [], $listing);
+        $profile = $job->parameters ?? [];
+        $result = $scorer->score($profile, $listing);
         if ($result['score'] < (float) $job->save_threshold) return;
+        $ranked = $ranker->rank($profile, $listing, $result);
         $match = ExternalListingMatch::updateOrCreate(
             ['external_listing_id' => $listing->id, 'property_id' => $property->id],
             ['property_move_id' => $job->property_move_id, 'discovery_job_id' => $job->id,
-                'status' => 'candidate', 'confidence_score' => $result['score'] / 100,
-                'deterministic_score' => $result['score'], 'final_score' => $result['score'],
+                'status' => 'candidate', 'confidence_score' => $ranked['final_score'] / 100,
+                'deterministic_score' => $result['score'], 'semantic_score' => $ranked['semantic_score'],
+                'final_score' => $ranked['final_score'], 'match_type' => $result['match_type'],
                 'data_confidence' => $result['data_confidence'], 'reasons' => $result['breakdown'],
-                'hard_conflicts' => $result['hard_conflicts'], 'explanation' => 'Deterministic score; optional AI ranking was not configured.']
+                'tolerance' => $result['tolerance'],
+                'hard_conflicts' => $result['hard_conflicts'], 'explanation' => $ranked['explanation']]
         );
-        if ($result['hard_conflicts'] === [] && $result['score'] >= (float) $job->auto_connect_threshold) {
+        if ($result['match_type'] === 'exact' && $result['score'] >= (float) $job->auto_connect_threshold) {
             AutoConnectExternalListing::dispatch($match->id)->onQueue('external-match');
         }
         $job->update(['status' => 'completed', 'finished_at' => now()]);

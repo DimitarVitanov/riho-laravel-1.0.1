@@ -27,39 +27,46 @@ class PropertyExtractorService
                 return null;
             }
 
-            $html = $response->body();
-
-            $jsonLdData = $this->extractFromJsonLd($html);
-            if ($jsonLdData && $this->isValidPropertyData($jsonLdData)) {
-                $jsonLdData['extraction_method'] = 'json_ld';
-                return $jsonLdData;
-            }
-
-            $domData = $this->extractFromDom($html, $url->url);
-            if ($domData && $this->isValidPropertyData($domData)) {
-                $domData['extraction_method'] = 'dom_selector';
-                return $domData;
-            }
-
-            $heuristicData = $this->extractHeuristic($html);
-            if ($heuristicData) {
-                $heuristicData['extraction_method'] = 'heuristic';
-                return $heuristicData;
-            }
-
-            // Try URL-based extraction for SPAs (React sites like RE/MAX)
-            $urlData = $this->extractFromUrl($url->url);
-            if ($urlData) {
-                $urlData['extraction_method'] = 'heuristic';
-                return $urlData;
-            }
-
-            return null;
+            return $this->extractFromHtml($response->body(), $url->url);
 
         } catch (\Exception $e) {
             Log::error("Property extraction failed for {$url->url}", ['error' => $e->getMessage()]);
             return null;
         }
+    }
+
+    /**
+     * Run the extraction cascade (JSON-LD, DOM selectors, heuristics, URL slug)
+     * against an arbitrary page. Shared with EST8ADS internet discovery.
+     */
+    public function extractFromHtml(string $html, string $pageUrl): ?array
+    {
+        $jsonLdData = $this->extractFromJsonLd($html);
+        if ($jsonLdData && $this->isValidPropertyData($jsonLdData)) {
+            $jsonLdData['extraction_method'] = 'json_ld';
+            return $jsonLdData;
+        }
+
+        $domData = $this->extractFromDom($html, $pageUrl);
+        if ($domData && $this->isValidPropertyData($domData)) {
+            $domData['extraction_method'] = 'dom_selector';
+            return $domData;
+        }
+
+        $heuristicData = $this->extractHeuristic($html);
+        if ($heuristicData) {
+            $heuristicData['extraction_method'] = 'heuristic';
+            return $heuristicData;
+        }
+
+        // Try URL-based extraction for SPAs (React sites like RE/MAX)
+        $urlData = $this->extractFromUrl($pageUrl);
+        if ($urlData) {
+            $urlData['extraction_method'] = 'heuristic';
+            return $urlData;
+        }
+
+        return null;
     }
 
     protected function extractFromJsonLd(string $html): ?array

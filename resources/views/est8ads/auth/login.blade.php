@@ -29,7 +29,7 @@
                 <button type="button" data-login-role="agency">Agency</button>
                 <button type="button" data-login-role="admin">Administrator</button>
             </div>
-            <form id="loginForm" method="POST" action="{{ route(request()->routeIs('est8ads.dev.*') ? 'est8ads.dev.login.store' : 'est8ads.login.store') }}">
+            <form id="loginForm" method="POST" action="{{ \App\Support\Est8adsRoute::to('login.store') }}">
                 @csrf
                 <input id="loginRole" type="hidden" name="role" value="{{ old('role', 'user') }}">
                 <div class="login-field">
@@ -49,8 +49,8 @@
                 <strong>{{ $errors->any() ? 'Unable to sign in' : 'Account access' }}</strong>
                 <p>{{ $errors->any() ? $errors->first() : 'Use the account credentials provided by your EST8ADS administrator.' }}</p>
             </div>
-            <a class="back-site" href="{{ route(request()->routeIs('est8ads.dev.*') ? 'est8ads.dev.register' : 'est8ads.register') }}">Create an EST8ADS-only account</a>
-            <a class="back-site" href="{{ route('est8ads.home') }}">← Back to public website</a>
+            <a class="back-site" href="{{ \App\Support\Est8adsRoute::to('register') }}">Create an EST8ADS-only account</a>
+            <a class="back-site" href="{{ \App\Support\Est8adsRoute::to('home') }}">← Back to public website</a>
         </div>
     </section>
 </div>

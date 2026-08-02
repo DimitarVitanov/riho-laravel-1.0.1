@@ -19,7 +19,7 @@
         <div class="login-card">
             <h2>Create your EST8ADS account</h2>
             <p>Villa Bit AI agencies do not need another account—use the same Villa Bit credentials on the EST8ADS sign-in page.</p>
-            <form method="POST" action="{{ route(request()->routeIs('est8ads.dev.*') ? 'est8ads.dev.register.store' : 'est8ads.register.store') }}">
+            <form method="POST" action="{{ \App\Support\Est8adsRoute::to('register.store') }}">
                 @csrf
                 <div class="login-field"><label>Account type</label><select name="account_type" required><option value="individual">Private user</option><option value="agency">Real estate agency</option></select></div>
                 <div class="login-field"><label>First name</label><input name="first_name" value="{{ old('first_name') }}" required></div>
@@ -34,7 +34,7 @@
                 <button class="login-submit" type="submit">Create account</button>
             </form>
             @if($errors->any())<div class="account-notice" role="alert"><strong>Check your details</strong><p>{{ $errors->first() }}</p></div>@endif
-            <a class="back-site" href="{{ route(request()->routeIs('est8ads.dev.*') ? 'est8ads.dev.login' : 'est8ads.login') }}">Already registered? Sign in</a>
+            <a class="back-site" href="{{ \App\Support\Est8adsRoute::to('login') }}">Already registered? Sign in</a>
         </div>
     </section>
 </div>

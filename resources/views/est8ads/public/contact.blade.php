@@ -15,28 +15,28 @@
 
 <header class="site-header" id="top">
   <div class="nav-shell">
-    <a class="brand" href="{{ route('est8ads.home') }}" aria-label="EST8ADS home"><img src="{{ asset('est8ads-assets/est8ads-logo.svg') }}" alt="EST8ADS logo"></a>
+    <a class="brand" href="{{ \App\Support\Est8adsRoute::to('home') }}" aria-label="EST8ADS home"><img src="{{ asset('est8ads-assets/est8ads-logo.svg') }}" alt="EST8ADS logo"></a>
     <nav class="desktop-nav" aria-label="Primary navigation">
-      <a href="{{ route('est8ads.home') }}#create">Create your move</a>
-      <a href="{{ route('est8ads.home') }}#what">What is EST8ADS?</a>
-      <a href="{{ route('est8ads.home') }}#how">How it works</a>
-      <a href="{{ route('est8ads.home') }}#faq">FAQ</a>
-      <a href="{{ route('est8ads.contact') }}">Contact</a>
+      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Create your move</a>
+      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#what">What is EST8ADS?</a>
+      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#how">How it works</a>
+      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#faq">FAQ</a>
+      <a href="{{ \App\Support\Est8adsRoute::to('contact') }}">Contact</a>
     </nav>
     <div class="nav-actions">
       <button class="language-button" type="button" aria-label="Choose language">EN</button>
-      <a class="sign-in" href="{{ route('est8ads.login') }}">Sign in</a>
-      <a class="primary-small" href="{{ route('est8ads.home') }}#create">Get started</a>
+      <a class="sign-in" href="{{ \App\Support\Est8adsRoute::to('login') }}">Sign in</a>
+      <a class="primary-small" href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Get started</a>
     </div>
     <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
   <div class="mobile-menu" hidden>
-    <a href="{{ route('est8ads.home') }}#create">Create your move</a>
-    <a href="{{ route('est8ads.home') }}#what">What is EST8ADS?</a>
-    <a href="{{ route('est8ads.home') }}#how">How it works</a>
-    <a href="{{ route('est8ads.home') }}#faq">FAQ</a>
-    <a href="{{ route('est8ads.contact') }}">Contact</a>
-    <a href="{{ route('est8ads.login') }}">Sign in</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Create your move</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#what">What is EST8ADS?</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#how">How it works</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#faq">FAQ</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('contact') }}">Contact</a>
+    <a href="{{ \App\Support\Est8adsRoute::to('login') }}">Sign in</a>
   </div>
 </header>
 
@@ -46,7 +46,7 @@
   <section class="contact-card">
     <h2>Send a message</h2>
     <p>Choose the most relevant subject so the request can be routed correctly.</p>
-    <form id="contactForm" method="POST" action="{{ route('est8ads.contact.store') }}" novalidate>
+    <form id="contactForm" method="POST" action="{{ \App\Support\Est8adsRoute::to('contact.store') }}" novalidate>
       @csrf
       <div class="contact-form-grid">
         <label class="contact-field"><span>Full name *</span><input type="text" name="full_name" autocomplete="name" required></label>
@@ -67,9 +67,9 @@
 <footer class="site-footer">
   <div class="section-shell footer-grid">
     <div><p>EST8ADS — Property Chain Intelligence based on Villa Bit AI technology.</p></div>
-    <div><h4>Platform</h4><a href="{{ route('est8ads.home') }}#create">Create your move</a><a href="{{ route('est8ads.home') }}#what">What is EST8ADS?</a><a href="{{ route('est8ads.home') }}#how">How it works</a><a href="{{ route('est8ads.home') }}#faq">FAQ</a></div>
-    <div><h4>For users</h4><a href="{{ route('est8ads.home') }}#create">Private buyers and sellers</a><a href="{{ route('est8ads.home') }}#create">Real estate agents</a><a href="{{ route('est8ads.login') }}">Sign in</a></div>
-    <div><h4>Legal</h4><a href="{{ route('est8ads.privacy') }}">Privacy Policy</a><a href="{{ route('est8ads.terms') }}">Terms of Use</a><a href="{{ route('est8ads.contact') }}">Contact</a></div>
+    <div><h4>Platform</h4><a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Create your move</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#what">What is EST8ADS?</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#how">How it works</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#faq">FAQ</a></div>
+    <div><h4>For users</h4><a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Private buyers and sellers</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Real estate agents</a><a href="{{ \App\Support\Est8adsRoute::to('login') }}">Sign in</a></div>
+    <div><h4>Legal</h4><a href="{{ \App\Support\Est8adsRoute::to('privacy') }}">Privacy Policy</a><a href="{{ \App\Support\Est8adsRoute::to('terms') }}">Terms of Use</a><a href="{{ \App\Support\Est8adsRoute::to('contact') }}">Contact</a></div>
   </div>
   <div class="section-shell footer-bottom"><span>© 2026 EST8ADS. All rights reserved.</span><span>Powered by Villa Bit AI</span></div>
 </footer>

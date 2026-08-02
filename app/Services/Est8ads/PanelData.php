@@ -7,11 +7,19 @@ use App\Models\AgencyProfile;
 use App\Models\Est8ads\Chain;
 use App\Models\Est8ads\Payment;
 use App\Models\User;
+use App\Services\Est8ads\Discovery\DiscoveryPresenter;
+use App\Services\Est8ads\Discovery\DiscoverySettings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class PanelData
 {
+    public function __construct(
+        private DiscoveryPresenter $discoveryPresenter,
+        private DiscoverySettings $discoverySettings,
+    ) {
+    }
+
     public function forUser(User $user): array
     {
         $agencyProfile = $user->getEffectiveAgencyProfile();
@@ -27,12 +35,23 @@ class PanelData
 
     public function forAdmin(): array
     {
-        return $this->payload(
+        $moves = \App\Models\Est8ads\PropertyMove::with('profile')->latest()->limit(100)->get();
+
+        $payload = $this->payload(
             $this->listingQuery()->get(),
             User::where('has_est8ads_access', true)->get(),
             AgencyProfile::with('user')->whereHas('user', fn (Builder $query) => $query->where('has_est8ads_access', true))->get(),
-            \App\Models\Est8ads\PropertyMove::with('profile')->latest()->limit(100)->get(),
+            $moves,
         );
+
+        $discovery = $this->discoveryPresenter->panelState($this->discoverySettings);
+        $discovery['requests'] = $payload['requests'];
+
+        $payload['discovery'] = $discovery;
+        $payload['discoveryJobs'] = $discovery['jobs'];
+        $payload['discoveryResults'] = $discovery['matches'];
+
+        return $payload;
     }
 
     private function listingQuery(): Builder

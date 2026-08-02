@@ -26,6 +26,7 @@ class Property extends Model
     public function agency(): BelongsTo { return $this->belongsTo(Agency::class); }
     public function propertyMove(): BelongsTo { return $this->belongsTo(PropertyMove::class); }
     public function matches(): HasMany { return $this->hasMany(MatchResult::class); }
+    public function externalListingMatches(): HasMany { return $this->hasMany(ExternalListingMatch::class); }
     public function externalListings(): BelongsToMany
     {
         return $this->belongsToMany(ExternalListing::class, 'est8ads_external_listing_matches')->withPivot(['status', 'confidence_score', 'is_manual'])->withTimestamps();

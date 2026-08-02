@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>EST8ADS Admin Panel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -135,7 +136,16 @@
 <tbody id="requestsTable"></tbody></table></div></section>
 
 
-<section class="panel-section" data-section="discovery">
+@php($discoveryRoute = (\Illuminate\Support\Facades\Route::is('est8ads.local.*') ? 'est8ads.local.' : 'est8ads.') . 'admin.discovery.')
+<section class="panel-section" data-section="discovery"
+    data-jobs-store-url="{{ route($discoveryRoute . 'jobs.store') }}"
+    data-job-retry-url="{{ route($discoveryRoute . 'jobs.retry', ['__JOB__']) }}"
+    data-settings-url="{{ route($discoveryRoute . 'settings.update') }}"
+    data-match-import-url="{{ route($discoveryRoute . 'matches.import', ['__MATCH__']) }}"
+    data-match-connect-url="{{ route($discoveryRoute . 'matches.connect', ['__MATCH__']) }}"
+    data-match-reject-url="{{ route($discoveryRoute . 'matches.reject', ['__MATCH__']) }}"
+    data-bulk-import-url="{{ route($discoveryRoute . 'matches.bulk-import') }}"
+    data-bulk-connect-url="{{ route($discoveryRoute . 'matches.bulk-connect') }}">
   
 <div class="section-head">
     
@@ -161,12 +171,12 @@
     
 <div>
       
-<strong>Automatic trigger is active</strong>
+<strong id="discoveryAutomationTitle">Loading automation status</strong>
       
 <p>Trigger: new sell request, new buy request or edited search criteria. The queued worker searches configured internet sources, normalizes listing data, removes duplicates, calculates similarity and creates proposed property connections.</p>
     </div>
     
-<span class="status active" id="discoveryAutomationStatus">RUNNING</span>
+<span class="status pending" id="discoveryAutomationStatus">LOADING</span>
   </div>
 
   
@@ -176,28 +186,28 @@
 <div class="kpi-top">
 <span class="kpi-icon">Q</span>
 <span class="kpi-change">live queue</span></div>
-<h3 id="discoveryQueueKpi">4</h3>
+<h3 id="discoveryQueueKpi">0</h3>
 <p>Requests waiting or searching</p></div>
     
 <div class="kpi-card">
 <div class="kpi-top">
 <span class="kpi-icon">WEB</span>
-<span class="kpi-change">12 active</span></div>
-<h3 id="discoverySourcesKpi">38</h3>
+<span class="kpi-change" id="discoverySourcesActive">0 active</span></div>
+<h3 id="discoverySourcesKpi">0</h3>
 <p>Configured websites and search feeds</p></div>
     
 <div class="kpi-card">
 <div class="kpi-top">
 <span class="kpi-icon">F</span>
 <span class="kpi-change">today</span></div>
-<h3 id="discoveryFoundKpi">147</h3>
+<h3 id="discoveryFoundKpi">0</h3>
 <p>Similar internet listings found</p></div>
     
 <div class="kpi-card">
 <div class="kpi-top">
 <span class="kpi-icon">↔</span>
 <span class="kpi-change">AI approved</span></div>
-<h3 id="discoveryConnectedKpi">23</h3>
+<h3 id="discoveryConnectedKpi">0</h3>
 <p>Listings automatically connected</p></div>
   </div>
 
@@ -210,7 +220,7 @@
 <div>
 <h3>Automatic discovery configuration</h3>
 <p>Rules applied whenever a user or agency submits a property request.</p></div>
-<span class="status active">AUTO</span></div>
+<span class="status pending" id="discoveryConfigStatus">LOADING</span></div>
       
 <div class="card-body">
         
@@ -218,70 +228,70 @@
           
 <div class="form-field">
 <label>Automation trigger</label>
-<select id="discoveryTrigger">
-<option>Immediately after every new request</option>
-<option>After administrator approval</option>
-<option>Manual only</option></select></div>
+<select id="discoveryTrigger" name="trigger">
+<option value="immediate">Immediately after every new request</option>
+<option value="after_approval">After administrator approval</option>
+<option value="manual">Manual only</option></select></div>
           
 <div class="form-field">
 <label>Refresh existing requests</label>
-<select id="discoveryRefresh">
-<option>Every 12 hours</option>
-<option>Every 24 hours</option>
-<option>Every 3 days</option>
-<option>Never</option></select></div>
+<select id="discoveryRefresh" name="refresh_interval">
+<option value="12_hours">Every 12 hours</option>
+<option value="24_hours">Every 24 hours</option>
+<option value="3_days">Every 3 days</option>
+<option value="never">Never</option></select></div>
           
 <div class="form-field">
 <label>Minimum similarity to save (%)</label>
-<input id="discoverySaveThreshold" type="number" min="0" max="100" value="72"></div>
+<input id="discoverySaveThreshold" name="save_threshold" type="number" min="0" max="100"></div>
           
 <div class="form-field">
 <label>Minimum score for auto-connect (%)</label>
-<input id="discoveryConnectThreshold" type="number" min="0" max="100" value="88"></div>
+<input id="discoveryConnectThreshold" name="connect_threshold" type="number" min="0" max="100"></div>
           
 <div class="form-field">
 <label>Maximum results per request</label>
-<input id="discoveryResultLimit" type="number" min="10" max="500" value="100"></div>
+<input id="discoveryResultLimit" name="result_limit" type="number" min="10" max="500"></div>
           
 <div class="form-field">
 <label>Search radius</label>
-<select id="discoveryRadius">
-<option>Exact city + nearby areas</option>
-<option>Exact area only</option>
-<option>Whole country</option>
-<option>International</option></select></div>
+<select id="discoveryRadius" name="radius">
+<option value="city_nearby">Exact city + nearby areas</option>
+<option value="exact_area">Exact area only</option>
+<option value="country">Whole country</option>
+<option value="international">International</option></select></div>
         </div>
         
 <div class="source-selector">
           
 <label class="source-check">
-<input type="checkbox" checked>
+<input type="checkbox" name="sources[]" value="portals">
 <span>
 <strong>Real estate portals</strong>
 <small>Configured marketplace APIs and permitted search feeds</small></span></label>
           
 <label class="source-check">
-<input type="checkbox" checked>
+<input type="checkbox" name="sources[]" value="agencies">
 <span>
 <strong>Agency websites</strong>
 <small>Agency XML feeds, sitemaps and permitted listing pages</small></span></label>
           
 <label class="source-check">
-<input type="checkbox" checked>
+<input type="checkbox" name="sources[]" value="private_owners">
 <span>
 <strong>Private-owner listings</strong>
 <small>Public listings where collection and reuse are permitted</small></span></label>
           
 <label class="source-check">
-<input type="checkbox" checked>
+<input type="checkbox" name="sources[]" value="developments">
 <span>
 <strong>New developments</strong>
 <small>Developer inventories and project pages</small></span></label>
         </div>
         
 <div class="discovery-save-row">
-<button class="btn" id="testDiscoveryRules">Test rules</button>
-<button class="btn primary" id="saveDiscoveryRules">Save automation rules</button></div>
+<button class="btn" id="testDiscoveryRules" type="button">Test rules</button>
+<button class="btn primary" id="saveDiscoveryRules" type="button">Save automation rules</button></div>
       </div>
     </div>
 

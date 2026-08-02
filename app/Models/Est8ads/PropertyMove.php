@@ -29,4 +29,6 @@ class PropertyMove extends Model
     public function properties(): HasMany { return $this->hasMany(Property::class); }
     public function matches(): HasMany { return $this->hasMany(MatchResult::class); }
     public function conversations(): HasMany { return $this->hasMany(Conversation::class); }
+    public function discoveryJobs(): HasMany { return $this->hasMany(DiscoveryJob::class); }
+    public function externalListingMatches(): HasMany { return $this->hasMany(ExternalListingMatch::class); }
 }

@@ -61,6 +61,7 @@ use App\Http\Controllers\Admin\AdminVillaReadyReferralController;
 use App\Http\Controllers\Agency\AgencyVillaReadyController;
 use App\Http\Controllers\CompetitorIntelligenceController;
 use App\Http\Controllers\Est8ads\AdminDashboardController as Est8adsAdminDashboardController;
+use App\Http\Controllers\Est8ads\AdminDiscoveryController as Est8adsAdminDiscoveryController;
 use App\Http\Controllers\Est8ads\AuthController as Est8adsAuthController;
 use App\Http\Controllers\Est8ads\ContactController as Est8adsContactController;
 use App\Http\Controllers\Est8ads\DashboardController as Est8adsDashboardController;
@@ -70,8 +71,32 @@ use App\Http\Controllers\Est8ads\PublicSiteController as Est8adsPublicSiteContro
 use App\Http\Controllers\Est8ads\RegisterController as Est8adsRegisterController;
 use App\Http\Controllers\Est8ads\SsoController as Est8adsSsoController;
 
+// EST8ADS — AI internet discovery admin endpoints. Registered inside both the
+// est8ads.com domain group and the local prefix group, so the panel works in
+// production and locally without duplicating definitions.
+$est8adsDiscoveryRoutes = function () {
+    Route::get('/jobs', [Est8adsAdminDiscoveryController::class, 'index'])->name('jobs.index');
+    Route::post('/jobs', [Est8adsAdminDiscoveryController::class, 'store'])->name('jobs.store');
+    Route::get('/jobs/{job}', [Est8adsAdminDiscoveryController::class, 'show'])->name('jobs.show');
+    Route::get('/jobs/{job}/results', [Est8adsAdminDiscoveryController::class, 'results'])->name('jobs.results');
+    Route::post('/jobs/{job}/retry', [Est8adsAdminDiscoveryController::class, 'retry'])->name('jobs.retry');
+
+    Route::get('/settings', [Est8adsAdminDiscoveryController::class, 'settings'])->name('settings');
+    Route::match(['patch', 'put'], '/settings', [Est8adsAdminDiscoveryController::class, 'updateSettings'])->name('settings.update');
+
+    Route::post('/matches/bulk-import', [Est8adsAdminDiscoveryController::class, 'bulkImport'])->name('matches.bulk-import');
+    Route::post('/matches/bulk-connect', [Est8adsAdminDiscoveryController::class, 'bulkConnect'])->name('matches.bulk-connect');
+    Route::post('/matches/{match}/import', [Est8adsAdminDiscoveryController::class, 'importMatch'])->name('matches.import');
+    Route::post('/matches/{match}/connect', [Est8adsAdminDiscoveryController::class, 'connectMatch'])->name('matches.connect');
+    Route::post('/matches/{match}/reject', [Est8adsAdminDiscoveryController::class, 'rejectMatch'])->name('matches.reject');
+
+    Route::post('/listings/{listing}/review', [Est8adsAdminDiscoveryController::class, 'review'])->name('listings.review');
+};
+
+$est8adsAdminMiddleware = ['auth', 'verified', 'platform:est8ads', 'role:admin'];
+
 // EST8ADS — isolated public website and role-based workspaces (must precede catch-all routes)
-Route::domain('est8ads.com')->name('est8ads.')->group(function () {
+Route::domain('est8ads.com')->name('est8ads.')->group(function () use ($est8adsDiscoveryRoutes, $est8adsAdminMiddleware) {
     Route::get('/', [Est8adsPublicSiteController::class, 'index'])->name('home');
     Route::get('/contact', [Est8adsPublicSiteController::class, 'contact'])->name('contact');
     Route::post('/contact', [Est8adsContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
@@ -91,10 +116,14 @@ Route::domain('est8ads.com')->name('est8ads.')->group(function () {
     Route::post('/listings', [Est8adsListingController::class, 'store'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('listings.store');
     Route::get('/dashboard', [Est8adsDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('dashboard');
     Route::get('/admin', [Est8adsAdminDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads', 'role:admin'])->name('admin.dashboard');
+
+    Route::prefix('admin/discovery')->name('admin.discovery.')
+        ->middleware($est8adsAdminMiddleware)
+        ->group($est8adsDiscoveryRoutes);
 });
 
 // EST8ADS local/testing fallback. Production links continue to use est8ads.com.
-Route::prefix('est8ads')->name('est8ads.local.')->group(function () {
+Route::prefix('est8ads')->name('est8ads.local.')->group(function () use ($est8adsDiscoveryRoutes, $est8adsAdminMiddleware) {
     Route::get('/', [Est8adsPublicSiteController::class, 'index'])->name('home');
     Route::get('/contact', [Est8adsPublicSiteController::class, 'contact'])->name('contact');
     Route::post('/contact', [Est8adsContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
@@ -114,6 +143,10 @@ Route::prefix('est8ads')->name('est8ads.local.')->group(function () {
     Route::post('/listings', [Est8adsListingController::class, 'store'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('listings.store');
     Route::get('/dashboard', [Est8adsDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('dashboard');
     Route::get('/admin', [Est8adsAdminDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads', 'role:admin'])->name('admin.dashboard');
+
+    Route::prefix('admin/discovery')->name('admin.discovery.')
+        ->middleware($est8adsAdminMiddleware)
+        ->group($est8adsDiscoveryRoutes);
 });
 
 // EST8ADS local authentication/workspace routes use a non-physical prefix.

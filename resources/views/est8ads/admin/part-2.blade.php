@@ -306,7 +306,8 @@
 <th>Status</th>
 <th>Actions</th></tr></thead>
 <tbody id="matchesTable"></tbody></table></div></section>
-<section class="panel-section" data-section="users">
+<section class="panel-section" data-section="users"
+    data-user-update-url="{{ \App\Support\Est8adsRoute::to('admin.users.update', ['__USER__']) }}">
 <div class="section-head">
 <div>
 <h2>Users</h2>

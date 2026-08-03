@@ -22,6 +22,32 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\AffiliateClickMiddleware::class,
             \App\Http\Middleware\SetUserLanguage::class,
         ]);
+
+        // Laravel's built-in `auth` middleware always runs before any custom
+        // middleware (its position in the global priority list is fixed), so
+        // EnsurePlatformAccess's own "redirect to est8ads.login" never gets a
+        // chance to run for guests on EST8ADS routes — `auth` already threw
+        // and redirected to the main site's login by then. Route the guest
+        // redirect itself based on the request path instead.
+        $middleware->redirectGuestsTo(fn ($request) => $request->routeIs('est8ads.*')
+            ? route(\App\Support\Est8adsRoute::name('login'))
+            : route('login'));
+
+        // Mirror the above for the reverse case: an already-authenticated
+        // user hitting a `guest`-only route (e.g. /est8ads/login) is caught
+        // by RedirectIfAuthenticated before Est8adsAuthController::create()
+        // ever runs. Its default target is the first route literally named
+        // "dashboard", which is the main site's dashboard — not EST8ADS's —
+        // so admins landed on /admin/villabit/dashboard instead of
+        // /est8ads/admin. Send them to the EST8ADS-specific destination when
+        // the request came from an EST8ADS route.
+        \Illuminate\Auth\Middleware\RedirectIfAuthenticated::redirectUsing(
+            fn ($request) => $request->routeIs('est8ads.*')
+                ? route(\App\Support\Est8adsRoute::name(
+                    optional(auth()->user())->isAdmin() ? 'admin.dashboard' : 'dashboard'
+                ))
+                : route('dashboard')
+        );
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

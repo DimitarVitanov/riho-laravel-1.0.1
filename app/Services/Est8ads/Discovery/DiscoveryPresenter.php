@@ -9,8 +9,8 @@ use App\Models\Est8ads\InternetSource;
 
 /**
  * Single source of truth for the shapes the EST8ADS admin panel JavaScript
- * expects (public/est8ads/panel/panel.js), used both by the initial page
- * payload and by the JSON endpoints.
+ * expects (public/est8ads-assets/panel/panel.js), used both by the initial
+ * page payload and by the JSON endpoints.
  */
 class DiscoveryPresenter
 {

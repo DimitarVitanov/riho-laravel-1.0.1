@@ -7,12 +7,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('est8ads/panel/panel.css') }}">
+    <link rel="stylesheet" href="{{ asset('est8ads-assets/panel/panel.css') }}">
 </head>
 <body>
 <div class="login-page">
     <section class="login-visual">
-        <img class="login-logo" src="{{ asset('est8ads/panel/est8ads-logo.svg') }}" alt="EST8ADS">
+        <a href="{{ \App\Support\Est8adsRoute::to('home') }}"><img class="login-logo" src="{{ asset('est8ads-assets/panel/est8ads-logo.svg') }}" alt="EST8ADS"></a>
         <div class="login-copy"><span class="eyebrow">EST8ADS ACCOUNT</span><h1>One account.<br>Your complete property move.</h1><p>Create an EST8ADS-only private or agency account. This account does not grant access to the Villa Bit AI application.</p></div>
     </section>
     <section class="login-form-side">

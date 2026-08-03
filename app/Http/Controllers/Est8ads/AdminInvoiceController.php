@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Controllers\Est8ads;
+
+use App\Http\Controllers\Controller;
+use App\Models\Est8ads\Invoice;
+use App\Services\Est8ads\BillingService;
+use Illuminate\Http\JsonResponse;
+
+class AdminInvoiceController extends Controller
+{
+    /**
+     * Records that an admin has manually checked the PayPal account and
+     * confirms the invoice was paid. There is no PayPal webhook, so this is
+     * the only way a payment is ever reconciled.
+     */
+    public function markPaid(Invoice $invoice, BillingService $billing): JsonResponse
+    {
+        if ($invoice->status === 'paid') {
+            return response()->json(['message' => 'This invoice is already marked as paid.'], 422);
+        }
+
+        $billing->markPaid($invoice->refresh());
+        $invoice->load('profile');
+
+        return response()->json([
+            'message' => 'Invoice marked as paid.',
+            'payment' => [
+                'id' => 'INV-' . $invoice->id,
+                'date' => $invoice->paid_at?->toDateString(),
+                'customer' => $invoice->profile?->company_name ?: $invoice->profile?->email,
+                'item' => 'EST8ADS 30-day subscription',
+                'amount' => (float) $invoice->total,
+                'currency' => $invoice->currency,
+                'status' => 'Paid',
+                'invoice_id' => $invoice->id,
+            ],
+        ]);
+    }
+}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Est8ads;
 
 use App\Http\Controllers\Controller;
+use App\Support\Est8adsRoute;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,6 +35,7 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $actualRole = $user->role;
 
@@ -62,7 +64,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route($request->routeIs('est8ads.dev.*') ? 'est8ads.local.home' : 'est8ads.home');
+        return redirect()->route(Est8adsRoute::name('home'));
     }
 
     private function roleMatches(string $selectedRole, string $actualRole): bool
@@ -76,14 +78,8 @@ class AuthController extends Controller
 
     private function redirectFor(string $role): RedirectResponse
     {
-        $development = request()->routeIs('est8ads.dev.*');
         $admin = in_array($role, ['super_admin', 'admin'], true);
 
-        return redirect()->route(match (true) {
-            $development && $admin => 'est8ads.dev.admin.dashboard',
-            $development => 'est8ads.dev.dashboard',
-            $admin => 'est8ads.admin.dashboard',
-            default => 'est8ads.dashboard',
-        });
+        return redirect()->route(Est8adsRoute::name($admin ? 'admin.dashboard' : 'dashboard'));
     }
 }

@@ -7,12 +7,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('est8ads/panel/panel.css') }}"></head>
+<link rel="stylesheet" href="{{ asset('est8ads-assets/panel/panel.css') }}"></head>
 <body data-panel-role="user">
 <div class="panel-app">
 <aside class="panel-sidebar">
 <a class="panel-brand" href="{{ route('est8ads.home') }}">
-<img src="{{ asset('est8ads/panel/est8ads-logo.svg') }}" alt="EST8ADS"></a>
+<img src="{{ asset('est8ads-assets/panel/est8ads-logo.svg') }}" alt="EST8ADS"></a>
 <div class="workspace-label">USER WORKSPACE</div>
 <nav class="side-nav">
 <button data-section-target="overview" class="active">
@@ -29,8 +29,6 @@
 <span class="nav-dot">✉</span>Messages</button>
 <button data-section-target="billing" class="">
 <span class="nav-dot">$</span>Billing</button>
-<button data-section-target="agency" class="">
-<span class="nav-dot">A</span>Agency workspace</button>
 <button data-section-target="profile" class="">
 <span class="nav-dot">U</span>Profile & security</button></nav>
 <div class="sidebar-footer">
@@ -88,10 +86,30 @@
 <div class="card">
 <div class="card-head">
 <div>
-<h3>Latest updates</h3>
+<h3>Recent activity</h3>
 <p>Messages and match activity.</p></div></div>
 <div class="card-body">
-<div class="message-list" id="overviewMessages"></div></div></div></div></section>
+<div class="message-list" id="overviewMessages"></div></div></div></div>
+@if (auth()->user()->isAgency())
+<div class="card" style="margin-top:18px">
+<div class="card-head">
+<div>
+<h3>Agency clients and moves</h3>
+<p>Submit and manage requests on behalf of clients.</p></div>
+<button class="btn primary" data-open-property>Add client property</button></div>
+<div class="table-wrap" style="border:0;border-radius:0">
+<table class="data-table">
+<thead>
+<tr>
+<th>Client</th>
+<th>Move</th>
+<th>Properties</th>
+<th>Best chain</th>
+<th>Status</th>
+<th>Actions</th></tr></thead>
+<tbody id="agencyMovesTable"><tr><td colspan="6">No agency client moves yet.</td></tr></tbody></table></div></div>
+@endif
+</section>
 <section class="panel-section" data-section="move">
 <div class="section-head">
 <div>
@@ -283,40 +301,62 @@ $discoveryJob = $est8adsData['latestDiscoveryJob'] ?? null;
 <section class="panel-section" data-section="billing">
 <div class="section-head">
 <div>
-<h2>Billing</h2>
-<p>Manage request activation, invoices and payment history.</p></div></div>
-<div class="card"><div class="card-head"><h3>Payment history</h3></div><div class="table-wrap" style="border:0;border-radius:0"><table class="data-table"><thead><tr><th>Date</th><th>Item</th><th>Amount</th><th>Status</th></tr></thead><tbody id="userPaymentsTable"><tr><td colspan="4">No payment records yet.</td></tr></tbody></table></div></div></section>
-<section class="panel-section" data-section="agency">
-<div class="section-head">
-<div>
-<h2>Agency workspace</h2>
-<p>Available when your account belongs to a verified real estate agency.</p></div>
-<span class="status active">VIEW enabled</span></div>
-<div class="agency-workspace">
-<h2 style="margin:0">{{ auth()->user()->agencyProfile?->agency_name ?? 'Agency workspace' }}</h2>
-<p>Manage agency listings, property moves and live chain opportunities.</p>
-<div class="grid kpis" style="margin-top:20px">
-<div class="kpi-card" style="color:#111"><h3>{{ count($est8adsData['properties']) }}</h3><p>Active agency listings</p></div>
-<div class="kpi-card" style="color:#111"><h3>{{ count($est8adsData['chains']) }}</h3><p>Chain opportunities</p></div>
-<div class="kpi-card" style="color:#111"><h3>{{ count($est8adsData['requests']) }}</h3><p>Property moves</p></div>
-<div class="kpi-card" style="color:#111"><h3>{{ count($est8adsData['messages']) }}</h3><p>Messages</p></div></div></div>
+<h2>Billing and payments</h2>
+<p>Your complete sell-and-buy move in one connected workspace</p></div>
+<button class="btn primary" data-open-property>Add property</button></div>
+@php
+$activeSubscription = $est8adsData['activeSubscription'] ?? null;
+$payments = $est8adsData['payments'] ?? [];
+@endphp
+@if ($activeSubscription)
+@php
+$subscriptionBadge = match ($activeSubscription['status']) {
+    'active' => '✓ ACTIVE',
+    'suspended' => '⛔ SUSPENDED — PAYMENT OVERDUE',
+    default => '⏳ AWAITING PAYMENT',
+};
+@endphp
+<div class="card">
+<div class="card-head">
+<h3>Billing</h3>
+<p>Manage request activation, invoices and payment history</p></div>
+<div class="card-body">
+<div class="subscription-card">
+<div class="subscription-badge">{{ $subscriptionBadge }}</div>
+<h3>{{ $activeSubscription['name'] }}</h3>
+<p>{{ $activeSubscription['description'] }}</p>
+<div class="subscription-price">
+<strong>${{ number_format($activeSubscription['amount'], 2) }}</strong>
+<span>/ {{ $activeSubscription['billing_period'] }} days</span></div>
+@if ($activeSubscription['status'] === 'active')
+<p style="font-size:11px;color:var(--muted)">Invoice {{ $activeSubscription['invoice_number'] }} paid on {{ $activeSubscription['paid_at'] }}.</p>
+@else
+<p style="font-size:11px;color:var(--muted)">Invoice {{ $activeSubscription['invoice_number'] }} due {{ $activeSubscription['due_on'] }}. Pay within {{ $activeSubscription['grace_period_days'] }} days of the due date to keep your account active.</p>
+@endif
+<a href="{{ route('est8ads.payment.paypal') }}" class="btn primary">{{ $activeSubscription['status'] === 'active' ? 'Extend another '.$activeSubscription['billing_period'].' days' : 'Pay now via PayPal' }}</a>
+<p style="font-size:10px;color:var(--muted);margin-top:8px">Payments are reconciled manually — your invoice is marked as paid once our team confirms the PayPal transaction.</p>
+</div></div></div>
+@endif
 <div class="card" style="margin-top:18px">
 <div class="card-head">
-<div>
-<h3>Agency clients and moves</h3>
-<p>Submit and manage requests on behalf of clients.</p></div>
-<button class="btn primary" data-open-property>Add client property</button></div>
+<h3>Payment history</h3></div>
+<div class="card-body">
+@if (count($payments))
 <div class="table-wrap" style="border:0;border-radius:0">
 <table class="data-table">
 <thead>
 <tr>
-<th>Client</th>
-<th>Move</th>
-<th>Properties</th>
-<th>Best chain</th>
-<th>Status</th>
-<th>Actions</th></tr></thead>
-<tbody id="agencyMovesTable"><tr><td colspan="6">No agency client moves yet.</td></tr></tbody></table></div></div></section>
+<th>DATE</th>
+<th>ITEM</th>
+<th>AMOUNT</th>
+<th>STATUS</th>
+<th>INVOICE</th></tr></thead>
+<tbody id="userPaymentsTable"></tbody></table></div>
+@else
+<p style="color:var(--muted);font-size:11px">No payment records yet.</p>
+@endif
+</div></div>
+</section>
 <section class="panel-section" data-section="profile">
 <div class="section-head">
 <div>
@@ -440,4 +480,4 @@ $discoveryJob = $est8adsData['latestDiscoveryJob'] ?? null;
 <button class="btn primary" type="submit">Save property</button></div></form></div></div>
 <div class="toast" id="panelToast"></div>
 <script>window.EST8DATA = {{ Illuminate\Support\Js::from($est8adsData) }};</script>
-<script src="{{ asset('est8ads/panel/panel.js') }}"></script></body></html>
+<script src="{{ asset('est8ads-assets/panel/panel.js') }}"></script></body></html>

@@ -8,30 +8,37 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('est8ads/panel/panel.css') }}"></head>
+<link rel="stylesheet" href="{{ asset('est8ads-assets/panel/panel.css') }}"></head>
 <body data-panel-role="admin">
 <div class="panel-app">
 <aside class="panel-sidebar">
 <a class="panel-brand" href="{{ route('est8ads.home') }}">
-<img src="{{ asset('est8ads/panel/est8ads-logo.svg') }}" alt="EST8ADS"></a>
+<img src="{{ asset('est8ads-assets/panel/est8ads-logo.svg') }}" alt="EST8ADS"></a>
 <div class="workspace-label">ADMIN WORKSPACE</div>
 <nav class="side-nav">
 <button data-section-target="overview" class="active">
 <span class="nav-dot">◆</span>Overview</button>
 <button data-section-target="requests" class="">
 <span class="nav-dot">R</span>Property requests</button>
-<button data-section-target="discovery" class="">
-<span class="nav-dot">WEB</span>Internet discovery</button>
+<!-- <button data-section-target="discovery" class="">
+<span class="nav-dot">WEB</span>Internet discovery</button> -->
 <button data-section-target="properties" class="">
 <span class="nav-dot">P</span>All properties</button>
+<!--
+
 <button data-section-target="analyzer" class="">
 <span class="nav-dot">AI</span>Chain analyzer</button>
 <button data-section-target="map" class="">
-<span class="nav-dot">◎</span>Chain map</button>
+
+<span class="nav-dot">◎</span>Chain map</button>\
+-->
 <button data-section-target="missing" class="">
 <span class="nav-dot">?</span>Missing links</button>
+
+<!--
 <button data-section-target="matches" class="">
 <span class="nav-dot">M</span>Matches</button>
+-->
 <button data-section-target="users" class="">
 <span class="nav-dot">U</span>Users</button>
 <button data-section-target="agencies" class="">
@@ -40,10 +47,14 @@
 <span class="nav-dot">$</span>Payments</button>
 <button data-section-target="reports" class="">
 <span class="nav-dot">▥</span>Reports</button>
+<!--
 <button data-section-target="settings" class="">
 <span class="nav-dot">⚙</span>System settings</button>
+
 <button data-section-target="audit" class="">
 <span class="nav-dot">↺</span>Audit log</button></nav>
+
+-->
 <div class="sidebar-footer">
 <div class="account-mini">
 <div class="avatar">{{ strtoupper(substr(auth()->user()->first_name, 0, 1) . substr(auth()->user()->last_name, 0, 1)) }}</div>

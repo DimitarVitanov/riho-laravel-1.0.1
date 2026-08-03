@@ -6,7 +6,9 @@ use App\Models\AgencyListing;
 use App\Models\AgencyProfile;
 use App\Models\Est8ads\Chain;
 use App\Models\Est8ads\ExternalListingMatch;
-use App\Models\Est8ads\Payment;
+use App\Models\Est8ads\Invoice;
+use App\Models\Est8ads\MissingLink;
+use App\Models\Est8ads\Profile;
 use App\Models\User;
 use App\Services\Est8ads\Discovery\ChainDiscoveryDispatcher;
 use App\Services\Est8ads\Discovery\DiscoveryPresenter;
@@ -19,6 +21,7 @@ class PanelData
     public function __construct(
         private DiscoveryPresenter $discoveryPresenter,
         private DiscoverySettings $discoverySettings,
+        private BillingService $billing,
     ) {
     }
 
@@ -29,13 +32,16 @@ class PanelData
             ? $this->listingQuery()->where('agency_profile_id', $agencyProfile->id)->get()
             : collect();
 
-        $profile = \App\Models\Est8ads\Profile::where('user_id', $user->id)->first();
+        $profile = Profile::where('user_id', $user->id)->first();
         $moves = $profile ? $profile->propertyMoves()->latest()->get() : collect();
 
         $payload = $this->payload($listings, collect(), $agencyProfile ? collect([$agencyProfile]) : collect(), $moves);
         $payload['chainMatches'] = $this->chainMatches($moves->pluck('id')->all());
         $payload['chainTolerance'] = ChainDiscoveryDispatcher::defaultTolerance();
         $payload['latestDiscoveryJob'] = $this->latestDiscoveryActivity($moves->pluck('id')->all());
+        $payload['activeSubscription'] = $profile ? $this->billing->subscriptionSummary($profile) : null;
+        $payload['accountSuspended'] = $profile ? $this->billing->isSuspended($profile) : false;
+        $payload['payments'] = $profile ? $this->invoices(Invoice::where('profile_id', $profile->id)) : [];
 
         return $payload;
     }
@@ -59,8 +65,53 @@ class PanelData
         $payload['discoveryResults'] = $discovery['matches'];
         $payload['chainMatches'] = $this->chainMatches($moves->pluck('id')->all());
         $payload['chainTolerance'] = ChainDiscoveryDispatcher::defaultTolerance();
+        $payload['payments'] = $this->invoices(Invoice::query(), 50);
+        $payload['billingStats'] = $this->billingStats();
 
         return $payload;
+    }
+
+    /**
+     * Invoices rendered as "payments" rows for the admin/user billing
+     * tables, newest first. Unpaid invoices carry an id so the admin panel
+     * can offer a "Mark as paid" action.
+     */
+    private function invoices(Builder $query, int $limit = 25): array
+    {
+        return $query->with('profile')->latest('issued_on')->limit($limit)->get()
+            ->map(function (Invoice $invoice) {
+                $suspended = $invoice->profile && $this->billing->isSuspended($invoice->profile);
+
+                return [
+                    'id' => 'INV-' . $invoice->id,
+                    'invoice_id' => $invoice->id,
+                    'date' => $invoice->issued_on?->toDateString(),
+                    'due_on' => $invoice->due_on?->toDateString(),
+                    'customer' => $invoice->profile?->company_name ?: $invoice->profile?->email ?: 'Unknown',
+                    'item' => 'EST8ADS 30-day subscription',
+                    'amount' => (float) $invoice->total,
+                    'currency' => $invoice->currency,
+                    'status' => $invoice->status === 'paid' ? 'Paid' : ($suspended ? 'Suspended' : 'Open'),
+                    'paid' => $invoice->status === 'paid',
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Real replacement for the hardcoded billing KPIs on the admin panel.
+     */
+    private function billingStats(): array
+    {
+        $monthStart = now()->startOfMonth();
+
+        return [
+            'monthly_revenue' => (float) Invoice::where('status', 'paid')->where('paid_at', '>=', $monthStart)->sum('total'),
+            'paid_invoices' => Invoice::where('status', 'paid')->where('paid_at', '>=', $monthStart)->count(),
+            'active_subscriptions' => Invoice::where('status', 'paid')->distinct('profile_id')->count('profile_id'),
+            'pending_amount' => (float) Invoice::where('status', '!=', 'paid')->sum('amount_due'),
+        ];
     }
 
     /**
@@ -112,6 +163,40 @@ class PanelData
             ->all();
     }
 
+    /**
+     * High-value requests the AI has flagged as blocked, most valuable and
+     * most urgent first.
+     *
+     * @param  array<int, int>  $moveIds
+     * @return array<int, array<string, mixed>>
+     */
+    private function missingLinks(array $moveIds, int $limit = 25): array
+    {
+        if ($moveIds === []) {
+            return [];
+        }
+
+        return MissingLink::whereIn('property_move_id', $moveIds)
+            ->where('status', 'open')
+            ->orderByDesc('priority_rank')
+            ->orderByDesc('unlock_value')
+            ->limit($limit)
+            ->get()
+            ->map(fn (MissingLink $link) => [
+                'id' => 'ML-' . $link->id,
+                'title' => $link->title,
+                'location' => $link->location,
+                'impact' => $link->impact,
+                'value' => $link->unlock_value !== null
+                    ? number_format((float) $link->unlock_value) . ' ' . $link->unlock_value_currency
+                    : null,
+                'priority' => $link->priority,
+                'reason' => $link->reason_type,
+                'explanation' => $link->explanation,
+            ])
+            ->all();
+    }
+
     private function deviationNote(?string $status, mixed $deviation): ?string
     {
         if ($status !== 'tolerance' || $deviation === null) {
@@ -142,7 +227,7 @@ class PanelData
             ])->values(),
             'discoveryJobs' => [],
             'discoveryResults' => [],
-            'missingLinks' => [],
+            'missingLinks' => $this->missingLinks($moves->pluck('id')->all()),
             'properties' => $listings->map(fn (AgencyListing $listing) => $this->listing($listing))->values(),
             'users' => $users->map(fn (User $user) => [
                 'id' => 'U-' . $user->id,
@@ -178,15 +263,9 @@ class PanelData
                 'missing' => $chain->summary ?: '',
                 'owner' => 'EST8ADS',
             ])->values(),
-            'payments' => Payment::latest()->limit(25)->get()->map(fn (Payment $payment) => [
-                'id' => 'TX-' . $payment->id,
-                'date' => $payment->created_at?->toDateString(),
-                'customer' => $payment->profile?->company_name ?: $payment->profile?->email,
-                'item' => 'EST8ADS service',
-                'amount' => (float) $payment->amount,
-                'currency' => $payment->currency,
-                'status' => ucfirst($payment->status),
-            ])->values(),
+            // Overwritten by forUser()/forAdmin() with real invoice data,
+            // scoped to the current profile or to everyone for the admin.
+            'payments' => [],
             'messages' => [],
         ];
     }
@@ -332,4 +411,5 @@ class PanelData
             'activity' => $activity,
         ];
     }
+
 }

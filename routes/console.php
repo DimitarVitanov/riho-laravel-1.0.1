@@ -53,6 +53,21 @@ Schedule::command('authority:generate')
     ->withoutOverlapping()
     ->runInBackground();
 
+// EST8ADS — re-evaluates every stalled request and asks the AI what is
+// missing (buyer, seller, property or condition) to unlock its chain.
+Schedule::command('est8ads:analyze-missing-links')
+    ->hourly()
+    ->withoutOverlapping()
+    ->runInBackground();
+
+// EST8ADS — opens the next $12/month invoice for individual users whose
+// previous 30-day billing period has elapsed. Checked daily since the exact
+// due date differs per user.
+Schedule::command('est8ads:generate-monthly-invoices')
+    ->dailyAt('02:00')
+    ->withoutOverlapping()
+    ->runInBackground();
+
 // ============================================
 // COMPETITOR INTELLIGENCE - 3-LEVEL SCANNING
 // ============================================

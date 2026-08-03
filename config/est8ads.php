@@ -35,4 +35,28 @@ return [
          */
         'semantic_weight' => (float) env('EST8ADS_DISCOVERY_SEMANTIC_WEIGHT', 0.25),
     ],
+
+    'billing' => [
+        /*
+         * Individual EST8ADS users (Profile type "individual") are billed a
+         * flat monthly fee for keeping their property move active. Agency
+         * accounts have their own separate Villa Bit billing and are not
+         * affected by this cycle.
+         */
+        'monthly_amount' => (float) env('EST8ADS_BILLING_MONTHLY_AMOUNT', 12.00),
+        'currency' => env('EST8ADS_BILLING_CURRENCY', 'USD'),
+
+        /*
+         * Days after an invoice's due date before the account is locked out
+         * of the workspace pending payment.
+         */
+        'grace_period_days' => (int) env('EST8ADS_BILLING_GRACE_DAYS', 10),
+
+        /*
+         * Manual PayPal checkout link. Payments are reconciled by an admin
+         * marking the matching invoice as paid from the admin panel — there
+         * is no PayPal webhook/IPN integration.
+         */
+        'paypal_link' => env('EST8ADS_BILLING_PAYPAL_LINK', 'https://www.paypal.com/ncp/payment/QTVBZLAPAD2MY'),
+    ],
 ];

@@ -62,6 +62,8 @@ use App\Http\Controllers\Agency\AgencyVillaReadyController;
 use App\Http\Controllers\CompetitorIntelligenceController;
 use App\Http\Controllers\Est8ads\AdminDashboardController as Est8adsAdminDashboardController;
 use App\Http\Controllers\Est8ads\AdminDiscoveryController as Est8adsAdminDiscoveryController;
+use App\Http\Controllers\Est8ads\AdminInvoiceController as Est8adsAdminInvoiceController;
+use App\Http\Controllers\Est8ads\AdminUserController as Est8adsAdminUserController;
 use App\Http\Controllers\Est8ads\AuthController as Est8adsAuthController;
 use App\Http\Controllers\Est8ads\ContactController as Est8adsContactController;
 use App\Http\Controllers\Est8ads\DashboardController as Est8adsDashboardController;
@@ -93,10 +95,22 @@ $est8adsDiscoveryRoutes = function () {
     Route::post('/listings/{listing}/review', [Est8adsAdminDiscoveryController::class, 'review'])->name('listings.review');
 };
 
+// EST8ADS — admin panel user management (edit + status change from the
+// Users table). Registered the same way as the discovery routes above.
+$est8adsAdminUsersRoutes = function () {
+    Route::patch('/{user}', [Est8adsAdminUserController::class, 'update'])->name('update');
+};
+
+// EST8ADS — admin panel invoice reconciliation ("mark as paid" after
+// manually checking the PayPal account).
+$est8adsAdminInvoicesRoutes = function () {
+    Route::post('/{invoice}/mark-paid', [Est8adsAdminInvoiceController::class, 'markPaid'])->name('mark-paid');
+};
+
 $est8adsAdminMiddleware = ['auth', 'verified', 'platform:est8ads', 'role:admin'];
 
 // EST8ADS — isolated public website and role-based workspaces (must precede catch-all routes)
-Route::domain('est8ads.com')->name('est8ads.')->group(function () use ($est8adsDiscoveryRoutes, $est8adsAdminMiddleware) {
+Route::domain('est8ads.com')->name('est8ads.')->group(function () use ($est8adsDiscoveryRoutes, $est8adsAdminUsersRoutes, $est8adsAdminInvoicesRoutes, $est8adsAdminMiddleware) {
     Route::get('/', [Est8adsPublicSiteController::class, 'index'])->name('home');
     Route::get('/contact', [Est8adsPublicSiteController::class, 'contact'])->name('contact');
     Route::post('/contact', [Est8adsContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
@@ -116,14 +130,27 @@ Route::domain('est8ads.com')->name('est8ads.')->group(function () use ($est8adsD
     Route::post('/listings', [Est8adsListingController::class, 'store'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('listings.store');
     Route::get('/dashboard', [Est8adsDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('dashboard');
     Route::get('/admin', [Est8adsAdminDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads', 'role:admin'])->name('admin.dashboard');
+    
+    // Payment routes - simple PayPal redirect (same as VillaBit AI)
+    Route::get('/payment/paypal', [\App\Http\Controllers\Est8ads\PaymentController::class, 'redirectToPayPal'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('payment.paypal');
+    Route::get('/payment/success', [\App\Http\Controllers\Est8ads\PaymentController::class, 'paymentSuccess'])->middleware(['auth', 'platform:est8ads'])->name('payment.success');
+    Route::get('/payment/cancelled', [\App\Http\Controllers\Est8ads\PaymentController::class, 'paymentCancelled'])->middleware(['auth', 'platform:est8ads'])->name('payment.cancelled');
 
     Route::prefix('admin/discovery')->name('admin.discovery.')
         ->middleware($est8adsAdminMiddleware)
         ->group($est8adsDiscoveryRoutes);
+
+    Route::prefix('admin/users')->name('admin.users.')
+        ->middleware($est8adsAdminMiddleware)
+        ->group($est8adsAdminUsersRoutes);
+
+    Route::prefix('admin/invoices')->name('admin.invoices.')
+        ->middleware($est8adsAdminMiddleware)
+        ->group($est8adsAdminInvoicesRoutes);
 });
 
 // EST8ADS local/testing fallback. Production links continue to use est8ads.com.
-Route::prefix('est8ads')->name('est8ads.local.')->group(function () use ($est8adsDiscoveryRoutes, $est8adsAdminMiddleware) {
+Route::prefix('est8ads')->name('est8ads.local.')->group(function () use ($est8adsDiscoveryRoutes, $est8adsAdminUsersRoutes, $est8adsAdminInvoicesRoutes, $est8adsAdminMiddleware) {
     Route::get('/', [Est8adsPublicSiteController::class, 'index'])->name('home');
     Route::get('/contact', [Est8adsPublicSiteController::class, 'contact'])->name('contact');
     Route::post('/contact', [Est8adsContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
@@ -147,6 +174,14 @@ Route::prefix('est8ads')->name('est8ads.local.')->group(function () use ($est8ad
     Route::prefix('admin/discovery')->name('admin.discovery.')
         ->middleware($est8adsAdminMiddleware)
         ->group($est8adsDiscoveryRoutes);
+
+    Route::prefix('admin/users')->name('admin.users.')
+        ->middleware($est8adsAdminMiddleware)
+        ->group($est8adsAdminUsersRoutes);
+
+    Route::prefix('admin/invoices')->name('admin.invoices.')
+        ->middleware($est8adsAdminMiddleware)
+        ->group($est8adsAdminInvoicesRoutes);
 });
 
 // EST8ADS local authentication/workspace routes use a non-physical prefix.
@@ -672,3 +707,6 @@ Route::get('/ref/{code}', function ($code) {
 // Villa Ready Croatia Property Pages (public, on agency domains)
 Route::get('/properties/{slug}', [VillaReadyPropertyPageController::class, 'show'])->name('villa-ready.property.show');
 Route::post('/villa-ready/track-visit', [VillaReadyPropertyPageController::class, 'trackVisit'])->name('villa-ready.track-visit');
+
+
+

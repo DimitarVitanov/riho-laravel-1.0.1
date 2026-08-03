@@ -9,30 +9,30 @@
 <th>Status</th>
 <th>Actions</th></tr></thead>
 <tbody id="agenciesTable"></tbody></table></div></section>
-<section class="panel-section" data-section="billing">
+<section class="panel-section" data-section="billing"
+    data-invoice-mark-paid-url="{{ \App\Support\Est8adsRoute::to('admin.invoices.mark-paid', ['__INVOICE__']) }}">
 <div class="section-head">
 <div>
 <h2>Payments and subscriptions</h2>
-<p>Track 30-day requests, agency packages, invoices and payment statuses.</p></div>
-<button class="btn primary">Create invoice</button></div>
+<p>Track $12/month individual subscriptions and PayPal payment reconciliation. Payments are verified manually and marked as paid here.</p></div></div>
 <div class="grid kpis" style="margin-bottom:18px">
 <div class="kpi-card">
-<h3>$18,420</h3>
-<p>Monthly revenue</p></div>
+<h3 id="billingMonthlyRevenue">$0</h3>
+<p>Monthly revenue (paid this month)</p></div>
 <div class="kpi-card">
-<h3>1,044</h3>
-<p>Paid 30-day requests</p></div>
+<h3 id="billingPaidInvoices">0</h3>
+<p>Paid invoices this month</p></div>
 <div class="kpi-card">
-<h3>38</h3>
-<p>Active agency packages</p></div>
+<h3 id="billingActiveSubscriptions">0</h3>
+<p>Active subscriptions</p></div>
 <div class="kpi-card">
-<h3>$298</h3>
-<p>Pending payments</p></div></div>
+<h3 id="billingPendingAmount">$0</h3>
+<p>Pending / overdue amount</p></div></div>
 <div class="table-wrap">
 <table class="data-table">
 <thead>
 <tr>
-<th>Transaction</th>
+<th>Invoice</th>
 <th>Date</th>
 <th>Customer</th>
 <th>Item</th>
@@ -294,6 +294,35 @@
 <div class="modal-foot">
 <button class="btn" type="button" data-close-modal>Cancel</button>
 <button class="btn primary" type="submit">Save property</button></div></form></div></div>
+<div class="modal-backdrop" id="userModal">
+<div class="modal">
+<div class="modal-head">
+<h2>Edit user</h2>
+<button class="modal-close">×</button></div>
+<form id="userForm">
+<div class="modal-body">
+<div class="form-grid">
+<div class="form-field">
+<label>First name *</label>
+<input name="first_name" required></div>
+<div class="form-field">
+<label>Last name *</label>
+<input name="last_name" required></div>
+<div class="form-field full">
+<label>Email *</label>
+<input name="email" type="email" required></div>
+<div class="form-field">
+<label>Phone</label>
+<input name="phone"></div>
+<div class="form-field">
+<label>Status *</label>
+<select name="status" required>
+<option value="active">Active</option>
+<option value="suspended">Suspended</option>
+<option value="waitlist">Waitlist</option></select></div></div></div>
+<div class="modal-foot">
+<button class="btn" type="button" data-close-modal>Cancel</button>
+<button class="btn primary" type="submit">Save user</button></div></form></div></div>
 <div class="toast" id="panelToast"></div>
 <script>window.EST8DATA = {{ Illuminate\Support\Js::from($est8adsData) }};</script>
-<script src="{{ asset('est8ads/panel/panel.js') }}"></script></body></html>
+<script src="{{ asset('est8ads-assets/panel/panel.js') }}"></script></body></html>

@@ -7,8 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('est8ads/panel/panel.css') }}">
-    <link rel="stylesheet" href="{{ asset('est8ads/panel/property-details.css') }}">
+    <link rel="stylesheet" href="{{ asset('est8ads-assets/panel/panel.css') }}">
+    <link rel="stylesheet" href="{{ asset('est8ads-assets/panel/property-details.css') }}">
 </head>
 <body data-panel-role="{{ $detail['isAdmin'] ? 'admin' : 'user' }}" class="property-detail-page">
 @php
@@ -20,15 +20,16 @@
     };
     $statusClass = str_contains(strtolower((string) $detail['status']), 'active') || str_contains(strtolower((string) $detail['status']), 'approved') ? 'active' : (str_contains(strtolower((string) $detail['status']), 'correction') ? 'action' : 'pending');
     $matchScore = $detail['match']['score'] ?? null;
+    $workspaceUrl = $detail['isAdmin'] ? \App\Support\Est8adsRoute::to('admin.dashboard') : \App\Support\Est8adsRoute::to('dashboard');
 @endphp
 <div class="panel-app">
     <aside class="panel-sidebar">
-        <a class="panel-brand" href="{{ url('/dashboard') }}"><img src="{{ asset('est8ads/panel/est8ads-logo.svg') }}" alt="EST8ADS"></a>
+        <a class="panel-brand" href="{{ \App\Support\Est8adsRoute::to('home') }}"><img src="{{ asset('est8ads-assets/panel/est8ads-logo.svg') }}" alt="EST8ADS"></a>
         <div class="workspace-label">{{ $detail['isAdmin'] ? 'ADMIN' : 'USER' }} WORKSPACE</div>
         <nav class="side-nav detail-side-nav">
-            <a href="{{ $detail['isAdmin'] ? url('/admin') : url('/dashboard') }}"><span class="nav-dot">◆</span>Overview</a>
-            <a class="active" href="{{ $detail['isAdmin'] ? url('/admin') . '?section=matches' : url('/dashboard') . '?section=matches' }}"><span class="nav-dot">M</span>Matches & properties</a>
-            <a href="{{ $detail['isAdmin'] ? url('/admin') . '?section=analyzer' : url('/dashboard') . '?section=chains' }}"><span class="nav-dot">AI</span>Chain analysis</a>
+            <a href="{{ $workspaceUrl }}"><span class="nav-dot">◆</span>Overview</a>
+            <a class="active" href="{{ $workspaceUrl }}?section=matches"><span class="nav-dot">M</span>Matches & properties</a>
+            <a href="{{ $workspaceUrl }}?section={{ $detail['isAdmin'] ? 'analyzer' : 'chains' }}"><span class="nav-dot">AI</span>Chain analysis</a>
         </nav>
         <div class="sidebar-footer">
             <div class="account-mini"><span class="avatar">{{ strtoupper(substr(auth()->user()->first_name ?: auth()->user()->email, 0, 2)) }}</span><div><strong>{{ auth()->user()->full_name }}</strong><small>{{ $detail['isAdmin'] ? 'Full access' : 'Authorized record' }}</small></div></div>
@@ -43,7 +44,7 @@
         </header>
         <div class="panel-content detail-page-content">
             @if(session('est8ads_success'))<div class="detail-alert">{{ session('est8ads_success') }}</div>@endif
-            <div class="detail-breadcrumb"><a href="{{ $detail['isAdmin'] ? url('/admin') : url('/dashboard') }}">Workspace</a><span>›</span><strong>{{ implode(' · ', $detail['ids']) }}</strong></div>
+            <div class="detail-breadcrumb"><a href="{{ $workspaceUrl }}">Workspace</a><span>›</span><strong>{{ implode(' · ', $detail['ids']) }}</strong></div>
             <section class="detail-hero">
                 <div class="detail-hero-main">
                     <div class="detail-kicker">COMPLETE DATABASE RECORD</div>

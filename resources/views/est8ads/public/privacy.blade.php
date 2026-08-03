@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,32 +13,11 @@
 </head>
 <body>
 
-<header class="site-header" id="top">
-  <div class="nav-shell">
-    <a class="brand" href="{{ \App\Support\Est8adsRoute::to('home') }}" aria-label="EST8ADS home"><img src="{{ asset('est8ads-assets/est8ads-logo.svg') }}" alt="EST8ADS logo"></a>
-    <nav class="desktop-nav" aria-label="Primary navigation">
-      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Create your move</a>
-      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#what">What is EST8ADS?</a>
-      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#how">How it works</a>
-      <a href="{{ \App\Support\Est8adsRoute::to('home') }}#faq">FAQ</a>
-      <a href="{{ \App\Support\Est8adsRoute::to('contact') }}">Contact</a>
-    </nav>
-    <div class="nav-actions">
-      <button class="language-button" type="button" aria-label="Choose language">EN</button>
-      <a class="sign-in" href="{{ \App\Support\Est8adsRoute::to('login') }}">Sign in</a>
-      <a class="primary-small" href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Get started</a>
-    </div>
-    <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
-  </div>
-  <div class="mobile-menu" hidden>
-    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Create your move</a>
-    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#what">What is EST8ADS?</a>
-    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#how">How it works</a>
-    <a href="{{ \App\Support\Est8adsRoute::to('home') }}#faq">FAQ</a>
-    <a href="{{ \App\Support\Est8adsRoute::to('contact') }}">Contact</a>
-    <a href="{{ \App\Support\Est8adsRoute::to('login') }}">Sign in</a>
-  </div>
-</header>
+@include('est8ads.public.partials.nav')
+
+@if (($locale ?? 'en') !== 'en')
+<div class="section-shell" style="padding-top:18px"><div class="legal-callout"><p>{{ __('This legal document is only available in English to ensure accuracy. Use the language selector above for the rest of the site.') }}</p></div></div>
+@endif
 
 <main>
 <section class="legal-hero"><div class="section-shell legal-hero-inner"><span class="section-kicker">EU, U.S. AND GLOBAL NOTICE</span><h1>Privacy Policy</h1><p>How EST8ADS handles account, property, verification, payment, public-source and AI-generated information across property-chain analysis and Missing Link campaigns.</p><div class="legal-meta"><span>Effective: July 26, 2026</span><span>Version 1.0</span><span>Applies globally, subject to local law</span></div><div class="prelaunch-note"><strong>Complete before publication:</strong> add the exact controller identity, address, registration details, processor list, hosting countries, retention schedule, cookie inventory, EU/UK representative and DPO details where required. The final policy must match the system’s real data flows.</div></div></section>
@@ -230,13 +209,5 @@
 </section>
 </article></div>
 </main>
-<footer class="site-footer">
-  <div class="section-shell footer-grid">
-    <div><p>EST8ADS — Property Chain Intelligence based on Villa Bit AI technology.</p></div>
-    <div><h4>Platform</h4><a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Create your move</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#what">What is EST8ADS?</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#how">How it works</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#faq">FAQ</a></div>
-    <div><h4>For users</h4><a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Private buyers and sellers</a><a href="{{ \App\Support\Est8adsRoute::to('home') }}#create">Real estate agents</a><a href="{{ \App\Support\Est8adsRoute::to('login') }}">Sign in</a></div>
-    <div><h4>Legal</h4><a href="{{ \App\Support\Est8adsRoute::to('privacy') }}">Privacy Policy</a><a href="{{ \App\Support\Est8adsRoute::to('terms') }}">Terms of Use</a><a href="{{ \App\Support\Est8adsRoute::to('contact') }}">Contact</a></div>
-  </div>
-  <div class="section-shell footer-bottom"><span>© 2026 EST8ADS. All rights reserved.</span><span>Powered by Villa Bit AI</span></div>
-</footer>
+@include('est8ads.public.partials.footer')
 <script src="{{ asset('est8ads-assets/page.js') }}"></script></body></html>

@@ -2579,6 +2579,161 @@ grid-template-columns:1fr
 }
 
 
+/* Billing and subscription */
+
+.subscription-card{
+background:linear-gradient(135deg,#0a1929 0%,#1a2332 100%);
+border-radius:16px;
+padding:28px;
+color:#fff;
+position:relative;
+overflow:hidden
+}
+
+
+.subscription-card::before{
+content:'';
+position:absolute;
+top:0;
+right:0;
+width:200px;
+height:200px;
+background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 70%);
+pointer-events:none
+}
+
+
+.subscription-badge{
+display:inline-flex;
+align-items:center;
+gap:6px;
+padding:6px 12px;
+border-radius:999px;
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(10px);
+font-size:10px;
+font-weight:800;
+letter-spacing:0.5px;
+margin-bottom:16px
+}
+
+
+.subscription-card h3{
+font-size:20px;
+margin:0 0 6px;
+font-weight:700
+}
+
+
+.subscription-card>p{
+font-size:12px;
+opacity:0.8;
+margin:0 0 20px
+}
+
+
+.subscription-price{
+display:flex;
+align-items:baseline;
+gap:8px;
+margin-bottom:20px
+}
+
+
+.subscription-price strong{
+font-size:36px;
+font-weight:800;
+line-height:1
+}
+
+
+.subscription-price span{
+font-size:13px;
+opacity:0.7
+}
+
+
+.subscription-card .btn{
+margin-top:8px
+}
+
+
+.subscription-card .btn.secondary{
+background:rgba(255,255,255,0.1);
+color:#fff;
+border:1px solid rgba(255,255,255,0.2);
+cursor:not-allowed;
+opacity:0.6
+}
+
+
+.payment-method-card{
+display:grid;
+grid-template-columns:auto 1fr auto auto;
+gap:16px;
+align-items:center;
+padding:16px;
+border:1px solid var(--line);
+border-radius:12px;
+background:#fcfcfd
+}
+
+
+.payment-method-icon{
+font-size:32px;
+width:48px;
+height:48px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#fff;
+border-radius:8px;
+border:1px solid var(--line)
+}
+
+
+.payment-method-details strong{
+display:block;
+font-size:11px;
+font-weight:700;
+color:var(--ink);
+margin-bottom:4px
+}
+
+
+.payment-method-details p{
+font-size:13px;
+color:var(--muted);
+margin:0;
+font-family:monospace
+}
+
+
+.payment-method-meta{
+display:flex;
+gap:20px
+}
+
+
+.payment-method-meta span{
+display:flex;
+flex-direction:column;
+gap:4px;
+font-size:10px;
+color:var(--muted);
+text-transform:uppercase;
+letter-spacing:0.5px
+}
+
+
+.payment-method-meta strong{
+font-size:12px;
+color:var(--ink);
+text-transform:none;
+letter-spacing:0
+}
+
+
 /* Discovery activity feed */
 
 .discovery-activity-feed{

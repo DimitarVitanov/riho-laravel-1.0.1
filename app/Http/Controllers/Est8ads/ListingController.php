@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Est8ads\Profile;
 use App\Models\Est8ads\Property;
 use App\Models\Est8ads\PropertyMove;
+use App\Services\Est8ads\BillingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,8 +14,18 @@ use Illuminate\Support\Str;
 
 class ListingController extends Controller
 {
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, BillingService $billing): JsonResponse
     {
+        // Defense in depth: an account still waiting for its first payment is
+        // held on the "waiting for payment" screen and must not be able to
+        // create listings by posting to this endpoint directly.
+        $profile = Profile::where('user_id', $request->user()->id)->first();
+        if ($profile && $billing->awaitingFirstPayment($profile)) {
+            return response()->json([
+                'message' => 'Please complete your first payment to activate your workspace.',
+            ], 402);
+        }
+
         $validated = $request->validate([
             'side' => ['required', 'in:sell,buy'],
             'type' => ['required', 'string', 'max:100'],

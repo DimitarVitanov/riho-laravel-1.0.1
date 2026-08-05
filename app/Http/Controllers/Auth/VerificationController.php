@@ -47,11 +47,21 @@ class VerificationController extends Controller
     /**
      * Show the email verification notice.
      *
-     * Only allow viewing immediately after registration or login. On refresh
-     * or navigation back, log the user out and redirect to login.
+     * EST8ADS-only accounts can come back to this page across several
+     * sessions while they wait to verify and pay, so it is shown to them
+     * without the "just registered" restriction below. Villa Bit accounts
+     * keep the original behaviour: only allow viewing immediately after
+     * registration or login, otherwise log the user out and redirect to
+     * login.
      */
     public function show(Request $request)
     {
+        $user = $request->user();
+
+        if ($user && $user->isEst8adsOnly()) {
+            return view('est8ads.auth.verify');
+        }
+
         if (! $request->session()->has('just_registered')) {
             Auth::logout();
             $request->session()->invalidate();
@@ -92,9 +102,11 @@ class VerificationController extends Controller
             throw new AuthorizationException;
         }
 
+        $redirectTo = $user->isEst8adsOnly() ? route('est8ads.dashboard') : $this->redirectPath();
+
         if ($user->hasVerifiedEmail()) {
             Auth::login($user);
-            return redirect($this->redirectPath())
+            return redirect($redirectTo)
                 ->with('verified_message', 'Your email is already verified. Welcome back!');
         }
 
@@ -104,7 +116,7 @@ class VerificationController extends Controller
 
         Auth::login($user);
 
-        return redirect($this->redirectPath())
+        return redirect($redirectTo)
             ->with('verified_message', 'Your email address has been confirmed successfully!');
     }
 }

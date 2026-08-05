@@ -274,6 +274,47 @@ $discoveryJob = $est8adsData['latestDiscoveryJob'] ?? null;
 <p>Results appear here automatically once a chain search has run for this listing.</p>
 </div>
 @endif
+</div></div>
+@php $memberMatches = $est8adsData['memberMatches'] ?? []; @endphp
+<div class="card" style="margin-top:18px">
+<div class="card-head">
+<div><h3>Matches from other EST8ADS members</h3>
+<p>Properties other EST8ADS members (and mirrored Villa Bit listings) are selling that fit what you want to buy, within {{ (int) ($est8adsData['chainTolerance'] ?? 15) }}% of your budget and size.</p></div>
+@if (count($memberMatches))<span class="status potential">{{ count($memberMatches) }} found</span>@endif</div>
+<div class="card-body">
+@if (count($memberMatches))
+<div class="chain-match-grid">
+@foreach ($memberMatches as $match)
+<article class="chain-match chain-match--{{ $match['kind'] }}">
+<header class="chain-match-top">
+<span class="chain-match-score">{{ number_format((float) $match['score']) }}<small>%</small></span>
+<span class="status {{ $match['kind'] === 'exact' ? 'active' : 'pending' }}">{{ $match['kind'] === 'exact' ? 'Exact match' : 'Within tolerance' }}</span>
+</header>
+<div class="chain-match-body">
+<h4>{{ $match['title'] }}</h4>
+<p class="chain-match-location">{{ $match['city'] ?: 'Location not published' }} · {{ $match['owner'] }}</p>
+<div class="chain-match-meta">
+<span>Price<strong>{{ $match['price'] ? number_format((float) $match['price']) . ' ' . $match['currency'] : '—' }}</strong>
+@if ($match['priceNote'])<em>{{ $match['priceNote'] }}</em>@endif</span>
+<span>Size<strong>{{ $match['size'] ? number_format((float) $match['size']) . ' m²' : '—' }}</strong>
+@if ($match['sizeNote'])<em>{{ $match['sizeNote'] }}</em>@endif</span>
+</div>
+@if ($match['explanation'])<p class="chain-match-why">{{ $match['explanation'] }}</p>@endif
+</div>
+@if ($match['url'])
+<footer class="chain-match-footer">
+<a class="btn small" href="{{ $match['url'] }}" target="_blank" rel="noopener noreferrer">View listing ↗</a>
+</footer>
+@endif
+</article>
+@endforeach
+</div>
+@else
+<div class="chain-match-empty">
+<strong>No member matches yet</strong>
+<p>When another EST8ADS member lists a property that fits your budget and size, it appears here automatically.</p>
+</div>
+@endif
 </div></div></section>
 <section class="panel-section" data-section="matches">
 <div class="section-head">

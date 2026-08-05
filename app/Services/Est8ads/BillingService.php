@@ -41,6 +41,27 @@ class BillingService
     }
 
     /**
+     * True once the account has ever had an invoice confirmed as paid. Used
+     * to tell a brand-new, never-paid account apart from one whose latest
+     * renewal invoice has simply lapsed.
+     */
+    public function hasActivated(Profile $profile): bool
+    {
+        return $profile->invoices()->where('status', 'paid')->exists();
+    }
+
+    /**
+     * A billable account that has never completed its first payment. These
+     * accounts are held on the "waiting for payment" screen — they cannot see
+     * or use the workspace until an admin confirms the first PayPal payment,
+     * regardless of the grace period.
+     */
+    public function awaitingFirstPayment(Profile $profile): bool
+    {
+        return $this->isBillable($profile) && ! $this->hasActivated($profile);
+    }
+
+    /**
      * Opens the first invoice for a newly registered individual user.
      */
     public function createFirstInvoice(Profile $profile): ?Invoice

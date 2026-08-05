@@ -70,6 +70,30 @@ return [
             'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
         ],
 
+        /*
+         * EST8ADS is a separate brand from Villa Bit AI and sends its
+         * transactional emails (verification, welcome, payment request/
+         * confirmation) from its own Proton Mail address instead of the
+         * default "from" address above.
+         *
+         * EST8ADS is connected to Proton Mail (real@est8ads.com). Proton
+         * only allows outbound SMTP submission for paid plans with a custom
+         * domain: generate a dedicated SMTP token from
+         * Proton Mail → Settings → All settings → IMAP/SMTP → SMTP tokens,
+         * pair it with real@est8ads.com, then set EST8ADS_MAIL_USERNAME to
+         * that address and EST8ADS_MAIL_PASSWORD to the generated token
+         * (not the normal account password).
+         */
+        'est8ads' => [
+            'transport' => 'smtp',
+            'host' => env('EST8ADS_MAIL_HOST', 'smtp.protonmail.ch'),
+            'port' => env('EST8ADS_MAIL_PORT', 587),
+            'encryption' => env('EST8ADS_MAIL_ENCRYPTION', 'tls'),
+            'username' => env('EST8ADS_MAIL_USERNAME', 'real@est8ads.com'),
+            'password' => env('EST8ADS_MAIL_PASSWORD'),
+            'timeout' => null,
+        ],
+
         'log' => [
             'transport' => 'log',
             'channel' => env('MAIL_LOG_CHANNEL'),
@@ -114,5 +138,16 @@ return [
     ],
 
     'admin_address' => env('MAIL_ADMIN_ADDRESS', 'inbox@villabit.ai'),
+
+    /*
+     * "From" address used by EST8ADS-only notifications (verification,
+     * welcome and payment emails). Sent through the "est8ads" mailer above
+     * so they go out via EST8ADS's own Proton Mail inbox instead of Villa
+     * Bit AI's.
+     */
+    'est8ads_from' => [
+        'address' => env('EST8ADS_MAIL_FROM_ADDRESS', 'real@est8ads.com'),
+        'name' => env('EST8ADS_MAIL_FROM_NAME', 'EST8ADS'),
+    ],
 
 ];

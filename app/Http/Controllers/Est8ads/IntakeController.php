@@ -43,7 +43,14 @@ class IntakeController extends Controller
             'buy_country' => ['nullable', 'required_unless:move_type,Only sell a property', 'string', 'max:100'],
             'buy_city' => ['nullable', 'required_unless:move_type,Only sell a property', 'string', 'max:255'],
             'buy_budget_min' => ['nullable', 'numeric', 'min:0'],
-            'buy_budget_max' => ['nullable', 'required_unless:move_type,Only sell a property', 'numeric', 'min:0', 'gte:buy_budget_min'],
+            // `gte:buy_budget_min` fails whenever the minimum is null, and the
+            // minimum is optional — only compare the two when a minimum was
+            // actually submitted, otherwise a buyer who leaves it blank is
+            // silently rejected.
+            'buy_budget_max' => array_values(array_filter([
+                'nullable', 'required_unless:move_type,Only sell a property', 'numeric', 'min:0',
+                filled($request->input('buy_budget_min')) ? 'gte:buy_budget_min' : null,
+            ])),
             'buy_currency' => ['nullable', 'string', 'size:3'],
             'buy_size_min' => ['nullable', 'numeric', 'min:0'],
             'buy_size_max' => ['nullable', 'numeric', 'min:0', 'gte:buy_size_min'],

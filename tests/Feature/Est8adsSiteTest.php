@@ -2,9 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Est8ads\Profile;
 use App\Models\User;
+use App\Services\Est8ads\BillingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class Est8adsSiteTest extends TestCase
@@ -106,5 +109,57 @@ class Est8adsSiteTest extends TestCase
         ])->assertRedirect(route('est8ads.dashboard'));
 
         $this->get('http://est8ads.com/dashboard')->assertOk()->assertSee('Your property move');
+    }
+
+    public function test_unpaid_individual_user_is_held_on_the_waiting_for_payment_screen(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'investor',
+            'account_type' => 'investor',
+            'has_est8ads_access' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        // The Profile observer opens the first (unpaid) invoice automatically.
+        Profile::create([
+            'user_id' => $user->id,
+            'type' => 'individual',
+            'status' => 'active',
+            'email' => $user->email,
+            'public_reference' => 'EST-TEST-' . Str::random(6),
+        ]);
+
+        $this->actingAs($user)
+            ->get('http://est8ads.com/dashboard')
+            ->assertOk()
+            ->assertSee('WAITING FOR PAYMENT')
+            ->assertDontSee('Your property move');
+    }
+
+    public function test_individual_user_reaches_the_dashboard_once_the_first_invoice_is_paid(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'investor',
+            'account_type' => 'investor',
+            'has_est8ads_access' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $profile = Profile::create([
+            'user_id' => $user->id,
+            'type' => 'individual',
+            'status' => 'active',
+            'email' => $user->email,
+            'public_reference' => 'EST-TEST-' . Str::random(6),
+        ]);
+
+        // An admin confirms the PayPal payment for the first invoice.
+        app(BillingService::class)->markPaid($profile->invoices()->latest('issued_on')->firstOrFail());
+
+        $this->actingAs($user)
+            ->get('http://est8ads.com/dashboard')
+            ->assertOk()
+            ->assertSee('Your property move')
+            ->assertDontSee('WAITING FOR PAYMENT');
     }
 }

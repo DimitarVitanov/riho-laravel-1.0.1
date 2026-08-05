@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Est8ads;
 
 use App\Http\Controllers\Controller;
 use App\Models\Est8ads\Invoice;
+use App\Notifications\Est8ads\PaymentConfirmedNotification;
 use App\Services\Est8ads\BillingService;
 use Illuminate\Http\JsonResponse;
 
@@ -21,7 +22,13 @@ class AdminInvoiceController extends Controller
         }
 
         $billing->markPaid($invoice->refresh());
-        $invoice->load('profile');
+        $invoice->load('profile.user');
+
+        $user = $invoice->profile?->user;
+
+        if ($user && $user->isEst8adsOnly()) {
+            $user->notify(new PaymentConfirmedNotification($invoice));
+        }
 
         return response()->json([
             'message' => 'Invoice marked as paid.',

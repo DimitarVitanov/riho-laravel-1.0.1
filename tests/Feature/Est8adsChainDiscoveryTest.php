@@ -82,7 +82,7 @@ class Est8adsChainDiscoveryTest extends TestCase
         $this->assertNotNull($move);
         $this->assertSame(500000.0, (float) $move->budget_max);
         $this->assertSame(['Split'], $move->requirements['cities']);
-        $this->assertSame(10.0, (float) $move->requirements['size_tolerance_percent']);
+        $this->assertSame(15.0, (float) $move->requirements['size_tolerance_percent']);
 
         $wanted = Property::where('property_move_id', $move->id)->where('listing_type', 'wanted')->first();
         $this->assertNotNull($wanted);
@@ -91,8 +91,8 @@ class Est8adsChainDiscoveryTest extends TestCase
         // The search profile handed to providers must carry the tolerance.
         $profile = app(SearchProfileBuilder::class)->build($move->fresh());
         $this->assertSame(350.0, (float) $profile['target_size_m2']);
-        $this->assertSame(10.0, (float) $profile['size_tolerance_percent']);
-        $this->assertSame(10.0, (float) $profile['price_tolerance_percent']);
+        $this->assertSame(15.0, (float) $profile['size_tolerance_percent']);
+        $this->assertSame(15.0, (float) $profile['price_tolerance_percent']);
     }
 
     public function test_repeated_saves_do_not_duplicate_the_mirrored_move(): void

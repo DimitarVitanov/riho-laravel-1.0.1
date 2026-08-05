@@ -13,7 +13,9 @@ use App\Models\User;
 use App\Services\Est8ads\Discovery\ChainDiscoveryDispatcher;
 use App\Services\Est8ads\Discovery\DiscoveryPresenter;
 use App\Services\Est8ads\Discovery\DiscoverySettings;
+use App\Services\Est8ads\Discovery\MemberMatchFinder;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class PanelData
@@ -22,6 +24,7 @@ class PanelData
         private DiscoveryPresenter $discoveryPresenter,
         private DiscoverySettings $discoverySettings,
         private BillingService $billing,
+        private MemberMatchFinder $memberMatches,
     ) {
     }
 
@@ -37,6 +40,7 @@ class PanelData
 
         $payload = $this->payload($listings, collect(), $agencyProfile ? collect([$agencyProfile]) : collect(), $moves);
         $payload['chainMatches'] = $this->chainMatches($moves->pluck('id')->all());
+        $payload['memberMatches'] = $this->memberMatches($moves);
         $payload['chainTolerance'] = ChainDiscoveryDispatcher::defaultTolerance();
         $payload['latestDiscoveryJob'] = $this->latestDiscoveryActivity($moves->pluck('id')->all());
         $payload['activeSubscription'] = $profile ? $this->billing->subscriptionSummary($profile) : null;
@@ -161,6 +165,36 @@ class PanelData
                 ];
             })
             ->all();
+    }
+
+    /**
+     * Properties that other EST8ADS members (and mirrored Villa Bit listings)
+     * are selling which match what this member is looking to buy, within the
+     * configured price/size tolerance. The member's own listings are excluded.
+     *
+     * @param  Collection<int, PropertyMove>  $moves
+     * @return array<int, array<string, mixed>>
+     */
+    private function memberMatches(Collection $moves, int $limit = 30): array
+    {
+        $buying = $moves->filter(fn ($move) => in_array($move->move_type, ['buy', 'sell_and_buy'], true)
+            && in_array($move->status, ['active', 'submitted'], true));
+
+        $matches = [];
+        foreach ($buying as $move) {
+            foreach ($this->memberMatches->forMove($move) as $match) {
+                // Dedupe across moves: keep the highest-scoring appearance of a
+                // given member property.
+                if (! isset($matches[$match['id']]) || $match['score'] > $matches[$match['id']]['score']) {
+                    $matches[$match['id']] = $match;
+                }
+            }
+        }
+
+        $matches = array_values($matches);
+        usort($matches, fn ($a, $b) => $b['score'] <=> $a['score']);
+
+        return array_slice($matches, 0, $limit);
     }
 
     /**

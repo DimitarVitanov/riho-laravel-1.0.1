@@ -8,6 +8,7 @@ use App\Models\Est8ads\Agency as Est8adsAgency;
 use App\Models\Est8ads\Profile as Est8adsProfile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class Est8adsPlatformIntegrationTest extends TestCase
@@ -83,6 +84,10 @@ class Est8adsPlatformIntegrationTest extends TestCase
 
     public function test_est8ads_only_registration_does_not_grant_villabit_access(): void
     {
+        // EST8ADS notifications are pinned to the Proton "est8ads" SMTP mailer,
+        // so let the fake intercept them instead of attempting a real send.
+        Notification::fake();
+
         $this->post('http://est8ads.com/register', [
             'account_type' => 'individual',
             'first_name' => 'Est',
@@ -92,7 +97,7 @@ class Est8adsPlatformIntegrationTest extends TestCase
             'password' => 'secure-password',
             'password_confirmation' => 'secure-password',
             'terms' => '1',
-        ])->assertRedirect(route('est8ads.dashboard'));
+        ])->assertRedirect(route('verification.notice'));
 
         $user = User::where('email', 'est8ads-only@example.com')->firstOrFail();
         $this->assertTrue($user->has_est8ads_access);

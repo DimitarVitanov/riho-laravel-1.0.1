@@ -87,7 +87,9 @@ class RegisterController extends Controller
 
         event(new Registered($user));
         Auth::login($user);
+        $user->sendEmailVerificationNotification();
+        $request->session()->flash('just_registered', true);
 
-        return redirect()->route(request()->routeIs('est8ads.dev.*') ? 'est8ads.dev.dashboard' : 'est8ads.dashboard');
+        return redirect()->route('verification.notice');
     }
 }

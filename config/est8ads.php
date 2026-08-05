@@ -4,10 +4,11 @@ return [
     'discovery' => [
         /*
          * Default plus/minus tolerance applied to the wanted size and budget
-         * when matching internet listings. A buyer asking for 200 m² also sees
-         * 190 m² and 220 m² at 10%.
+         * when matching internet listings and other users' offers. A buyer
+         * asking for 200 m² / €200k also sees offers from €170k to €230k at
+         * 15% (up or down).
          */
-        'tolerance_percent' => (float) env('EST8ADS_DISCOVERY_TOLERANCE', 10),
+        'tolerance_percent' => (float) env('EST8ADS_DISCOVERY_TOLERANCE', 15),
 
         /*
          * Provider used by the AI web-search adapter when the internet source

@@ -134,6 +134,16 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         return $this->status === 'waitlist';
     }
 
+    /**
+     * True for accounts registered directly on EST8ADS that have no Villa
+     * Bit access at all — these get EST8ADS-branded verification, welcome
+     * and payment emails instead of Villa Bit's.
+     */
+    public function isEst8adsOnly(): bool
+    {
+        return (bool) $this->has_est8ads_access && ! $this->has_villabit_access;
+    }
+
     public function canAccessPlatform(string $platform): bool
     {
         if ($this->isAdmin()) {
@@ -238,6 +248,11 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
 
     public function sendEmailVerificationNotification(): void
     {
+        if ($this->isEst8adsOnly()) {
+            $this->notify(new \App\Notifications\Est8ads\VerifyEmailNotification());
+            return;
+        }
+
         $this->notify(new VerifyEmailNotification());
     }
 

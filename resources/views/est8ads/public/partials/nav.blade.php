@@ -2,6 +2,10 @@
     $onHome = $onHome ?? false;
     $homeUrl = \App\Support\Est8adsRoute::to('home');
     $anchor = fn (string $hash) => $onHome ? $hash : $homeUrl . $hash;
+    // A visitor who is signed in with EST8ADS access is funnelled to their
+    // workspace instead of the public "Sign in" / anonymous move form.
+    $est8adsMember = $est8adsMember ?? (auth()->check() && auth()->user()->canAccessPlatform('est8ads'));
+    $dashboardUrl = $dashboardUrl ?? ($est8adsMember ? \App\Support\Est8adsRoute::to('dashboard') : null);
 @endphp
 <header class="site-header" id="top">
   <div class="nav-shell">
@@ -26,8 +30,13 @@
           @endforeach
         </ul>
       </div>
-      <a class="sign-in" href="{{ \App\Support\Est8adsRoute::to('login') }}">{{ __('Sign in') }}</a>
-      <a class="primary-small" href="{{ $anchor('#create') }}">{{ __('Get started') }}</a>
+      @if ($est8adsMember)
+        <a class="sign-in" href="{{ $dashboardUrl }}">{{ __('My dashboard') }}</a>
+        <a class="primary-small" href="{{ $dashboardUrl }}">{{ __('Add a property') }}</a>
+      @else
+        <a class="sign-in" href="{{ \App\Support\Est8adsRoute::to('login') }}">{{ __('Sign in') }}</a>
+        <a class="primary-small" href="{{ $anchor('#create') }}">{{ __('Get started') }}</a>
+      @endif
     </div>
     <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
@@ -37,7 +46,11 @@
     <a href="{{ $anchor('#how') }}">{{ __('How it works') }}</a>
     <a href="{{ $anchor('#faq') }}">{{ __('FAQ') }}</a>
     <a href="{{ \App\Support\Est8adsRoute::to('contact') }}">{{ __('Contact') }}</a>
-    <a href="{{ \App\Support\Est8adsRoute::to('login') }}">{{ __('Sign in') }}</a>
+    @if ($est8adsMember)
+      <a href="{{ $dashboardUrl }}">{{ __('My dashboard') }}</a>
+    @else
+      <a href="{{ \App\Support\Est8adsRoute::to('login') }}">{{ __('Sign in') }}</a>
+    @endif
   </div>
 </header>
 <script>

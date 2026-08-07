@@ -6,11 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Est8ads\Profile;
 use App\Models\Est8ads\Property;
 use App\Models\Est8ads\PropertyMove;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class IntakeController extends Controller
 {
@@ -70,7 +75,8 @@ class IntakeController extends Controller
             'chain_notes' => ['nullable', 'string', 'max:5000'],
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email:rfc', 'max:255'],
+            'email' => ['required', 'email:rfc', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
+            'password' => ['required', 'confirmed', 'min:8'],
             'phone' => ['required', 'string', 'max:50'],
             'language' => ['nullable', 'string', 'max:50'],
             'terms' => ['accepted'],
@@ -81,10 +87,33 @@ class IntakeController extends Controller
         $storedPaths = [];
 
         try {
-            DB::transaction(function () use ($request, $validated, &$storedPaths) {
+            $user = DB::transaction(function () use ($request, $validated, &$storedPaths) {
+                // Submitting the public move form now registers a real EST8ADS
+                // account (individual, billable) so the person enters the same
+                // verify-email -> pay -> workspace funnel as the register page.
+                User::onlyTrashed()->where('email', strtolower($validated['email']))->forceDelete();
+
+                $user = User::create([
+                    'first_name' => $validated['first_name'],
+                    'last_name' => $validated['last_name'],
+                    'email' => strtolower($validated['email']),
+                    'password' => Hash::make($validated['password']),
+                    'phone' => $validated['phone'],
+                    'country' => $validated['sell_country'] ?? $validated['buy_country'] ?? 'Croatia',
+                    'account_type' => 'investor',
+                    'role' => 'investor',
+                    'status' => 'active',
+                    'has_villabit_access' => false,
+                    'has_est8ads_access' => true,
+                    'privacy_accepted_at' => now(),
+                    'terms_accepted_at' => now(),
+                    'referral_code' => strtoupper(Str::random(8)),
+                ]);
+
                 $profile = Profile::create([
-                    'type' => $validated['user_type'] === 'Real estate agency or agent' ? 'agency_contact' : 'individual',
-                    'status' => 'pending',
+                    'user_id' => $user->id,
+                    'type' => 'individual',
+                    'status' => 'active',
                     'first_name' => $validated['first_name'],
                     'last_name' => $validated['last_name'],
                     'email' => strtolower($validated['email']),
@@ -195,6 +224,8 @@ class IntakeController extends Controller
                         ],
                     ]);
                 }
+
+                return $user;
             });
         } catch (\Throwable $exception) {
             foreach ($storedPaths as $path) {
@@ -204,7 +235,16 @@ class IntakeController extends Controller
             throw $exception;
         }
 
-        return back()->with('est8ads_success', 'Your property move has been submitted for EST8ADS analysis.');
+        // Mirror the register flow: log the new account in and send them to the
+        // verify-email screen. Verification then triggers the welcome + payment
+        // emails, and the workspace stays behind the "waiting for payment" gate
+        // until the first invoice is confirmed paid.
+        event(new Registered($user));
+        Auth::login($user);
+        $user->sendEmailVerificationNotification();
+        $request->session()->flash('just_registered', true);
+
+        return redirect()->route('verification.notice');
     }
 
     private function location(?string $city, ?string $country): ?string

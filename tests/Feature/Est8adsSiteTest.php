@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\Est8ads\BillingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -43,8 +44,10 @@ class Est8adsSiteTest extends TestCase
         ]);
     }
 
-    public function test_buy_only_intake_creates_a_profile_move_and_wanted_property(): void
+    public function test_public_move_form_registers_an_account_and_starts_the_verify_pay_funnel(): void
     {
+        Notification::fake();
+
         $response = $this->post('http://est8ads.com/property-moves', [
             'user_type' => 'Private buyer or seller',
             'move_type' => 'Only buy a property',
@@ -60,15 +63,77 @@ class Est8adsSiteTest extends TestCase
             'last_name' => 'Kovac',
             'email' => 'ana@example.com',
             'phone' => '+385 91 555 1122',
+            'password' => 'secure-password',
+            'password_confirmation' => 'secure-password',
             'language' => 'English',
             'terms' => 'on',
             'service_terms' => 'on',
         ]);
 
-        $response->assertRedirect()->assertSessionHas('est8ads_success');
-        $this->assertDatabaseHas('est8ads_profiles', ['email' => 'ana@example.com', 'status' => 'pending']);
+        // The form now creates the account and sends them to verify their email.
+        $response->assertRedirect(route('verification.notice'));
+
+        $user = User::where('email', 'ana@example.com')->first();
+        $this->assertNotNull($user);
+        $this->assertTrue((bool) $user->has_est8ads_access);
+        $this->assertFalse((bool) $user->has_villabit_access);
+        $this->assertAuthenticatedAs($user);
+
+        // The submitted move is saved to that account (profile linked to the user).
+        $this->assertDatabaseHas('est8ads_profiles', ['email' => 'ana@example.com', 'user_id' => $user->id, 'type' => 'individual']);
         $this->assertDatabaseHas('est8ads_property_moves', ['move_type' => 'Only buy a property', 'status' => 'submitted']);
         $this->assertDatabaseHas('est8ads_properties', ['listing_type' => 'wanted', 'property_type' => 'Villa']);
+
+        // First (unpaid) invoice was opened, so the payment gate applies.
+        $this->assertDatabaseHas('est8ads_invoices', ['status' => 'open']);
+        Notification::assertSentTo($user, \App\Notifications\Est8ads\VerifyEmailNotification::class);
+    }
+
+    public function test_home_page_funnels_a_signed_in_member_to_their_dashboard(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'investor',
+            'account_type' => 'investor',
+            'has_est8ads_access' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)->get('http://est8ads.com/');
+
+        $response->assertOk();
+        $response->assertSee('YOU ARE SIGNED IN');
+        $response->assertSee('My dashboard');
+        // The anonymous contact/registration form is not shown to members.
+        $response->assertDontSee('id="propertyMoveForm"', false);
+    }
+
+    public function test_public_move_form_rejects_an_email_that_already_has_an_account(): void
+    {
+        User::factory()->create(['email' => 'ana@example.com', 'has_est8ads_access' => true]);
+
+        $this->from('http://est8ads.com/#create')
+            ->post('http://est8ads.com/property-moves', [
+                'user_type' => 'Private buyer or seller',
+                'move_type' => 'Only buy a property',
+                'current_stage' => 'Planning only',
+                'buy_type' => 'Villa',
+                'buy_country' => 'Croatia',
+                'buy_city' => 'Split',
+                'buy_budget_max' => 800000,
+                'buy_currency' => 'EUR',
+                'buy_description' => 'A sea-view villa near Split.',
+                'first_name' => 'Ana',
+                'last_name' => 'Kovac',
+                'email' => 'ana@example.com',
+                'phone' => '+385 91 555 1122',
+                'password' => 'secure-password',
+                'password_confirmation' => 'secure-password',
+                'terms' => 'on',
+                'service_terms' => 'on',
+            ])->assertSessionHasErrors('email');
+
+        // No second account or move was created for that email.
+        $this->assertSame(1, User::where('email', 'ana@example.com')->count());
     }
 
     public function test_login_rejects_a_workspace_that_does_not_match_the_account(): void

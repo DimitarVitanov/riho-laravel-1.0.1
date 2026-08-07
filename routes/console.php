@@ -8,7 +8,11 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
 
-Schedule::command('queue:work --stop-when-empty --max-time=55 --timeout=1800')
+// Drains the default queue AND every named EST8ADS queue. Without the explicit
+// --queue list, queue:work only processes "default", so the whole internet
+// discovery pipeline (internet-discovery -> external-fetch -> external-normalize
+// -> external-match) and the est8ads notification/missing-link queues never run.
+Schedule::command('queue:work --queue=notifications,default,internet-discovery,external-fetch,external-normalize,external-match,missing-links,stale-listing-check --stop-when-empty --max-time=55 --timeout=1800')
     ->everyMinute()
     ->withoutOverlapping()
     ->runInBackground();

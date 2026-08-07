@@ -162,4 +162,41 @@ class Est8adsSiteTest extends TestCase
             ->assertSee('Your property move')
             ->assertDontSee('WAITING FOR PAYMENT');
     }
+
+    public function test_admin_users_payload_carries_billing_status_for_the_mark_as_paid_switch(): void
+    {
+        $individual = User::factory()->create([
+            'role' => 'investor',
+            'account_type' => 'investor',
+            'has_est8ads_access' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        // The Profile observer opens the first (unpaid) invoice automatically.
+        $profile = Profile::create([
+            'user_id' => $individual->id,
+            'type' => 'individual',
+            'status' => 'active',
+            'email' => $individual->email,
+            'public_reference' => 'EST-TEST-' . Str::random(6),
+        ]);
+        $invoice = $profile->invoices()->latest('issued_on')->firstOrFail();
+
+        $before = collect(app(\App\Services\Est8ads\PanelData::class)->forAdmin()['users'])
+            ->firstWhere('id', 'U-' . $individual->id);
+
+        $this->assertNotNull($before);
+        $this->assertTrue($before['billable']);
+        $this->assertFalse($before['paid']);
+        $this->assertSame($invoice->id, $before['invoice_id']);
+
+        // Admin flips the switch → invoice is paid, nothing left to charge.
+        app(BillingService::class)->markPaid($invoice);
+
+        $after = collect(app(\App\Services\Est8ads\PanelData::class)->forAdmin()['users'])
+            ->firstWhere('id', 'U-' . $individual->id);
+
+        $this->assertTrue($after['paid']);
+        $this->assertNull($after['invoice_id']);
+    }
 }

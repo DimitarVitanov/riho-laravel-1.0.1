@@ -53,13 +53,18 @@ class PanelData
     public function forAdmin(): array
     {
         $moves = \App\Models\Est8ads\PropertyMove::with('profile')->latest()->limit(100)->get();
+        $users = User::where('has_est8ads_access', true)->get();
 
         $payload = $this->payload(
             $this->listingQuery()->get(),
-            User::where('has_est8ads_access', true)->get(),
+            $users,
             AgencyProfile::with('user')->whereHas('user', fn (Builder $query) => $query->where('has_est8ads_access', true))->get(),
             $moves,
         );
+
+        // Attach per-user billing status so the Users table can offer a
+        // one-click "Mark as paid" switch on each individual account.
+        $payload['users'] = $this->withUserBilling($payload['users']);
 
         $discovery = $this->discoveryPresenter->panelState($this->discoverySettings);
         $discovery['requests'] = $payload['requests'];
@@ -73,6 +78,41 @@ class PanelData
         $payload['billingStats'] = $this->billingStats();
 
         return $payload;
+    }
+
+    /**
+     * Adds per-user billing status to the admin Users table so an admin can
+     * mark an individual's outstanding EST8ADS invoice as paid straight from
+     * the row. Agency accounts are billed separately and shown as "Free".
+     *
+     * @param  Collection<int, array<string, mixed>>  $users
+     * @return Collection<int, array<string, mixed>>
+     */
+    private function withUserBilling(Collection $users): Collection
+    {
+        $ids = $users->map(fn (array $user) => (int) Str::after($user['id'], 'U-'))->all();
+
+        $profiles = Profile::whereIn('user_id', $ids)
+            ->where('type', 'individual')
+            ->with(['invoices' => fn ($query) => $query->orderByDesc('issued_on')])
+            ->get()
+            ->keyBy('user_id');
+
+        return $users->map(function (array $user) use ($profiles) {
+            $profile = $profiles->get((int) Str::after($user['id'], 'U-'));
+
+            if (! $profile) {
+                return array_merge($user, ['billable' => false, 'paid' => false, 'invoice_id' => null]);
+            }
+
+            $latest = $profile->invoices->first();
+
+            return array_merge($user, [
+                'billable' => true,
+                'paid' => $latest?->status === 'paid',
+                'invoice_id' => ($latest && $latest->status !== 'paid') ? $latest->id : null,
+            ]);
+        });
     }
 
     /**

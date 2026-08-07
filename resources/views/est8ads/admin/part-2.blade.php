@@ -333,6 +333,7 @@
 <th>Role</th>
 <th>Moves</th>
 <th>Status</th>
+<th>Payment</th>
 <th>Joined</th>
 <th>Actions</th></tr></thead>
 <tbody id="usersTable"></tbody></table></div></section>

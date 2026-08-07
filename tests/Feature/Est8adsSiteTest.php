@@ -199,4 +199,20 @@ class Est8adsSiteTest extends TestCase
         $this->assertTrue($after['paid']);
         $this->assertNull($after['invoice_id']);
     }
+
+    public function test_admin_panel_renders_a_working_sign_out_form(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+            'email_verified_at' => now(),
+        ]);
+
+        $response = $this->actingAs($admin)->get('http://est8ads.com/admin');
+
+        $response->assertOk();
+        $response->assertSee('Sign out');
+        // The button must POST to the logout route (it was a dead <button> before).
+        $response->assertSee('action="' . route('est8ads.logout') . '"', false);
+    }
 }

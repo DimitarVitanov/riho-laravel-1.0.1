@@ -61,7 +61,7 @@
 <div>
 <strong>{{ auth()->user()->full_name }}</strong>
 <small>{{ auth()->user()->email }}</small></div></div>
-<button class="logout" data-logout>Sign out</button></div></aside>
+<form method="POST" action="{{ \App\Support\Est8adsRoute::to('logout') }}" style="margin:0">@csrf<button class="logout" type="submit">Sign out</button></form></div></aside>
 <main class="panel-main">
 <header class="panel-topbar">
 <div style="display:flex;align-items:center;gap:12px">

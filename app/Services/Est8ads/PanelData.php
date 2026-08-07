@@ -39,6 +39,18 @@ class PanelData
         $moves = $profile ? $profile->propertyMoves()->latest()->get() : collect();
 
         $payload = $this->payload($listings, collect(), $agencyProfile ? collect([$agencyProfile]) : collect(), $moves);
+
+        // Surface the member's own properties — the sell/buy items inside their
+        // moves — in "My properties". The agency-listing set above only covers
+        // sell listings published through the agency flow, so a private buyer's
+        // "wanted" property would otherwise never appear.
+        $ownProperties = \App\Models\Est8ads\Property::whereIn('property_move_id', $moves->pluck('id')->all())
+            ->latest()
+            ->get()
+            ->map(fn (\App\Models\Est8ads\Property $property) => $this->est8adsPropertyCard($property, $user->full_name));
+
+        $payload['properties'] = $ownProperties->concat($payload['properties'])->values();
+
         $payload['chainMatches'] = $this->chainMatches($moves->pluck('id')->all());
         $payload['memberMatches'] = $this->memberMatches($moves);
         $payload['chainTolerance'] = ChainDiscoveryDispatcher::defaultTolerance();
@@ -341,6 +353,40 @@ class PanelData
             // scoped to the current profile or to everyone for the admin.
             'payments' => [],
             'messages' => [],
+        ];
+    }
+
+    /**
+     * Maps one of the member's own EST8ADS properties (a sell or wanted item
+     * inside a property move) to the "My properties" card shape used by the
+     * panel JS.
+     *
+     * @return array<string, mixed>
+     */
+    private function est8adsPropertyCard(\App\Models\Est8ads\Property $property, ?string $ownerName): array
+    {
+        return [
+            'id' => 'R-' . $property->id,
+            'side' => $property->listing_type === 'wanted' ? 'buy' : 'sell',
+            'title' => $property->title ?: 'Untitled property',
+            'type' => Str::headline((string) $property->property_type),
+            'country' => data_get($property->metadata, 'country'),
+            'city' => $property->city,
+            'area' => $property->region,
+            'price' => (float) ($property->asking_price ?? 0),
+            'currency' => $property->currency ?: 'EUR',
+            'size' => (float) ($property->floor_area ?? 0),
+            'beds' => (int) ($property->bedrooms ?? 0),
+            'baths' => (int) ($property->bathrooms ?? 0),
+            'status' => ucfirst((string) $property->status),
+            'owner' => $ownerName,
+            'agency' => null,
+            'flexibility' => 0,
+            'url' => data_get($property->metadata, 'listing_url'),
+            'views' => 0,
+            'verified' => $property->status === 'active',
+            'description' => $property->description,
+            'lookingToBuy' => false,
         ];
     }
 

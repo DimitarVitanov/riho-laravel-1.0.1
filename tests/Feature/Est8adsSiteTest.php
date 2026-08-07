@@ -8,6 +8,7 @@ use App\Services\Est8ads\BillingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -226,6 +227,85 @@ class Est8adsSiteTest extends TestCase
             ->assertOk()
             ->assertSee('Your property move')
             ->assertDontSee('WAITING FOR PAYMENT');
+    }
+
+    public function test_user_panel_lists_the_members_own_wanted_property(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'investor',
+            'account_type' => 'investor',
+            'has_est8ads_access' => true,
+            'email_verified_at' => now(),
+        ]);
+        $profile = Profile::create([
+            'user_id' => $user->id,
+            'type' => 'individual',
+            'status' => 'active',
+            'email' => $user->email,
+            'public_reference' => 'EST-TEST-' . Str::random(6),
+        ]);
+        $move = \App\Models\Est8ads\PropertyMove::create([
+            'uuid' => (string) Str::uuid(),
+            'profile_id' => $profile->id,
+            'move_type' => 'buy',
+            'status' => 'active',
+            'title' => 'Wanted villa',
+            'submitted_at' => now(),
+        ]);
+        \App\Models\Est8ads\Property::create([
+            'uuid' => (string) Str::uuid(),
+            'property_move_id' => $move->id,
+            'reference' => 'BUY-' . Str::random(8),
+            'status' => 'active',
+            'listing_type' => 'wanted',
+            'property_type' => 'Villa',
+            'title' => 'Wanted villa in Split',
+            'city' => 'Split',
+            'asking_price' => 500000,
+            'currency' => 'EUR',
+        ]);
+
+        $data = app(\App\Services\Est8ads\PanelData::class)->forUser($user->fresh());
+        $card = collect($data['properties'])->firstWhere('title', 'Wanted villa in Split');
+
+        $this->assertNotNull($card, 'The member\'s own wanted property should appear in "My properties".');
+        $this->assertSame('buy', $card['side']);
+        $this->assertSame('Split', $card['city']);
+    }
+
+    public function test_adding_a_move_auto_enables_open_web_discovery_and_queues_ai_analysis(): void
+    {
+        Queue::fake();
+        // Production default; the test suite otherwise turns this off.
+        config(['est8ads.discovery.auto_enable_open_web' => true]);
+
+        $user = User::factory()->create([
+            'role' => 'investor',
+            'account_type' => 'investor',
+            'has_est8ads_access' => true,
+            'email_verified_at' => now(),
+        ]);
+        $profile = Profile::create([
+            'user_id' => $user->id,
+            'type' => 'individual',
+            'status' => 'active',
+            'email' => $user->email,
+            'public_reference' => 'EST-TEST-' . Str::random(6),
+        ]);
+
+        // Adding the move fires the analysis, exactly like Villa Bit AI does.
+        \App\Models\Est8ads\PropertyMove::create([
+            'uuid' => (string) Str::uuid(),
+            'profile_id' => $profile->id,
+            'move_type' => 'buy',
+            'status' => 'submitted',
+            'title' => 'Wanted villa',
+            'submitted_at' => now(),
+        ]);
+
+        // Open-web discovery was auto-provisioned and the AI search was queued.
+        $this->assertDatabaseHas('est8ads_internet_sources', ['domain' => 'open-web', 'enabled' => 1]);
+        Queue::assertPushed(\App\Jobs\Est8ads\DiscoverInternetProperties::class);
     }
 
     public function test_admin_users_payload_carries_billing_status_for_the_mark_as_paid_switch(): void

@@ -14,20 +14,28 @@ use Throwable;
  * done by a search engine, and the AI is used for what it is good at — turning
  * a buyer profile into good queries and judging the results afterwards.
  *
- * Backends, in order of preference:
+ * Every configured backend is queried and the results are merged, so a search
+ * draws on all available resources at once instead of only the first that
+ * answers:
  *  - Brave Search API   (BRAVE_SEARCH_API_KEY)
  *  - Google Custom Search (GOOGLE_CSE_KEY + GOOGLE_CSE_CX)
- *  - DuckDuckGo Lite HTML (no key, used as the default fallback)
+ *  - DuckDuckGo Lite HTML (no key, always available as a keyless fallback)
  */
 class WebSearchClient
 {
     private const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
 
     /**
+     * Query every available search backend and merge the results (de-duplicated,
+     * best-source first). Backends without an API key simply return nothing, so
+     * the keyless DuckDuckGo fallback always contributes.
+     *
      * @return array<int, string> Absolute result URLs, best first.
      */
     public function search(string $query, int $limit = 20): array
     {
+        $urls = [];
+
         foreach (['brave', 'google', 'duckduckgo'] as $backend) {
             $results = match ($backend) {
                 'brave' => $this->brave($query, $limit),
@@ -35,12 +43,12 @@ class WebSearchClient
                 'duckduckgo' => $this->duckduckgo($query, $limit),
             };
 
-            if ($results !== []) {
-                return $results;
+            foreach ($results as $url) {
+                $urls[$url] = true; // de-dupe across backends, keep first-seen order
             }
         }
 
-        return [];
+        return array_slice(array_keys($urls), 0, $limit);
     }
 
     /**

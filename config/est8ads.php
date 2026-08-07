@@ -35,6 +35,16 @@ return [
          * override a hard rule conflict.
          */
         'semantic_weight' => (float) env('EST8ADS_DISCOVERY_SEMANTIC_WEIGHT', 0.25),
+
+        /*
+         * When true, the first property move automatically turns on open-web
+         * discovery (AI query generation + multi-engine web search + scraper)
+         * so a listing is analyzed the moment it is added — mirroring how Villa
+         * Bit AI analyzes a listing on creation, with no manual setup. The
+         * actual searching runs on the "internet-discovery" queue, so a queue
+         * worker must be running. Disabled in the test suite.
+         */
+        'auto_enable_open_web' => (bool) env('EST8ADS_DISCOVERY_AUTO_ENABLE', true),
     ],
 
     'billing' => [

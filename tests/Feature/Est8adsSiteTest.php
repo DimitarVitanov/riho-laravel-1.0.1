@@ -308,6 +308,42 @@ class Est8adsSiteTest extends TestCase
         Queue::assertPushed(\App\Jobs\Est8ads\DiscoverInternetProperties::class);
     }
 
+    public function test_member_can_trigger_ai_analysis_from_the_dashboard(): void
+    {
+        Queue::fake();
+        config(['est8ads.discovery.auto_enable_open_web' => true]);
+
+        $user = User::factory()->create([
+            'role' => 'investor',
+            'account_type' => 'investor',
+            'has_est8ads_access' => true,
+            'email_verified_at' => now(),
+        ]);
+        $profile = Profile::create([
+            'user_id' => $user->id,
+            'type' => 'individual',
+            'status' => 'active',
+            'email' => $user->email,
+            'public_reference' => 'EST-TEST-' . Str::random(6),
+        ]);
+        // Paid, so the workspace is active (not on the payment gate).
+        app(BillingService::class)->markPaid($profile->invoices()->latest('issued_on')->firstOrFail());
+        \App\Models\Est8ads\PropertyMove::create([
+            'uuid' => (string) Str::uuid(),
+            'profile_id' => $profile->id,
+            'move_type' => 'buy',
+            'status' => 'active',
+            'title' => 'Wanted villa',
+        ]);
+
+        $this->actingAs($user)
+            ->postJson('http://est8ads.com/analyze')
+            ->assertOk()
+            ->assertJsonPath('queued', 1);
+
+        Queue::assertPushed(\App\Jobs\Est8ads\DiscoverInternetProperties::class);
+    }
+
     public function test_admin_users_payload_carries_billing_status_for_the_mark_as_paid_switch(): void
     {
         $individual = User::factory()->create([

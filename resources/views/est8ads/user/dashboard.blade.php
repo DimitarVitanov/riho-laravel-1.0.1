@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>EST8ADS User Panel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -191,7 +192,7 @@
 <div>
 <h2>AI property-chain analysis</h2>
 <p>Review complete chains that connect your move with other participants and properties.</p></div>
-<button class="btn primary" id="userRunAnalysis">Refresh analysis</button></div>
+<button class="btn primary" id="userRunAnalysis" data-analyze-url="{{ \App\Support\Est8adsRoute::to('moves.analyze') }}">Refresh analysis</button></div>
 @php
 $hasMatches = count($est8adsData['chainMatches'] ?? []) > 0;
 @endphp

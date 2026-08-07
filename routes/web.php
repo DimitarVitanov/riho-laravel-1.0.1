@@ -64,6 +64,7 @@ use App\Http\Controllers\Est8ads\AdminDashboardController as Est8adsAdminDashboa
 use App\Http\Controllers\Est8ads\AdminDiscoveryController as Est8adsAdminDiscoveryController;
 use App\Http\Controllers\Est8ads\AdminInvoiceController as Est8adsAdminInvoiceController;
 use App\Http\Controllers\Est8ads\AdminUserController as Est8adsAdminUserController;
+use App\Http\Controllers\Est8ads\AnalysisController as Est8adsAnalysisController;
 use App\Http\Controllers\Est8ads\AuthController as Est8adsAuthController;
 use App\Http\Controllers\Est8ads\ContactController as Est8adsContactController;
 use App\Http\Controllers\Est8ads\DashboardController as Est8adsDashboardController;
@@ -128,6 +129,7 @@ Route::domain('est8ads.com')->name('est8ads.')->group(function () use ($est8adsD
 
     Route::post('/logout', [Est8adsAuthController::class, 'destroy'])->middleware('auth')->name('logout');
     Route::post('/listings', [Est8adsListingController::class, 'store'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('listings.store');
+    Route::post('/analyze', [Est8adsAnalysisController::class, 'trigger'])->middleware(['auth', 'verified', 'platform:est8ads', 'throttle:10,1'])->name('moves.analyze');
     Route::get('/dashboard', [Est8adsDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('dashboard');
     Route::get('/admin', [Est8adsAdminDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads', 'role:admin'])->name('admin.dashboard');
     
@@ -168,6 +170,7 @@ Route::prefix('est8ads')->name('est8ads.local.')->group(function () use ($est8ad
 
     Route::post('/logout', [Est8adsAuthController::class, 'destroy'])->middleware('auth')->name('logout');
     Route::post('/listings', [Est8adsListingController::class, 'store'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('listings.store');
+    Route::post('/analyze', [Est8adsAnalysisController::class, 'trigger'])->middleware(['auth', 'verified', 'platform:est8ads', 'throttle:10,1'])->name('moves.analyze');
     Route::get('/dashboard', [Est8adsDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('dashboard');
     Route::get('/admin', [Est8adsAdminDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads', 'role:admin'])->name('admin.dashboard');
 
@@ -197,6 +200,7 @@ Route::prefix('est8ads-app')->name('est8ads.dev.')->group(function () {
 
     Route::post('/logout', [Est8adsAuthController::class, 'destroy'])->middleware('auth')->name('logout');
     Route::post('/listings', [Est8adsListingController::class, 'store'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('listings.store');
+    Route::post('/analyze', [Est8adsAnalysisController::class, 'trigger'])->middleware(['auth', 'verified', 'platform:est8ads', 'throttle:10,1'])->name('moves.analyze');
     Route::get('/dashboard', [Est8adsDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads'])->name('dashboard');
     Route::get('/admin', [Est8adsAdminDashboardController::class, 'index'])->middleware(['auth', 'verified', 'platform:est8ads', 'role:admin'])->name('admin.dashboard');
 });

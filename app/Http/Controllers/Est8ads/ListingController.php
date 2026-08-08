@@ -110,6 +110,12 @@ class ListingController extends Controller
             return ['id' => 'R-' . $property->id, 'type' => 'wanted'];
         });
 
-        return response()->json(['message' => 'Property saved successfully.', ...$result], 201);
+        // A "buy" side opens a property move, which fires internet discovery in
+        // the background — tell the user matches are on the way.
+        $message = ($result['type'] ?? null) === 'wanted'
+            ? 'Property saved — our AI is now searching the market. Potential matches will appear here in a few minutes.'
+            : 'Property saved successfully.';
+
+        return response()->json(['message' => $message, ...$result], 201);
     }
 }

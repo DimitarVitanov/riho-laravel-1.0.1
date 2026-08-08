@@ -50,7 +50,7 @@ class AnalysisController extends Controller
         }
 
         return response()->json([
-            'message' => 'AI analysis started — new matches will appear here shortly.',
+            'message' => 'AI analysis started — potential matches will appear here in a few minutes.',
             'queued' => $queued,
         ]);
     }

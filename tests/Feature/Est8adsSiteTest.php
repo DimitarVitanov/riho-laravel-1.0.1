@@ -292,6 +292,8 @@ class Est8adsSiteTest extends TestCase
             'email' => $user->email,
             'public_reference' => 'EST-TEST-' . Str::random(6),
         ]);
+        // Discovery only runs for paid members, so activate the account first.
+        app(BillingService::class)->markPaid($profile->invoices()->latest('issued_on')->firstOrFail());
 
         // Adding the move fires the analysis, exactly like Villa Bit AI does.
         \App\Models\Est8ads\PropertyMove::create([
@@ -306,6 +308,61 @@ class Est8adsSiteTest extends TestCase
         // Open-web discovery was auto-provisioned and the AI search was queued.
         $this->assertDatabaseHas('est8ads_internet_sources', ['domain' => 'open-web', 'enabled' => 1]);
         Queue::assertPushed(\App\Jobs\Est8ads\DiscoverInternetProperties::class);
+    }
+
+    public function test_est8ads_only_sell_listing_stays_in_est8ads_not_villabit(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'investor',
+            'account_type' => 'investor',
+            'has_est8ads_access' => true,
+            'has_villabit_access' => false,
+            'email_verified_at' => now(),
+        ]);
+        $profile = Profile::create([
+            'user_id' => $user->id,
+            'type' => 'individual',
+            'status' => 'active',
+            'email' => $user->email,
+            'public_reference' => 'EST-TEST-' . Str::random(6),
+        ]);
+        app(BillingService::class)->markPaid($profile->invoices()->latest('issued_on')->firstOrFail());
+
+        $this->actingAs($user)->postJson('http://est8ads.com/listings', [
+            'side' => 'sell',
+            'type' => 'Villa',
+            'title' => 'My Split Villa',
+            'country' => 'Croatia',
+            'city' => 'Split',
+            'price' => 500000,
+            'currency' => 'EUR',
+            'size' => 120,
+        ])->assertCreated();
+
+        // Stays inside EST8ADS, never written to the Villa Bit agency pool.
+        $this->assertDatabaseHas('est8ads_properties', ['title' => 'My Split Villa', 'listing_type' => 'sell']);
+        $this->assertDatabaseMissing('agency_listings', ['title' => 'My Split Villa']);
+    }
+
+    public function test_buyer_is_matched_against_another_members_sell_property(): void
+    {
+        // A member lists a property for sale inside EST8ADS.
+        $seller = User::factory()->create(['role' => 'investor', 'account_type' => 'investor', 'has_est8ads_access' => true, 'email_verified_at' => now()]);
+        $sellerProfile = Profile::create(['user_id' => $seller->id, 'type' => 'individual', 'status' => 'active', 'email' => $seller->email, 'public_reference' => 'EST-' . Str::random(6)]);
+        $sellMove = \App\Models\Est8ads\PropertyMove::create(['uuid' => (string) Str::uuid(), 'profile_id' => $sellerProfile->id, 'move_type' => 'sell', 'status' => 'active', 'title' => 'Selling apartment']);
+        $sell = \App\Models\Est8ads\Property::create(['uuid' => (string) Str::uuid(), 'property_move_id' => $sellMove->id, 'reference' => 'SELL-' . Str::random(8), 'status' => 'active', 'listing_type' => 'sell', 'property_type' => 'Apartment', 'title' => 'Sea-view apartment', 'city' => 'Split', 'asking_price' => 200000, 'currency' => 'EUR', 'floor_area' => 80]);
+
+        // A different member is looking to buy something similar (within 15%).
+        $buyer = User::factory()->create(['role' => 'investor', 'account_type' => 'investor', 'has_est8ads_access' => true, 'email_verified_at' => now()]);
+        $buyerProfile = Profile::create(['user_id' => $buyer->id, 'type' => 'individual', 'status' => 'active', 'email' => $buyer->email, 'public_reference' => 'EST-' . Str::random(6)]);
+        $buyMove = \App\Models\Est8ads\PropertyMove::create(['uuid' => (string) Str::uuid(), 'profile_id' => $buyerProfile->id, 'move_type' => 'buy', 'status' => 'active', 'title' => 'Wanted apartment']);
+        \App\Models\Est8ads\Property::create(['uuid' => (string) Str::uuid(), 'property_move_id' => $buyMove->id, 'reference' => 'BUY-' . Str::random(8), 'status' => 'active', 'listing_type' => 'wanted', 'property_type' => 'Apartment', 'title' => 'Wanted apartment in Split', 'city' => 'Split', 'asking_price' => 205000, 'currency' => 'EUR', 'floor_area' => 78]);
+
+        $data = app(\App\Services\Est8ads\PanelData::class)->forUser($buyer->fresh());
+        $match = collect($data['memberMatches'])->firstWhere('id', 'MEMBER-' . $sell->id);
+
+        $this->assertNotNull($match, "The buyer should be matched against another member's matching sell property.");
+        $this->assertSame('Split', $match['city']);
     }
 
     public function test_member_can_trigger_ai_analysis_from_the_dashboard(): void
@@ -341,6 +398,80 @@ class Est8adsSiteTest extends TestCase
             ->assertOk()
             ->assertJsonPath('queued', 1);
 
+        Queue::assertPushed(\App\Jobs\Est8ads\DiscoverInternetProperties::class);
+    }
+
+    public function test_unpaid_member_move_does_not_trigger_ai_discovery(): void
+    {
+        Queue::fake();
+        config(['est8ads.discovery.auto_enable_open_web' => true]);
+
+        $user = User::factory()->create([
+            'role' => 'investor',
+            'account_type' => 'investor',
+            'has_est8ads_access' => true,
+            'email_verified_at' => now(),
+        ]);
+        // Profile observer opens the first (unpaid) invoice — account not activated.
+        $profile = Profile::create([
+            'user_id' => $user->id,
+            'type' => 'individual',
+            'status' => 'active',
+            'email' => $user->email,
+            'public_reference' => 'EST-TEST-' . Str::random(6),
+        ]);
+
+        \App\Models\Est8ads\PropertyMove::create([
+            'uuid' => (string) Str::uuid(),
+            'profile_id' => $profile->id,
+            'move_type' => 'buy',
+            'status' => 'submitted',
+            'title' => 'Wanted villa',
+            'submitted_at' => now(),
+        ]);
+
+        // No AI credits spent before the first payment.
+        Queue::assertNotPushed(\App\Jobs\Est8ads\DiscoverInternetProperties::class);
+    }
+
+    public function test_confirming_first_payment_triggers_ai_discovery(): void
+    {
+        Queue::fake();
+        Notification::fake();
+        config(['est8ads.discovery.auto_enable_open_web' => true]);
+
+        $admin = User::factory()->create(['role' => 'admin', 'status' => 'active', 'email_verified_at' => now()]);
+        $user = User::factory()->create([
+            'role' => 'investor',
+            'account_type' => 'investor',
+            'has_est8ads_access' => true,
+            'has_villabit_access' => false,
+            'email_verified_at' => now(),
+        ]);
+        $profile = Profile::create([
+            'user_id' => $user->id,
+            'type' => 'individual',
+            'status' => 'active',
+            'email' => $user->email,
+            'public_reference' => 'EST-TEST-' . Str::random(6),
+        ]);
+        \App\Models\Est8ads\PropertyMove::create([
+            'uuid' => (string) Str::uuid(),
+            'profile_id' => $profile->id,
+            'move_type' => 'buy',
+            'status' => 'active',
+            'title' => 'Wanted villa',
+        ]);
+
+        // Nothing queued while unpaid.
+        Queue::assertNotPushed(\App\Jobs\Est8ads\DiscoverInternetProperties::class);
+
+        $invoice = $profile->invoices()->latest('issued_on')->firstOrFail();
+        $this->actingAs($admin)
+            ->postJson(route('est8ads.admin.invoices.mark-paid', $invoice))
+            ->assertOk();
+
+        // Payment confirmed → discovery now runs for the member's move.
         Queue::assertPushed(\App\Jobs\Est8ads\DiscoverInternetProperties::class);
     }
 

@@ -44,11 +44,18 @@ class ListingController extends Controller
             'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
         ]);
 
-        $result = DB::transaction(function () use ($request, $validated) {
-            if ($validated['side'] === 'sell') {
-                $agencyProfile = $request->user()->getEffectiveAgencyProfile();
-                abort_unless($agencyProfile, 422, 'An agency profile is required to publish a sell listing.');
+        $user = $request->user();
+        $agencyProfile = $user->getEffectiveAgencyProfile();
 
+        // A Villa Bit agency publishes its EST8ADS sell listing into the shared
+        // agency_listings pool — that is the deliberate Villa Bit <-> EST8ADS
+        // integration. Everyone else (private members and EST8ADS-only accounts)
+        // stays entirely inside EST8ADS, so nothing they create ever leaks into
+        // Villa Bit.
+        $sharedWithVillabit = $validated['side'] === 'sell' && $agencyProfile && $user->has_villabit_access;
+
+        if ($sharedWithVillabit) {
+            $result = DB::transaction(function () use ($request, $validated, $agencyProfile) {
                 $images = [];
                 foreach ($request->file('images', []) as $image) {
                     $images[] = $image->store('agency-listings/' . $agencyProfile->id, 'public');
@@ -72,49 +79,78 @@ class ListingController extends Controller
                 ]);
 
                 return ['id' => 'P-' . $listing->id, 'type' => 'listing'];
-            }
+            });
+        } else {
+            $result = DB::transaction(function () use ($request, $validated, $user) {
+                $profile = Profile::where('user_id', $user->id)->firstOrFail();
+                $isSell = $validated['side'] === 'sell';
 
-            $profile = Profile::where('user_id', $request->user()->id)->firstOrFail();
-            $move = PropertyMove::create([
-                'uuid' => (string) Str::uuid(),
-                'profile_id' => $profile->id,
-                'agency_id' => $profile->agency_id,
-                'move_type' => 'buy',
-                'status' => 'active',
-                'title' => $validated['title'],
-                'target_location' => $validated['city'] . ', ' . $validated['country'],
-                'budget_max' => $validated['price'],
-                'currency' => $validated['currency'],
-                'submitted_at' => now(),
-            ]);
-            $property = Property::create([
-                'uuid' => (string) Str::uuid(),
-                'agency_id' => $profile->agency_id,
-                'property_move_id' => $move->id,
-                'reference' => 'BUY-' . strtoupper(Str::random(12)),
-                'status' => 'active',
-                'listing_type' => 'wanted',
-                'property_type' => $validated['type'],
-                'title' => $validated['title'],
-                'description' => $validated['description'] ?? null,
-                'city' => $validated['city'],
-                'region' => $validated['area'] ?? null,
-                'asking_price' => $validated['price'],
-                'currency' => $validated['currency'],
-                'floor_area' => $validated['size'] ?? null,
-                'bedrooms' => $validated['beds'] ?? null,
-                'bathrooms' => $validated['baths'] ?? null,
-                'metadata' => ['country' => $validated['country'], 'source' => 'est8ads_panel'],
-            ]);
+                $move = PropertyMove::create([
+                    'uuid' => (string) Str::uuid(),
+                    'profile_id' => $profile->id,
+                    'agency_id' => $profile->agency_id,
+                    'move_type' => $isSell ? 'sell' : 'buy',
+                    'status' => 'active',
+                    'title' => $validated['title'],
+                    'current_location' => $isSell ? $validated['city'] . ', ' . $validated['country'] : null,
+                    'target_location' => $isSell ? null : $validated['city'] . ', ' . $validated['country'],
+                    'budget_max' => $isSell ? null : $validated['price'],
+                    'currency' => $validated['currency'],
+                    // Only a "buy" needs the internet searched; a sell just joins
+                    // the pool so other members' buys can match against it.
+                    'submitted_at' => $isSell ? null : now(),
+                ]);
 
-            return ['id' => 'R-' . $property->id, 'type' => 'wanted'];
-        });
+                $property = Property::create([
+                    'uuid' => (string) Str::uuid(),
+                    'agency_id' => $profile->agency_id,
+                    'property_move_id' => $move->id,
+                    'reference' => ($isSell ? 'SELL-' : 'BUY-') . strtoupper(Str::random(12)),
+                    'status' => 'active',
+                    'listing_type' => $isSell ? 'sell' : 'wanted',
+                    'property_type' => $validated['type'],
+                    'title' => $validated['title'],
+                    'description' => $validated['description'] ?? null,
+                    'city' => $validated['city'],
+                    'region' => $validated['area'] ?? null,
+                    'asking_price' => $validated['price'],
+                    'currency' => $validated['currency'],
+                    'floor_area' => $validated['size'] ?? null,
+                    'bedrooms' => $validated['beds'] ?? null,
+                    'bathrooms' => $validated['baths'] ?? null,
+                    'metadata' => [
+                        'country' => $validated['country'],
+                        'source' => 'est8ads_panel',
+                        'listing_url' => $validated['url'] ?? null,
+                    ],
+                ]);
 
-        // A "buy" side opens a property move, which fires internet discovery in
-        // the background — tell the user matches are on the way.
-        $message = ($result['type'] ?? null) === 'wanted'
-            ? 'Property saved — our AI is now searching the market. Potential matches will appear here in a few minutes.'
-            : 'Property saved successfully.';
+                foreach ($request->file('images', []) as $index => $photo) {
+                    $path = $photo->store('est8ads/properties/' . $property->uuid, 'public');
+                    DB::table('est8ads_property_media')->insert([
+                        'property_id' => $property->id,
+                        'type' => 'image',
+                        'disk' => 'public',
+                        'path' => $path,
+                        'title' => $photo->getClientOriginalName(),
+                        'mime_type' => $photo->getMimeType(),
+                        'size_bytes' => $photo->getSize(),
+                        'sort_order' => $index,
+                        'is_primary' => $index === 0,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+
+                return ['id' => ($isSell ? 'S-' : 'R-') . $property->id, 'type' => $isSell ? 'sell' : 'wanted'];
+            });
+        }
+
+        $message = match ($result['type']) {
+            'wanted' => 'Property saved — our AI is now searching the market. Potential matches will appear here in a few minutes.',
+            'sell' => 'Property saved — it is now published on EST8ADS and matched against interested buyers.',
+            default => 'Property saved successfully.',
+        };
 
         return response()->json(['message' => $message, ...$result], 201);
     }

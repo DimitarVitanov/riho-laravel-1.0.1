@@ -13,6 +13,7 @@
   <script type="application/ld+json">
   {"@@context":"https://schema.org","@@type":"FAQPage","name":"EST8ADS Frequently Asked Questions","url":"{{ \App\Support\Est8adsRoute::to('home') }}#faq","description":"Answers about EST8ADS property chains, Missing Link Ads, AI analysis, agencies, privacy, pricing, fees and transaction risks."}
   </script>
+    @include('est8ads.partials.favicon')
 </head>
 <body>
   @php

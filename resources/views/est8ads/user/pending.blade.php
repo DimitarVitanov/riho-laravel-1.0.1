@@ -19,6 +19,7 @@
 .pending-screen .login-chain span.active{border-color:var(--navy);background:var(--navy);color:#fff}
 .pending-screen .login-chain i{background:var(--line)}
 </style>
+    @include('est8ads.partials.favicon')
 </head>
 <body data-panel-role="user">
 <div class="pending-screen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg,#0e1420)">

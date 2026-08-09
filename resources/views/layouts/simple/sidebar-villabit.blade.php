@@ -432,6 +432,19 @@
                     </a>
                 </li>
 
+                @if($user->canAccessPlatform('est8ads'))
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <form action="{{ route('est8ads.sso.start') }}" method="POST" target="_blank" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="sidebar-link link-nav menu-link" style="width:100%;border:0;background:transparent;text-align:left;">
+                            <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
+                            <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
+                            <span>Multiple Sales Chain</span>
+                        </button>
+                    </form>
+                </li>
+                @endif
+
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.villa-ready.index') }}">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
@@ -439,21 +452,6 @@
                         <span>Villa Bit Estate Projects</span>
                     </a>
                 </li>
-
-                @if($user->canAccessPlatform('est8ads'))
-                <li class="sidebar-main-title"><div><h6>Ads</h6></div></li>
-
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <form action="{{ route('est8ads.sso.start') }}" method="POST" target="_blank" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="sidebar-link link-nav menu-link" style="width:100%;border:0;background:transparent;text-align:left;">
-                            <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
-                            <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
-                            <span style="color:white">Multiple Sales Chain</span>
-                        </button>
-                    </form>
-                </li>
-                @endif
 
                 <li class="sidebar-main-title"><div><h6>{{ __('messages.settings') }}</h6></div></li>
 

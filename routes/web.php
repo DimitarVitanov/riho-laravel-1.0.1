@@ -242,9 +242,29 @@ Route::get('/', function () {
     return redirect('https://villabit.ai/');
 });
 
-// Public Lead Magnet Capture Form
-Route::get('/lm/{agency}', [App\Http\Controllers\Frontend\LeadMagnetController::class, 'show'])->name('lead-magnet.show');
-Route::post('/lm/{agency}', [App\Http\Controllers\Frontend\LeadMagnetController::class, 'store'])->name('lead-magnet.store');
+// Public Lead Magnet Capture Form.
+//
+// These forms are embedded in SEO / authority / campaign pages served from OTHER
+// origins (agency custom domains, est8ads.com, realestate.taxi, or static pages
+// pushed to the agency's own server via PageSftpUploader), so the form POSTs
+// cross-site to app.villabit.ai. With SESSION_SAME_SITE=lax the session cookie is
+// NOT sent on a cross-site POST, so every submit arrived with no session: Laravel
+// started a brand-new session each time ("uvijek nova sesija") and the
+// session-bound CSRF token could never match (419, lost leads).
+//
+// The endpoint holds no server-side session state (it only writes a Lead), so it
+// runs WITHOUT the session/CSRF stack. Because session-based CSRF cannot work for
+// an anonymous cross-origin form, spam protection is handled session-free inside
+// LeadMagnetController (honeypot + Google reCAPTCHA) instead.
+Route::withoutMiddleware([
+    \Illuminate\Session\Middleware\StartSession::class,
+    \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+    \App\Http\Middleware\SetUserLanguage::class,
+])->group(function () {
+    Route::get('/lm/{agency}', [App\Http\Controllers\Frontend\LeadMagnetController::class, 'show'])->name('lead-magnet.show');
+    Route::post('/lm/{agency}', [App\Http\Controllers\Frontend\LeadMagnetController::class, 'store'])->name('lead-magnet.store');
+});
 
 // Public Agency Sitemap XML — by ID
 Route::get('/sitemap/agency/{agencyId}.xml', [AgencySitemapController::class, 'show'])->name('agency.sitemap');

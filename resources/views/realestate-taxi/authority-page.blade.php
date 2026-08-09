@@ -586,6 +586,8 @@ textarea { min-height: 120px; resize: vertical; }
               </p>
               <form action="{{ route('lead-magnet.store', $profile->id ?? 1) }}" method="POST">
                 @csrf
+                {{-- Honeypot: leave empty. Real users never see it; bots fill it (see LeadMagnetController). --}}
+                <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
                 <input type="hidden" name="source" value="ai_authority_page">
                 <input type="hidden" name="page_id" value="{{ $page->id }}">
                 <input type="hidden" name="page_location" value="{{ $fullLocation }}">

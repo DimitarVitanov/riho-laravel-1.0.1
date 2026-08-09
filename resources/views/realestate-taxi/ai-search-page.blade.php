@@ -1629,8 +1629,13 @@
                             <div>
                                 <h3>Ask which route fits this property goal</h3>
                                 <p class="form-subtitle">Fill this form if {{ $propertyName }} is interesting, but you want to understand whether direct purchase, similar villas, rental-managed ownership, or a lower-entry investor route makes more sense.</p>
-                                <form class="investor-form" action="#" method="POST">
+                                <form class="investor-form" action="{{ route('lead-magnet.store', $profile->id ?? 1) }}" method="POST">
                                     @csrf
+                                    {{-- Honeypot: leave empty. Real users never see it; bots fill it (see LeadMagnetController). --}}
+                                    <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
+                                    <input type="hidden" name="source" value="ai_search_page">
+                                    <input type="hidden" name="page_id" value="{{ $page->id }}">
+                                    <input type="hidden" name="page_location" value="{{ $fullLocation }}">
                                     <input type="text" name="full_name" placeholder="Full name" required>
                                     <input type="email" name="email" placeholder="Email" required>
                                     <input type="text" name="phone" placeholder="Phone / WhatsApp">

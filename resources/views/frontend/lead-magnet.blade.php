@@ -50,9 +50,19 @@
             object-fit: cover;
             margin-bottom: 20px;
         }
+        /* Honeypot: visually hidden, off-screen, and out of the tab order. */
+        .lead-hp {
+            position: absolute !important;
+            left: -9999px !important;
+            top: -9999px !important;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
+    @php($recaptchaSiteKey = config('services.recaptcha.key'))
     <div class="lead-form-card">
         <div class="text-center">
             @if($agencyProfile->logo)
@@ -66,90 +76,107 @@
             <p class="text-muted mb-4">Get exclusive property opportunities delivered to your inbox</p>
         </div>
 
-        @if(session('success'))
+        @if($submitted)
             <div class="alert alert-success">
-                <i class="fa fa-check-circle me-2"></i>{{ session('success') }}
+                <i class="fa fa-check-circle me-2"></i>Thank you for your interest! We will contact you shortly.
             </div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('lead-magnet.store', $agencyProfile->id) }}">
-            @csrf
-            
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">First Name *</label>
-                    <input type="text" name="first_name" class="form-control" value="{{ old('first_name') }}" required>
+        @else
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Last Name *</label>
-                    <input type="text" name="last_name" class="form-control" value="{{ old('last_name') }}" required>
+            @endif
+
+            {{-- This endpoint is stateless (see routes/web.php), so there is no
+                 @csrf token here — spam is handled by the honeypot + reCAPTCHA below. --}}
+            <form method="POST" action="{{ route('lead-magnet.store', $agencyProfile->id) }}" autocomplete="off">
+
+                {{-- Honeypot: leave empty. Real users never see this; bots tend to fill it. --}}
+                <div class="lead-hp" aria-hidden="true">
+                    <label>Website
+                        <input type="text" name="website" tabindex="-1" autocomplete="off">
+                    </label>
                 </div>
-            </div>
 
-            <div class="mb-3">
-                <label class="form-label">Email Address *</label>
-                <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
-            </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">First Name *</label>
+                        <input type="text" name="first_name" class="form-control" value="{{ $old['first_name'] ?? '' }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Last Name *</label>
+                        <input type="text" name="last_name" class="form-control" value="{{ $old['last_name'] ?? '' }}" required>
+                    </div>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Phone Number</label>
-                <input type="tel" name="phone" class="form-control" value="{{ old('phone') }}">
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" name="email" class="form-control" value="{{ $old['email'] ?? '' }}" required>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Country</label>
-                <select name="country" class="form-select">
-                    <option value="">Select country...</option>
-                    <option value="Croatia" {{ old('country') == 'Croatia' ? 'selected' : '' }}>Croatia</option>
-                    <option value="Germany" {{ old('country') == 'Germany' ? 'selected' : '' }}>Germany</option>
-                    <option value="Austria" {{ old('country') == 'Austria' ? 'selected' : '' }}>Austria</option>
-                    <option value="Switzerland" {{ old('country') == 'Switzerland' ? 'selected' : '' }}>Switzerland</option>
-                    <option value="Slovenia" {{ old('country') == 'Slovenia' ? 'selected' : '' }}>Slovenia</option>
-                    <option value="Other" {{ old('country') == 'Other' ? 'selected' : '' }}>Other</option>
-                </select>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" name="phone" class="form-control" value="{{ $old['phone'] ?? '' }}">
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">I am a...</label>
-                <select name="investor_type" class="form-select">
-                    <option value="">Select type...</option>
-                    <option value="cash_buyer" {{ old('investor_type') == 'cash_buyer' ? 'selected' : '' }}>Cash Buyer</option>
-                    <option value="mortgage_buyer" {{ old('investor_type') == 'mortgage_buyer' ? 'selected' : '' }}>Mortgage Buyer</option>
-                    <option value="investor" {{ old('investor_type') == 'investor' ? 'selected' : '' }}>Investor</option>
-                    <option value="other" {{ old('investor_type') == 'other' ? 'selected' : '' }}>Other</option>
-                </select>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Country</label>
+                    <select name="country" class="form-select">
+                        <option value="">Select country...</option>
+                        <option value="Croatia" {{ ($old['country'] ?? '') == 'Croatia' ? 'selected' : '' }}>Croatia</option>
+                        <option value="Germany" {{ ($old['country'] ?? '') == 'Germany' ? 'selected' : '' }}>Germany</option>
+                        <option value="Austria" {{ ($old['country'] ?? '') == 'Austria' ? 'selected' : '' }}>Austria</option>
+                        <option value="Switzerland" {{ ($old['country'] ?? '') == 'Switzerland' ? 'selected' : '' }}>Switzerland</option>
+                        <option value="Slovenia" {{ ($old['country'] ?? '') == 'Slovenia' ? 'selected' : '' }}>Slovenia</option>
+                        <option value="Other" {{ ($old['country'] ?? '') == 'Other' ? 'selected' : '' }}>Other</option>
+                    </select>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Investment Budget (€)</label>
-                <input type="number" name="interest_amount" class="form-control" value="{{ old('interest_amount') }}" placeholder="e.g. 500000">
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">I am a...</label>
+                    <select name="investor_type" class="form-select">
+                        <option value="">Select type...</option>
+                        <option value="cash_buyer" {{ ($old['investor_type'] ?? '') == 'cash_buyer' ? 'selected' : '' }}>Cash Buyer</option>
+                        <option value="mortgage_buyer" {{ ($old['investor_type'] ?? '') == 'mortgage_buyer' ? 'selected' : '' }}>Mortgage Buyer</option>
+                        <option value="investor" {{ ($old['investor_type'] ?? '') == 'investor' ? 'selected' : '' }}>Investor</option>
+                        <option value="other" {{ ($old['investor_type'] ?? '') == 'other' ? 'selected' : '' }}>Other</option>
+                    </select>
+                </div>
 
-            <div class="mb-4">
-                <label class="form-label">Message</label>
-                <textarea name="message" class="form-control" rows="3" placeholder="Tell us what you're looking for...">{{ old('message') }}</textarea>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Investment Budget (€)</label>
+                    <input type="number" name="interest_amount" class="form-control" value="{{ $old['interest_amount'] ?? '' }}" placeholder="e.g. 500000">
+                </div>
 
-            <button type="submit" class="btn btn-primary w-100">
-                <i class="fa fa-paper-plane me-2"></i>Send Request
-            </button>
+                <div class="mb-4">
+                    <label class="form-label">Message</label>
+                    <textarea name="message" class="form-control" rows="3" placeholder="Tell us what you're looking for...">{{ $old['message'] ?? '' }}</textarea>
+                </div>
 
-            <p class="text-center text-muted small mt-3 mb-0">
-                <i class="fa fa-lock me-1"></i>Your information is secure and will never be shared.
-            </p>
-        </form>
+                @if($recaptchaSiteKey)
+                    <div class="mb-3 d-flex justify-content-center">
+                        <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div>
+                    </div>
+                @endif
+
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fa fa-paper-plane me-2"></i>Send Request
+                </button>
+
+                <p class="text-center text-muted small mt-3 mb-0">
+                    <i class="fa fa-lock me-1"></i>Your information is secure and will never be shared.
+                </p>
+            </form>
+        @endif
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @if($recaptchaSiteKey)
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    @endif
 </body>
 </html>

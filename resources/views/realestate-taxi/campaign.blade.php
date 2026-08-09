@@ -1332,6 +1332,8 @@ textarea { min-height: 100px; resize: vertical; }
 
               <form class="form" style="margin-top:14px;" method="POST" action="{{ route('lead-magnet.store', $agencyProfile->id ?? 1) }}">
                 @csrf
+                {{-- Honeypot: leave empty. Real users never see it; bots fill it (see LeadMagnetController). --}}
+                <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
                 <input type="hidden" name="source" value="local_seo_campaign">
                 <input type="hidden" name="campaign_id" value="{{ $campaign->id }}">
                 <input type="hidden" name="campaign_city" value="{{ $campaign->primary_city }}">

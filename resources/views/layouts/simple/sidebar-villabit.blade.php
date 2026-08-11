@@ -162,8 +162,6 @@
                     </a>
                 </li>
 
-                <li class="sidebar-main-title"><div><h6>Ads</h6></div></li>
-
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
                     <form action="{{ route('est8ads.sso.start') }}" method="POST" target="_blank" style="margin:0;">
                         @csrf

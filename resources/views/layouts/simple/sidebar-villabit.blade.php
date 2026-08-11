@@ -480,15 +480,19 @@
                 </li>
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
-                    <a class="sidebar-link sidebar-title {{ request()->routeIs('agency.affiliate.*') || request()->routeIs('agency.villa-ready.*') ? 'active' : '' }}" href="javascript:void(0)">
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.affiliate.index') }}">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
                         <span>{{ __('messages.affiliate') }}</span>
                     </a>
-                    <ul class="sidebar-submenu" style="{{ request()->routeIs('agency.affiliate.*') || request()->routeIs('agency.villa-ready.*') ? 'display: block;' : '' }}">
-                        <li><a href="{{ route('agency.affiliate.index') }}" class="{{ request()->routeIs('agency.affiliate.*') ? 'active' : '' }}">Overview</a></li>
-                        <li><a href="{{ route('agency.villa-ready.index') }}" class="{{ request()->routeIs('agency.villa-ready.*') ? 'active' : '' }}">Villa Bit Estate Projects</a></li>
-                    </ul>
+                </li>
+
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i>
+                    <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.villa-ready.index') }}">
+                        <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
+                        <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
+                        <span>Villa Bit Estate Projects</span>
+                    </a>
                 </li>
 
                 {{-- Manager viewing agency in read-only mode - show their URLs & Commissions --}}

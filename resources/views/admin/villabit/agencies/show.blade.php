@@ -150,10 +150,11 @@
                     @php
                         $viewOnlyManager = \App\Models\ManagerProfile::where('view_agency_user_id', $user->id)
                             ->where('can_view_agency_readonly', true)
+                            ->whereHas('user')
                             ->with('user')
                             ->first();
                     @endphp
-                    @if($viewOnlyManager)
+                    @if($viewOnlyManager && $viewOnlyManager->user)
                         <p><strong>Assigned Manager:</strong> {{ $viewOnlyManager->user->first_name }} {{ $viewOnlyManager->user->last_name }} ({{ $viewOnlyManager->user->email }})</p>
                         <form action="{{ route('admin.villabit.agencies.remove-view-only-manager', $user) }}" method="POST" class="d-inline">
                             @csrf

@@ -147,9 +147,24 @@ class CompetitorIntelligenceController extends Controller
 
     public function create()
     {
-        $countries = DB::table('countries')->orderBy('iso_3166_2')->get(['name', 'iso_3166_2']);
+        $countries = $this->countryOptions();
 
         return view('competitor-intelligence.competitors.create', compact('countries'));
+    }
+
+    /**
+     * Countries for the picker: clean common name as both value and label,
+     * ordered alphabetically by that common name.
+     */
+    private function countryOptions()
+    {
+        return DB::table('countries')->get(['name', 'iso_3166_2'])
+            ->map(function ($country) {
+                $country->common_name = \App\Helpers\Helpers::commonCountryName($country->name);
+                return $country;
+            })
+            ->sortBy('common_name', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values();
     }
 
     public function store(Request $request)
@@ -158,6 +173,7 @@ class CompetitorIntelligenceController extends Controller
             'name' => 'required|string|max:255',
             'website_url' => 'required|url|max:2048',
             'legal_name' => 'nullable|string|max:255',
+            'primary_market' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:100',
             'google_place_id' => 'nullable|string|max:255',
             'google_maps_url' => 'nullable|url|max:2048',
@@ -268,7 +284,7 @@ class CompetitorIntelligenceController extends Controller
         $this->authorizeCompetitor($competitor);
 
         $competitor->load(['aliases', 'identifiers', 'sourceSettings']);
-        $countries = DB::table('countries')->orderBy('iso_3166_2')->get(['name', 'iso_3166_2']);
+        $countries = $this->countryOptions();
 
         return view('competitor-intelligence.competitors.edit', compact('competitor', 'countries'));
     }
@@ -280,6 +296,7 @@ class CompetitorIntelligenceController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'legal_name' => 'nullable|string|max:255',
+            'primary_market' => 'nullable|string|max:255',
             'country' => 'nullable|string|max:100',
             'website_url' => 'required|url|max:2048',
             'google_place_id' => 'nullable|string|max:255',

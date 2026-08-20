@@ -31,6 +31,12 @@ label{font-weight:700;font-size:11px;margin-bottom:6px;display:block}
 .small{font-size:11px}
 .muted{color:#747b87}
 @media(max-width:900px){.vb-grid-3,.vb-grid-2{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.check-grid{grid-template-columns:1fr}}
+.pm-field{position:relative}
+.pm-suggest{position:absolute;top:100%;left:0;right:0;z-index:50;background:#fff;border:1px solid #d7dbe1;border-top:none;border-radius:0 0 7px 7px;max-height:260px;overflow-y:auto;box-shadow:0 8px 20px rgba(18,24,40,.12)}
+.pm-suggest button{display:block;width:100%;text-align:left;background:#fff;border:none;border-bottom:1px solid #eef0f3;padding:9px 11px;font-size:12px;cursor:pointer;color:#2b323d}
+.pm-suggest button:last-child{border-bottom:none}
+.pm-suggest button:hover{background:#f2f6ff}
+.pm-loading{padding:9px 11px;font-size:12px;color:#8a92a0}
 </style>
 @endpush
 
@@ -54,11 +60,18 @@ label{font-weight:700;font-size:11px;margin-bottom:6px;display:block}
   <div class="vb-card" style="grid-column:span 3">
     <div class="vb-card-head"><h2>1. Competitor Identity</h2><span class="badge-soft b-blue">REQUIRED</span></div>
     <div class="vb-card-body">
-      <div class="form-group"><label>Competitor / Agency Name</label><input class="form-control" name="name" value="{{ old('name') }}" placeholder="e.g. Viga Nekretnine" required></div>
+      <div class="form-row">
+        <div><label>Competitor / Agency Name</label><input class="form-control" name="name" value="{{ old('name') }}" placeholder="e.g. Viga Nekretnine" required></div>
+        <div class="pm-field">
+          <label>Primary Market</label>
+          <input class="form-control" id="pmSearch" name="primary_market" value="{{ old('primary_market') }}" placeholder="Search city, area or street…" autocomplete="off">
+          <div id="pmSuggestions" class="pm-suggest" style="display:none"></div>
+        </div>
+      </div>
       <div class="form-group"><label>Main Website URL</label><input class="form-control" name="website_url" value="{{ old('website_url') }}" placeholder="https://www.competitor.com" required></div>
       <div class="form-row">
         <div><label>Legal Company Name (optional)</label><input class="form-control" name="legal_name" value="{{ old('legal_name') }}" placeholder="e.g. Example Real Estate d.o.o."></div>
-        <div><label>Country</label><select class="form-control" name="country"><option value="" disabled {{ old('country') ? '' : 'selected' }}>Select country</option>@foreach($countries as $country)<option value="{{ $country->name }}" {{ old('country') === $country->name ? 'selected' : '' }}>{{ $country->iso_3166_2 }} — {{ $country->name }}</option>@endforeach</select></div>
+        <div><label>Country</label><select class="form-control" name="country"><option value="" disabled {{ old('country') ? '' : 'selected' }}>Select country</option>@foreach($countries as $country)<option value="{{ $country->common_name }}" {{ old('country') === $country->common_name ? 'selected' : '' }}>{{ $country->common_name }}</option>@endforeach</select></div>
       </div>
       <div class="form-group"><label>Brand Variations / Aliases</label><input class="form-control" name="aliases" value="{{ old('aliases') }}" placeholder="Separate aliases with commas"></div>
       <div class="notice">Villa Bit AI uses identity signals such as brand name, legal name, domain, phones, emails and aliases to match the same competitor across different websites and external sources.</div>
@@ -139,4 +152,57 @@ label{font-weight:700;font-size:11px;margin-bottom:6px;display:block}
 </div>
 </form>
 </div>
+
+<script>
+// Primary Market autocomplete — searches every real place via OpenStreetMap Nominatim.
+(function () {
+    var input = document.getElementById('pmSearch');
+    var box = document.getElementById('pmSuggestions');
+    if (!input || !box) return;
+
+    var timer = null;
+
+    function hideBox() { box.style.display = 'none'; box.innerHTML = ''; }
+
+    input.addEventListener('input', function () {
+        var q = input.value.trim();
+        clearTimeout(timer);
+        if (q.length < 3) { hideBox(); return; }
+        box.style.display = 'block';
+        box.innerHTML = '<div class="pm-loading">Searching…</div>';
+        timer = setTimeout(function () {
+            fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=8&q=' + encodeURIComponent(q), {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (results) {
+                box.innerHTML = '';
+                if (!results || !results.length) { hideBox(); return; }
+                results.slice(0, 8).forEach(function (item) {
+                    var addr = item.address || {};
+                    var place = addr.city || addr.town || addr.village || addr.municipality ||
+                                addr.suburb || addr.neighbourhood || addr.quarter ||
+                                item.display_name.split(',')[0];
+                    var country = addr.country || '';
+                    var label = place + (country ? ', ' + country : '');
+                    var btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.textContent = item.display_name;
+                    btn.addEventListener('click', function () {
+                        input.value = label;
+                        hideBox();
+                    });
+                    box.appendChild(btn);
+                });
+                box.style.display = 'block';
+            })
+            .catch(function () { hideBox(); });
+        }, 300);
+    });
+
+    document.addEventListener('click', function (e) {
+        if (e.target !== input && !box.contains(e.target)) hideBox();
+    });
+})();
+</script>
 @endsection

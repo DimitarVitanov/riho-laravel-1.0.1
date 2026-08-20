@@ -403,10 +403,10 @@
                     <a class="sidebar-link sidebar-title {{ request()->routeIs('agency.competitor-intelligence.*') ? 'active' : '' }}" href="javascript:void(0)">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/05_competitor_scan_radar.svg') }}" alt="">
-                        <span>Competitor Intelligence </span>
+                        <span>Competitors</span>
                     </a>
                     <ul class="sidebar-submenu" style="{{ request()->routeIs('agency.competitor-intelligence.*') ? 'display: block;' : '' }}">
-                        <li><a href="{{ route('agency.competitor-intelligence.competitors.index') }}" class="{{ request()->routeIs('agency.competitor-intelligence.competitors.*') ? 'active' : '' }}">Competitors</a></li>
+                        <li><a href="{{ route('agency.competitor-intelligence.competitors.create') }}" class="{{ request()->routeIs('agency.competitor-intelligence.competitors.*') ? 'active' : '' }}">Add Competitor</a></li>
                         <li><a href="{{ route('agency.competitor-intelligence.today') }}" class="{{ request()->routeIs('agency.competitor-intelligence.today') ? 'active' : '' }}">Today</a></li>
                         <li><a href="{{ route('agency.competitor-intelligence.properties.index') }}" class="{{ request()->routeIs('agency.competitor-intelligence.properties.*') ? 'active' : '' }}">Property Intelligence</a></li>
                         <li><a href="{{ route('agency.competitor-intelligence.reputation.index') }}" class="{{ request()->routeIs('agency.competitor-intelligence.reputation.*') ? 'active' : '' }}">Reviews & Reputation</a></li>

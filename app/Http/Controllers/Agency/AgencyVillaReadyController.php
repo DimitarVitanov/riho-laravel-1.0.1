@@ -45,6 +45,6 @@ class AgencyVillaReadyController extends Controller
                 ->sum('commission_amount'),
         ];
 
-        return view('agency.villa-ready.index', compact('publications', 'referrals', 'stats'));
+        return view('agency.villa-ready.index', compact('publications', 'referrals', 'stats', 'profile'));
     }
 }

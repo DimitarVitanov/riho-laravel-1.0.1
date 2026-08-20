@@ -17,6 +17,8 @@
 .vrc-small{font-size:12px;color:#6c757d}
 .property-card{border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:16px}
 .property-card img{width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:12px}
+.page-body-wrapper a.vrc-page-link{font-size:12px;color:#2563eb !important;text-decoration:underline !important;word-break:break-all}
+.page-body-wrapper a.vrc-page-link:hover{color:#1d4ed8 !important;text-decoration:none !important}
 </style>
 
 <div class="container-fluid">
@@ -79,7 +81,13 @@
                             <code style="font-size:11px">{{ $pub->affiliate_code }}</code>
                         </div>
                         <div class="mt-2">
-                            <small class="text-muted">Page: {{ $pub->page_slug }}</small>
+                            @php
+                                $vrcDomain = $profile->custom_domain
+                                    ? rtrim($profile->custom_domain, '/')
+                                    : rtrim(parse_url(config('app.url'), PHP_URL_HOST) ?? config('app.url'), '/');
+                                $vrcUrl = 'https://' . $vrcDomain . '/' . ltrim($pub->page_slug, '/');
+                            @endphp
+                            <a href="{{ $vrcUrl }}" target="_blank" rel="noopener noreferrer" class="vrc-page-link">{{ $vrcUrl }}</a>
                         </div>
                     </div>
                 </div>

@@ -23,7 +23,7 @@
 <!-- Toastr css -->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/toastr.min.css')}}">
 <!-- Villa Bit AI Panel css -->
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/villabit-panel.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/villabit-panel.css') }}?v={{ @filemtime(public_path('assets/css/villabit-panel.css')) ?: time() }}">
 <!-- Page-specific CSS (loaded last to override) -->
 @yield('css')
 @stack('css')

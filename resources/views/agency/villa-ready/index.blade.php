@@ -17,8 +17,6 @@
 .vrc-small{font-size:12px;color:#6c757d}
 .property-card{border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:16px}
 .property-card img{width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:12px}
-.page-body-wrapper a.vrc-page-link{font-size:12px;color:#2563eb !important;text-decoration:underline !important;word-break:break-all}
-.page-body-wrapper a.vrc-page-link:hover{color:#1d4ed8 !important;text-decoration:none !important}
 </style>
 
 <div class="container-fluid">

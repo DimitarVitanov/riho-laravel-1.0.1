@@ -489,7 +489,7 @@
                     <a class="sidebar-link sidebar-title link-nav menu-link" href="{{ route('agency.villa-ready.index') }}">
                         <img class="stroke-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
                         <img class="fill-icon svg-icon" src="{{ asset('assets/images/svg-icons/14_affiliate_handshake.svg') }}" alt="">
-                        <span>Villa Bit Estate Projects</span>
+                        <span>Villa Bit Projects</span>
                     </a>
                 </li>
 

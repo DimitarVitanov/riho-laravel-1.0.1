@@ -68,6 +68,22 @@ body .page-body-wrapper a.vb-domain-support-link:not(.sidebar-link):not(.menu-li
     font-weight: 600 !important;
 }
 
+/* Villa Ready property page link — black, underlined, underline off on hover.
+   Uses the same :not() chain as the global link rule so it wins the specificity fight. */
+body .page-body-wrapper a.vrc-page-link,
+body .page-body-wrapper a.vrc-page-link:visited,
+body .page-body-wrapper a.vrc-page-link:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link) {
+    color: #111827 !important;
+    text-decoration: underline !important;
+    font-size: 12px;
+    word-break: break-all;
+}
+body .page-body-wrapper a.vrc-page-link:hover,
+body .page-body-wrapper a.vrc-page-link:not(.sidebar-link):not(.menu-link):not(.dropdown-item):not(.btn):not(.nav-link):hover {
+    color: #111827 !important;
+    text-decoration: none !important;
+}
+
 
 /* Dark Sidebar Override */
 .page-wrapper .sidebar-wrapper,

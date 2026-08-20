@@ -139,7 +139,7 @@ body .page-body-wrapper a.vrc-page-link:not(.sidebar-link):not(.menu-link):not(.
     overflow-y: auto !important;
     overflow-x: hidden !important;
     scrollbar-width: auto;
-    scrollbar-color: #6b7cff #1a1c1f;
+    scrollbar-color: #ffffff #1a1c1f;
 }
 .page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links::-webkit-scrollbar {
     width: 12px;
@@ -149,13 +149,13 @@ body .page-body-wrapper a.vrc-page-link:not(.sidebar-link):not(.menu-link):not(.
     border-radius: 6px;
 }
 .page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links::-webkit-scrollbar-thumb {
-    background-color: #6b7cff;
+    background-color: #ffffff;
     border: 2px solid #1a1c1f;
     border-radius: 6px;
     min-height: 48px;
 }
 .page-wrapper .sidebar-wrapper .sidebar-main .sidebar-links::-webkit-scrollbar-thumb:hover {
-    background-color: #8a97ff;
+    background-color: #e5e7eb;
 }
 
 /* Global Text Color Overrides — make muted/secondary text dark */
